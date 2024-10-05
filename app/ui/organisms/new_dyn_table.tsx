@@ -7,8 +7,6 @@ export default function NewDynamicTable(): React.JSX.Element {
     const [numRows, setNumRows] = useState<number>(0);
     const [rows, setRows] = useState<Array<React.JSX.Element>>([]);
     const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-    const [inputs, setInputs] = useState<Array<React.JSX.Element>>([]);
-    const [head, setHead] = useState<Array<React.JSX.Element>>([]);
     
     const handleAddColumn = () => {
         if (numColumns === 0) {
@@ -18,6 +16,9 @@ export default function NewDynamicTable(): React.JSX.Element {
         }
         setNumColumns(prev => prev + 1);
         setColumns(prev => [...prev, <th><input type="input" name={`${letters[numColumns]}${numColumns}`} id={`${letters[numColumns]}${numColumns}`}/></th>])
+    }
+    const handleAddRow = () => {
+
     }
 
     return (
@@ -31,7 +32,7 @@ export default function NewDynamicTable(): React.JSX.Element {
                         </tr>
                     </thead>
                     <tbody>
-                        {inputs}
+                        {rows}
                     </tbody>
                 </table>
             </form>
