@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState } from "react"
 import { v4 as uuidv4 } from 'uuid'
 
 export function useTable () {
@@ -7,8 +7,8 @@ export function useTable () {
     const [ columns, setColumns ] = useState<Array<React.JSX.Element>>([]);
     const [ rows, setRows ] = useState<Array<React.JSX.Element>>([]);
     // Reference to the <thead> targeting columns. Only one element available as there is only one row of columns
-    const columnsRef = useRef<(HTMLTableSectionElement | null)>();
-    // Reference to each <thead> targeting a row. Array of nodes as there can be multiple rows.
+    const columnsRef = useRef<HTMLTableSectionElement | null>();
+    // Reference to each <th> targeting a row. Array of nodes as there can be multiple rows.
     const rowsRef = useRef<(HTMLTableSectionElement | null)[]>([]);
 
     const addColumn = () => {
