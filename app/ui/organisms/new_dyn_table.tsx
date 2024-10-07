@@ -1,18 +1,22 @@
 'use client'
-import { useCreateTable } from "@/app/hooks/custom"
+import { useTable } from "@/app/hooks/custom"
 
 export default function NewDynamicTable(): React.JSX.Element {
-    const { rows, addColumn, addRow } = useCreateTable();
+    const { columns, rows, addColumn, addRow } = useTable();
 
     return (
         <>
             <form>
                 <input type="text" name="name" id="name" placeholder="Untitled table" defaultValue="Untitled table"/>
+                
                 <table>
-                    {rows}
+                    {columns}
+                    <tbody>
+                        {rows}
+                    </tbody>
                 </table>
+
             </form>
-            
             <button type="button" onClick={(e) => addColumn()}>Add Column</button>
         </>
     )

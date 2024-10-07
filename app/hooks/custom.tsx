@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid'
 
-export function useCreateTable () {
+export function useTable () {
     const [ numColumns, setNumColumns ] = useState<number>(0);
     const [ numRows, setNumRows ] = useState<number>(0);
     const [ columns, setColumns ] = useState<Array<React.JSX.Element>>([]);
@@ -14,7 +14,7 @@ export function useCreateTable () {
     const addColumn = () => {
         // If empty, create row with one cell
         if (numColumns === 0 && numRows === 0) {
-            setRows([
+            setColumns([
                 <thead 
                 ref={(element) => {
                     columnsRef.current = element;
@@ -29,29 +29,31 @@ export function useCreateTable () {
             setNumRows(1);
             return;
         }
-        // If not empty, add column to each existing row
+        // If not empty, add cell to columnRef and to each existing row
 
     }
 
     const addRow = () => {
-        // If empty, create row with one cell
+        // If empty, create row with one cell. *The first row will be considered as a row of columns*
         if (numColumns === 0 && numRows === 0) {
-            setRows([
-                <thead
-                ref={(element) => {
-                    rowsRef.current[0] = element;
-                }}
-                key={uuidv4()}>
-                    <tr>
-                        <th scope="col"><input type="text" name={`${numRows}-${numColumns}`}/></th>
-                    </tr>
-                </thead>
-            ])
-            setNumColumns(1);
-            setNumRows(1);
-            return;
+            if (numColumns === 0 && numRows === 0) {
+                setColumns([
+                    <thead 
+                    ref={(element) => {
+                        columnsRef.current = element;
+                    }}
+                    key={uuidv4()}>
+                        <tr>
+                            <th scope="col"><input type="text" name={`${numRows}-${numColumns}`}/></th>
+                        </tr>
+                    </thead>
+                ])
+                setNumColumns(1);
+                setNumRows(1);
+                return;
+            }
         }
-        // If not empty, create row with X number of columns
+        // If not empty, create row with X number of columns/cells
 
     }
 
@@ -62,5 +64,5 @@ export function useCreateTable () {
     const deleteRow = (index: number) => {
 
     }
-    return {rows, addColumn, addRow}
+    return {columns, rows, addColumn, addRow}
 }
