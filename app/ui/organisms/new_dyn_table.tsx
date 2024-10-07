@@ -18,7 +18,7 @@ export default function NewDynamicTable(): React.JSX.Element {
 
             </form>
             <button type="button" onClick={(e) => addColumn()}>Add Column</button>
+            <button type="button" onClick={(e) => addRow()}>Add Row</button>
         </>
     )
 }
-
