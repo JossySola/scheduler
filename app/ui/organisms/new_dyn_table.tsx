@@ -1,5 +1,6 @@
 'use client'
 import { useTable } from "@/app/hooks/custom"
+import { ActionButton } from "../atoms/button"
 
 export default function NewDynamicTable(): React.JSX.Element {
     const { columns, rows, addColumn, addRow } = useTable();
@@ -17,8 +18,8 @@ export default function NewDynamicTable(): React.JSX.Element {
                 </table>
 
             </form>
-            <button type="button" onClick={(e) => addColumn()}>Add Column</button>
-            <button type="button" onClick={(e) => addRow()}>Add Row</button>
+            <ActionButton callback={addColumn} text='Add Column' />
+            <ActionButton callback={addRow} text='Add Row' />
         </>
     )
 }
