@@ -24,6 +24,7 @@ export function useHTMLTable() {
 
     const addRow = (value?: string) => {
         if (numColumns === 0) {
+            setNumRows(prev => prev + 1);
             return addColumn(value);
         }
         setRows(prev => {
@@ -40,10 +41,48 @@ export function useHTMLTable() {
         setNumRows(prev => prev + 1);
     }
 
+    const popColumn = () => {
+        setColumns(prev => {
+            return prev.filter((col, index) => {
+                const final = numColumns - 1;
+                if (index !== final) {
+                    return col;
+                }
+            })
+        })
+        setRows(prev => {
+            return prev.map((prevRows) => {
+                return prevRows.filter((col, index) => {
+                    const final = numColumns - 1;
+                    if (index !== final) {
+                        return col;
+                    }
+                })
+            })
+        })
+        setNumColumns(prev => prev - 1);
+    }
+
+    const popRow = () => {
+        setRows(prev => {
+            return prev.filter((row, index) => {
+                const final = numRows - 1;
+                if (index !== final) {
+                    return row;
+                }
+            })
+        })
+        setNumRows(prev => prev - 1);
+    }
+
     return {
         columns, 
         rows, 
+        numColumns,
+        numRows,
         addColumn, 
-        addRow
+        addRow,
+        popColumn,
+        popRow,
     }
 }
