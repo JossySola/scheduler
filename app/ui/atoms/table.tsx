@@ -6,7 +6,7 @@ export default function Table({columns, rows} : {
     rows: Array<Array<React.JSX.Element>>,
 }) {
     return (
-        <table>
+        <table className='text-black'>
             <thead>
                 <tr>
                     {columns}

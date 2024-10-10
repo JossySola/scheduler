@@ -6,22 +6,29 @@ export function useHTMLTable() {
     const [ numRows, setNumRows ] = useState<number>(0);
     const [ columns, setColumns ] = useState<Array<React.JSX.Element>>([]);
     const [ rows, setRows ] = useState<Array<Array<React.JSX.Element>>>([]);
+    const columnCells = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
     const addColumn = (value?: string) => {
-        // Add a <th> element to the Columns array
-        setColumns(prev => {
-            return [...prev, <th scope="col" key={uuidv4()}><input type="text" placeholder={value ? value : ''}/></th>]
-        })
-        // If there are rows, add an input field to each row
-        if (numRows) {
-            setRows(prev => {
-                return prev.map(row => [
-                    ...row,
-                    <td key={uuidv4()}><input type="text" placeholder={value ? value : ''}/></td>
-                ])
+        // Puts a number limit on how many columns there can be
+        if (numColumns < 26) {
+            // Add a <th> element to the Columns array
+            setColumns(prev => {
+                return [...prev, <th scope="col" key={uuidv4()}><input type="text" id={`${columnCells[numColumns]}0`} placeholder={value ? value : ''}/></th>]
             })
+            // If there are rows, add an input field to each row
+            if (numRows) {
+                setRows(prev => {
+                    return prev.map((row, index) => [
+                        ...row,
+                        <td key={uuidv4()}><input type="text" id={`${columnCells[numColumns]}${index+1}`} placeholder={value ? value : ''}/></td>
+                    ])
+                })
+            }
+            setNumColumns(prev => prev + 1);
+        } else {
+            console.log("Limit reached");
+            return;
         }
-        setNumColumns(prev => prev + 1);
     }
 
     const addRow = (value?: string) => {
@@ -38,9 +45,9 @@ export function useHTMLTable() {
                 ...prev,
                 columns.map((el, index) => {
                     if (index === 0) {
-                        return <th key={uuidv4()} scope="row"><input type="text" placeholder={value ? value : ''}/></th>
+                        return <th key={uuidv4()} scope="row"><input type="text" id={`${columnCells[index]}${numRows+1}`} placeholder={value ? value : ''}/></th>
                     }
-                    return <td key={uuidv4()}><input type="text" placeholder={value ? value : ''}/></td>
+                    return <td key={uuidv4()}><input type="text" id={`${columnCells[index]}${numRows+1}`} placeholder={value ? value : ''}/></td>
                 })
             ]
         })
