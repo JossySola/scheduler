@@ -4,7 +4,14 @@ import { ActionButton } from "../atoms/button"
 import Table from "../atoms/table"
 
 export default function NewDynamicTable(): React.JSX.Element {
-    const { columns, rows, addColumn, addRow, popColumn, popRow } = useHTMLTable();
+    const { 
+        columns, 
+        rows, 
+        addColumn, 
+        addRow, 
+        popColumn, 
+        popRow 
+    } = useHTMLTable();
 
     return (
         <>
