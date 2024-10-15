@@ -13,8 +13,8 @@ export default function Table({columns, rows} : {
                 </tr>
             </thead>
             <tbody>
-                {rows.map((row) => {
-                    return <tr key={uuidv4()}>{row}</tr>
+                {rows.map((row, index) => {
+                    return <tr key={uuidv4()} id={`${index+1}`}>{row}</tr>
                 })}
             </tbody>
         </table>
