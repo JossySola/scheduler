@@ -13,7 +13,7 @@ export function useHTMLTable() {
         if (numColumns < 26) {
             // Add a <th> element to the Columns array
             setColumns(prev => {
-                return [...prev, <th scope="col" key={uuidv4()}><input type="text" id={`${columnCells[numColumns]}0`} placeholder={value ? value : ''}/></th>]
+                return [...prev, <th scope="col" key={uuidv4()} id={`${columnCells[numColumns]}`}><input type="text" id={`${columnCells[numColumns]}0`} placeholder={value ? value : ''}/></th>]
             })
             // If there are rows, add an input field to each row
             if (numRows) {
@@ -117,6 +117,52 @@ export function useHTMLTable() {
         })
         setNumRows(prev => prev - 1);
     }
+    const swapColumn = (from: number, to: number) => {
+        if (columns[from] && columns[to]) {
+            const fromColumn = columns[from];
+            const toColumn = columns[to];
+            const newColumns = columns.map((column, index) => {
+                if (from === index) {
+                    return toColumn;
+                } else if (to === index) {
+                    return fromColumn;
+                }
+                return column;
+            })
+            setColumns(newColumns);
+
+            if (numRows) {
+                const newRows = rows.map((row) => {
+                    const fromField = row[from];
+                    const toField = row[to];
+                    return row.map((field, index) => {
+                        if (from === index) {
+                            return toField;
+                        } else if (to === index) {
+                            return fromField;
+                        }
+                        return field;
+                    })
+                })
+                setRows(newRows);
+            }
+        }
+    }
+    const swapRow = (from: number, to: number) => {
+        if (rows[from] && rows[to]) {
+            const fromRow = rows[from];
+            const toRow = rows[to];
+            const newRows = rows.map((row, index) => {
+                if (from === index) {
+                    return toRow;
+                } else if (to === index) {
+                    return fromRow;
+                }
+                return row;
+            });
+            setRows(newRows);
+        }
+    }
 
     return {
         columns, 
@@ -128,4 +174,8 @@ export function useHTMLTable() {
         popColumn,
         popRow,
     }
+}
+
+export function useDataOnTable() {
+
 }
