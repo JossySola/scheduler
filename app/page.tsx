@@ -1,5 +1,5 @@
 import Image from "next/image";
-import NewDynamicTable from "./ui/organisms/new_dyn_table";
+import NewDynamicTable from "./ui/organisms/dynamic-table";
 
 export default function Home() {
   return (

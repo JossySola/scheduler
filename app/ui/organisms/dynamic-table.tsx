@@ -1,7 +1,7 @@
 'use client'
 import { useHTMLTable } from "@/app/hooks/custom"
-import { ActionButton } from "../atoms/button"
-import Table from "../atoms/table"
+import { ActionButton } from "../atoms/atom-button"
+import Table from "../atoms/atom-table"
 
 export default function NewDynamicTable(): React.JSX.Element {
     const { 

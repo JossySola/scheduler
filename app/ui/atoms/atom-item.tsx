@@ -1,6 +1,6 @@
 'use client';
 
-import { SubmitButton } from "./button";
+import { SubmitButton } from "./atom-button";
 
 export default function Item () {
     return (
