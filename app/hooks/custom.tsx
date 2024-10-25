@@ -117,6 +117,7 @@ export function useHTMLTable() {
         })
         setNumRows(prev => prev - 1);
     }
+
     const swapColumn = (from: number, to: number) => {
         if (columns[from] && columns[to]) {
             const fromColumn = columns[from];
@@ -148,6 +149,7 @@ export function useHTMLTable() {
             }
         }
     }
+    
     const swapRow = (from: number, to: number) => {
         if (rows[from] && rows[to]) {
             const fromRow = rows[from];
