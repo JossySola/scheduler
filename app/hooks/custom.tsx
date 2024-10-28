@@ -13,14 +13,14 @@ export function useHTMLTable() {
         if (numColumns < 26) {
             // Add a <th> element to the Columns array
             setColumns(prev => {
-                return [...prev, <th scope="col" key={uuidv4()} id={`${columnCells[numColumns]}`}><input type="text" id={`${columnCells[numColumns]}0`} placeholder={value ? value : ''}/></th>]
+                return [...prev, <th scope="col" key={uuidv4()} id={`${columnCells[numColumns]}`}><input type="text" id={`${columnCells[numColumns]}0`} name={`${columnCells[numColumns]}0`} placeholder={value ? value : ''}/></th>]
             })
             // If there are rows, add an input field to each row
             if (numRows) {
                 setRows(prev => {
                     return prev.map((row, index) => [
                         ...row,
-                        <td key={uuidv4()}><input type="text" id={`${columnCells[numColumns]}${index+1}`} placeholder={value ? value : ''}/></td>
+                        <td key={uuidv4()}><input type="text" id={`${columnCells[numColumns]}${index+1}`} name={`${columnCells[numColumns]}${index+1}`} placeholder={value ? value : ''}/></td>
                     ])
                 })
             }
@@ -45,9 +45,9 @@ export function useHTMLTable() {
                 ...prev,
                 columns.map((el, index) => {
                     if (index === 0) {
-                        return <th key={uuidv4()} scope="row"><input type="text" id={`${columnCells[index]}${numRows+1}`} placeholder={value ? value : ''}/></th>
+                        return <th key={uuidv4()} scope="row"><input type="text" id={`${columnCells[index]}${numRows+1}`} name={`${columnCells[index]}${numRows+1}`} placeholder={value ? value : ''}/></th>
                     }
-                    return <td key={uuidv4()}><input type="text" id={`${columnCells[index]}${numRows+1}`} placeholder={value ? value : ''}/></td>
+                    return <td key={uuidv4()}><input type="text" id={`${columnCells[index]}${numRows+1}`} name={`${columnCells[index]}${numRows+1}`} placeholder={value ? value : ''}/></td>
                 })
             ]
         })
