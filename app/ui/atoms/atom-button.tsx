@@ -11,9 +11,7 @@ export function ActionButton({callback, text}: {
     )
 }
 
-export function SubmitButton({name, value, text, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget}: {
-    name: string,
-    value: string,
+export function SubmitButton({text, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget}: {
     text: string,
     disabled?: boolean,
     form?: string,
@@ -23,17 +21,15 @@ export function SubmitButton({name, value, text, disabled, form, formaction, for
     formnovalidate?: boolean,
     formtarget?: "_self" | "_blank" | "_parent" | "_top",
 }) {
-    return (
-        <button 
-        name={name}
-        value={value}
-        type="submit"
-        disabled={disabled}
-        form={form}
-        formAction={formaction}
-        formEncType={formenctype}
-        formMethod={formmethod}
-        formNoValidate={formnovalidate}
-        formTarget={formtarget}>{text}</button>
-    )
+
+    return <button 
+    type="submit"
+    disabled={disabled}
+    form={form}
+    formAction={formaction}
+    formEncType={formenctype}
+    formMethod={formmethod}
+    formNoValidate={formnovalidate}
+    formTarget={formtarget}>{text}</button> 
+        
 }
