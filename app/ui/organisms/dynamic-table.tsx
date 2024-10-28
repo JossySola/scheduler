@@ -3,7 +3,7 @@ import { useHTMLTable } from "@/app/hooks/custom"
 import { ActionButton } from "../atoms/atom-button"
 import Table from "../atoms/atom-table"
 
-export default function NewDynamicTable(): React.JSX.Element {
+export default function DynamicTable(): React.JSX.Element {
     const { 
         columns, 
         rows, 
@@ -15,11 +15,7 @@ export default function NewDynamicTable(): React.JSX.Element {
 
     return (
         <>
-            <form>
-                <input type="text" name="name" id="name" placeholder="Untitled table" defaultValue="Untitled table"/>
-                
-                <Table columns={columns} rows={rows} />
-            </form>
+            <Table columns={columns} rows={rows} />
             <ActionButton callback={addColumn} text='Add Column' />
             <ActionButton callback={addRow} text='Add Row' />
             <ActionButton callback={popColumn} text="Remove Column" />
