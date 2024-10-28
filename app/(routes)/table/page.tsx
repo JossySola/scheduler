@@ -8,7 +8,7 @@ export default function Page () {
         <>
             <h1>Table - Page.tsx</h1>
             <form action={printAction} id="new-table" className="flex flex-col">
-                <input name="table-name" type="text" defaultValue="Untitled" />
+                <input name="table-name" id="table-name" type="text" defaultValue="Untitled" />
                 <DynamicTable />
                 <SubmitButton text="print"/>
             </form>
