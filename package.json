@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "^15.0.2-canary.6",
+    "@vercel/postgres": "^0.10.0",
+    "dotenv": "^16.4.5",
+    "next": "^15.0.2-canary.8",
     "react": "^19.0.0-rc-1631855f-20241023",
     "react-dom": "^19.0.0-rc-1631855f-20241023",
     "sass": "^1.80.3",
