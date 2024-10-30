@@ -26,21 +26,31 @@ describe('Receives formData, Outputs Query Rows Object', () => {
         const expectedRows = 9;
 
         const OPERATION = (table: typeof sample) => {
+            // Keeps count of each element on table
             let index = 0;
+            // Keeps record of how many columns there are based on the first letter of the key's name
             let count = 0;
+            // Current letter
             let letter = '';
+            // Matches [letter][number] (e.g. A0)
             const regexCol = /[A-Z][0-9]/;
+            // Matches [$ACTION_ID_][alphanumeric id] (e.g. $ACTION_ID_dbba0bad173f8c1ba9734f1313c7ca3f7298c8f6)
             const regexId = /(\$ACTION_ID_)[\w]+/;
+            // Matches [table-name]
             const regexName = /(table-name)/;
 
             for (let column in table) {
+                // If the current element is an Action ID or the table name, do nothing and continue iteration
                 if (column.match(regexId) || column.match(regexName)) {
                     continue;
                 }
+                // If the current element's key is a letter+number AND the key start with the letter stored in the variable
                 if (column.match(regexCol) && column.startsWith(letter)) {
                     count++;
+                    // Store current key's name first letter
                     letter = column[0];
                 }
+                // Count every iteration
                 index++;
             }
             return {columns: count, rows: index};
@@ -69,6 +79,9 @@ describe('Receives formData, Outputs Query Rows Object', () => {
             }
             // Mock of UUIDv4 result function
             const uuid = '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d';
+            // Form entries to Object
+            const formEntries = Object.entries(form);
+            // Query Object to be returned
             let result: Definition = {
                 id: uuid,
                 name: form['table-name'],
@@ -76,8 +89,8 @@ describe('Receives formData, Outputs Query Rows Object', () => {
                 rows: [],
             };
     
-            let columnArray = []
-            Object.entries(form).forEach((value, index) => {
+            let columnArray: Array<string> = []
+            formEntries.forEach((value, index) => {
                 if (index > 1 && index < previousResult.columns+2) {
                     columnArray.push(`${value[1]} varchar(20)`);
                 }
