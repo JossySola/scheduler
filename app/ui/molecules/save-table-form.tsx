@@ -1,4 +1,4 @@
-import { printAction } from "@/app/(routes)/table/actions/actions"
+import { printAction } from "@/app/(routes)/table/actions"
 import DynamicTable from "./dynamic-table"
 import { SubmitButton } from "../atoms/atom-button"
 
