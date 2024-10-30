@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals'
 
 describe('Receives formData, Outputs Query Rows Object', () => {
-    type Definition = {
+    type ObjectOutput = {
         id: string,
         name: string,
         columns: string,
@@ -82,7 +82,7 @@ describe('Receives formData, Outputs Query Rows Object', () => {
             // Form entries to Object
             const formEntries = Object.entries(form);
             // Query Object to be returned
-            let result: Definition = {
+            let result: ObjectOutput = {
                 id: uuid,
                 name: form['table-name'],
                 columns: '',
