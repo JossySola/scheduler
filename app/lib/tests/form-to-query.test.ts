@@ -88,16 +88,37 @@ describe('Receives formData, Outputs Query Rows Object', () => {
                 columns: '',
                 rows: [],
             };
-    
+            
+            // For each element, if the index is greater than 1 and is less than the number of columns
+            // push a query to the array below
             let columnArray: Array<string> = []
-            formEntries.forEach((value, index) => {
+            formEntries.forEach((entry, index) => {
                 if (index > 1 && index < previousResult.columns+2) {
-                    columnArray.push(`${value[1]} varchar(20)`);
+                    columnArray.push(`${entry[1]} varchar(20)`);
                 }
                 return;
             })
             result['columns'] = columnArray.join(',');
             
+            // First remove the first two elements corresponding to the ID and table's name
+            // Then remove the number of columns added to the query above
+            const reducedFormEntries = formEntries.toSpliced(0, previousResult.columns+2);
+            let count = 0;
+            reducedFormEntries.forEach(entry => {
+                if (count === 0) {
+                    result.rows.push(`${entry[1]}`);
+                    count++;
+                    return;
+                } else if (count === previousResult.columns) {
+                    count = 1;
+                    result.rows.push(`${entry[1]}`);
+                    return;
+                }
+                result.rows[result.rows.length-1] += `, ${entry[1]}`;
+                count++;
+                return;
+            });
+
             return result;
         };
         const result = OPERATION(sample);
