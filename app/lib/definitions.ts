@@ -7,4 +7,3 @@ export type Result_FormDataToQuery = {
 type TableData = {
     [index: string]: string,
 }
-export type TableFormData = FormData & TableData;

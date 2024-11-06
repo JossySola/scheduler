@@ -1,13 +1,12 @@
 'use server'
 import pool from "@/app/lib/mocks/db"
 import { FormDataToQuery } from "@/app/lib/utils"
-import { TableFormData } from "@/app/lib/definitions"
 
 export async function printAction (formData: FormData) {
     console.log(formData)
 }
 
-export async function SaveActionPOOL (formData: TableFormData) {
+export async function SaveActionPOOL (formData: FormData) {
     const {id, columns, columnsParam, rows} = FormDataToQuery(formData);
     
     
@@ -28,7 +27,7 @@ export async function SaveActionPOOL (formData: TableFormData) {
     */
 
 }
-export async function SaveAction (formData: TableFormData) {
+export async function SaveAction (formData: FormData) {
 
 }
 export async function CancelAction () {
