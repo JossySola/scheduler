@@ -4,6 +4,3 @@ export type Result_FormDataToQuery = {
     columnsParam: string,
     rows: Array<string>
 }
-type TableData = {
-    [index: string]: string,
-}
