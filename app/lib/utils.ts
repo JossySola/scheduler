@@ -2,6 +2,11 @@ import { Result_FormDataToQuery, TableFormData } from "./definitions";
 import { v4 as uuidv4 } from 'uuid';
 
 export function FormDataToQuery (formData: TableFormData) {
+    const date = Date.now().toString();
+    const uuid =`_${uuidv4().replace(/-/g, '')}_${formData.get('table-name')}_${date}`;
+    const entries_values = formData.values();
+    const entries_keys = formData.keys();
+
     const getNumRowsCols = (formData: TableFormData) => {
         // Keeps count of each element on table
         let index = 0;
@@ -32,48 +37,33 @@ export function FormDataToQuery (formData: TableFormData) {
         }
         return {columns: count, rows: index};
     }
-
     const numberOf = getNumRowsCols(formData);
-    const uuid = uuidv4();
-    // Form entries to Object
-    const formEntries = Object.entries(formData);
     // Query Object to be returned
     let result: Result_FormDataToQuery = {
         id: uuid,
-        name: formData['table-name'],
         columns: '',
+        columnsParam: '',
         rows: [],
     };
-    
     // For each element, if the index is greater than 1 and is less than the number of columns
     // push a query to the array below
-    let columnArray: Array<string> = []
-    formEntries.forEach((entry, index) => {
-        if (index > 1 && index < numberOf.columns + 2) {
-            columnArray.push(`${entry[1]} varchar(20)`);
+    let columnArray: Array<FormDataEntryValue> = [];
+    let paramsArray: Array<FormDataEntryValue> = [];
+    let count = 0;
+    for (const entry of entries_keys) {
+        if (count > 1) {
+            columnArray.push(`${entry} VARCHAR(30)`);
+            paramsArray.push(`${entry}`);
         }
-        return;
-    })
-    result['columns'] = columnArray.join(',');
+        count++;
+    }
+    if (columnArray && paramsArray) {
+        result.columns = columnArray.join(', ');
+        result.columnsParam = paramsArray.join(', ');
+    }
     
     // First remove the first two elements corresponding to the ID and table's name
     // Then remove the number of columns added to the query above
-    const reducedFormEntries = formEntries.toSpliced(0, numberOf.columns + 2);
-    let count = 0;
-    reducedFormEntries.forEach(entry => {
-        if (count === 0) {
-            result.rows.push(`${entry[1]}`);
-            count++;
-            return;
-        } else if (count === numberOf.columns) {
-            count = 1;
-            result.rows.push(`${entry[1]}`);
-            return;
-        }
-        result.rows[result.rows.length - 1] += `, ${entry[1]}`;
-        count++;
-        return;
-    });
-
+    
     return result;
 }

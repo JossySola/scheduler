@@ -1,10 +1,10 @@
 export type Result_FormDataToQuery = {
-    id: string,
-    name: string,
+    id: string;
     columns: string,
+    columnsParam: string,
     rows: Array<string>
 }
-export type TableFormData = {
+type TableData = {
     [index: string]: string,
-    'table-name': string,
 }
+export type TableFormData = FormData & TableData;
