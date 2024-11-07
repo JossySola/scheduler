@@ -1,6 +1,12 @@
 export type Result_FormDataToQuery = {
     id: string;
     columns: string,
-    columnsParam: string,
-    rows: Array<string>
+    columnsParams: string,
+    rows: Array<Array<string | null>>
+}
+export type Action_State = {
+    message?: string | null,
+    errors?: {
+        save?: string[],
+    }
 }
