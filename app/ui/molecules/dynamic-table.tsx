@@ -10,13 +10,17 @@ export default function DynamicTable(): React.JSX.Element {
         addColumn, 
         addRow, 
         popColumn, 
-        popRow 
+        popRow,
+        message
     } = useHTMLTable();
 
     return (
         <>
             <Table columns={columns} rows={rows} />
             <ActionButton callback={addColumn} text='Add Column' />
+            {
+                message && <p>{message}</p>
+            }
             <ActionButton callback={addRow} text='Add Row' />
             <ActionButton callback={popColumn} text="Remove Column" />
             <ActionButton callback={popRow} text="Remove Row" />
