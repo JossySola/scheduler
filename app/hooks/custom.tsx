@@ -6,6 +6,7 @@ export function useHTMLTable() {
     const [ numRows, setNumRows ] = useState<number>(0);
     const [ columns, setColumns ] = useState<Array<React.JSX.Element>>([]);
     const [ rows, setRows ] = useState<Array<Array<React.JSX.Element>>>([]);
+    const [ message, setMessage ] = useState<string>('');
     const columnCells = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
     const addColumn = (value?: string) => {
@@ -26,8 +27,8 @@ export function useHTMLTable() {
             }
             setNumColumns(prev => prev + 1);
         } else {
-            console.log("Limit reached");
-            return;
+            setMessage("Limit reached");
+            return message;
         }
     }
 
@@ -43,7 +44,7 @@ export function useHTMLTable() {
             // fields.
             return [
                 ...prev,
-                columns.map((el, index) => {
+                columns.map((_, index) => {
                     if (index === 0) {
                         return <th key={uuidv4()} scope="row"><input type="text" id={`${columnCells[index]}${numRows+1}`} name={`${columnCells[index]}${numRows+1}`} placeholder={value ? value : ''}/></th>
                     }
@@ -175,6 +176,7 @@ export function useHTMLTable() {
         addRow,
         popColumn,
         popRow,
+        message
     }
 }
 
