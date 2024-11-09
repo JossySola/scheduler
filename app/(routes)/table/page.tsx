@@ -1,4 +1,4 @@
-import SaveTableForm from "@/app/ui/molecules/save-table-form";
+import SaveTableForm from "@/app/ui/molecules/mol-save-table-form";
 
 export default function Page () {
     
