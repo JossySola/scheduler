@@ -9,7 +9,7 @@ export function useHTMLTable () {
             return [...previous,
                 rows.length > 0 ? rows[rows.length - 1].map((_, index) => {
                     return {
-                        id: `${columnLetters[index]}${rows.length + 1}`,
+                        id: `${columnLetters[index]}${rows.length}`,
                         value: value ? value : ''
                     }
                 }) : [
@@ -38,8 +38,8 @@ export function useHTMLTable () {
 
     const removeRow = () => {
         setRows(() => {
-            if (rows.length) {
-                return rows.toSpliced(0, rows.length - 1);
+            if (rows.length > 0) {
+                return rows.slice(0, rows.length - 1);
             } else {
                 return [];
             }
@@ -49,7 +49,10 @@ export function useHTMLTable () {
     const removeColumn = () => {
         setRows(() => {
             return rows.map(row => {
-                return row.toSpliced(0, row.length - 1);
+                if (row.length > 0) {
+                    return row.slice(0, row.length - 1);
+                }
+                return row;
             })
         })
     }
