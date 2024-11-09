@@ -4,6 +4,26 @@ export function useHTMLTable () {
     const [ rows, setRows ] = useState<Array<Array<{id: string, value: string}>>>([]);
     const columnLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
+    const handleInputChange = ({id, index, value}: {
+        id: string,
+        index: number,
+        value: string,
+    }) => {
+        setRows(() => {
+            return rows.map((row, i) => {
+                if (i = index) {
+                    return row.map(column => {
+                        if (column.id === id) {
+                            column.value = value;
+                        }
+                        return column;
+                    })
+                }
+                return row;
+            })
+        })
+    }
+    
     const addRow = (value?: string) => {
         setRows(previous => {
             return [...previous,
@@ -24,15 +44,22 @@ export function useHTMLTable () {
 
     const addColumn = (value?: string) => {
         setRows(() => {
-            return rows.map((row, index) => {
-                return [
-                    ...row,
-                    {
-                        id: `${columnLetters[row.length]}${index}`,
-                        value: value ? value : ''
-                    }
-                ]
-            })
+            if (rows.length > 0) {
+                return rows.map((row, index) => {
+                    return [
+                        ...row,
+                        {
+                            id: `${columnLetters[row.length]}${index}`,
+                            value: value ? value : ''
+                        }
+                    ]
+                })
+            } else {
+                return [[{
+                    id: `${columnLetters[rows.length]}${rows.length}`,
+                    value: value ? value : ''
+                }]]
+            }
         });
     }
 
@@ -63,5 +90,6 @@ export function useHTMLTable () {
         removeRow,
         removeColumn,
         rows,
+        handleInputChange,
     }
 }
