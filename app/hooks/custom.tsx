@@ -1,7 +1,6 @@
 import { useState } from "react"
-import { v4 as uuidv4 } from 'uuid'
 
-export function useHTMLTable() {
+export function useHTMLTable () {
     const [ rows, setRows ] = useState<Array<Array<{id: string, value: string}>>>([]);
     const columnLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
