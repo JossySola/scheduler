@@ -1,20 +1,47 @@
-'use client'
-import { useHTMLTable } from "@/app/hooks/custom";
-import Table from "../atoms/atom-table";
-import { ActionButton } from "../atoms/atom-button";
+import { v4 as uuidv4 } from 'uuid'
 
-export default function DynamicTable () {
-    const { addRow, addColumn, removeRow, removeColumn, rows } = useHTMLTable();
-    const onlyRows = rows.toSpliced(0, 1);
-    const onlyColumns = rows.toSpliced(1, rows.length)[0];
-    
+export default function DynamicTable ({ rows, columns, handleInputChange }: {
+    rows: Array<Array<{id: string, value: string}>>,
+    columns: Array<{id: string, value: string}>,
+    handleInputChange: ({id, index, value}: {id: string, index: number, value: string}) => void,
+}) {
     return (
-        <>
-            <Table rows={onlyRows} columns={onlyColumns}/>
-            <ActionButton callback={addRow} text={"-Add row"}/>
-            <ActionButton callback={addColumn} text={"-Add column"}/>
-            <ActionButton callback={removeRow} text={"-Remove row"}/>
-            <ActionButton callback={removeColumn} text={"-Remove column"}/>
-        </>
+        <table>
+            <thead>
+                <tr>
+                    {
+                        columns && columns.map((column, index) => {
+                            return <th scope="col" key={uuidv4()}>
+                                        <input type='text' id={column.id} name={column.id} defaultValue={column.value} onChange={
+                                            (e) => {
+                                                handleInputChange(column.id, index, e.target.value);
+                                            }
+                                        }></input>
+                                    </th>
+                        })
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                    {
+                        rows && rows.map(row => {
+                            return <tr key={uuidv4()}>
+                                {
+                                    row.map((cell, index) => {
+                                        if (index === 0) {
+                                            return <th key={uuidv4()}>
+                                                <input type='text' id={cell.id} name={cell.id} defaultValue={cell.value}></input>
+                                            </th>
+                                        }
+                                        return <td key={uuidv4()}>
+                                            <input type='text' id={cell.id} name={cell.id} defaultValue={cell.value}></input>
+                                        </td>
+                                    })
+                                }
+                            </tr>
+                        })
+                    }
+            </tbody>
+        </table>
     )
 }

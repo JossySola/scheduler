@@ -1,6 +1,6 @@
 'use client'
 import { printAction, SaveActionMOCK } from "@/app/(routes)/table/actions"
-import DynamicTable from "./mol-dyn-table"
+import TablePanel from "./mol-table-panel"
 import { SubmitButton } from "../atoms/atom-button"
 import { Action_State } from "@/app/lib/definitions"
 import { useActionState } from "react"
@@ -14,7 +14,7 @@ export default function SaveTableForm() {
     return (
         <form action={formAction} id="new-table" className="flex flex-col" aria-describedby="form-error">
             <input name="table-name" id="table-name" type="text" defaultValue="Untitled" placeholder="Untitled" />
-            <DynamicTable />
+            <TablePanel />
             <SubmitButton text="save" isSubmitting={isPending ? true : false} />
             <div id="form-error" aria-live="polite" aria-atomic="true">
                 {state?.message && <p>{state?.message}</p>}
