@@ -11,6 +11,7 @@ export default function SaveTableForm() {
         errors: {}
     }
     const [state, formAction, isPending] = useActionState(SaveActionMOCK, initialState);
+    
     return (
         <form action={formAction} id="new-table" className="flex flex-col" aria-describedby="form-error">
             <input name="table-name" id="table-name" type="text" defaultValue="Untitled" placeholder="Untitled" />
