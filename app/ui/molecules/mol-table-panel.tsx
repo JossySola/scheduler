@@ -1,6 +1,6 @@
 'use client'
 import { useHTMLTable } from "@/app/hooks/custom";
-import DynamicTable from "./mol-dyn-table";
+import DynamicTable from "./mol-table-dynamic";
 import { ActionButton } from "../atoms/atom-button";
 
 export default function TablePanel () {

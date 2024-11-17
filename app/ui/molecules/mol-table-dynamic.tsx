@@ -1,15 +1,16 @@
 import { v4 as uuidv4 } from 'uuid'
 
-export default function Table ({ rows, columns }: {
+export default function DynamicTable ({ rows, columns, handleInputChange }: {
     rows: Array<Array<{id: string, value: string}>>,
     columns: Array<{id: string, value: string}>,
+    handleInputChange: ({id, index, value}: {id: string, index: number, value: string}) => void,
 }) {
     return (
         <table>
             <thead>
                 <tr>
                     {
-                        columns && columns.map(column => {
+                        columns && columns.map((column, index) => {
                             return <th scope="col" key={uuidv4()}>
                                         <input type='text' id={column.id} name={column.id} defaultValue={column.value}></input>
                                     </th>
