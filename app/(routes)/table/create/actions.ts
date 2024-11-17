@@ -15,14 +15,15 @@ export async function SaveActionMOCK (prevState: Action_State, formData: FormDat
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS ${id} (
+            _num integer,
             ${columns}
             );
         `)
         await Promise.all(
-            rows.map(async (rowValues) => {
+            rows.map(async (rowValues, i) => {
                 const placeholders = rowValues.map((_, index) => `$${index+1}`).join(', ');
                 return pool.query(
-                    `INSERT INTO ${id} (${columnsParams}) VALUES (${placeholders})`,
+                    `INSERT INTO ${id} (_num, ${columnsParams}) VALUES (${i}, ${placeholders})`,
                     rowValues
                 )
             })

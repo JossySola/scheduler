@@ -1,5 +1,5 @@
 export default function Page () {
     return (
-        <p>Table Page</p>
+        <p>Edit page</p>
     )
 }
