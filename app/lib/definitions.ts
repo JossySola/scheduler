@@ -10,3 +10,7 @@ export type Action_State = {
         save?: string[],
     }
 }
+
+export interface Params {
+    [index: string]: string;
+}
