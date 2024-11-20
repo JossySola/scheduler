@@ -3,16 +3,18 @@ import { v4 as uuidv4 } from 'uuid'
 export default function DynamicTable ({ rows, columns, handleInputChange }: {
     rows: Array<Array<{id: string, value: string}>>,
     columns: Array<{id: string, value: string}>,
-    handleInputChange: ({id, index, value}: {id: string, index: number, value: string}) => void,
+    handleInputChange: (rowIndex: number, colIndex: number, newValue: string) => void,
 }) {
     return (
-        <table>
+        <table className='text-black'>
             <thead>
                 <tr>
                     {
                         columns && columns.map((column, index) => {
                             return <th scope="col" key={uuidv4()}>
-                                        <input type='text' id={column.id} name={column.id} defaultValue={column.value}></input>
+                                        <input type='text' id={column.id} name={column.id} defaultValue={column.value} onChange={(event) => {
+                                            handleInputChange(0, index, event.target.value);
+                                        }}></input>
                                     </th>
                         })
                     }
@@ -20,17 +22,21 @@ export default function DynamicTable ({ rows, columns, handleInputChange }: {
             </thead>
             <tbody>
                     {
-                        rows && rows.map(row => {
+                        rows && rows.map((row, rowIndex) => {
                             return <tr key={uuidv4()}>
                                 {
-                                    row.map((cell, index) => {
-                                        if (index === 0) {
+                                    row.map((cell, colIndex) => {
+                                        if (colIndex === 0) {
                                             return <th key={uuidv4()}>
-                                                <input type='text' id={cell.id} name={cell.id} defaultValue={cell.value}></input>
+                                                <input type='text' id={cell.id} name={cell.id} defaultValue={cell.value} onChange={(event) => {
+                                                    handleInputChange(rowIndex, colIndex, event.target.value);
+                                                }}></input>
                                             </th>
                                         }
                                         return <td key={uuidv4()}>
-                                            <input type='text' id={cell.id} name={cell.id} defaultValue={cell.value}></input>
+                                            <input type='text' id={cell.id} name={cell.id} defaultValue={cell.value} onChange={(event) => {
+                                                    handleInputChange(rowIndex, colIndex, event.target.value);
+                                                }}></input>
                                         </td>
                                     })
                                 }
