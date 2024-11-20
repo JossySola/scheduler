@@ -12,10 +12,10 @@
   "dependencies": {
     "@vercel/postgres": "^0.10.0",
     "dotenv": "^16.4.5",
-    "next": "^15.0.4-canary.14",
+    "next": "^15.0.4-canary.19",
     "pg": "^8.13.1",
-    "react": "^19.0.0-rc-e1ef8c95-20241115",
-    "react-dom": "^19.0.0-rc-e1ef8c95-20241115",
+    "react": "^19.0.0-rc-6f0dc294-20241119",
+    "react-dom": "^19.0.0-rc-6f0dc294-20241119",
     "sass": "^1.80.3",
     "server-only": "^0.0.1",
     "swr": "^2.2.5",
