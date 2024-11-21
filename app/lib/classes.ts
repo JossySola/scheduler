@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
+/*
 class $Node {
     data: unknown;
     next: $Node | null;
@@ -30,7 +31,7 @@ class $Node {
     getPreviousNode(): $Node | null {
         return this.previous;
     }
-    setNewData(data: unknown) {
+    setData(data: unknown) {
         return this.data = data;
     }
     getData() {
@@ -120,15 +121,14 @@ class Doubly {
         return output;
     }
 }
-
 class Cell extends $Node {
     readonly id: string;
     column : List;
     row: List;
 
-    constructor(data: unknown, column: List, row: List) {
+    constructor(data: unknown, id: string, column: List, row: List) {
         super(data);
-        this.id = uuidv4();
+        this.id = id;
         this.column = column;
         this.row = row;
     }
@@ -222,20 +222,32 @@ class List extends Doubly {
         return null;
     }
 }
-class Table {
-    name: string;
-    columns: Array<List>;
-    rows: Array<List>;
+*/
 
-    constructor(name: string) {
-        this.name = name;
+class Table {
+    columnCells: Array<string>;
+    columns: Array<string>;
+    rows: Array<Array<string>>;
+
+    constructor () {
+        this.columnCells = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
         this.columns = [];
         this.rows = [];
     }
-    getName() {
-        return this.name;
-    }
-    setName(name: string) {
-        return this.name = name;
+
+    sync (numColumns: number, numRows: number) {
+        if (numColumns !== this.columns.length) {
+            if (numColumns < this.columns.length) {
+                this.columns.pop();
+            } else if (numColumns > this.columns.length) {
+
+            }
+        } else if (numRows !== this.rows.length) {
+            if (numRows < this.rows.length) {
+                this.rows.pop();
+            } else if (numRows > this.rows.length) {
+
+            }
+        }
     }
 }

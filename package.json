@@ -6,23 +6,38 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest"
   },
   "dependencies": {
-    "next": "^14.2.15",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "uuid": "^10.0.0"
+    "@vercel/postgres": "^0.10.0",
+    "dotenv": "^16.4.5",
+    "next": "^15.0.4-canary.19",
+    "pg": "^8.13.1",
+    "react": "^19.0.0-rc-6f0dc294-20241119",
+    "react-dom": "^19.0.0-rc-6f0dc294-20241119",
+    "sass": "^1.80.3",
+    "server-only": "^0.0.1",
+    "swr": "^2.2.5",
+    "ts-node": "^10.9.2",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/node": "^20.16.10",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
     "@types/uuid": "^10.0.0",
     "eslint": "^8",
-    "eslint-config-next": "14.2.13",
+    "eslint-config-next": "14.2.16",
+    "jest": "^29.7.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1"
   }
 }
