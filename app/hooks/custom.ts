@@ -96,6 +96,8 @@ export function useTableById ({ params }: {
     const fetcher = async () => await fetch(url).then(r => r.json());
     const { data, error, isLoading } = useSWR(url, fetcher, {
         fallbackData: [],
+        suspense: true,
+        refreshInterval: 1000,
     });
     const rows = data["rows"] !== undefined ? data["rows"].map((row: {
         [index: string]: unknown}) => {
