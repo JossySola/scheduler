@@ -1,6 +1,6 @@
 'use client'
 import { printAction, SaveActionMOCK } from "@/app/(routes)/table/create/actions"
-import TablePanel from "./mol-table-panel"
+import TablePanel from "../molecules/mol-table-panel"
 import { SubmitButton } from "../atoms/atom-button"
 import { Action_State } from "@/app/lib/definitions"
 import { useActionState } from "react"
