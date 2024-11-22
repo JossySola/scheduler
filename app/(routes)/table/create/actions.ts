@@ -1,4 +1,5 @@
 'use server'
+import "server-only"
 import pool from "@/app/lib/mocks/db"
 import { FormDataToQuery } from "@/app/lib/utils"
 import { Action_State } from "@/app/lib/definitions"
