@@ -1,5 +1,5 @@
 'use client'
-import { printAction, SaveActionMOCK } from "@/app/(routes)/table/create/actions"
+import { SaveAction } from "@/app/(routes)/table/create/actions"
 import TablePanel from "../molecules/mol-table-panel"
 import { SubmitButton } from "../atoms/atom-button"
 import { Action_State } from "@/app/lib/definitions"
@@ -10,7 +10,7 @@ export default function SaveTableForm() {
         message: null,
         errors: {}
     }
-    const [state, formAction, isPending] = useActionState(SaveActionMOCK, initialState);
+    const [state, formAction, isPending] = useActionState(SaveAction, initialState);
     
     return (
         <form action={formAction} id="new-table" className="flex flex-col" aria-describedby="form-error">
