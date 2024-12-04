@@ -1,10 +1,9 @@
 'use server'
 import "server-only"
 import { FormDataToQuery } from "@/app/lib/utils"
-import { Action_State } from "@/app/lib/definitions"
 import { redirect } from "next/navigation"
 
-export async function SaveAction (prevState: Action_State, formData: FormData) {
+export async function SaveAction (prevState: { message: string }, formData: FormData) {
     const {id, columns, columnsParams, rows} = FormDataToQuery(formData);
     
     const response = await fetch('http://localhost:3000/api/table/create', {
@@ -21,6 +20,7 @@ export async function SaveAction (prevState: Action_State, formData: FormData) {
     
     if (res.success) {
         // redirect('/dashboard');
+        return prevState;
     } else {
         return {
             message: 'Table creation failed'
