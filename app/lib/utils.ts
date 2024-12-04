@@ -76,17 +76,17 @@ export function isInputValid(formData: FormData) {
     if (!formData) false;
     
     let result = {
-        message: '',
+        message: 'Success!',
         ok: true,
     }
 
     for (const pair of formData.entries()) {
         const type = pair[0].toString();
         const value = pair[1].toString();
-        const name = /[+'/\\@#$%^&()_![\]'.,*-]/;
+        const name = /[+/\\@#$%^&()_!<>:;{}=`|?"[\].,*-]/;
         const birthday = /([0-9][0-9])(\/|-)([0-9][0-9])(\/|-)([0-9][0-9][0-9][0-9])/;
-        const email = /[A-Za-z0-9-_]\S*\w+\@[a-z]\w+\.[a-z]\w+\S+/;
-        const password = /[a-zA-Z0-9]\S+/;
+        const email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const pwd = /(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>-_']).{8,}/;
         
         switch (type) {
             case 'name':
@@ -112,40 +112,24 @@ export function isInputValid(formData: FormData) {
             break;
             case 'email':
                 if (!email.test(value)) {
-                    result.message = 'Failed due to the use of a possible forbidden character. (email)';
+                    result.message = 'Malformed email syntax. (email)';
                     result.ok = false;
                     return result;
                 }
             break;
             case 'password':
-                if (/\s/.test(value)) {
-                    result.message = 'Failed due to the use of whitespace. (password)';
+                if (!pwd.test(value)) {
+                    result.message = 'Password must contain one special character, one number and one uppercase letter.';
                     result.ok = false;
                     return result;
-                } else if (!/\d/.test(value)) {
-                    result.message = 'At least one number must be used. (password)';
-                    result.ok = false;
-                    return result;
-                } else if (!/[A-Z]/.test(value)) {
-                    result.message = 'At least one capital letter must be used. (password)';
-                    result.ok = false;
-                    return result;
-                } else if (!/[0-9]/.test(value)) {
-                    result.message = 'At least one number must be used. (password)';
-                    result.ok = false;
-                    return result;
-                } else if (!/[+'/\\@#$%^&()_![\]'.,*-]/.test(value)) {
-                    result.message = 'At least one special character must be used. (password)';
+
+                } else if (value.length < 8) {
+                    result.message = 'Password must be more than 8 characters.';
                     result.ok = false;
                     return result;
                 }
             break;
             case 'confirmpwd':
-                if (!password.test(value)) {
-                    result.message = 'Failed due to the use of a possible forbidden character. (confirmation)';
-                    result.ok = false;
-                    return result;
-                }
             break;
             default:
                 result.message = 'The input type is not listed';
