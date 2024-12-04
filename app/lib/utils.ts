@@ -1,3 +1,4 @@
+import { transpileModule } from "typescript";
 import { Result_FormDataToQuery } from "./definitions";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -143,4 +144,15 @@ export function isInputValid(formData: FormData) {
         }
     }
     return result;
+}
+
+export function arePasswordsConfirmed(formData: FormData) {
+    const password = formData.get('password');
+    const confirmation = formData.get('confirmpwd');
+
+    if (password === confirmation) {
+        return true;
+    } else {
+        return false;
+    }
 }
