@@ -87,6 +87,12 @@ export function isInputValid(formData: FormData) {
         const birthday = /([0-9][0-9])(\/|-)([0-9][0-9])(\/|-)([0-9][0-9][0-9][0-9])/;
         const email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         const pwd = /(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>-_']).{8,}/;
+
+        if (!value) {
+            result.message = 'Field must not be empty';
+            result.ok = false;
+            return result;
+        }
         
         switch (type) {
             case 'name':
