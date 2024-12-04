@@ -1,5 +1,3 @@
-'use client'
-
 export function ActionButton({callback, text}: {
     callback: () => void,
     text: string | null,
@@ -15,7 +13,7 @@ export function SubmitButton({text, disabled, form, formaction, formenctype, for
     text: string,
     disabled?: boolean,
     form?: string,
-    formaction?: string,
+    formaction?: () => void,
     formenctype?: "application/x-www-form-urlencoded" | "multipart/form-data" | "text/plain",
     formmethod?: "post" | "get" | "dialog",
     formnovalidate?: boolean,
