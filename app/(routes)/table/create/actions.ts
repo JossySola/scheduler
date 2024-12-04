@@ -1,5 +1,4 @@
 'use server'
-import "server-only"
 import { FormDataToQuery } from "@/app/lib/utils"
 import { redirect } from "next/navigation"
 
@@ -8,6 +7,9 @@ export async function SaveAction (prevState: { message: string }, formData: Form
     
     const response = await fetch('http://localhost:3000/api/table/create', {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
         body: JSON.stringify({
             id,
             columns,
