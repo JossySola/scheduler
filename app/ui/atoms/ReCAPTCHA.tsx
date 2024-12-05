@@ -10,6 +10,17 @@ export default function ReCAPTCHA ({text, formAction, action}: {
     const { executeRecaptcha } = useGoogleReCaptcha();
     const [token, setToken] = useState('');
 
+    useEffect(() => {
+        if (!executeRecaptcha) {
+            return;
+        }
+        const handleReCaptchaVerify = async () => {
+            const token = await executeRecaptcha(action);
+            setToken(token);
+        };
+        handleReCaptchaVerify();
+    }, [executeRecaptcha]);
+
     const clickHandler = useCallback(async () => {
         if (!executeRecaptcha) {
             return;
@@ -23,21 +34,9 @@ export default function ReCAPTCHA ({text, formAction, action}: {
         }
     }, [executeRecaptcha]);
 
-    useEffect(() => {
-        if (!executeRecaptcha) {
-            return;
-        }
-        const handleReCaptchaVerify = async () => {
-            const token = await executeRecaptcha(action);
-            setToken(token);
-        };
-        handleReCaptchaVerify();
-    }, [executeRecaptcha]);
-
     return (
         <>
             <SubmitButton text={text} formaction={formAction} onClick={clickHandler} disabled={!executeRecaptcha}/>
-            <p>{token}</p>
         </>
     )
 }
