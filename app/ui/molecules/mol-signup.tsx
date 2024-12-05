@@ -27,7 +27,7 @@ export default function SignUp () {
 
                 <label htmlFor="confirmpwd">Confirm password:</label>
                 <input type="password" id="confirmpwd" name="confirmpwd" minLength={8} required />
-                <ReCAPTCHA text="Sign Up" formAction={SignUpAction} />
+                <ReCAPTCHA text="Sign Up" formAction={SignUpAction} action="signup"/>
             </form>
             <Link href="#">Forgot Password</Link>
         </GoogleReCaptchaProvider>

@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { SubmitButton } from "./atom-button";
 
-export default function ReCAPTCHA ({text, formAction}: {
+export default function ReCAPTCHA ({text, formAction, action}: {
     text: string,
     formAction?: string | ((formData: FormData) => void | Promise<unknown>),
+    action: string,
 }) {
     const { executeRecaptcha } = useGoogleReCaptcha();
     const [token, setToken] = useState('');
@@ -13,7 +14,7 @@ export default function ReCAPTCHA ({text, formAction}: {
         if (!executeRecaptcha) {
             return;
         }
-        const result = await executeRecaptcha('submit');
+        const result = await executeRecaptcha(action);
 
         if (formAction && typeof formAction === 'function') {
             const formData = new FormData();
@@ -27,7 +28,7 @@ export default function ReCAPTCHA ({text, formAction}: {
             return;
         }
         const handleReCaptchaVerify = async () => {
-            const token = await executeRecaptcha('submit');
+            const token = await executeRecaptcha(action);
             setToken(token);
         };
         handleReCaptchaVerify();
