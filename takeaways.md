@@ -2,7 +2,8 @@
 
 ## **ReCAPTCHA in Next.js (App Router) + React**
 
-1. **Load the JavaScript API with sitekey**
+1. Sign up for an API key pair and in this specific case, choose the client-side integration `reCAPTCHA v3`. [Google reCAPTCHA intro](https://developers.google.com/recaptcha/intro))
+2. **Load the JavaScript API with sitekey**
 ```javascript
 import Script from "next/script";
 
@@ -24,14 +25,14 @@ export default function RootLayout({
 }
 ```
 
-2. **Create React custom hook to:**
+3. **Create React custom hook to:**
   - Check availability of the Window object
   - Implement a handler function to use `grecaptcha.execute` and get the token
   - Verify form data input
   - Make a POST request to custom API endpoint
   - Provide a state `isSubmitting`
 
-3. **At UI component**
+4. **At UI component**
   - Utilize React custom hook
   - Conditionally render component based on Window Object's availability
   - On `<form>` use attribute `onSubmit` with the handler function provided by the React custom hook
