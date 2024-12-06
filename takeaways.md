@@ -26,15 +26,14 @@ export default function RootLayout({
 ```
 
 3. **Create React custom hook to:**
-  - Check availability of the Window object
+  - Check availability of the Window object and return boolean State
   - Implement a handler function to use `grecaptcha.execute` and get the token
   - Verify form data input
   - Make a POST request to custom API endpoint
   - Provide a state `isSubmitting`
 
 4. **At UI component**
-  - Utilize React custom hook
-  - Conditionally render component based on Window Object's availability
+  - Conditionally render component based on Window Object's availability state
   - On `<form>` use attribute `onSubmit` with the handler function provided by the React custom hook
 
 ## **Connect PostgreSQL for testing in Next.js (App Router) + React**
