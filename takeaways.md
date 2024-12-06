@@ -18,7 +18,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
-      <Script src="https://www.google.com/recaptcha/api.js?render=reCAPTCHA_site_key" />
+      <Script src="https://www.google.com/recaptcha/api.js?render=<reCAPTCHA_site_key>" />
     </html>
   );
 }
