@@ -2,7 +2,7 @@
 
 ## **ReCAPTCHA in Next.js (App Router) + React**
 
-1. Sign up for an API key pair and in this specific case, choose the client-side integration `reCAPTCHA v3`. [Google reCAPTCHA intro](https://developers.google.com/recaptcha/intro))
+1. Sign up for an API key pair and in this specific case, choose the client-side integration `reCAPTCHA v3`. *[Google reCAPTCHA intro](https://developers.google.com/recaptcha/intro)*
 2. **Load the JavaScript API with sitekey**
 ```javascript
 import Script from "next/script";
