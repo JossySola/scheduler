@@ -1,6 +1,6 @@
 # KEY TAKEAWAYS
 
-## **ReCAPTCHA**
+## **ReCAPTCHA in Next.js and React**
 
 1. **Load the JavaScript API with sitekey**
 ```javascript
