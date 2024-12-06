@@ -33,8 +33,9 @@ export default function RootLayout({
   - Provide a state `isSubmitting`
 
 4. **At UI component**
-  - Conditionally render component based on Window Object's availability state
-  - On `<form>` use attribute `onSubmit` with the handler function provided by the React custom hook
+  - Using the React custom hook:
+    - Conditionally render component based on Window Object's availability state
+    - On `<form>` use attribute `onSubmit` with the handler function provided by the React custom hook
 
 ## **Connect PostgreSQL for testing in Next.js (App Router) + React**
 ✔️
