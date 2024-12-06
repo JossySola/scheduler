@@ -9,7 +9,7 @@ export function ActionButton({callback, text}: {
     )
 }
 
-export function SubmitButton({text, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick}: {
+export function SubmitButton({text, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick, onSubmit}: {
     text: string,
     disabled?: boolean,
     form?: string,
@@ -21,6 +21,7 @@ export function SubmitButton({text, disabled, form, formaction, formenctype, for
     isSubmitting?: boolean,
     isSubmitted?: boolean,
     onClick?: () => void,
+    onSubmit?: () => void,
 }) {
     
     return <button 
@@ -33,6 +34,7 @@ export function SubmitButton({text, disabled, form, formaction, formenctype, for
     formNoValidate={formnovalidate}
     formTarget={formtarget}
     onClick={onClick}
+    onSubmit={onSubmit}
     >
     {text}{isSubmitting ? "Submitting...": null}{isSubmitted ? "Submitted!" : null}
     </button> 
