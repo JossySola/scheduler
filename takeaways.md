@@ -1,6 +1,6 @@
 # KEY TAKEAWAYS
 
-## **ReCAPTCHA in Next.js and React**
+## **ReCAPTCHA in Next.js (App Router) + React**
 
 1. **Load the JavaScript API with sitekey**
 ```javascript
@@ -36,6 +36,6 @@ export default function RootLayout({
   - Conditionally render component based on Window Object's availability
   - On `<form>` use attribute `onSubmit` with the handler function provided by the React custom hook
 
-## **Connect PostgreSQL for testing in Next.js + React**
+## **Connect PostgreSQL for testing in Next.js (App Router) + React**
 ✔️
 ❌
