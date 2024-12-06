@@ -34,7 +34,7 @@ export default function RootLayout({
 3. **At UI component**
   - Utilize React custom hook
   - Conditionally render component based on Window Object's availability
-  - On <form> use attribute `onSubmit` with the handler function provided by the React custom hook
+  - On `<form>` use attribute `onSubmit` with the handler function provided by the React custom hook
 
 
 ✔️
