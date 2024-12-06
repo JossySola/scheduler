@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -25,11 +26,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
+      <Script src="https://www.google.com/recaptcha/api.js?render=6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t" />
     </html>
   );
 }
