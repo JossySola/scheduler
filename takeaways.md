@@ -38,5 +38,73 @@ export default function RootLayout({
     - On `<form>` use attribute `onSubmit` with the handler function provided by the React custom hook
 
 ## **Connect local PostgreSQL database for testing in Next.js (App Router) + React**
+
+1. **Download PostgreSQL** *[Download here](https://www.postgresql.org/download/)*
+  - Create a database and a table either through the PSQL or the Query tool interface (*pgAdmin*)
+  - Through *pgAdmin*:
+    - Object -> Create -> Server Group... -> *Set name*
+    - On server created, right clic: Register -> Server... -> Connection
+      - Set `Host name`, `Port`, `Maintanance database`, `Username`, `Password`
+2. Create `.env.local` file
+  - Set environment variables, e.g.:
+    ```
+    DB_USER="postgres"
+    DB_HOST="localhost"
+    DB_NAME="project"
+    DB_PASSWORD=<password>
+    DB_PORT="5432"
+    ```
+3. **Install node-postgres**
+  ```
+  $ npm install pg
+  ```
+4. **Create a file `db.ts` and connect to the local database**
+```javascript
+import { Pool } from "pg";
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABASE,
+  password: process.env.DB_PASSWORD,
+  port: 5432,
+});
+
+export default pool;
+```
+
+### Make a request to the local database using a custom API endpoint
+
+#### Inside the `app` folder
+1. Create an `Action Handler` inside the working route segment
+  - await fetch(<URLendpoint>, { <any payload> })
+2. Create custom endpoint
+  - *app/api/<route>/route.ts*
+3. Create function for POST requests to `send a query`
+```javascript
+import pool from "@/app/lib/db"
+
+export async function POST (
+  request: NextRequest,
+) {
+  try {
+    await pool.query(`<QUERY>`);
+    return NextResponse.json({
+      success: true,
+      code: 201,
+    })
+  } catch (error) {
+    return NextResponse.json({
+      success: false,
+      message: `${error.message}`,
+      code: 500,
+    })
+  }
+}
+```
+
+
+
+
 ✔️
 ❌
