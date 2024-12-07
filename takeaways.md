@@ -33,11 +33,27 @@ export default function RootLayout({
   - Make a POST request to custom API endpoint
   - Provide a state `isSubmitting`
 
-**4. At UI component**
+**4. At `UI component`**
   - Using the React custom hook:
     - Conditionally render component based on Window Object's availability state
     - On `<form>` use attribute `onSubmit` with the handler function provided by the React custom hook
     - On `<form>` set attribute `method` as `POST`
+**5. At `Route Handler`**
+  - Create `POST` function to handle the request
+  - Parse the `request` JSON and produce JavaScript object
+  ```javascript
+  const object = await request.json();
+  ```
+  - Fetch to the endpoint: *"https://www.google.com/recaptcha/api/siteverify"*
+    - METHOD: `POST`
+    - BODY as `new URLSearchParams`
+    - secret: `<Google Secret key>` *required*
+    - response: `<reCAPTCHA token>` *required*
+    - remoteip: The user's IP address *optional*
+  - Parse JSON response and produce JavaScript object
+  ```javascript
+  const verification = await verify.json();
+  ```
 
 ## **Connect local PostgreSQL database for testing in Next.js (App Router) + React**
 
