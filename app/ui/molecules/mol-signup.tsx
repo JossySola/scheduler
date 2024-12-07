@@ -5,14 +5,14 @@ import useReCAPTCHA from "@/app/lib/recaptcha";
 
 
 export default function SignUp_Conditioned () {
-    const { isSubmitting, windowIsLoaded, executeCAPTCHA } = useReCAPTCHA('signup');
+    const { isSubmitting, windowIsLoaded, signupCAPTCHA } = useReCAPTCHA('signup');
     
     if (!windowIsLoaded) {
         return <p>Loading...</p>
     } else {
         return (
             <section>
-                <form onSubmit={executeCAPTCHA} method="POST" className="flex-col">
+                <form onSubmit={signupCAPTCHA} method="POST" className="flex-col">
                     <label htmlFor="name">Name:</label>
                     <input type="text" id="name" name="name" minLength={3} maxLength={30} required />
 

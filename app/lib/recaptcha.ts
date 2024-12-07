@@ -11,7 +11,7 @@ export default function useReCAPTCHA (action: string) {
         }
     })
 
-    const executeCAPTCHA = async (event: BaseSyntheticEvent<Event & EventTarget & HTMLFormElement & EventTarget>) => {
+    const signupCAPTCHA = async (event: BaseSyntheticEvent<Event & EventTarget & HTMLFormElement & EventTarget>) => {
         try {
             setIsSubmitting(true);
             const token = await window.grecaptcha.execute('6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t', { action: action });
@@ -45,6 +45,6 @@ export default function useReCAPTCHA (action: string) {
     return {
         isSubmitting,
         windowIsLoaded,
-        executeCAPTCHA,
+        signupCAPTCHA,
     }
 }
