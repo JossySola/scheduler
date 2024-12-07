@@ -41,7 +41,7 @@ export default function RootLayout({
 
 **5. At `Route Handler`**
   - Create `POST` function to handle the request
-  - Parse the `request` JSON and produce JavaScript object
+  - Parse the **`JSON request`** and produce JavaScript object
   ```javascript
   const object = await request.json();
   ```
@@ -51,7 +51,7 @@ export default function RootLayout({
     - secret: `<Google Secret key>` *required*
     - response: `<reCAPTCHA token>` *required*
     - remoteip: The user's IP address *optional*
-  - Parse JSON response and produce JavaScript object
+  - Parse **`JSON response`** and produce JavaScript object
   ```javascript
   const verification = await verify.json();
   ```
