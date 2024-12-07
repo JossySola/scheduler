@@ -40,7 +40,7 @@ export default function RootLayout({
 ## **Connect local PostgreSQL database for testing in Next.js (App Router) + React**
 
 1. **Download PostgreSQL** *[Download here](https://www.postgresql.org/download/)*
-  - Create a database and a table either through the PSQL or the Query tool interface (*pgAdmin*)
+  - Create a database and a table either through the `PSQL` or the Query tool interface (`*pgAdmin*`)
   - Through *pgAdmin*:
     > Object -> Create -> Server Group... -> *Set name*
     - On server created, right clic:
