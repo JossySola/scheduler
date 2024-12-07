@@ -85,7 +85,7 @@ export default pool;
 **2. Create custom endpoint**
   > *app/api/&lt;route&gt;/route.ts*
 
-**3. Create function for POST requests to `send a query`**
+**3. Create function for POST requests to `send a query` at `route.ts`**
 ```javascript
 import pool from "@/app/lib/db"
 
