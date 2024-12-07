@@ -77,9 +77,9 @@ export default pool;
 
 #### Inside the `app` folder
 1. Create an `Action Handler` inside the working route segment
-  - await fetch(*<URLendpoint>*, { *<any payload>* })
+  - await fetch(*< URLendpoint >*, { *< any payload >* })
 2. Create custom endpoint
-  - *app/api/*<route>*/route.ts*
+  - *app/api/< route >/route.ts*
 3. Create function for POST requests to `send a query`
 ```javascript
 import pool from "@/app/lib/db"
