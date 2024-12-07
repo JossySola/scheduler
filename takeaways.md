@@ -42,9 +42,10 @@ export default function RootLayout({
 1. **Download PostgreSQL** *[Download here](https://www.postgresql.org/download/)*
   - Create a database and a table either through the PSQL or the Query tool interface (*pgAdmin*)
   - Through *pgAdmin*:
-    - Object -> Create -> Server Group... -> *Set name*
-    - On server created, right clic: Register -> Server... -> Connection
-      - Set `Host name`, `Port`, `Maintanance database`, `Username`, `Password`
+    > Object -> Create -> Server Group... -> *Set name*
+    - On server created, right clic:
+    > Register -> Server... -> Connection
+      - Set `Host name`, `Port`, `Maintenance database`, `Username`, `Password`
 2. Create `.env.local` file
   - Set environment variables, e.g.:
     ```
