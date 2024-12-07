@@ -48,9 +48,9 @@ export default function RootLayout({
   - Fetch to the endpoint: *"https://www.google.com/recaptcha/api/siteverify"*
     - METHOD: `POST`
     - BODY as `new URLSearchParams`
-    - secret: `<Google Secret key>` *required*
-    - response: `<reCAPTCHA token>` *required*
-    - remoteip: The user's IP address *optional*
+    - secret: `<Google Secret key>` *(required)*
+    - response: `<reCAPTCHA token>` *(required)*
+    - remoteip: The user's IP address *(optional)*
   - Parse **`JSON response`** and produce JavaScript object
   ```javascript
   const verification = await verify.json();
