@@ -70,7 +70,7 @@ const pool = new Pool({
   host: process.env.DB_HOST,
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
-  port: 5432,
+  port: 5432, // This is set without the environment variable because the value must be a number, not a string.
 });
 
 export default pool;
