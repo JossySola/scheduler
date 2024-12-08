@@ -1,11 +1,11 @@
 'use client'
 import Link from "next/link";
 import { SubmitButton } from "../atoms/atom-button";
-import useReCAPTCHA from "@/app/lib/recaptcha";
+import useReCAPTCHA from "@/app/lib/recaptcha/client-recaptcha";
 
 
 export default function SignUp_Conditioned () {
-    const { isSubmitting, windowIsLoaded, signupCAPTCHA } = useReCAPTCHA('signup');
+    const { isSubmitting, windowIsLoaded, signupCAPTCHA } = useReCAPTCHA();
     
     if (!windowIsLoaded) {
         return <p>Loading...</p>
