@@ -6,15 +6,15 @@ export default function Page ({ params }: {
     params: Promise<{ id: string }>
 }) {
     const { data, error, isLoading } = useTableById({ params });
-    // http://localhost:3000/table/edit/_8eea43e99cbd4fafb6ca50bc098f48f0_untitled_1731303485221
+    // http://localhost:3000/table/edit/_d981e3d3f7bb4325a5bfec35d72e4fc0_name_1733274076000
     
     if (isLoading) return <p>Loading...</p>;
     if (error) return <p>Error loading data</p>;
     
     return (
-        <form>
+        <>
             <input name="table-name" id="table-name" type="text" defaultValue="Untitled" placeholder="Untitled" />
             <TablePanel rowsProp={data} />
-        </form>
+        </>
     )
 }

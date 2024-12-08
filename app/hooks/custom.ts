@@ -4,17 +4,6 @@ import useSWR from "swr"
 export function useHTMLTable () {
     const [rows, setRows] = useState<Array<Array<{id: string, value: string}>>>([]);
     const columnLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-    
-    const handleInputChange = useCallback((rowIndex: number, colIndex: number, newValue: string) => {
-        setRows(prev => {
-            const target = [...prev];
-            target[rowIndex][colIndex] = {
-                ...target[rowIndex][colIndex],
-                value: newValue,
-            };
-            return target;
-        })
-    }, [])
 
     const addRow = (value?: string) => {
         setRows(previous => {
@@ -77,14 +66,13 @@ export function useHTMLTable () {
     }
 
     return {
-        rows: rows.toSpliced(0, 1),
-        columns: rows.toSpliced(1, rows.length)[0],
+        rows: rows && rows.toSpliced(0, 1),
+        columns: rows && rows.toSpliced(1, rows.length)[0],
         setRows,
         addRow,
         addColumn,
         removeRow,
         removeColumn,
-        handleInputChange,
     }
 }
 export function useTableById ({ params }: {
@@ -96,6 +84,8 @@ export function useTableById ({ params }: {
     const fetcher = async () => await fetch(url).then(r => r.json());
     const { data, error, isLoading } = useSWR(url, fetcher, {
         fallbackData: [],
+        suspense: true,
+        refreshInterval: 1000,
     });
     const rows = data["rows"] !== undefined ? data["rows"].map((row: {
         [index: string]: unknown}) => {

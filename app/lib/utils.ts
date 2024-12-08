@@ -71,3 +71,87 @@ export function FormDataToQuery (formData: FormData) {
     createRowsQuery();
     return result;
 }
+
+export function isInputValid (formData: FormData) {
+    if (!formData) false;
+    
+    let result = {
+        message: 'Success!',
+        ok: true,
+    }
+
+    for (const pair of formData.entries()) {
+        const type = pair[0].toString();
+        const value = pair[1].toString();
+        const name = /[+/\\@#$%^&()_!<>:;{}=`|?"[\].,*-]/;
+        const birthday = /([0-9][0-9])(\/|-)([0-9][0-9])(\/|-)([0-9][0-9][0-9][0-9])/;
+        const email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const pwd = /(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>-_']).{8,}/;
+
+        if (!value) {
+            result.message = 'Field must not be empty';
+            result.ok = false;
+            return result;
+        }
+        
+        switch (type) {
+            case 'name':
+                if (name.test(value)) {
+                    result.message = 'Failed due to the use of a possible forbidden character. (name)';
+                    result.ok = false;
+                    return result;
+                }
+            break;
+            case 'username':
+                if (name.test(value)) {
+                    result.message = 'Failed due to the use of a possible forbidden character. (username)';
+                    result.ok = false;
+                    return result;
+                }
+            break;
+            case 'birthday':
+                if (birthday.test(value)) {
+                    result.message = 'Failed due to the use of a possible forbidden character. (birthday)';
+                    result.ok = false;
+                    return result;
+                }
+            break;
+            case 'email':
+                if (!email.test(value)) {
+                    result.message = 'Malformed email syntax. (email)';
+                    result.ok = false;
+                    return result;
+                }
+            break;
+            case 'password':
+                if (!pwd.test(value)) {
+                    result.message = 'Password must contain one special character, one number and one uppercase letter.';
+                    result.ok = false;
+                    return result;
+
+                } else if (value.length < 8) {
+                    result.message = 'Password must be more than 8 characters.';
+                    result.ok = false;
+                    return result;
+                }
+            break;
+            case 'confirmpwd':
+            break;
+            default:
+                result.message = 'The input type is not listed';
+                return result;
+        }
+    }
+    return result;
+}
+
+export function arePasswordsConfirmed (formData: FormData) {
+    const password = formData.get('password');
+    const confirmation = formData.get('confirmpwd');
+
+    if (password === confirmation) {
+        return true;
+    } else {
+        return false;
+    }
+}
