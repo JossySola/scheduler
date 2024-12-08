@@ -16,9 +16,9 @@
 ## Prevention
 
 + **Classify data** processed, stored, or transmitted by an application. Identify which data is sensitive according to privacy laws, regulatory requirements, or business needs.
-+ **Don't store sensitive data unnecessarily**. Discard it as soon as possible or use PCI DSS compliant tokenization or even truncation. Data that is not retained cannot be stolen.
++ **Don't store sensitive data unnecessarily**. Discard it as soon as possible or use `PCI DSS compliant tokenization` or `even truncation`. Data that is not retained cannot be stolen.
 + Make sure to **encrypt all sensitive data at rest**.
-+ **Ensure up-to-date and strong standard algorithms**, protocols, and keys are in place; use proper key management.
++ **Ensure up-to-date and strong standard algorithms**, protocols, and keys are in place; **use proper key management**.
 + **Encrypt all data in transit** with secure protocols such as TLS with `forward secrecy (FS) ciphers`, `cipher prioritization` by the server, and `secure parameters`. Enforce encryption using directives like `HTTP Stricts Transport Security (HSTS)`.
 + **Disable caching for response that contain sensitive data**.
 + **Apply required security protocols** as per the data classification.
