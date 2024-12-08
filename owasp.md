@@ -8,7 +8,7 @@
 + **Disable web server directory listing** and ensure file metadata (*e.g., .git*) and backup files are not present within web roots.
 + **Log access control failures**, alert admins when appropriate (*e.g., repeated failures*).
 + **Rate limit API and controller access** to minimize the harm from automated attack tooling.
-+ Stateful **session identifiers should be invalidated** on the server **after logout**. **Stateless JWT tokens should rather be short-lived** so that the window of opportunity for an attacker is minimized. For longer lived JWTs it's highly recommended to follow the OAuth standards to revoke access.
++ Stateful **session identifiers should be invalidated** on the server **after logout**. **Stateless JWT tokens should rather be short-lived** so that the window of opportunity for an attacker is minimized. For longer lived `JWTs` it's highly recommended to follow the `OAuth` standards to revoke access.
 
 *Include functional access control unit and integration tests.*
 
