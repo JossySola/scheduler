@@ -37,7 +37,7 @@ export default function RootLayout({
   - Using the React custom hook:
     - Conditionally render component based on Window Object's availability state
     - On `<form>` use attribute `onSubmit` with the handler function provided by the React custom hook
-    - On `<form>` set attribute `method` as `POST`
+    - On `<form>` set attribute `method` to `POST`
 
 **5. At `Route Handler`**
   - Create `POST` function to handle the request
@@ -46,11 +46,11 @@ export default function RootLayout({
   const object = await request.json();
   ```
   - Fetch to the endpoint: *"https://www.google.com/recaptcha/api/siteverify"*
-    - METHOD: `POST`
+    - **METHOD**: `POST`
     - BODY as `new URLSearchParams`
-    - secret: `<Google Secret key>` *(required)*
-    - response: `<reCAPTCHA token>` *(required)*
-    - remoteip: The user's IP address *(optional)*
+    - **secret**: `<Google Secret key>` *(required)*
+    - **response**: `<reCAPTCHA token>` *(required)*
+    - **remoteip**: The user's IP address *(optional)*
   - Parse **`JSON response`** and produce JavaScript object
   ```javascript
   const verification = await verify.json();
