@@ -80,7 +80,7 @@ export function useTableById ({ params }: {
 }) {
     const param = use(params);
     const id = param.id;
-    const url = `http://localhost:3000/api/table/${id}`;
+    const url = `${process.env.NEXT_PUBLIC_ORIGIN}/api/table/${id}`;
     const fetcher = async () => await fetch(url).then(r => r.json());
     const { data, error, isLoading } = useSWR(url, fetcher, {
         fallbackData: [],
