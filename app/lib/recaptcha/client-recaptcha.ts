@@ -23,7 +23,7 @@ export default function useReCAPTCHA () {
                 formData.append('recaptcha_token', token);
 
                 if (isInputValid(formData).ok && arePasswordsConfirmed(formData)) {
-                    const hashedPassword = await argon2.hash(formData.get("passowrd"));
+                    const hashedPassword = await argon2.hash(formData.get("password"));
                     await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
                         method: 'POST',
                         headers: {
