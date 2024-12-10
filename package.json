@@ -13,6 +13,7 @@
     "@vercel/postgres": "^0.10.0",
     "auth": "^1.2.3",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.5",
     "next": "^15.0.4-canary.49",
     "next-auth": "^5.0.0-beta.25",
@@ -27,7 +28,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.16.10",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",

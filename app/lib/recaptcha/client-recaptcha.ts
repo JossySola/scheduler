@@ -1,6 +1,6 @@
 import { useState, useEffect, BaseSyntheticEvent } from "react";
 import { isInputValid, arePasswordsConfirmed } from "../utils";
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { redirect } from "next/navigation";
 
 export default function useReCAPTCHA () {
