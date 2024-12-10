@@ -1,12 +1,11 @@
 import { NextResponse, NextRequest } from 'next/server'
-import { reCAPTCHAResponse } from './app/lib/recaptcha/server-recaptcha';
+import { reCAPTCHAResponse, VerificationResponse } from './app/lib/recaptcha/server-recaptcha';
 import { ReturnReCAPTCHAError } from './app/lib/recaptcha/server-recaptcha';
 
 export async function middleware (request: NextRequest) {
     if (request.nextUrl.pathname.startsWith('/api')) {
-        const googleResponse = await GoogleVerification(request);
-        
-        if (!googleResponse.success || googleResponse.score < 0.8) {
+        const googleResponse: VerificationResponse = await GoogleVerification(request);    
+        if (googleResponse.status !== 200) {
             return NextResponse.json(googleResponse);
         }
         return NextResponse.next();
@@ -29,8 +28,16 @@ const GoogleVerification = async (request: NextRequest) => {
     const verification: reCAPTCHAResponse = await verify.json();
     
     if (verification.success === false) {
-        const error = verification['error-codes'][0];
-        return ReturnReCAPTCHAError(error);
+        return ReturnReCAPTCHAError(verification['error-codes'][0]);
     }
-    return verification
+    if (verification.score < 0.8) {
+        return {
+            status: 401,
+            statusText: 'Requires human verification'
+        }
+    }
+    return {
+        status: 200,
+        statusText: 'Verified!'
+    }
 }
