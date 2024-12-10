@@ -40,3 +40,29 @@ Request {
   isHistoryNavigation: false,
   signal: AbortSignal { aborted: false }
 }
+
+
+{
+  success: true,
+  challenge_ts: '2024-12-10T05:39:06Z',
+  hostname: 'localhost',
+  score: 0.9,
+  action: 'signup'
+}
+
+{ success: false, 'error-codes': [ 'invalid-input-response' ] }
+
+OnError {
+  status: 408 | 400 | 401;
+  statusText: string;
+}
+
+OnLowScore {
+  success: boolean;
+  message: string;
+}
+
+OnSuccess {
+  success: boolean;
+  message: string;
+}
