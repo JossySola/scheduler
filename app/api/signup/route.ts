@@ -1,6 +1,7 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
+import * as argon2 from "argon2";
 import pool from "@/app/lib/mocks/db";
 
 export async function POST (
@@ -11,8 +12,8 @@ export async function POST (
     const name = req.name;
     const username = req.username;
     const birthday = req.birthday;
-    const email = req.email;
-    const password = req.password;
+    const email = argon2.hash(req.email);
+    const password = argon2.hash(req.password);
     const id = uuidv4();
 
     
