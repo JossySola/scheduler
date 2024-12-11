@@ -1,6 +1,5 @@
 import { useState, useEffect, BaseSyntheticEvent } from "react";
 import { isInputValid, arePasswordsConfirmed } from "../utils";
-import bcryptjs from 'bcryptjs';
 import { redirect } from "next/navigation";
 
 export default function useReCAPTCHA () {
@@ -23,10 +22,6 @@ export default function useReCAPTCHA () {
                 formData.append('recaptcha_token', token);
 
                 if (isInputValid(formData).ok && arePasswordsConfirmed(formData)) {
-                    const salt = bcryptjs.genSaltSync();
-                    const hashedPassword = bcryptjs.hashSync(formData.get('password'), salt);
-                    const hashedEmail = bcryptjs.hashSync(formData.get('email'), salt);
-
                     await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
                         method: 'POST',
                         headers: {
@@ -37,8 +32,8 @@ export default function useReCAPTCHA () {
                             name: formData.get('name'),
                             username: formData.get('username'),
                             birthday: formData.get('birthday'),
-                            email: hashedEmail,
-                            password: hashedPassword,
+                            email: formData.get('email'),
+                            password: formData.get('password'),
                         })
                     })
                 }
