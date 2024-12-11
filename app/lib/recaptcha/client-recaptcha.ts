@@ -1,6 +1,6 @@
 import { useState, useEffect, BaseSyntheticEvent } from "react";
 import { isInputValid, arePasswordsConfirmed } from "../utils";
-import * as argon2 from "argon2";
+import bcryptjs from 'bcryptjs';
 import { redirect } from "next/navigation";
 
 export default function useReCAPTCHA () {
@@ -23,7 +23,9 @@ export default function useReCAPTCHA () {
                 formData.append('recaptcha_token', token);
 
                 if (isInputValid(formData).ok && arePasswordsConfirmed(formData)) {
-                    const hashedPassword = await argon2.hash(formData.get("password"));
+                    const salt = bcryptjs.genSaltSync();
+                    const hashedPassword = bcryptjs.hashSync(formData.get('password'), salt);
+                    
                     await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
                         method: 'POST',
                         headers: {
