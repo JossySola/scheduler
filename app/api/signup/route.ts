@@ -7,13 +7,13 @@ import pool from "@/app/lib/mocks/db";
 export async function POST (
     request: NextRequest
 ) {
-    const req = await request.json();
+    const incoming = await request.json();
     
-    const name = req.name;
-    const username = req.username;
-    const birthday = req.birthday;
-    const email = req.email;
-    const password = argon2.hash(req.password);
+    const name = incoming.name;
+    const username = incoming.username;
+    const birthday = incoming.birthday;
+    const email = incoming.email;
+    const password = argon2.hash(incoming.password);
     const id = uuidv4();
 
     
