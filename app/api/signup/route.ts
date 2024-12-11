@@ -12,7 +12,7 @@ export async function POST (
     const name = req.name;
     const username = req.username;
     const birthday = req.birthday;
-    const email = argon2.hash(req.email);
+    const email = req.email;
     const password = argon2.hash(req.password);
     const id = uuidv4();
 
