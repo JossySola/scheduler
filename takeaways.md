@@ -4,7 +4,7 @@
 1. [ReCAPTCHA in Next.js + React](#recaptcha-in-nextjs-app-router--react)
 2. [Connect local PostgreSQL database for testing in Next.js (App Router) + React](#connect-local-postgresql-database-for-testing-in-nextjs-app-router--react)
    1. [Make a request to the local database using a custom API endpoint](#make-a-request-to-the-local-database-using-a-custom-api-endpoint)
-3. [Signup feature using traditional credentials model (username + password)](#signup-feature-using-traditional-credentials-model-username--password)
+3. [Signup feature using traditional credentials model (username + password with Next.js + React)](#signup-feature-using-traditional-credentials-model-username--password-with-nextjs--react)
    1. [Custom React hook](#custom-react-hook)
    2. [Route Handler](#route-handler)
    3. [UI Component](#ui-component)
@@ -134,9 +134,7 @@ export async function POST (
   }
 }
 ```
-## Signup feature using traditional credentials model (username + password)
-
-_This structure is based on this specific project_
+## Signup feature using traditional credentials model (username + password) with Next.js + React
 
 ### Custom React hook
 + Custom hook handles React States for status such as *submitting* and *error*.
@@ -186,6 +184,11 @@ _This structure is based on this specific project_
   <form onSubmit={<Submit Handler>} method="POST">
   // ...
   ```
+> [!NOTE]
+> *Personal notes:*
+> + `bcrypt` is used **client-side while** `argon2` is used **server-side**.
+> + While hashing passwords in the signing up process, it is unecessary to hash passwords client-side as the `HTTPS protocol` encrypts the data sent to the server. **Hashing passwords is better done server-side**.
+> + In this scenario, it is important to implement `rate-limiting`, `2FA` and the `password reset` option for the user.
 
 ✔️❌
 [^1]: [OWASP Password Storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
