@@ -1,7 +1,11 @@
+"use server"
+import "server-only"
 import { Result_FormDataToQuery } from "./definitions";
 import { v4 as uuidv4 } from 'uuid';
+import * as argon2 from "argon2";
+import pool from "./mocks/db";
 
-export function FormDataToQuery (formData: FormData) {
+export async function FormDataToQuery (formData: FormData) {
     // Query Object to be returned
     const name = formData.get('table-name')?.toString().replaceAll(' ', '');
     let result: Result_FormDataToQuery = {
@@ -72,7 +76,7 @@ export function FormDataToQuery (formData: FormData) {
     return result;
 }
 
-export function isInputValid (formData: FormData) {
+export async function isInputValid (formData: FormData) {
     if (!formData) false;
     
     let result = {
@@ -101,51 +105,53 @@ export function isInputValid (formData: FormData) {
                     result.ok = false;
                     return result;
                 }
-            break;
+                break;
             case 'username':
                 if (name.test(value)) {
                     result.message = 'Failed due to the use of a possible forbidden character. (username)';
                     result.ok = false;
                     return result;
                 }
-            break;
+                break;
             case 'birthday':
                 if (birthday.test(value)) {
                     result.message = 'Failed due to the use of a possible forbidden character. (birthday)';
                     result.ok = false;
                     return result;
                 }
-            break;
+                break;
             case 'email':
                 if (!email.test(value)) {
                     result.message = 'Malformed email syntax. (email)';
                     result.ok = false;
                     return result;
                 }
-            break;
+                break;
             case 'password':
                 if (!pwd.test(value)) {
                     result.message = 'Password must contain one special character, one number and one uppercase letter.';
                     result.ok = false;
                     return result;
-
                 } else if (value.length < 8) {
                     result.message = 'Password must be more than 8 characters.';
                     result.ok = false;
                     return result;
                 }
-            break;
+                break;
             case 'confirmpwd':
-            break;
+                break;
+            case 'recaptcha_token':
+                break;
             default:
                 result.message = 'The input type is not listed';
+                result.ok = false;
                 return result;
         }
     }
     return result;
 }
 
-export function arePasswordsConfirmed (formData: FormData) {
+export async function arePasswordsConfirmed (formData: FormData) {
     const password = formData.get('password');
     const confirmation = formData.get('confirmpwd');
 
@@ -153,5 +159,25 @@ export function arePasswordsConfirmed (formData: FormData) {
         return true;
     } else {
         return false;
+    }
+}
+
+export async function getUserFromDb (username: string, email: string, password: string) {
+    try {
+        const user = await pool.query(`
+            SELECT * FROM scheduler_users 
+                WHERE username = $1 OR email = $2;
+        `, [username, email]);
+        
+        if (user.rows.length === 0) {
+            throw new Error('User not found.');
+        }
+        const userRecord = user.rows[0];
+        if (await argon2.verify(userRecord.password, password)) {
+            return userRecord;
+        }
+    } catch (error) {
+        console.error(error)
+        return null;
     }
 }
