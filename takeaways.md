@@ -103,6 +103,7 @@ export default pool;
 ### Make a request to the local database using a custom API endpoint
 
 Inside the `app` folder
+
 **1. Create an `Action Handler` inside the working route segment**
   > await fetch(*&lt;URLendpoint&gt;*, { *&lt;any payload&gt;* })
 
