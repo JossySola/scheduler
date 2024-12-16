@@ -186,7 +186,7 @@ export async function POST (
   ```
 > [!NOTE]
 > *Personal notes:*
-> + `bcrypt` is used **client-side while** `argon2` is used **server-side**.
+> + `bcrypt` is used **client-side** while `argon2` is used **server-side**.
 > + While hashing passwords in the signing up process, it is unecessary to hash passwords client-side as the `HTTPS protocol` encrypts the data sent to the server. **Hashing passwords is better done server-side**.
 > + In this scenario, it is important to implement `rate-limiting`, `2FA` and the `password reset` option for the user.
 
