@@ -5,9 +5,6 @@
 2. [Connect local PostgreSQL database for testing in Next.js (App Router) + React](#connect-local-postgresql-database-for-testing-in-nextjs-app-router--react)
    1. [Make a request to the local database using a custom API endpoint](#make-a-request-to-the-local-database-using-a-custom-api-endpoint)
 3. [Signup feature using traditional credentials model (username + password with Next.js + React)](#signup-feature-using-traditional-credentials-model-username--password-with-nextjs--react)
-   1. [Custom React hook](#custom-react-hook)
-   2. [Route Handler](#route-handler)
-   3. [UI Component](#ui-component)
 ---
 ## **ReCAPTCHA in Next.js (App Router) + React**
 
@@ -136,31 +133,32 @@ export async function POST (
 ```
 ## Signup feature using traditional credentials model (username + password) with Next.js + React
 
-### Custom React hook
-+ Custom hook handles React States for status such as *submitting* and *error*.
-  + **Submit handler** for signing up.
-    + Makes a **POST** request to the `/api/signup` endpoint with the `FormData` keys/values within the `body`, formatted with **`JSON.stringify()`**.
+**1. Custom React hook**
+   + Custom hook handles React States for status such as *submitting* and *error*.
+     + **Submit handler** for signing up.
+       + Makes a **POST** request to the `/api/signup` endpoint with the `FormData` keys/values within the `body`, formatted with **`JSON.stringify()`**.
 
-### Route Handler
+**2. At `route.ts`**
+   + Receives the `NextRequest` and converts it with `.json()`.
+   + **Hashes password** with `Argon2id`.
+     + Utility used: `Oslo`.
+       ```
+       npm i oslo
+       ```
+       ```javascript
+       import { Argon2id } from "oslo/password";
+       // ...
+       const argon2id = new Argon2id()
+       const password = await argon2id.hash(incoming.password);
+       // ...
+       ```
+   + Makes a **SQL Query** to **INSERT** the values into the table.
 
-+ Receives the `NextRequest` and converts it with `.json()`.
-+ **Hashes password** with `Argon2id`.
-  + Utility used: `Oslo`.
-    ```
-    npm i oslo
-    ```
-    ```javascript
-    import { Argon2id } from "oslo/password";
-    // ...
-    const argon2id = new Argon2id()
-    const password = await argon2id.hash(incoming.password);
-    // ...
-    ```
 > [!NOTE]
 > `Argon2` is the award winner of [**Password Hashing Competition**](https://en.wikipedia.org/wiki/Password_Hashing_Competition) of 2015. Having three versions,
-> the recommended version to use is `Argon2id` which has different parameters that can be configured, such as: *memorize size, iterations, parallelism, and secret*.
+> the recommended version to use is `Argon2id` which has different parameters that can be configured, such as: *memory size, iterations, parallelism, and secret*.
 > Argon2id provides a balanced approach to resisting both `side-channel` and `GPU-based attacks`[^1].
-+ Makes a **SQL Query** to **INSERT** the values into the table.
+
 > [!IMPORTANT]
 > `Parameterized queries` are important to avoid **SQL Injections** instead of using *template literals*. Example:
 > ```javascript
@@ -176,14 +174,13 @@ export async function POST (
 >  `, [name, username, email, birthday, password]);
 > ```
 
-### UI Component
-
-+ The component apart from other features (*displaying password requirements, reveal the password function, etc.*) sets the **onSubmit** property with the **Submit Handler** provided by the custom React hook and sets **method** to **POST**  on the `<form>` element.
-  ```javascript
-  // ...
-  <form onSubmit={<Submit Handler>} method="POST">
-  // ...
-  ```
+**3. At `UI Component`**
+   + The component apart from other features (*displaying password requirements, reveal the password function, etc.*) sets the **onSubmit** property with the **Submit Handler** provided by the custom React hook and sets **method** to **POST**  on the `<form>` element.
+     ```javascript
+     // ...
+     <form onSubmit={<Submit Handler>} method="POST">
+     // ...
+     ```
 > [!NOTE]
 > *Personal notes:*
 > + `bcrypt` is used **client-side** while `argon2` is used **server-side**.
