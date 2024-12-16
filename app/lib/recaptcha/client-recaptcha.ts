@@ -21,8 +21,11 @@ export default function useReCAPTCHA () {
                 window.grecaptcha.execute('6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t', { action: 'signup'}).then(async (token: string) => {
                     const formData = new FormData(event.target);
                     formData.append('recaptcha_token', token);
-
-                    if (isInputValid(formData).ok && arePasswordsConfirmed(formData)) {
+                    
+                    const inputIsValid = await isInputValid(formData).then((result) => result.ok);
+                    const passwordConfirmed = await arePasswordsConfirmed(formData);
+                    
+                    if (inputIsValid && passwordConfirmed) {
                         const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
                             method: 'POST',
                             headers: {
@@ -41,6 +44,8 @@ export default function useReCAPTCHA () {
                         if (res.status === 500) {
                             setError(res.statusText);
                         }
+                    } else {
+                        setError("Invalid input.")
                     }
                 })
             })

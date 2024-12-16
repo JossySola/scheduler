@@ -4,7 +4,7 @@ import * as argon2 from "argon2";
 import pool from "@/app/lib/mocks/db";
 
 export async function POST (
-    request: NextRequest
+    request: NextRequest,
 ) {
     const incoming = await request.json();
     
@@ -13,22 +13,27 @@ export async function POST (
     const birthday = incoming.birthday;
     const email = incoming.email;
     const password = await argon2.hash(incoming.password);
-
+    
     try {
-        await pool.query(`
+        const result = await pool.query(`
             INSERT INTO scheduler_users (name, username, email, birthday, password)
                 VALUES (
-                    '${name}',
-                    '${username}',
-                    '${email}',
-                    '${birthday}',
-                    '${password}'
+                    $1,
+                    $2,
+                    $3,
+                    $4,
+                    $5
                 )
-        `)
-        return NextResponse.json({
-            status: 200,
-            statusText: 'Signed up successfully!'
-        })
+        `, [name, username, email, birthday, password]);
+
+        if (result.rowCount && result.rowCount > 0) {
+            return NextResponse.json({
+                status: 200,
+                statusText: 'Signed up successfully!'
+            })
+        } else {
+            throw new Error('Query failed');
+        }
     } catch (error) {
         let message = '';
         if (error.detail && error.detail.includes('already exists')) {
