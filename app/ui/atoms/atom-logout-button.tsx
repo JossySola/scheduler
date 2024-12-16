@@ -1,0 +1,13 @@
+import { signOut } from "@/auth"
+
+export default function LogInButton () {
+    return (
+        <form action={async () => {
+            "use server"
+            await signOut();
+        }}>
+            <button type="submit">Log In</button>
+        </form>
+        
+    )
+}

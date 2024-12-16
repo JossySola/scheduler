@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 export async function SaveAction (prevState: { message: string }, formData: FormData) {
     const {id, columns, columnsParams, rows} = FormDataToQuery(formData);
     
-    const response = await fetch('http://localhost:3000/api/table/create', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/table/create`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
