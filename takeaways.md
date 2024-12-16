@@ -179,7 +179,7 @@ export async function POST (
    + The component apart from other features (*displaying password requirements, reveal the password function, etc.*) sets the **onSubmit** property with the **Submit Handler** provided by the custom React hook and sets **method** to **POST**  on the `<form>` element.
      ```javascript
      // ...
-     <form onSubmit={<Submit Handler>} method="POST">
+     <form onSubmit={submitHandler} method="POST">
      // ...
      ```
 > [!NOTE]
