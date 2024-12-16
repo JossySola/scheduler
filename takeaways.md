@@ -1,5 +1,14 @@
 # Key Takeaways
 
+## Table of contents
+1. [ReCAPTCHA in Next.js + React](#recaptcha-in-nextjs-app-router--react)
+2. [Connect local PostgreSQL database for testing in Next.js (App Router) + React](#connect-local-postgresql-database-for-testing-in-nextjs-app-router--react)
+   1. [Make a request to the local database using a custom API endpoint](#make-a-request-to-the-local-database-using-a-custom-api-endpoint)
+3. [Signup feature using traditional credentials model (username + password)](#signup-feature-using-traditional-credentials-model-username--password)
+   1. [Custom React hook](#custom-react-hook)
+   2. [Route Handler](#route-handler)
+   3. [UI Component](#ui-component)
+---
 ## **ReCAPTCHA in Next.js (App Router) + React**
 
 **1. Sign up for an API key pair and in this specific case, choose the client-side integration `reCAPTCHA v3`**. *[Google reCAPTCHA intro](https://developers.google.com/recaptcha/intro)*
@@ -96,7 +105,7 @@ export default pool;
 
 ### Make a request to the local database using a custom API endpoint
 
-#### Inside the `app` folder
+Inside the `app` folder
 **1. Create an `Action Handler` inside the working route segment**
   > await fetch(*&lt;URLendpoint&gt;*, { *&lt;any payload&gt;* })
 
@@ -125,9 +134,58 @@ export async function POST (
   }
 }
 ```
+## Signup feature using traditional credentials model (username + password)
 
+_This structure is based on this specific project_
 
+### Custom React hook
++ Custom hook handles React States for status such as *submitting* and *error*.
+  + **Submit handler** for signing up.
+    + Makes a **POST** request to the `/api/signup` endpoint with the `FormData` keys/values within the `body`, formatted with **`JSON.stringify()`**.
 
+### Route Handler
 
-✔️
-❌
++ Receives the `NextRequest` and converts it with `.json()`.
++ **Hashes password** with `Argon2id`.
+  + Utility used: `Oslo`.
+    ```
+    npm i oslo
+    ```
+    ```javascript
+    import { Argon2id } from "oslo/password";
+    // ...
+    const argon2id = new Argon2id()
+    const password = await argon2id.hash(incoming.password);
+    // ...
+    ```
+> [!NOTE]
+> `Argon2` is the award winner of [**Password Hashing Competition**](https://en.wikipedia.org/wiki/Password_Hashing_Competition) of 2015. Having three versions,
+> the recommended version to use is `Argon2id` which has different parameters that can be configured, such as: *memorize size, iterations, parallelism, and secret*.
+> Argon2id provides a balanced approach to resisting both `side-channel` and `GPU-based attacks`[^1].
++ Makes a **SQL Query** to **INSERT** the values into the table.
+> [!IMPORTANT]
+> `Parameterized queries` are important to avoid **SQL Injections** instead of using *template literals*. Example:
+> ```javascript
+> await pool.query(`
+>    INSERT INTO scheduler_users (name, username, email, birthday, password)
+>        VALUES (
+>            $1,
+>            $2,
+>            $3,
+>            $4,
+>            $5
+>        )
+>  `, [name, username, email, birthday, password]);
+> ```
+
+### UI Component
+
++ The component apart from other features (*displaying password requirements, reveal the password function, etc.*) sets the **onSubmit** property with the **Submit Handler** provided by the custom React hook and sets **method** to **POST**  on the **<form>** element.
+  ```javascript
+  // ...
+  <form onSubmit={<Submit Handler>} method="POST">
+  // ...
+  ```
+
+✔️❌
+[^1]: [OWASP Password Storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
