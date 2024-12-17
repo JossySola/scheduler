@@ -18,11 +18,19 @@ export default function useReCAPTCHA () {
         setIsSubmitting(true);
         try {
             await window.grecaptcha.ready(() => {
-                window.grecaptcha.execute('6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t', { action: 'signup'}).then(async (token: string) => {
+                window.grecaptcha.execute('6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t', { action: 'signup'}).then(async (grecaptchaToken: string) => {
                     const formData = new FormData(event.target);
-                    formData.append('recaptcha_token', token);
+                    formData.append('recaptcha_token', grecaptchaToken);
+
+                    const token = formData.get('recaptcha_token')?.toString();
+                    const name = formData.get('name')?.toString();
+                    const username = formData.get('username')?.toString();
+                    const birthday = formData.get('birthday')?.toString();
+                    const email = formData.get('email')?.toString();
+                    const password = formData.get('password')?.toString();
+
                     
-                    const passwordIsNotExposed = await isPasswordPwned(formData.get('password')?.toString());
+                    const passwordIsNotExposed = await isPasswordPwned(password!);
                     const passwordIsConfirmed = await arePasswordsConfirmed(formData);
                     
                     if (passwordIsNotExposed && passwordIsConfirmed) {
@@ -32,12 +40,12 @@ export default function useReCAPTCHA () {
                                 'Content-Type': 'application/json',
                             },
                             body: JSON.stringify({
-                                token: formData.get('recaptcha_token'),
-                                name: formData.get('name'),
-                                username: formData.get('username'),
-                                birthday: formData.get('birthday'),
-                                email: formData.get('email'),
-                                password: formData.get('password'),
+                                token,
+                                name,
+                                username,
+                                birthday,
+                                email,
+                                password,
                             })
                         })
                         const res = await response.json();
