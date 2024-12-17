@@ -9,9 +9,6 @@ export default function SignUp_Conditioned () {
     const { error, isSubmitting, windowIsLoaded, signupCAPTCHA } = useReCAPTCHA();
     const [ reveal, setReveal ] = useState<boolean>(false);
     const [ length, setLength ] = useState<boolean>(false);
-    const [ capital, setCapital ] = useState<boolean>(false);
-    const [ number, setNumber ] = useState<boolean>(false);
-    const [ char, setChar ] = useState<boolean>(false);
     
     if (!windowIsLoaded) {
         return <p>Loading...</p>
@@ -25,7 +22,7 @@ export default function SignUp_Conditioned () {
                         }
                     </div>
                     <label htmlFor="name">Name:</label>
-                    <input type="text" id="name" name="name" minLength={3} maxLength={30} required />
+                    <input type="text" id="name" name="name" minLength={3} maxLength={30} autoComplete="name" required />
 
                     <label htmlFor="username">Username:</label>
                     <input type="text" id="username" name="username" minLength={3} maxLength={15} required />
@@ -34,29 +31,23 @@ export default function SignUp_Conditioned () {
                     <input type="date" id="birthday" name="birthday" max="2012-12-31" required />
 
                     <label htmlFor="email">Email:</label>
-                    <input type="email" id="email" name="email" placeholder="example@domain.com" required />
+                    <input type="email" id="email" name="email" placeholder="example@domain.com" autoComplete="email" required />
 
                     <fieldset>
                         <label htmlFor="password">Set a password:</label>
-                        <input type={reveal ? "text" : "password"} id="password" name="password" minLength={8} required onChange={(e) => {
+                        <input type={reveal ? "text" : "password"} id="password" name="password" minLength={8} onChange={(e) => {
                             const value = e.target.value;
                             setLength(value.length >= 8);
-                            setCapital(/[A-Z]/.test(value));
-                            setNumber(/[0-9]/.test(value));
-                            setChar(/[!@#$%^&*(),.?":{}|<>\-_']/g.test(value));
-                        }}/>
+                        }} autoComplete="new-password" required/>
                         <button type="button" onClick={() => {
                             setReveal(!reveal);
                         }}>Reveal</button>
                         <section>
                             <p>{length ? '✔️' : '❌'} Has at least 8 characters</p>
-                            <p>{capital ? '✔️' : '❌'} Has at least 1 capital letter</p>
-                            <p>{number ? '✔️' : '❌'} Has at least 1 number</p>
-                            <p>{char ? '✔️' : '❌'} Has at least 1 of the following special characters: <span>! @ # $ % ^ & * , . ? " : | - _ '</span></p>
                         </section>
 
                         <label htmlFor="confirmpwd">Confirm password:</label>
-                        <input type={reveal ? "text" : "password"} id="confirmpwd" name="confirmpwd" minLength={8} required />
+                        <input type={reveal ? "text" : "password"} id="confirm-new-password" name="confirmpwd" autoComplete="new-password" minLength={8} required />
                     </fieldset>
                     
                     <SubmitButton text={isSubmitting ? "Submitting..." : "Submit"} disabled={isSubmitting}/>
