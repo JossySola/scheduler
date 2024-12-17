@@ -1,5 +1,5 @@
 import { useState, useEffect, BaseSyntheticEvent } from "react";
-import { isInputValid, arePasswordsConfirmed } from "../utils";
+import { isInputValid, arePasswordsConfirmed, isPasswordPwned } from "../utils";
 
 export default function useReCAPTCHA () {
     'use client'
@@ -22,10 +22,10 @@ export default function useReCAPTCHA () {
                     const formData = new FormData(event.target);
                     formData.append('recaptcha_token', token);
                     
-                    const inputIsValid = await isInputValid(formData).then((result) => result.ok);
-                    const passwordConfirmed = await arePasswordsConfirmed(formData);
+                    const passwordIsNotExposed = await isPasswordPwned(formData.get('password')?.toString());
+                    const passwordIsConfirmed = await arePasswordsConfirmed(formData);
                     
-                    if (inputIsValid && passwordConfirmed) {
+                    if (passwordIsNotExposed && passwordIsConfirmed) {
                         const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
                             method: 'POST',
                             headers: {
