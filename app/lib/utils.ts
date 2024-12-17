@@ -2,7 +2,6 @@
 import "server-only"
 import { Result_FormDataToQuery } from "./definitions";
 import { v4 as uuidv4 } from 'uuid';
-import * as argon2 from "argon2";
 import pool from "./mocks/db";
 
 export async function FormDataToQuery (formData: FormData) {
@@ -160,6 +159,10 @@ export async function arePasswordsConfirmed (formData: FormData) {
     } else {
         return false;
     }
+}
+
+export async function isPasswordPwned (password: string) {
+    
 }
 
 export async function getUserFromDb (username: string, email: string, password: string) {
