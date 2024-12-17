@@ -1,5 +1,5 @@
 import { useState, useEffect, BaseSyntheticEvent } from "react";
-import { isInputValid, arePasswordsConfirmed, isPasswordPwned } from "../utils";
+import { arePasswordsConfirmed, isPasswordPwned } from "../utils";
 
 export default function useReCAPTCHA () {
     'use client'
