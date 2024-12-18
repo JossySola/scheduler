@@ -15,7 +15,7 @@ export async function POST (
 
     const argon2id = new Argon2id()
     const password = await argon2id.hash(incoming.password);
-    console.log(typeof birthday)
+    
     try {
         const result = await pool.query(`
             INSERT INTO scheduler_users (name, username, email, birthday, password)
