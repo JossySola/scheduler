@@ -101,14 +101,14 @@ export async function isInputValid (formData: FormData) {
         switch (type) {
             case 'name':
                 if (name.test(value)) {
-                    result.message = 'Failed due to the use of a possible forbidden character. (name)';
+                    result.message = 'Failed due to a possible use of a special character in the name';
                     result.ok = false;
                     return result;
                 }
                 break;
             case 'username':
                 if (name.test(value)) {
-                    result.message = 'Failed due to the use of a possible forbidden character. (username)';
+                    result.message = 'Failed due to a possible use of a special character in the username';
                     result.ok = false;
                     return result;
                 }
