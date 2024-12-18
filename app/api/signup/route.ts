@@ -15,7 +15,7 @@ export async function POST (
 
     const argon2id = new Argon2id()
     const password = await argon2id.hash(incoming.password);
-    
+    console.log(typeof birthday)
     try {
         const result = await pool.query(`
             INSERT INTO scheduler_users (name, username, email, birthday, password)
@@ -25,7 +25,7 @@ export async function POST (
                     $3,
                     $4,
                     $5
-                )
+                );
         `, [name, username, email, birthday, password]);
 
         if (result.rowCount && result.rowCount > 0) {
@@ -38,6 +38,7 @@ export async function POST (
         }
     } catch (error) {
         let message = '';
+        console.error(error)
         if (error.detail && error.detail.includes('already exists')) {
             if (error.detail.includes('username')) {
                 message = 'Username already exists.'
