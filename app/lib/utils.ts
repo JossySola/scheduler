@@ -90,7 +90,7 @@ export async function isInputValid (formData: FormData) {
         const name = /[+/\\@#$%^&()_!<>:;{}=`|?"[\].,*-]/;
         const birthday = /([0-9][0-9])(\/|-)([0-9][0-9])(\/|-)([0-9][0-9][0-9][0-9])/;
         const email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        const pwd = /(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>-_']).{8,}/;
+        // const pwd = /(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>-_']).{8,}/;
 
         if (!value) {
             result.message = 'Field must not be empty';
@@ -128,15 +128,6 @@ export async function isInputValid (formData: FormData) {
                 }
                 break;
             case 'password':
-                if (!pwd.test(value)) {
-                    result.message = 'Password must contain one special character, one number and one uppercase letter.';
-                    result.ok = false;
-                    return result;
-                } else if (value.length < 8) {
-                    result.message = 'Password must be more than 8 characters.';
-                    result.ok = false;
-                    return result;
-                }
                 break;
             case 'confirmpwd':
                 break;
