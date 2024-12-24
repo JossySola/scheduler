@@ -1,11 +1,9 @@
-"use server"
-import "server-only"
 import { Result_FormDataToQuery } from "./definitions";
 import { v4 as uuidv4 } from 'uuid';
 import crypto from "crypto";
 import pool from "./mocks/db";
 
-export async function FormDataToQuery (formData: FormData) {
+export function FormDataToQuery (formData: FormData) {
     // Query Object to be returned
     const name = formData.get('table-name')?.toString().replaceAll(' ', '');
     let result: Result_FormDataToQuery = {
@@ -76,76 +74,63 @@ export async function FormDataToQuery (formData: FormData) {
     return result;
 }
 
-export async function isInputValid (formData: FormData) {
-    if (!formData) false;
+export function isInputValid (formData: FormData) {
+    'use client'
+    if (formData === undefined || !(formData instanceof FormData)) {
+        const errors = [
+            {
+                message: 'Wrong data instance or is missing',
+                ok: false,
+            }
+        ]
+        return errors;        
+    }
     
-    let result = {
-        message: 'Success!',
-        ok: true,
+    const form = {
+        name: { value: formData.get('name')?.toString(), error: { message: 'A name is required.', ok: false}},
+        username: { value: formData.get('username')?.toString(), error: { message: 'A username is required.', ok: false}},
+        birthday: { value: formData.get('birthday')?.toString(), error: { message: 'A birthday date is required.', ok: false}},
+        email: { value: formData.get('email')?.toString(), error: { message: 'An email is required.', ok: false}},
+        password: { value: formData.get('password')?.toString(), error: { message: 'A password is required.', ok: false}},
+        confirmation: { value: formData.get('confirmpwd')?.toString(), error: { message: 'The password confirmation is required.', ok: false}},
+        token: { value: formData.get('recaptcha_token')?.toString(), error: { message: 'Server error.', ok: false}},
     }
 
-    for (const pair of formData.entries()) {
-        const type = pair[0].toString();
-        const value = pair[1].toString();
-        const name = /[+/\\@#$%^&()_!<>:;{}=`|?"[\].,*-]/;
-        const birthday = /([0-9][0-9])(\/|-)([0-9][0-9])(\/|-)([0-9][0-9][0-9][0-9])/;
-        const email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        // const pwd = /(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>-_']).{8,}/;
-
-        if (!value) {
-            result.message = 'Field must not be empty';
-            result.ok = false;
-            return result;
-        }
-        
-        switch (type) {
-            case 'name':
-                if (name.test(value)) {
-                    result.message = 'Failed due to a possible use of a special character in the name';
-                    result.ok = false;
-                    return result;
-                }
-                break;
-            case 'username':
-                if (name.test(value)) {
-                    result.message = 'Failed due to a possible use of a special character in the username';
-                    result.ok = false;
-                    return result;
-                }
-                break;
-            case 'birthday':
-                if (birthday.test(value)) {
-                    result.message = 'Failed due to the use of a possible forbidden character. (birthday)';
-                    result.ok = false;
-                    return result;
-                }
-                break;
-            case 'email':
-                if (!email.test(value)) {
-                    result.message = 'Malformed email syntax. (email)';
-                    result.ok = false;
-                    return result;
-                }
-                break;
-            case 'password':
-                break;
-            case 'confirmpwd':
-                break;
-            case 'recaptcha_token':
-                break;
-            default:
-                result.message = 'The input type is not listed';
-                result.ok = false;
-                return result;
-        }
+    const errors = Object.entries(form)
+    .filter(([_, { value }]) => !value)
+    .map(([key, {error}]) => error );
+    if (errors.length > 0) {
+        return  errors ;
     }
-    return result;
+
+    const nameREGEX = /[+/\\@#$%^&()_!<>:;{}=`|?"[\].,*-]/g;
+    const birthdayREGEX = /([0-9][0-9])(\/|-)([0-9][0-9])(\/|-)([0-9][0-9][0-9][0-9])/;
+    const emailREGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (form.name.value?.match(nameREGEX) && form.birthday.value?.match(birthdayREGEX) && form.email.value?.match(emailREGEX)) {
+        const errors = [
+            !form.name.value?.match(nameREGEX) && form.name.error,
+            !form.birthday.value?.match(birthdayREGEX) && form.birthday.error,
+            !form.email.value?.match(emailREGEX) && form.email.error,
+        ]
+        return errors;
+    } else {
+        return true;
+    }
 }
 
-export async function arePasswordsConfirmed (formData: FormData) {
+export function arePasswordsConfirmed (formData: FormData) {
+    if (!(formData instanceof FormData)) {
+        return false;
+    }
+    
     const password = formData.get('password');
     const confirmation = formData.get('confirmpwd');
-
+    
+    if (!password || !confirmation) {
+        return false
+    }
+    
     if (password === confirmation) {
         return true;
     } else {
@@ -184,6 +169,7 @@ export async function isPasswordPwned (password: string) {
 }
 
 export async function getUserFromDb (username: string, email: string, password: string) {
+    'use server'
     try {
         const user = await pool.query(`
             SELECT * FROM scheduler_users 
