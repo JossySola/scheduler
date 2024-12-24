@@ -38,11 +38,13 @@ describe('Uses pwned API successfuly', async () => {
         const test = await fn('p@55w0rd');
 
         expect(test).toBeGreaterThan(0);
+        expect(test).toMatchSnapshot();
     });
     test('Returns 0 in a non-exposed password', async () => {
         
         const test = await fn('asfoi8fh08f9dfkj');
 
         expect(test).toBe(0);
+        expect(test).toMatchSnapshot();
     })
 })
