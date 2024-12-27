@@ -4,9 +4,9 @@ import Password from "../atoms/atom-password";
 
 export default function LogIn () {
     return (
-        <form action={async () => {
+        <form action={async (formData) => {
             "use server"
-            await signIn();
+            await signIn("credentials", { formData, redirect: true, redirectTo: '/dashboard' });
         }}>
             <label>
                 E-mail or username
