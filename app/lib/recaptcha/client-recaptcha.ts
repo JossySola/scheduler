@@ -1,11 +1,12 @@
 import { useState, useEffect, BaseSyntheticEvent } from "react";
-import { arePasswordsConfirmed, isInputValid, isPasswordPwned } from "../utils";
+import { arePasswordsConfirmed, isInputValid } from "../utils-client";
+import { isPasswordPwned } from "../utils-server";
 
 export default function useReCAPTCHA () {
     'use client'
     const [ windowIsLoaded, setWindowIsLoaded ] = useState<Window | null>(null);
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
-    const [ error, setError ] = useState<string>('');
+    const [ status, setStatus ] = useState<string>('');
 
     useEffect(() => {
         if (window) {
@@ -30,10 +31,10 @@ export default function useReCAPTCHA () {
                     const password = formData.get('password')?.toString();
                     
                     const passwordIsNotExposed = await isPasswordPwned(password!);
-                    const passwordIsConfirmed = await arePasswordsConfirmed(formData);
-                    const inputIsValid = await isInputValid(formData);
+                    const passwordIsConfirmed = arePasswordsConfirmed(formData);
+                    const inputIsValid = isInputValid(formData);
                     
-                    if (inputIsValid.ok && passwordIsNotExposed === 0 && passwordIsConfirmed) {
+                    if (inputIsValid && passwordIsNotExposed === 0 && passwordIsConfirmed) {
                         const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
                             method: 'POST',
                             headers: {
@@ -49,32 +50,33 @@ export default function useReCAPTCHA () {
                             })
                         })
                         const res = await response.json();
-                        if (res.status === 500) {
-                            setError(res.statusText);
-                        }
+                        setStatus(res.statusText);
                     } else {
                         if (passwordIsNotExposed > 0) {
-                            setError('Upon a password verification, unfortunately this password has been exposed in a data breach. For security reasons, please choose another password.');
+                            setStatus('Upon a password verification, unfortunately this password has been exposed in a data breach. For security reasons, please choose another password.');
                             return;
                         } else if (passwordIsConfirmed === false) {
-                            setError('The password confirmation is likely to have an error');
+                            setStatus('The password confirmation is likely to have an error');
                             return;
                         } else {
-                            setError(inputIsValid.message);
+
+                            if (!inputIsValid) {
+                                setStatus(inputIsValid[0].message);
+                            }
                             return;
                         }
                     }
                 })
             })
         } catch (error) {
-            setError('Failed loading initial dependency.');
+            setStatus('Failed loading initial dependency.');
         } finally {
             setIsSubmitting(false);
         }
     }
 
     return {
-        error,
+        status,
         isSubmitting,
         windowIsLoaded,
         signupCAPTCHA,
