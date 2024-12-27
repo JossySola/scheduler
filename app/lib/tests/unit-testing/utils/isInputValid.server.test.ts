@@ -1,4 +1,4 @@
-import { isInputValid } from "../../../utils";
+import { isInputValid } from "../../../utils-client";
 import { test, describe, expect } from "vitest";
 
 describe('isInputValid', () => {
