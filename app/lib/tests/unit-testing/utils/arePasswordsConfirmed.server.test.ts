@@ -1,4 +1,4 @@
-import { arePasswordsConfirmed } from "../../../utils";
+import { arePasswordsConfirmed } from "../../../utils-client";
 import { describe, expect, test } from "vitest";
 
 describe('arePasswordsConfirmed', () => {
