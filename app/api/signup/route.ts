@@ -38,7 +38,6 @@ export async function POST (
         }
     } catch (error) {
         let message = '';
-        console.error(error)
         if (error.detail && error.detail.includes('already exists')) {
             if (error.detail.includes('username')) {
                 message = 'Username already exists.'
@@ -46,7 +45,7 @@ export async function POST (
                 message = 'E-mail already used.'
             }
         } else {
-            message = 'An unexpected error has occured.'
+            message = 'An unexpected error has occured from route.'
         }
         
         return NextResponse.json({
