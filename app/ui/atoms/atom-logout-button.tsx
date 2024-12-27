@@ -1,13 +1,10 @@
-import { signOut } from "@/auth"
+"use client"
+import { handleSignOut } from "@/app/lib/utils-server";
 
-export default function LogInButton () {
+export default function LogOutButton () {
     return (
-        <form action={async () => {
-            "use server"
-            await signOut();
-        }}>
-            <button type="submit">Log In</button>
-        </form>
-        
+        <button type="button" onClick={() => {
+            handleSignOut();
+        }}>Log Out</button>
     )
 }
