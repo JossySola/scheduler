@@ -6,7 +6,7 @@ import { useState } from "react";
 
 
 export default function SignUp_Conditioned () {
-    const { error, isSubmitting, windowIsLoaded, signupCAPTCHA } = useReCAPTCHA();
+    const { status, isSubmitting, windowIsLoaded, signupCAPTCHA } = useReCAPTCHA();
     const [ reveal, setReveal ] = useState<boolean>(false);
     const [ length, setLength ] = useState<boolean>(false);
     
@@ -18,7 +18,7 @@ export default function SignUp_Conditioned () {
                 <form onSubmit={signupCAPTCHA} method="POST" className="flex-col" aria-describedby="form-error">
                     <div id="form-error" aria-live="polite" aria-atomic="true">
                         {
-                            error && <p>{error}</p>
+                            status && <p>{status}</p>
                         }
                     </div>
                     <label htmlFor="name">Name:</label>
