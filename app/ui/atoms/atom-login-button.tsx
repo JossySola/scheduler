@@ -1,13 +1,7 @@
-import { signIn } from "@/auth"
+import Link from "next/link"
 
 export default function LogInButton () {
     return (
-        <form action={async () => {
-            "use server"
-            await signIn("credentials", { redirectTo: "/dashboard" });
-        }}>
-            <button type="submit">Log In</button>
-        </form>
-        
+        <Link href={'/login'}>Log In</Link>
     )
 }
