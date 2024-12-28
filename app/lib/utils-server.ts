@@ -28,11 +28,12 @@ export async function getUserFromDb (username: string, email: string, password: 
                 email: userRecord.email,
                 birthday: userRecord.birthday,
                 created_at: userRecord.created_at,
-                role: userRecord.role
+                role: userRecord.role,
+                ok: true
             };
         } else {
             return {
-                message: "Incorrect password.",
+                message: "Invalid credentials.",
                 ok: false
             };
         }
