@@ -52,7 +52,7 @@ export default function useReCAPTCHA () {
                         const res = await response.json();
                         setStatus(res.statusText);
                     } else {
-                        if (passwordIsNotExposed > 0) {
+                        if (typeof passwordIsNotExposed === 'number' && passwordIsNotExposed > 0) {
                             setStatus('Upon a password verification, unfortunately this password has been exposed in a data breach. For security reasons, please choose another password.');
                             return;
                         } else if (passwordIsConfirmed === false) {
