@@ -12,21 +12,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 password: { label: "Password", type: "password" },
             },
             authorize: async (credentials) => {
+                if (!credentials || !credentials.username || !credentials.password) {
+                    return null;
+                }
                 try {
                     let user = null;
-
+                    
                     const username = z.string().min(1).safeParse(credentials.username);
                     const email = z.string().min(1).email("Not an email").safeParse(credentials.username);
                     const password = z.string().min(1).safeParse(credentials.password);
-                    
-                    if (!username || !email || !password) {
-                        return null;
-                    }
 
                     // logic to verify if the user exists on DB
                     user = await getUserFromDb(username.data, email.data, password.data);
                     
-                    if (!user) {
+                    if (!user || !user.ok) {
                         // No user found, so this is their first attempt to login
                         // Optionally, this is also the place you could do a user registration
                         return null;
@@ -44,19 +43,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         }),
     ],
-    callbacks: {
-        redirect: async ({ url, baseUrl }) => {
-            if (url === '/login') {
-                return baseUrl + '/dashboard';
-            }
-
-            if (url === '/dashboard') {
-                return baseUrl + '/login';
-            }
-
-            return url || baseUrl; 
-        }
-    },
     pages: {
         signIn: "/login"
     },
