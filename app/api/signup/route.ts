@@ -1,7 +1,7 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
-import * as argon2 from "argon2";
 import pool from "@/app/lib/mocks/db";
+import { Argon2id } from "oslo/password";
 
 export async function POST (
     request: NextRequest,
@@ -12,7 +12,9 @@ export async function POST (
     const username = incoming.username;
     const birthday = incoming.birthday;
     const email = incoming.email;
-    const password = await argon2.hash(incoming.password);
+
+    const argon2id = new Argon2id()
+    const password = await argon2id.hash(incoming.password);
     
     try {
         const result = await pool.query(`
@@ -23,7 +25,7 @@ export async function POST (
                     $3,
                     $4,
                     $5
-                )
+                );
         `, [name, username, email, birthday, password]);
 
         if (result.rowCount && result.rowCount > 0) {
@@ -43,7 +45,7 @@ export async function POST (
                 message = 'E-mail already used.'
             }
         } else {
-            message = 'An unexpected error has occured.'
+            message = 'An unexpected error has occured from route.'
         }
         
         return NextResponse.json({

@@ -7,21 +7,23 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "vitest"
+    "test": "vitest",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "@auth/pg-adapter": "^1.7.4",
+    "@sendgrid/mail": "^8.1.4",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
     "@vercel/postgres": "^0.10.0",
-    "@vitest/ui": "^2.1.8",
-    "argon2": "^0.41.1",
     "auth": "^1.2.3",
-    "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.5",
-    "next": "^15.1.1-canary.5",
+    "next": "^15.1.1-canary.23",
     "next-auth": "^5.0.0-beta.25",
+    "oslo": "^1.2.1",
     "pg": "^8.13.1",
-    "react": "^19.1.0-canary-4dff0e62-20241213",
-    "react-dom": "^19.1.0-canary-4dff0e62-20241213",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "server-only": "^0.0.1",
     "swr": "^2.2.5",
     "ts-node": "^10.9.2",
@@ -30,20 +32,18 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
+    "@eslint/js": "^9.17.0",
     "@types/node": "^20.16.10",
-    "@types/react": "18.3.12",
-    "@types/react-dom": "18.3.1",
     "@types/uuid": "^10.0.0",
-    "cypress": "^13.16.1",
-    "eslint": "^8",
+    "@vitest/ui": "^2.1.8",
+    "cypress": "^13.17.0",
+    "eslint": "^8.57.1",
     "eslint-config-next": "14.2.16",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  },
-  "overrides": {
-    "@types/react": "18.3.12",
-    "@types/react-dom": "18.3.1"
+    "eslint-plugin-react": "^7.37.3",
+    "globals": "^15.14.0",
+    "jsdom": "^25.0.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.2"
   }
 }

@@ -1,6 +1,6 @@
-import SignUp_Conditioned from "@/app/ui/molecules/mol-signup";
+import SignUp_Conditioned from "@/app/ui/organisms/org-signup";
 
-export default function Page () {
+export default async function Page () {
     return (
         <main>
             <SignUp_Conditioned />

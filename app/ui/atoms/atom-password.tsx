@@ -5,7 +5,7 @@ export default function Password () {
     const [ reveal, setReveal ] = useState<boolean>(false);
     return (
         <>
-            <input type={reveal ? "text" : "password"} id="password" name="password" />
+            <input type={reveal ? "text" : "password"} id="password" name="password" autoComplete="password"/>
             <button 
                 type="button" 
                 onClick={() => {
