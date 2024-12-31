@@ -1,12 +1,13 @@
 import { useState, useEffect, BaseSyntheticEvent } from "react";
 import { arePasswordsConfirmed, isInputValid } from "../utils-client";
-import { isPasswordPwned } from "../utils-server";
+import { sendEmailConfirmation, isPasswordPwned } from "../utils-server";
 
 export default function useReCAPTCHA () {
     'use client'
     const [ windowIsLoaded, setWindowIsLoaded ] = useState<Window | null>(null);
     const [ isSubmitting, setIsSubmitting ] = useState<boolean>(false);
     const [ status, setStatus ] = useState<string>('');
+    const [ pendingVerification, setPendingVerification ] = useState<boolean>(false);
 
     useEffect(() => {
         if (window) {
@@ -35,6 +36,7 @@ export default function useReCAPTCHA () {
                     const inputIsValid = isInputValid(formData);
                     
                     if (inputIsValid && passwordIsNotExposed === 0 && passwordIsConfirmed) {
+                        
                         const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
                             method: 'POST',
                             headers: {
@@ -51,6 +53,11 @@ export default function useReCAPTCHA () {
                         })
                         const res = await response.json();
                         setStatus(res.statusText);
+                        
+                        if (res.status === 200) {
+                            await sendEmailConfirmation(`${email}`, `${name}`);
+                            setPendingVerification(true);
+                        }
                     } else {
                         if (typeof passwordIsNotExposed === 'number' && passwordIsNotExposed > 0) {
                             setStatus('Upon a password verification, unfortunately this password has been exposed in a data breach. For security reasons, please choose another password.');
@@ -76,6 +83,7 @@ export default function useReCAPTCHA () {
     }
 
     return {
+        pendingVerification,
         status,
         isSubmitting,
         windowIsLoaded,
