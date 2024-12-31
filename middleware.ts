@@ -3,17 +3,20 @@ import { reCAPTCHAResponse, VerificationResponse } from './app/lib/recaptcha/ser
 import { ReturnReCAPTCHAError } from './app/lib/recaptcha/server-recaptcha';
 
 export async function middleware (request: NextRequest) {
-    if (request.nextUrl.pathname.startsWith('/api')) {
+    if (request.nextUrl.pathname.startsWith('/api/signup')) {
         const googleResponse: VerificationResponse = await GoogleVerification(request);    
         if (googleResponse.status !== 200) {
             return NextResponse.json(googleResponse);
         }
         return NextResponse.next();
     }
+    if (request.nextUrl.pathname.startsWith('/dashboard')) {
+        
+    }
 }
 
 export const config = {
-    matcher: ['/api/signup'],
+    matcher: ['/api', '/dashboard'],
 }
 
 const GoogleVerification = async (request: NextRequest) => {
