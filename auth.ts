@@ -1,11 +1,15 @@
 import "server-only";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { z, ZodError } from "zod";
+import Google from "next-auth/providers/google";
+import Facebook from "next-auth/providers/facebook";
+import { z } from "zod";
 import { getUserFromDb } from "./app/lib/utils-server";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
+        Google,
+        Facebook,
         Credentials({
             credentials: {
                 username: { label: "Username or e-mail", type: "text" },
@@ -34,10 +38,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     // return the user object with their profile data
                     return user;
                 } catch (error) {
-                    if (error instanceof ZodError) {
-                        // Return 'null' to indicate that the credentials are invalid
-                        return null;
-                    }
                     return null;
                 }
             },
