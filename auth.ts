@@ -23,11 +23,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     let user = null;
                     
                     const username = z.string().min(1).safeParse(credentials.username);
-                    const email = z.string().min(1).email("Not an email").safeParse(credentials.username);
                     const password = z.string().min(1).safeParse(credentials.password);
 
                     // logic to verify if the user exists on DB
-                    user = await getUserFromDb(username.data, email.data, password.data);
+                    user = await getUserFromDb(username.data, password.data);
                     
                     if (!user || !user.ok) {
                         // No user found, so this is their first attempt to login

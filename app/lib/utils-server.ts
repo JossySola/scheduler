@@ -6,12 +6,12 @@ import { Argon2id } from "oslo/password";
 import { auth, signOut } from "@/auth";
 import sgMail from "@sendgrid/mail";
 
-export async function getUserFromDb (username: string, email: string, password: string) {
+export async function getUserFromDb (username: string, password: string) {
     try {
         const user = await pool.query(`
             SELECT * FROM scheduler_users 
-                WHERE username = $1 OR email = $2;
-        `, [username, email]);
+                WHERE username = $1 OR email = $1;
+        `, [username]);
         if (user.rows.length === 0) {
             return {
                 message: "User not found.",
