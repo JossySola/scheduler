@@ -3,38 +3,51 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
-import { z } from "zod";
-import { getUserFromDb } from "./app/lib/utils-server";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+    secret: process.env.NEXTAUTH_SECRET,
     providers: [
-        Google,
-        Facebook,
+        Google({
+            clientId: process.env.AUTH_GOOGLE_ID,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET,
+            async profile(profile) {
+                return { ...profile };
+            }
+        }),
+        Facebook({
+            clientId: process.env.AUTH_FACEBOOK_ID,
+            clientSecret: process.env.AUTH_FACEBOOK_SECRET,
+            async profile(profile) {
+                return { ...profile };
+            }
+        }),
         Credentials({
             credentials: {
                 username: { label: "Username or e-mail", type: "text" },
                 password: { label: "Password", type: "password" },
             },
-            authorize: async (credentials) => {
+            async authorize(credentials) {
+                
                 if (!credentials || !credentials.username || !credentials.password) {
                     return null;
                 }
                 try {
-                    let user = null;
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/argon/user`, {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            username: credentials.username,
+                            password: credentials.password,
+                        })
+                    })
                     
-                    const username = z.string().min(1).safeParse(credentials.username);
-                    const password = z.string().min(1).safeParse(credentials.password);
-
-                    // logic to verify if the user exists on DB
-                    user = await getUserFromDb(username.data, password.data);
-                    
-                    if (!user || !user.ok) {
-                        // No user found, so this is their first attempt to login
-                        // Optionally, this is also the place you could do a user registration
+                    if (!response.ok || response.status !== 200) {
                         return null;
                     }
-
-                    // return the user object with their profile data
+                    
+                    const { user } = await response.json();
                     return user;
                 } catch (error) {
                     return null;
@@ -42,8 +55,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         }),
     ],
+    session: {
+        strategy: "jwt"
+    },
+    callbacks: {
+        jwt({ token, user, account, trigger }) {
+            if (user) {
+                token.image = user.image;
+                token.picture = user.picture;
+                if (account) {
+                    token.provider = account.provider;
+                    token.access_token = account.access_token;
+                }
+                if (trigger) {
+                    token.trigger = trigger;
+                }
+            }
+            return token;
+        },
+        session({ session, token }) {
+            session.user.image = token.image;
+            session.user.picture = token.picture;
+            session.user.provider = token.provider;
+            session.user.trigger = token.trigger;
+            session.user.access_token = token.access_token;
+            return session;
+        },
+    },
     pages: {
         signIn: "/login"
     },
-    debug: true,
+    debug: false,
 })
