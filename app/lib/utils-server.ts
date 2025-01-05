@@ -5,6 +5,7 @@ import pool from "./mocks/db";
 import { Argon2id } from "oslo/password";
 import { auth, signOut } from "@/auth";
 import sgMail from "@sendgrid/mail";
+import { redirect } from "next/navigation";
 
 export async function getUserFromDb (username: string, password: string) {
     try {
@@ -12,12 +13,14 @@ export async function getUserFromDb (username: string, password: string) {
             SELECT * FROM scheduler_users 
                 WHERE username = $1 OR email = $1;
         `, [username]);
-        if (user.rows.length === 0) {
+        
+        if (user.rowCount === 0) {
             return {
                 message: "User not found.",
                 ok: false
             };
         }
+        
         const userRecord = user.rows[0];
         const argon2id = new Argon2id();
 
@@ -297,4 +300,28 @@ export async function sendEmailConfirmation(email: string, name?: string) {
     } catch (error) {
         console.error(error);
     }
+}
+
+export async function handleEmailConfirmation (state: { message: string }, formData: FormData) {
+  const token = formData.get('confirmation-token');
+  const email = formData.get('email');
+  
+  const query = await pool.query(`
+      UPDATE scheduler_users
+          SET verified = true
+          WHERE verify_token = $1 AND email = $2;
+  `, [token, email]);
+  
+  if (query.rowCount > 0) {
+      await pool.query(`
+      UPDATE scheduler_users
+          SET verify_token = ''
+          WHERE email = $1;
+      `, [email]);
+      redirect('/dashboard');
+  } else {
+      return {
+          message: 'The code is invalid or has expired. (El código es incorrecto o ha expirado)'
+      }
+  }
 }
