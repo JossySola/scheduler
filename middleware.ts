@@ -12,20 +12,21 @@ export default auth(async (request: NextRequest) => {
         }
         return NextResponse.next();
     }
+
+    const secret = process.env.NEXTAUTH_SECRET;
+    const token = await getToken({
+        req: request,
+        secret: secret
+    });
     
     if (!['/','/login', '/signup'].includes(request.nextUrl.pathname)) {
-        const secret = process.env.NEXTAUTH_SECRET;
-        
-        const token = await getToken({
-            req: request,
-            secret: secret
-        });
-        
         if (!token) {
             return NextResponse.redirect(new URL("/login", request.url));
         }
-    } else {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+    } else if (['/login', '/signup'].includes(request.nextUrl.pathname)) {
+        if (token) {
+            return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
     }
 })
 
