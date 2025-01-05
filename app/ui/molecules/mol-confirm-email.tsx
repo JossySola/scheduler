@@ -1,10 +1,10 @@
-import handleConfirmation from "@/app/(routes)/signup/actions";
+import { handleEmailConfirmation } from "@/app/lib/utils-server";
 import { sendEmailConfirmation } from "@/app/lib/utils-server";
 import { useActionState, useState } from "react"
 
 export default function ConfirmEmail (form: { email: string }) {
     const [sent, setSent] = useState<boolean>(false);
-    const [state, formAction, pending] = useActionState(handleConfirmation, { message: ''});
+    const [state, formAction, pending] = useActionState(handleEmailConfirmation, { message: ''});
     
     return (
         <section>
