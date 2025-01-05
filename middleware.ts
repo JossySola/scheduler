@@ -1,22 +1,36 @@
 import { NextResponse, NextRequest } from 'next/server'
 import { reCAPTCHAResponse, VerificationResponse } from './app/lib/recaptcha/server-recaptcha';
 import { ReturnReCAPTCHAError } from './app/lib/recaptcha/server-recaptcha';
+import { auth } from '@/auth';
+import { getToken } from 'next-auth/jwt';
 
-export async function middleware (request: NextRequest) {
-    if (request.nextUrl.pathname.startsWith('/api/signup')) {
+export default auth(async (request: NextRequest) => {
+    if (request.nextUrl.pathname.startsWith('/api/signup') || request.nextUrl.pathname.startsWith('/api/login')) {
         const googleResponse: VerificationResponse = await GoogleVerification(request);    
         if (googleResponse.status !== 200) {
             return NextResponse.json(googleResponse);
         }
         return NextResponse.next();
     }
-    if (request.nextUrl.pathname.startsWith('/dashboard')) {
+    
+    if (!['/','/login', '/signup'].includes(request.nextUrl.pathname)) {
+        const secret = process.env.NEXTAUTH_SECRET;
         
+        const token = await getToken({
+            req: request,
+            secret: secret
+        });
+        
+        if (!token) {
+            return NextResponse.redirect(new URL("/login", request.url));
+        }
+    } else {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
     }
-}
+})
 
 export const config = {
-    matcher: ['/api', '/dashboard'],
+    matcher: ['/api', '/dashboard', '/login', '/signup'],
 }
 
 const GoogleVerification = async (request: NextRequest) => {
