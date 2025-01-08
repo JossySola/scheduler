@@ -97,12 +97,26 @@ export async function confirmEmailAction (state: { message: string }, formData: 
     const birthday = formData.get('birthday')?.toString();
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
+
+    if (!token) {
+        return {
+            ok: false,
+            message: "Please type the code sent to your email in the field above"
+        }
+    }
+
+    if (!name || !username || !birthday || !email || !password) {
+        return {
+            ok: false,
+            message: "Some data is missing"
+        }
+    }
     
     const confirm = await handleEmailConfirmation(token, email);
     if (!confirm.ok) {
         return {
             ok: false,
-            message: "Invalid or expired code"
+            message: confirm.message
         }
     }
 
