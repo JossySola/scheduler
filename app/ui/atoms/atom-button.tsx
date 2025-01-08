@@ -1,3 +1,6 @@
+"use client"
+import { useCallback, useTransition } from "react";
+
 export function Button({callback, text}: {
     callback: () => void,
     text: string | null,
@@ -56,7 +59,63 @@ export function ActionButton({action, text, disabled, form, formaction, formenct
     onClick?: () => void,
     onSubmit?: () => void,
 }) {
-    "use client"
+    const [ isPending, startTransition ] = useTransition();
+    
+    const handleClick = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        const key = '6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t';
+        if (!key) {
+            console.error("Google reCAPTCHA key is missing.");
+            return;
+        }
+
+        const formElement = (e.currentTarget as HTMLButtonElement).form;
+        if (!formElement || !formaction) return;
+
+        try {
+            await new Promise<void>((resolve) => {
+                window.grecaptcha.ready(() => {
+                    window.grecaptcha
+                    .execute(key, { action })
+                    .then(async (token: string) => {
+                        const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/grecaptcha`, {
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ token })
+                        });
+
+                        const response = await request.json();
+                        if (response.status !== 200) {
+                            throw new Error("reCAPTCHA verification failed");
+                        }
+                        resolve();
+                    })
+                    .catch((error) => {
+                        console.error("Error executing reCAPTCHA: ", error);
+                        throw error;
+                    });
+                });
+            });
+            const formData = new FormData(formElement);
+
+            startTransition(async () => {
+                try {
+                    if (typeof formaction === 'function') {
+                        await formaction(formData);
+                        onClick?.();
+                        onSubmit?.();
+                    }
+                } catch (error) {
+                    console.error("Error during form submission: ", error);
+                }
+            });
+        } catch (error) {
+            console.error("Error during reCAPTCHA verification: ", error);
+        }
+    }, [action, formaction, onClick, onSubmit]);
+    
     return <button
             disabled={disabled}
             form={form}
@@ -65,45 +124,7 @@ export function ActionButton({action, text, disabled, form, formaction, formenct
             formMethod={formmethod}
             formNoValidate={formnovalidate}
             formTarget={formtarget}
-            onClick={async (e) => {
-                e.preventDefault();
-                const key = '6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t';
-                if (!key) {
-                    console.error("Google reCAPTCHA key is missing.");
-                }
-                const formElement = (e.currentTarget as HTMLButtonElement).form;
-                
-                console.log(formElement)
-                try {
-                    await window.grecaptcha.ready(() => {
-                        window.grecaptcha
-                        .execute(key, { action })
-                        .then(async (token: string) => {
-                            const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/grecaptcha`, {
-                                method: 'POST',
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    token
-                                })
-                            })
-                            const response = await request.json();
-                            if (response.status !== 200) {
-                                throw Error;
-                            }
-                            
-                            formElement?.submit();
-                        })
-                        .catch(() => {
-                            console.error("Error executing reCAPTCHA");
-                        })
-                    })
-                } catch (error) {
-                    console.error(error);
-                }
-
-            }}
+            onClick={handleClick}
             onSubmit={onSubmit}
             >
             {text}
