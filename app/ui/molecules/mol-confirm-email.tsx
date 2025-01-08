@@ -23,12 +23,17 @@ export default function ConfirmEmail () {
             <h4>Hemos enviado un e-mail que contiene un código, por favor ingresalo aquí para verificar tu cuenta</h4>
 
             <input minLength={6} maxLength={6} id="confirmation-token" name="confirmation-token" required />
+            
+            {
+                !confirmState.ok ? <p>{confirmState.message}</p> : null
+            }
+            
             <ActionButton 
                 action="confirm_email" 
                 form="register" 
                 text="Confirm" 
                 formaction={ confirmAction } 
-                disabled={ pending } 
+                disabled={ pending }
                 />
         </fieldset>
     )
