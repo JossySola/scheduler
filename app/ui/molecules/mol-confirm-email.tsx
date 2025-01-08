@@ -15,16 +15,21 @@ export default function ConfirmEmail () {
 
     if (!windowReady) {
         return <p>Loading...</p>
-    } else {
-        return (
-            <fieldset>
-                <h3>We've sent you an e-mail with a code, please type it here to verify your account</h3>
-                <h4>Hemos enviado un e-mail que contiene un código, por favor ingresalo aquí para verificar tu cuenta</h4>
-    
-                <input minLength={6} maxLength={6} id="confirmation-token" name="confirmation-token" required />
-                <ActionButton action="confirm_email" form="register" text="Confirm" formaction={ confirmAction } disabled={ pending } />   
-            
-            </fieldset>
-        )
     }
+
+    return (
+        <fieldset>
+            <h3>We've sent you an e-mail with a code, please type it here to verify your account</h3>
+            <h4>Hemos enviado un e-mail que contiene un código, por favor ingresalo aquí para verificar tu cuenta</h4>
+
+            <input minLength={6} maxLength={6} id="confirmation-token" name="confirmation-token" required />
+            <ActionButton 
+                action="confirm_email" 
+                form="register" 
+                text="Confirm" 
+                formaction={ confirmAction } 
+                disabled={ pending } 
+                />
+        </fieldset>
+    )
 }
