@@ -1,4 +1,7 @@
-export function ActionButton({callback, text}: {
+"use client"
+import { useCallback, useTransition } from "react";
+
+export function Button({callback, text}: {
     callback: () => void,
     text: string | null,
 }) {
@@ -13,7 +16,7 @@ export function SubmitButton({text, disabled, form, formaction, formenctype, for
     text: string,
     disabled?: boolean,
     form?: string,
-    formaction?: string | ((formData: FormData) => void | Promise<unknown>),
+    formaction?: string | ((formData: FormData) => void | Promise<void>),
     formenctype?: "application/x-www-form-urlencoded" | "multipart/form-data" | "text/plain",
     formmethod?: "post" | "get" | "dialog",
     formnovalidate?: boolean,
@@ -39,4 +42,91 @@ export function SubmitButton({text, disabled, form, formaction, formenctype, for
     {text}{isSubmitting ? "Submitting...": null}{isSubmitted ? "Submitted!" : null}
     </button> 
         
+}
+
+export function ActionButton({action, text, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick, onSubmit}: {
+    action: string,
+    text: string,
+    disabled?: boolean,
+    form?: string,
+    formaction?: string | ((formData: FormData) => void | Promise<void>),
+    formenctype?: "application/x-www-form-urlencoded" | "multipart/form-data" | "text/plain",
+    formmethod?: "post" | "get" | "dialog",
+    formnovalidate?: boolean,
+    formtarget?: "_self" | "_blank" | "_parent" | "_top",
+    isSubmitting?: boolean,
+    isSubmitted?: boolean,
+    onClick?: () => void,
+    onSubmit?: () => void,
+}) {
+    const [ isPending, startTransition ] = useTransition();
+    
+    const handleClick = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        const key = '6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t';
+        if (!key) {
+            console.error("Google reCAPTCHA key is missing.");
+            return;
+        }
+
+        const formElement = (e.currentTarget as HTMLButtonElement).form;
+        if (!formElement || !formaction) return;
+
+        try {
+            await new Promise<void>((resolve) => {
+                window.grecaptcha.ready(() => {
+                    window.grecaptcha
+                    .execute(key, { action })
+                    .then(async (token: string) => {
+                        const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/grecaptcha`, {
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ token })
+                        });
+
+                        const response = await request.json();
+                        if (response.status !== 200) {
+                            throw new Error("reCAPTCHA verification failed");
+                        }
+                        resolve();
+                    })
+                    .catch((error) => {
+                        console.error("Error executing reCAPTCHA: ", error);
+                        throw error;
+                    });
+                });
+            });
+            const formData = new FormData(formElement);
+
+            startTransition(async () => {
+                try {
+                    if (typeof formaction === 'function') {
+                        await formaction(formData);
+                        onClick?.();
+                        onSubmit?.();
+                    }
+                } catch (error) {
+                    console.error("Error during form submission: ", error);
+                }
+            });
+        } catch (error) {
+            console.error("Error during reCAPTCHA verification: ", error);
+        }
+    }, [action, formaction, onClick, onSubmit]);
+
+    return <button
+            disabled={disabled}
+            form={form}
+            formAction={formaction}
+            formEncType={formenctype}
+            formMethod={formmethod}
+            formNoValidate={formnovalidate}
+            formTarget={formtarget}
+            onClick={handleClick}
+            onSubmit={onSubmit}
+            >
+            {text}
+    </button>       
 }
