@@ -115,7 +115,7 @@ export function ActionButton({action, text, disabled, form, formaction, formenct
             console.error("Error during reCAPTCHA verification: ", error);
         }
     }, [action, formaction, onClick, onSubmit]);
-    
+
     return <button
             disabled={disabled}
             form={form}
