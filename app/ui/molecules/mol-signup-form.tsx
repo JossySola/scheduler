@@ -9,7 +9,9 @@ export default function SignupForm () {
     return (
         <form name="register" id="register">
             <BasicInformation validated={validated} setValidated={setValidated} />
-            <ConfirmEmail />
+            {
+                validated ? <ConfirmEmail /> : null
+            }
         </form>
     )
 }
