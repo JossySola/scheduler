@@ -5,65 +5,116 @@ import pool from "./mocks/db";
 import { Argon2id } from "oslo/password";
 import { auth, signOut } from "@/auth";
 import sgMail from "@sendgrid/mail";
-import { redirect } from "next/navigation";
+import { z } from "zod";
 
 export async function getUserFromDb (username: string, password: string) {
-    try {
-        const user = await pool.query(`
-            SELECT * FROM scheduler_users 
-                WHERE username = $1 OR email = $1;
-        `, [username]);
-        
-        if (user.rowCount === 0) {
-            return {
-                message: "User not found.",
-                ok: false
-            };
-        }
-        
-        const userRecord = user.rows[0];
-        const argon2id = new Argon2id();
-
-        if (await argon2id.verify(userRecord.password, password)) {
-            return {
-                id: userRecord.id,
-                name: userRecord.name,
-                username: userRecord.username,
-                email: userRecord.email,
-                birthday: userRecord.birthday,
-                created_at: userRecord.created_at,
-                role: userRecord.role,
-                verified: userRecord.verified,
-                ok: true
-            };
-        } else {
-            return {
-                message: "Invalid credentials.",
-                ok: false
-            };
-        }
-    } catch (error) {
-        return {
-            message: "Unknown error from server.",
-            ok: false
-        }
+  console.error("[getUserFromDb] Starting...")
+  console.error("[getUserFromDb] Checking if data is missing...")
+  if (!username || !password) {
+    console.error("[getUserFromDb] Some data is missing, exiting...")
+    return {
+      message: "Data missing",
+      provider: "",
+      ok: false
     }
+  }
+  console.error("[getUserFromDb] Entering try block...")
+  try {
+    console.error("[getUserFromDb] Starting query...")
+    console.error("[getUserFromDb] SELECT * WHERE username OR email...")
+    const user = await pool.query(`
+        SELECT * FROM scheduler_users 
+            WHERE username = $1 OR email = $1;
+    `, [username]);
+    console.error("[getUserFromDb] Query result:", user)
+    if (user.rowCount === 0) {
+      console.error("[getUserFromDb] Failed query, exiting...")
+        throw new Error ("User not found")
+    }
+    
+    const userRecord = user.rows[0];
+    console.error("[getUserFromDb] User row returned:", userRecord)
+    
+    if (userRecord.password === null) {
+      console.error("[getUserFromDb] User password is null")
+      console.error("[getUserFromDb] Starting query...")
+      console.error("[getUserFromDb] SELECT provider WHERE email...")
+      const provider = await pool.query(`
+        SELECT provider FROM scheduler_users_providers
+        WHERE email = $1;
+      `, [userRecord.email]);
+      console.error("[getUserFromDb] Query result:", provider)
+      const name = provider.rowCount === 2 ? `${provider.rows[0].provider} and ${provider.rows[1].provider}` : `${provider.rows[0]}`;
+      console.error("[getUserFromDb] Provider name:", name)
+      console.error("[getUserFromDb] Returning with custom message...")
+      console.error("[getUserFromDb] Exiting...")
+      return {
+        message: `This account uses ${name} authentication.`,
+        provider: name,
+        ok: false
+      }
+    }
+    
+    const argon2id = new Argon2id();
+    console.error("[getUserFromDb] New Argon creation:", argon2id)
+    const hashVerified = await argon2id.verify(userRecord.password, password);
+    console.error("[getUserFromDb] Hashed password verification:", hashVerified)
+
+    if (hashVerified) {
+      console.error("[getUserFromDb] Password is correctly verified")
+      console.error("[getUserFromDb] Exiting...")
+      return {
+          id: userRecord.id,
+          name: userRecord.name,
+          username: userRecord.username,
+          email: userRecord.email,
+          birthday: userRecord.birthday,
+          created_at: userRecord.created_at,
+          role: userRecord.role,
+          verified: userRecord.verified,
+          ok: true
+      };
+    }
+    console.error("[getUserFromDb] Password verification returned failure")
+    console.error("[getUserFromDb] Exiting...")
+    throw new Error ("Invalid credentials");
+  } catch (error) {
+    console.error("[getUserFromDb] Entering catch block...")
+    console.error("[getUserFromDb] Exiting...")
+    return error;
+  }
 }
 
 export async function isPasswordPwned (password: string) {
+  console.error("[isPasswordPwned] Starting...")
     try {
+      console.error("[isPasswordPwned] Entering try block...")
         // API requires password to be hashed with SHA1
+        console.error("[isPasswordPwned] Creating SHA1 hash...")
         const hashed = crypto.createHash('sha1').update(password).digest('hex');
+        console.error("[isPasswordPwned] Hash:", hashed)
         // "range" endpoint requires only the first 5 characters of the hashed password
+        console.error("[isPasswordPwned] Setting a range...")
         const range = hashed.slice(0,5);
+        console.error("[isPasswordPwned] Range:", range)
         // Slice gives the remaining hashed password after the string index 5
+        console.error("[isPasswordPwned] Setting the suffix...")
         const suffixToCheck = hashed.slice(5).toUpperCase();
+        console.error("[isPasswordPwned] Suffix:", suffixToCheck)
+        console.error("[isPasswordPwned] Fetching from /api.pwnedpasswords.com ...")
         const response = await fetch(`https://api.pwnedpasswords.com/range/${range}`);
         // The API returns a plain text response, not a JSON
         const text = await response.text();
+        console.error("[isPasswordPwned] Response parsed into text:", text)
         // For each \n break, convert the plain text into an Array
+        console.error("[isPasswordPwned] Splitting text...")
+        console.error("[isPasswordPwned] Split a text chunk for each space, and save it to an Array...")
         const lines = text.split('\n');
-
+        console.error("[isPasswordPwned] Starting iteration...")
+        console.error("[isPasswordPwned] For each element, split their value for each ':' found, and save them to an Array...")
+        console.error("[isPasswordPwned] The format of each line is... <suffix>:<count>")
+        console.error("[isPasswordPwned] After splitting in each iteration, it results an array of: [<suffix>,<count>]")
+        console.error("[isPasswordPwned] If the suffix from the array is equal to the suffix saved before, return the <count> in number")
         for (const line of lines) {
             // The format of each line is divided by a ":", the left part is the suffix and the right part is the count
             const [hashSuffix, count] = line.split(':');
@@ -74,8 +125,12 @@ export async function isPasswordPwned (password: string) {
             }
         }
         // If the remaining part of the hashed password is not found on the list, return 0
+        console.error("[isPasswordPwned] After the iteration, there was no match found, returning 0, exiting...")
         return 0;
     } catch (error) {
+      console.error("[isPasswordPwned] Entering catch block...")
+      console.error("[isPasswordPwned] Error:", error)
+      console.error("[isPasswordPwned] Exiting...")
         return {
             message: "Unknown error from exposed password checking.",
             ok: false
@@ -96,66 +151,100 @@ export async function handleSignOut() {
 }
 
 export async function sendResetPasswordConfirmation(email: string | undefined) {
+  console.error("[sendResetPasswordConfirmation] Starting...")
+  console.error("[sendResetPasswordConfirmation] Checking necessary data exists...")
   if (!email) {
+    console.error("[sendResetPasswordConfirmation] Data is missing, exiting...")
     return {
       status: 400,
       statusText: 'Email must be provided'
     }
   }
-
+  console.error("[sendResetPasswordConfirmation] Validating data with Zod...")
   const validated = z.string().min(1).email({ message: "Invalid e-mail" }).safeParse(email);
+  console.error("[sendResetPasswordConfirmation] Zod validation:", validated)
   if (!validated) {
+    console.error("[sendResetPasswordConfirmation] Validation unsuccessful, exiting...")
     return {
       status: 400,
       statusText: validated
     }
   }
-
+  console.error("[sendResetPasswordConfirmation] Starting query...")
+  console.error("[sendResetPasswordConfirmation] SELECT email...")
   const confirming = await pool.query(`
       SELECT email FROM scheduler_users
         WHERE email = $1;
   `, [email])
+  console.error("[sendResetPasswordConfirmation] Query result:", confirming)
   if (confirming.rowCount === 0 || !confirming) {
+    console.error("[sendResetPasswordConfirmation] Record not found, exiting...")
     return {
       status: 400,
       statusText: 'Email not found'
     }
   }
-
+  console.error("[sendResetPasswordConfirmation] Generating random code...")
   const verification_code = randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 6); 
-  const resetting = await pool.query(`
-    UPDATE scheduler_users
-      SET reset = $1
-      WHERE email = $2;
-  `, [verification_code, email]);
-  if (resetting.rowCount === 0 || !resetting) {
-    return {
-      status: 400,
-      statusText: 'Error at database'
-    }
-  }
-
-  const key = process.env.SENDGRID_API_KEY;
-
-  sgMail.setApiKey(key);
+  console.error("[sendResetPasswordConfirmation] Code:", verification_code)
+  console.error("[sendResetPasswordConfirmation] Setting sgMail API key...")
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  console.error("[sendResetPasswordConfirmation] Creating msg Object...")
   const msg = {
     to: `${email}`,
     from: 'no-reply@jossysola.com',
     subject: 'Scheduler: Reset password confirmation',
     text: `${verification_code}`
   }
-  const sending = await sgMail.send(msg)
-  if (sending[0].statusCode !== 202) {
+  console.error("[sendResetPasswordConfirmation] Entering try block...")
+  try {
+    console.error("[sendResetPasswordConfirmation] Starting query...")
+    console.error("[sendResetPasswordConfirmation] INSERT token INTO confirmations")
+    const insertToken = await pool.query(`
+      INSERT INTO scheduler_email_confirmation_tokens (token, email, expires_at)
+        VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
+    `, [verification_code, email]);
+    console.error("[sendResetPasswordConfirmation] Query result:", insertToken)
+    if (insertToken.rowCount === 0) {
+      console.error("[sendResetPasswordConfirmation] Token failed to insert, exiting...")
+      throw new Error('Server Error');
+    }
+    console.error("[sendResetPasswordConfirmation] Sending email...")
+    const sending = await sgMail.send(msg)
+    console.error("[sendResetPasswordConfirmation] Sender response:", sending)
+    if (sending[0].statusCode !== 202) {
+      console.error("[sendResetPasswordConfirmation] Send unsuccessful, exiting...")
+      return {
+        status: 400,
+        statusText: 'Error at mail provider'
+      }
+    }
+    console.error("[sendResetPasswordConfirmation] Email sent, exiting...")
     return {
-      status: 400,
-      statusText: 'Error at mail provider'
+      ok: true,
+      message: 'Code sent!'
+    }
+  } catch (error) {
+    console.error("[sendResetPasswordConfirmation] Entering catch block...")
+    console.error("[sendResetPasswordConfirmation] Error:", error)
+    console.error("[sendResetPasswordConfirmation] Exiting...")
+    return {
+      ok: false,
+      message: 'Server failure'
     }
   }
+
+  
 }
 
 export async function sendEmailConfirmation(email: string, name?: string) {
+  console.error("[sendEmailConfirmation] Starting...")
+  console.error("[sendEmailConfirmation] Creating code...")
   const verification_code = randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 6);
+  console.error("[sendEmailConfirmation] Code:", verification_code)
+  console.error("[sendEmailConfirmation] Setting sgMail API key...")
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  console.error("[sendEmailConfirmation] Creating msg Object...")
   const msg = {
       to: `${email}`,
       from: 'no-reply@jossysola.com',
@@ -343,29 +432,39 @@ export async function sendEmailConfirmation(email: string, name?: string) {
   
 </body></html>`
   }
-
+  console.error("[sendEmailConfirmation] Entering try block...")
   try {
+    console.error("[sendEmailConfirmation] Starting query...")
+    console.error("[sendEmailConfirmation] INSERT token INTO confirmations...")
     const insertToken = await pool.query(`
-      INSERT INTO email_confirmation_tokens (token, email, expires_at)
+      INSERT INTO scheduler_email_confirmation_tokens (token, email, expires_at)
         VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
     `, [verification_code, email]);
-
+    console.error("[sendEmailConfirmation] Query result:", insertToken)
     if (insertToken.rowCount === 0) {
+      console.error("[sendEmailConfirmation] INSERT failed")
+      console.error("[sendEmailConfirmation] Exiting...")
       throw new Error('Server Error');
     }
-
+    console.error("[sendEmailConfirmation] Sending email...")
     const sendConfirmation = await sgMail.send(msg)
     if (sendConfirmation[0].statusCode !== 202) {
+      console.error("[sendEmailConfirmation] Send failed, exiting...")
         return {
             ok: false,
             message: "The code couldn't be sent"
         }
     }
+    console.error("[sendEmailConfirmation] Email sent")
+    console.error("[sendEmailConfirmation] Exiting...")
     return {
       ok: true,
       message: 'Code sent!'
     }
   } catch (error) {
+    console.error("[sendEmailConfirmation] Entering catch block...")
+    console.error("[sendEmailConfirmation] Error:", error)
+    console.error("[sendEmailConfirmation] Exiting...")
     return {
       ok: false,
       message: 'Server failure'
