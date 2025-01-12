@@ -1,4 +1,4 @@
-import XForm from "@/app/ui/molecules/mol-XForm";
+import XPanel from "@/app/ui/molecules/mol-XPanel";
 
 export default async function Page ({
     params,
@@ -7,7 +7,7 @@ export default async function Page ({
     
     return (
         <>
-            <XForm id={id}/>
+        <XPanel id={id} />
         </>
     )
 }
