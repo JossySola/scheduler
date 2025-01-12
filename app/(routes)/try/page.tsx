@@ -1,4 +1,4 @@
-import XPanel from "@/app/ui/molecules/mol-XPanel";
+import XPanel from "@/app/ui/organisms/org-XPanel";
 
 export default async function Page ({
     params,
