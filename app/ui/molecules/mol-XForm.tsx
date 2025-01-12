@@ -5,8 +5,9 @@ import { SaveTableAction } from "@/app/(routes)/table/actions";
 import { SubmitButton } from "../atoms/atom-button";
 import { v4 as uuidv4 } from "uuid";
 
-export default function XForm ({ id, rows, setRows }: 
+export default function XForm ({ children, id, rows, setRows }: 
     { 
+        children: React.JSX.Element,
         id: string,
         rows?: Array<Array<string>>,
         setRows?: React.Dispatch<SetStateAction<string[][]>>
@@ -18,7 +19,7 @@ export default function XForm ({ id, rows, setRows }:
             <input type="text" name="table_title" id="table_title" defaultValue="Untitled table" />
             
             <XTable id={id} rows={rows} setRows={setRows} />
-
+            { children }
             <SubmitButton text={savePending ? "Saving..." : "Save"} formaction={saveAction} disabled={savePending} />
         </form>
     )
