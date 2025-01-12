@@ -11,11 +11,13 @@
     "cy:open": "cypress open"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.0.18",
     "@auth/pg-adapter": "^1.7.4",
     "@sendgrid/mail": "^8.1.4",
     "@types/react": "19.0.4",
     "@types/react-dom": "19.0.2",
     "@vercel/postgres": "^0.10.0",
+    "ai": "^4.0.33",
     "auth": "^1.2.3",
     "dotenv": "^16.4.5",
     "next": "^15.2.0-canary.3",
