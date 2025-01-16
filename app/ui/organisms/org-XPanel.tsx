@@ -44,7 +44,7 @@ export default function XPanel ({ id }:{ id?: string }) {
                     enableRemoval={false} />
                     
                     <XList 
-                    name="Predefined values"
+                    name="Values"
                     items={values}
                     setItems={setValues} />
                 </>
