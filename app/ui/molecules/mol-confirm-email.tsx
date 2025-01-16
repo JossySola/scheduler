@@ -19,8 +19,8 @@ export default function ConfirmEmail () {
 
     return (
         <fieldset>
-            <h3>We've sent you an e-mail with a code, please type it here to verify your account</h3>
-            <h4>Hemos enviado un e-mail que contiene un código, por favor ingresalo aquí para verificar tu cuenta</h4>
+            <h3>We've sent you an e-mail with a code, please type it here to verify your account. Remember to check your "Junk" folder in case you don't see the confirmation e-mail in your Inbox.</h3>
+            <h4>Hemos enviado un e-mail que contiene un código, por favor ingresalo aquí para verificar tu cuenta. Recuerda checar la carpeta de 'Spam' si no ves el e-mail en tu Bandeja de Entrada.</h4>
 
             <input minLength={6} maxLength={6} id="confirmation-token" name="confirmation-token" required />
             
