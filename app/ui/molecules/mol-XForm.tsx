@@ -2,7 +2,7 @@
 import { useActionState, SetStateAction, useEffect, useState } from "react";
 import XTable from "./mol-XTable";
 import { SaveTableAction, UseAiAction } from "@/app/(routes)/table/actions";
-import { SubmitButton } from "../atoms/atom-button";
+import { ActionButton, SubmitButton } from "../atoms/atom-button";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 
@@ -56,7 +56,7 @@ export default function XForm ({ id, children, rows, setRows, values }:
             { children }
             {
                 session?.user ? 
-                <SubmitButton text={savePending ? "Saving..." : "Save"} formaction={saveAction} disabled={savePending} /> 
+                <ActionButton text={savePending ? "Saving..." : "Save"} formaction={saveAction} disabled={savePending} action="save_table"/> 
                 : null
             }
 
@@ -67,7 +67,7 @@ export default function XForm ({ id, children, rows, setRows, values }:
                 }}/> times.
             </label>
 
-            <SubmitButton text={aiPending ? "Creating..." : "Create"} formaction={aiAction} disabled={aiPending} />
+            <ActionButton text={aiPending ? "Creating..." : "Create"} formaction={aiAction} disabled={aiPending} action="autofill_table"/>
         </form>
     )
 }
