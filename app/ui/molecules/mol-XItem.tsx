@@ -1,38 +1,99 @@
 "use client"
+import { useEffect, useState } from "react";
 
-export default function XItem ({ name, criteria } : {
+export default function XItem ({ name, subjects, criteria = [], values = []} : {
     name: string,
-    criteria: Array<string>
+    subjects: number,
+    criteria: Array<string>,
+    values?: Array<string>,
 }) {
+    const [ disable, setDisable ] = useState<boolean>(false);
+    const [ enabledColumns, setEnabledColumns ] = useState<Array<boolean>>(() =>
+        criteria.map(() => false)
+    );
+    const [ count, setCount ] = useState<number>(criteria.length);
+    const [ enabledValues, setEnabledValues ] = useState<Array<boolean>>(() => 
+        values.map(() => false)
+    );
+
+    useEffect(() => {
+        setCount(prevCount => (prevCount === criteria.length ? criteria.length : prevCount));
+        setEnabledColumns(criteria.map(() => false));
+    }, [criteria]);
+    
+    useEffect(() => {
+        setEnabledValues(values.map(() => false));
+    }, [values]);
+
     return (
         <details>
             <summary>{name}</summary>
-                <input type="text" name="name" value={`${name}-criteria`} hidden readOnly />
+            <label>
+                Disable on all columns:
+                <input 
+                type="radio" 
+                name={`Specification[${name}]-disable-on-table`} 
+                value="Yes" 
+                checked={disable} 
+                onChange={() => setDisable(prev => !prev)}/>
+            </label>
 
-                <label>
-                    Disable
-                    <input type="radio" name={`do-not-use-${name}-on-table`} value="Yes" />
-                </label>
-                
-                <label>
-                    <select>
-                        <option></option>
-                    </select>
-                </label>
+            <fieldset>
+                <legend>Enable/disable in certain columns:</legend>
+                {
+                    criteria && criteria.map((variable, index) => {
+                        return <label key={`${variable}-${index}`}>
+                            <input 
+                            type="checkbox" 
+                            name={`Specification[${name}]-should-be-used-on`} 
+                            value={variable} 
+                            checked={!!enabledColumns[index]}
+                            onChange={(e => {
+                                e.preventDefault();
+                                setEnabledColumns(prev => 
+                                    prev.map((col, colIndex) => colIndex === index ? !col : col )
+                                )
+                            })}/>
+                            {variable}
+                        </label>
+                    })
+                }
+            </fieldset>
 
-                <fieldset>
-                    <legend>Enable/disable in certain values:</legend>
-                    {
-                        criteria && criteria.map(variable => {
-                            return <input type="checkbox" name={`${name}-should-appear-on-${variable}`} value={variable} />
-                        })
-                    }
-                </fieldset>
-
-                <label>
-                    How many times it should appear?
-                    <input type="number" name={`${name}-should-appear-this-amount`} min={0} max={criteria.length} />
-                </label>
+            <label>
+                How many times it should appear (randomly)?
+                <input 
+                type="number" 
+                name={`Specification[${name}]-should-appear-this-amount-of-times`} 
+                max={criteria.length} 
+                value={count} 
+                onChange={e => {
+                    e.preventDefault();
+                    setCount(parseInt(e.target.value, 10) || 0);
+                }}/>
+            </label>
+            
+            <fieldset>
+                <legend>Prefer the following values:</legend>
+                {
+                    values && values.map((value, index) => {
+                        return <label key={`${value}-${index}`}>
+                            <input 
+                            type="checkbox" 
+                            name={`Specification[${name}]-use-this-as-value`} 
+                            value={value} 
+                            checked={!!enabledValues[index]}
+                            onChange={(e => {
+                                e.preventDefault();
+                                setEnabledValues(prev =>
+                                    prev.map((col, colIndex) => colIndex === index ? !col : col )
+                                )
+                            })}/>
+                            {value}
+                        </label>
+                    })
+                }
+            </fieldset>
         </details>
     )
 }
