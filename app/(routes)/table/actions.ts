@@ -1,27 +1,117 @@
 "use server"
+
+import { redirect } from "next/navigation";
+
 export async function SaveTableAction (state: { message: string }, formData: FormData) {
     console.log("[SaveTableAction] Starting...")
     console.log("[SaveTableAction] Received:", formData)
     console.log("[SaveTableAction] Unpacking...")
+
     const content = UNPACK(formData);
+    if (!content) {
+        return {
+            message: "Some data is missing"
+        }
+    }
+    const user_id = content.filter(item => item[0] === "user_id").filter(item => item !== undefined && item !== null)[0][1];  
+    if (!user_id) {
+        return {
+            message: "No current session"
+        }
+    }
+
+    const table_id = content.filter(item => item[0] === "table_id").filter(item => item !== undefined && item !== null)[0][1];
+    const user_email = content.filter(item => item[0] === "user_email").filter(item => item !== undefined && item !== null)[0][1];
+    const rows = SORT(content);
+    const values = content.filter(item => item[0].startsWith("ValueOption")).filter(item => item !== undefined && item !== null);
+    const specs = content.filter(item => item[0].startsWith("Specification[")).filter(item => item !== undefined && item !== null);
+
     console.log("[SaveTableAction] Content:", content)
-    console.log("[SaveTableAction] Sorting...")
-    const sort = SORT(content);
-    console.log("[SaveTableAction] Sort:", sort)
+    console.log("[SaveTableAction] User id:", user_id)
+    console.log("[SaveTableAction] Table id:", table_id)
+    console.log("[SaveTableAction] Rows:", rows)
     console.log("[SaveTableAction] Fetching /api/table/save...")
-    const saving = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/table/save`, {
+    const payload = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/table/save`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
+            user_id,
+            user_email,
+            table_id,
             title: formData.get("table_title"),
-            rows: sort
+            rows,
+            values,
+            specs
         })
     })
-    console.log("[SaveTableAction] Fetch result:", saving)
+    console.log("[SaveTableAction] Fetch result:", payload)
+    if (payload.ok) {
+        redirect(payload.url);
+    }
     return {
-        message: ""
+        message: "Saved!"
+    }
+}
+export async function UseAiAction (state: { message: string }, formData: FormData) {
+    console.error("[UseAiAction] Starting...")
+    const payload = UNPACK(formData);
+    console.error("[UseAiAction] Form Data:", payload)
+    const rows = SORT(payload);
+    if (!rows) {
+        return {
+            message: "No rows provided"
+        }
+    }
+    const specifications = payload.map(row => {
+        if (row && row[0] && row[0].startsWith("Specification[")) {
+            return row;
+        }
+    }).filter(key => key !== undefined);
+    if (!specifications) {
+        return {
+            message: "No values provided"
+        }
+    }
+    const values = payload.map(row => {
+        if (row && row[0] && row[0].startsWith("ValueOption")) {
+            return row[1];
+        }
+    }).filter(header => header !== undefined);
+    console.error("[UseAiAction] Rows", rows)
+    const columns = rows && rows[0];
+    console.error("[UseAiAction] Columns", columns)
+    const rowHeaders = rows && rows.map((row, index) => {
+        if (index !== 0) {
+            const [ header ] = row;
+            return header;
+        }
+    }).filter(header => header !== undefined);
+    console.error("[UseAiAction] Row Headers", rowHeaders)
+    
+
+    const request = {
+        columns,
+        rows: rowHeaders,
+        specifications,
+        values,
+    }
+    console.error("[UseAiAction] Request", request)
+    const requesting = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/ai`, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(request)
+    })
+    const response = await requesting.json();
+    console.error("[UseAiAction] Fetching /api/ai endpoint...")
+    console.error("[UseAiAction] Fetch result:", response)
+    console.error("[UseAiAction] Exiting...")
+    return {
+        message: "",
+        response
     }
 }
 const UNPACK = (formData: FormData) => {
