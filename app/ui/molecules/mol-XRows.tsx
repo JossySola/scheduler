@@ -1,11 +1,12 @@
 "use client"
-
+import { v4 as uuidv4 } from "uuid";
 import { SetStateAction } from "react";
 
 export default function XRows ({
     existingRows,
     setRows,
-}: { existingRows: Array<Array<string>>, setRows: React.Dispatch<SetStateAction<string[][]>> }) {
+    values,
+}: { existingRows: Array<Array<string>>, setRows: React.Dispatch<SetStateAction<string[][]>>, values?: Array<string> }) {
     // display rows dynamically based on data received
     // dynamically add and remove
     return (
@@ -43,7 +44,7 @@ export default function XRows ({
                                     }
                                     return (
                                     <td key={cIndex}>
-                                        <RowInput rIndex={rIndex} cIndex={cIndex} value={column} setNewValue={setRows} currentRows={existingRows} />
+                                        <RowInput rIndex={rIndex} cIndex={cIndex} value={column} setNewValue={setRows} currentRows={existingRows} values={values && values} />
                                     </td>)
                                 })
                             }
@@ -56,16 +57,50 @@ export default function XRows ({
     )
 }
 
-const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows } : 
+const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows, values } : 
     { 
         rIndex: number,
         cIndex: number, 
         value: string, 
         setNewValue: React.Dispatch<SetStateAction<string[][]>>, 
         currentRows: Array<Array<string>>,
+        values?: Array<string>,
     }) => {
     const columnNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
     const columnName = `${columnNames[cIndex]}${rIndex}`;
+
+    if (values && values.length) {
+        return (
+            <select 
+            id={`${rIndex}-${cIndex}-selection`} 
+            value={value} 
+            onChange={(e) => {
+                e.preventDefault();
+                setNewValue(() => {
+                    return currentRows && currentRows.map((row, rowIndex) => {
+                        if (rIndex !== rowIndex) {
+                            return row;
+                        }
+                        return row && row.map((column, colIndex) => {
+                            if (cIndex !== colIndex) {
+                                return column;
+                            }
+                            return value;
+                        })
+                    })
+                })
+            }}
+            >
+                <option value="">Select</option>
+                {
+                    values.map(value => {
+                        return <option key={`${uuidv4()}`} value={value}>{value}</option>
+                    })
+                }
+            </select>
+        )
+    }
+
     return <input type="text" key={columnName} id={columnName} name={columnName} value={value} autoComplete="off" onChange={(e) => {
         e.preventDefault();
         setNewValue(() => {
