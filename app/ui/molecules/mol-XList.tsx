@@ -2,12 +2,15 @@
 import { SetStateAction, useState } from "react";
 import XItem from "./mol-XItem";
 
-export default function XList({ name, items, setItems, criteria } : 
+export default function XList({ name, items, setItems, criteria, values, enableInput = true, enableRemoval = true } : 
     { 
         name: string, 
         items?: Array<string>,
         setItems?: React.Dispatch<SetStateAction<string[]>>,
         criteria?: Array<string>,
+        values?: Array<string>,
+        enableInput?: boolean,
+        enableRemoval?: boolean,
     }) {
     const [ localItems, setLocalItems ] = useState<Array<string>>([]);
     const [ input, setInput ] = useState<string>("");
@@ -52,36 +55,47 @@ export default function XList({ name, items, setItems, criteria } :
     }
 
     return (
-        <ol id="name">
+        <ol id={name}>
             <h3>{name}</h3>
-            <input type="text" name="item" autoComplete="off" onChange={e => { 
-                e.preventDefault();
-                setInput(e.target.value);
-            }} />
-            <button type="button" onClick={e => {
-                e.preventDefault();
-                handleAddItem(input);
-                setInput("");
-            }}>Add</button>
+            {
+                enableInput ? <div><input type="text" name="item" autoComplete="off" onChange={e => { 
+                    e.preventDefault();
+                    setInput(e.target.value);
+                }} />
+                <button type="button" onClick={e => {
+                    e.preventDefault();
+                    handleAddItem(input);
+                    setInput("");
+                }}>Add</button></div> : null
+            }
+            
             {
                 items ? items.map((item, index) => {
                     return <li key={index}>
-                        { criteria ? <XItem name={item} criteria={criteria}/> : name }
-                        <button type="button" onClick={(e) => {
-                        e.preventDefault();
-                        handleRemoveItem(item);
-                        }}>Remove
-                        </button>
+                        { criteria ? <XItem name={item} criteria={criteria} values={values} /> : null }
+                        {
+                            enableRemoval ? <>
+                            <input type="text" name={`ValueOption${index}:`} value={item} readOnly/>
+                            <button type="button" onClick={(e) => {
+                                e.preventDefault();
+                                handleRemoveItem(item);
+                                }}>Remove
+                            </button></> : null
+                        }
                         </li>
                 }) : 
                 localItems.map((item, index) => {
                     return <li key={index}>
-                        { criteria ? <XItem name={item} criteria={criteria}/> : name }
-                        <button type="button" onClick={(e) => {
-                        e.preventDefault();
-                        handleRemoveItem(item);
-                        }}>Remove
-                        </button>
+                        { criteria ? <XItem name={item} criteria={criteria} values={values} /> : null }
+                        {
+                            enableRemoval ? <>
+                            <input type="text" name={`ValueOption${index}:`} value={item} readOnly/>
+                            <button type="button" onClick={(e) => {
+                                e.preventDefault();
+                                handleRemoveItem(item);
+                                }}>Remove
+                            </button></> : null
+                        }
                         </li>
                 })
             }
