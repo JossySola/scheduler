@@ -1,9 +1,8 @@
 "use client"
 import { useEffect, useState } from "react";
 
-export default function XItem ({ name, subjects, criteria = [], values = []} : {
+export default function XItem ({ name, criteria = [], values = []} : {
     name: string,
-    subjects: number,
     criteria: Array<string>,
     values?: Array<string>,
 }) {
