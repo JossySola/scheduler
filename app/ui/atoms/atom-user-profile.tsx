@@ -7,8 +7,10 @@ export default async function UserProfile() {
 
     return (
         <section>
+            {
+                session.user.image ? <img src={session.user.image} /> : null
+            }
             <h2>{session.user.name}</h2>
-            <h4>{session.user.email}</h4>
         </section>
     )
 }

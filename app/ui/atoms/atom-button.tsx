@@ -2,12 +2,12 @@
 import { useCallback, useTransition } from "react";
 
 export function Button({callback, text}: {
-    callback: () => void,
+    callback: (event: React.FormEvent<HTMLFormElement>) => void,
     text: string | null,
 }) {
     return (
-        <button type="button" onClick={() => {
-            callback();
+        <button type="button" onClick={(e) => {
+            callback(e);
         }}>{text}</button>
     )
 }
@@ -23,8 +23,8 @@ export function SubmitButton({text, disabled, form, formaction, formenctype, for
     formtarget?: "_self" | "_blank" | "_parent" | "_top",
     isSubmitting?: boolean,
     isSubmitted?: boolean,
-    onClick?: () => void,
-    onSubmit?: () => void,
+    onClick?: (event: React.FormEvent<HTMLFormElement>) => void,
+    onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void,
 }) {
     
     return <button 
@@ -56,9 +56,10 @@ export function ActionButton({action, text, disabled, form, formaction, formenct
     formtarget?: "_self" | "_blank" | "_parent" | "_top",
     isSubmitting?: boolean,
     isSubmitted?: boolean,
-    onClick?: () => void,
-    onSubmit?: () => void,
+    onClick?: (event: React.FormEvent<HTMLFormElement>) => void,
+    onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void,
 }) {
+    "use client"
     const [ isPending, startTransition ] = useTransition();
     
     const handleClick = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
