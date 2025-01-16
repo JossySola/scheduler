@@ -17,7 +17,7 @@ export async function middleware (request: NextRequest) {
             console.error("[Middleware] There is no token, redirecting to /login...")
             return NextResponse.redirect(new URL("/login", request.url));
         }
-    } else if (['/login', '/signup', '/reset'].includes(request.nextUrl.pathname)) {
+    } else if (['/login', '/signup', '/try'].includes(request.nextUrl.pathname)) {
         if (token) {
             console.error("[Middleware] There is a token, redirecting to /dashboard...")
             return NextResponse.redirect(new URL("/dashboard", request.url));
