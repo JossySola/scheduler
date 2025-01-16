@@ -2,11 +2,11 @@
 import { useState, SetStateAction } from "react";
 import XRows from "./mol-XRows";
 
-export default function XTable ({ id, rows, setRows }:
-    { 
-        id: string,
+export default function XTable ({ rows, setRows, values }:
+    {
         rows?: Array<Array<string>>,
-        setRows?: React.Dispatch<SetStateAction<string[][]>>
+        setRows?: React.Dispatch<SetStateAction<string[][]>>,
+        values?: Array<string>,
     }) {
     
     const [ localRows, setLocalRows ] = useState<Array<Array<string>>>([]);
@@ -91,7 +91,7 @@ export default function XTable ({ id, rows, setRows }:
     return (
         <>
         <table>
-            <XRows existingRows={rows ? rows : localRows} setRows={setRows ? setRows : setLocalRows}/>
+            <XRows existingRows={rows ? rows : localRows} setRows={setRows ? setRows : setLocalRows} values={values ? values : []}/>
         </table>
         <button type="button" name="add-row" id="add-row" onClick={() => handleAddRow()}>Add Row</button>
         <button type="button" name="delete-row" id="delete-row" onClick={() => handleDeleteRow()}>Delete Row</button>
