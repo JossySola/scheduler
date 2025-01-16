@@ -13,6 +13,11 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+const solitreo = localFont({
+  src: "./fonts/Solitreo-Regular.ttf",
+  variable: "--font-solitreo",
+  weight: "100 900",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
