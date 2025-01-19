@@ -3,7 +3,6 @@ import "server-only";
 import crypto, { randomBytes } from "crypto";
 import pool from "./mocks/db";
 import { Argon2id } from "oslo/password";
-import { auth, signOut } from "@/auth";
 import sgMail from "@sendgrid/mail";
 import { z } from "zod";
 
@@ -136,18 +135,6 @@ export async function isPasswordPwned (password: string) {
             ok: false
         };
     }
-}
-
-export async function getSession () {
-    const session = await auth();
-    return session;
-}
-
-export async function handleSignOut() {
-    await signOut({
-        redirect: true,
-        redirectTo: "/login"
-    });
 }
 
 export async function sendResetPasswordConfirmation(email: string | undefined) {
