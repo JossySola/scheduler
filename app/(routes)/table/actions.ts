@@ -8,12 +8,15 @@ export async function SaveTableAction (state: { message: string }, formData: For
     console.log("[SaveTableAction] Unpacking...")
 
     const content = UNPACK(formData);
+    
     if (!content) {
         return {
             message: "Some data is missing"
         }
     }
+        
     const user_id = content.filter(item => item[0] === "user_id").filter(item => item !== undefined && item !== null)[0][1];  
+    
     if (!user_id) {
         return {
             message: "No current session"
@@ -31,6 +34,7 @@ export async function SaveTableAction (state: { message: string }, formData: For
     console.log("[SaveTableAction] Table id:", table_id)
     console.log("[SaveTableAction] Rows:", rows)
     console.log("[SaveTableAction] Fetching /api/table/save...")
+    
     const payload = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/table/save`, {
         method: 'POST',
         headers: {
@@ -50,6 +54,7 @@ export async function SaveTableAction (state: { message: string }, formData: For
     if (payload.ok) {
         redirect(payload.url);
     }
+        
     return {
         message: "Saved!"
     }
