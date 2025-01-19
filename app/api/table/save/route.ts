@@ -9,10 +9,13 @@ export async function POST (request: NextRequest) {
     const user_email = payload.user_email;
     const table_id = payload.table_id;
     const title = payload.title;
-    const values = payload.values;
-    const specs = payload.specs;
+    const values = JSON.stringify(payload.values);
+    const specs = JSON.stringify(payload.specs);
     const rows = JSON.stringify(payload.rows);
     const secret = process.env.NEXTAUTH_SECRET;
+
+    console.error("[/api/table/save] VALUES:", values)
+    console.error("[/api/table/save] SPECS:", specs)
 
     const tableLimit = await pool.query(`
         SELECT num_tables, id FROM scheduler_users
@@ -45,6 +48,12 @@ export async function POST (request: NextRequest) {
             )
             RETURNING id;
         `, [id, title, rows, specs, values, secret]);
+        const response = await pool.query(`
+            UPDATE scheduler_users
+            SET num_tables = COALESCE(num_tables, 0) + 1
+            WHERE id = $1;
+        `, [id]);
+        console.error(`SAVE ROUTE: ${response}`)
         if (newTable.rowCount === 0) {
             return NextResponse.json({
                 status: 400,
@@ -55,11 +64,20 @@ export async function POST (request: NextRequest) {
         const newTableId = newTable.rows[0].id;
         return NextResponse.redirect(new URL(`/table/${newTableId}`, process.env.NEXT_PUBLIC_ORIGIN));
     }
-    // case 1: table already exists
-    // case 2: its the first time table is saved (creation)
+    
+    await pool.query(`
+        UPDATE scheduler_users_tables
+        SET table_name = $1,
+            table_data = pgp_sym_encrypt($2, $5),
+            table_specs = pgp_sym_encrypt($3, $5),
+            table_values = pgp_sym_encrypt($4, $5),
+            updated_at = NOW()
+        WHERE id = $6;
+    `, [title, rows, specs, values, secret, table_id]);
     
     console.error("[/api/table/save] Exiting...")
     return NextResponse.json({
-        status: 200
+        status: 200,
+        statusText: "Saved!"
     })
 }

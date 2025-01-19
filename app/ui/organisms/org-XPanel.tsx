@@ -9,8 +9,7 @@ export default function XPanel ({ id }:{ id?: string }) {
     const [ rowHeaders, setRowHeaders ] = useState<Array<string>>([]);
     const [ rows, setRows ] = useState<Array<Array<string>>>([]);
     const [ values, setValues ] = useState<Array<string>>([]);
-
-    // Update colHeaders and rowHeaders based on rows modifications
+    
     useEffect(() => {
         let update: Array<string> = [];
         rows.forEach((row, index) => {
@@ -32,7 +31,7 @@ export default function XPanel ({ id }:{ id?: string }) {
 
     return (
         <SessionProvider>
-            <XForm id={id} rows={rows} setRows={setRows} values={values}>
+            <XForm id={id} rows={rows} setRows={setRows} values={values} setValues={setValues}>
                 <>
                     <XList 
                     name="Rows" 
@@ -44,7 +43,7 @@ export default function XPanel ({ id }:{ id?: string }) {
                     enableRemoval={false} />
                     
                     <XList 
-                    name="Predefined values"
+                    name="Values"
                     items={values}
                     setItems={setValues} />
                 </>

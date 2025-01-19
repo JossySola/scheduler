@@ -22,7 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         username: profile.name,
                         email: profile.email,
                         provider: 'Google',
-                        provider_id: profile.sub
+                        image: profile.picture,
                     })
                 })
                 console.log("[Auth Providers Google] Fetch result:", signup)
@@ -46,7 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         username: profile.name,
                         email: profile.email,
                         provider: 'Facebook',
-                        provider_id: profile.id
+                        image: profile.picture.data.url,
                     })
                 })
                 console.log("[Auth Providers Facebook] Fetch result:", signup)
@@ -93,7 +93,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             console.log("[Auth JWT] Starting...")
             if (user) {
                 console.log("[Auth JWT] User object exists...")
-                token.id = token.sub;
                 if (user.picture && user.picture.data && user.picture.data.url) {
                     console.log("[Auth JWT] user.picture.data.url exists...")
                     token.image = user.picture.data.url;
@@ -123,7 +122,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 console.log("[Auth Session] User object exists...")
                 session.user.image = token.image;
                 session.user.provider = token.provider;
-                session.user.id = token.id;
             }
             console.log("[Auth Session] Session:", session)
             console.log("[Auth Session] Exiting...")
