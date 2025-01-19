@@ -2,17 +2,19 @@
 import { useActionState, SetStateAction, useEffect, useState } from "react";
 import XTable from "./mol-XTable";
 import { SaveTableAction, UseAiAction } from "@/app/(routes)/table/actions";
-import { ActionButton, SubmitButton } from "../atoms/atom-button";
+import { ActionButton } from "../atoms/atom-button";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
+import { getTableAction } from "@/app/(routes)/dashboard/[id]/actions";
 
-export default function XForm ({ id, children, rows, setRows, values }: 
+export default function XForm ({ id, children, rows, setRows, values, setValues }: 
     { 
         children: React.JSX.Element,
         id?: string,
         rows?: Array<Array<string>>,
         setRows?: React.Dispatch<SetStateAction<string[][]>>,
         values?: Array<string>,
+        setValues?: React.Dispatch<SetStateAction<string[]>>,
      }) {
     const { data: session } = useSession();
     const params = useParams();
@@ -20,6 +22,25 @@ export default function XForm ({ id, children, rows, setRows, values }:
     const [ aiState, aiAction, aiPending ] = useActionState(UseAiAction, { message: ""} );
     const [ title, setTitle ] = useState<string>("Untitled table");
     const [ times, setTimes ] = useState<number>(rows && rows.length ? rows.length : 0);
+    const [ loading, setLoading ] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            getTableAction(id).then(res => {
+                if (res && res.status === 200) {
+                    setTitle(res.title);
+                    if (setRows && res.table) {
+                        setRows(res.table);
+                    }
+                    if (setValues && res.values) {
+                        setValues(res.values);
+                    }
+                }
+                setLoading(false);
+            })
+        }
+    }, [id])
 
     useEffect(() => {
         setTimes(prevCount => {
@@ -41,6 +62,9 @@ export default function XForm ({ id, children, rows, setRows, values }:
         }
     }, [aiState])
 
+    if (loading) {
+        return <p>Loading...</p>
+    }
     return (
         <form id={id ? id : "try"} name={id ? id : "try"}>
             <input type="text" name="user_id" id="user_id" value={id ? id : ""} hidden readOnly />
