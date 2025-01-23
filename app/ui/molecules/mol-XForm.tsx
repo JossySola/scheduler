@@ -5,11 +5,13 @@ import { SaveTableAction, UseAiAction } from "@/app/(routes)/table/actions";
 import { ActionButton } from "../atoms/atom-button";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { getTableAction } from "@/app/(routes)/dashboard/[id]/actions";
 
-export default function XForm ({ id, children, rows, setRows, values, setValues }: 
+export default function XForm ({ id, preferences, title, setTitle, children, rows, setRows, values, setValues }: 
     { 
         children: React.JSX.Element,
+        preferences?: Array<Array<string>>,
+        title?: string,
+        setTitle?: React.Dispatch<SetStateAction<string>>,
         id?: string,
         rows?: Array<Array<string>>,
         setRows?: React.Dispatch<SetStateAction<string[][]>>,
@@ -20,27 +22,15 @@ export default function XForm ({ id, children, rows, setRows, values, setValues 
     const params = useParams();
     const [ saveState, saveAction, savePending ] = useActionState(SaveTableAction, { message: "" });
     const [ aiState, aiAction, aiPending ] = useActionState(UseAiAction, { message: ""} );
-    const [ title, setTitle ] = useState<string>("Untitled table");
-    const [ times, setTimes ] = useState<number>(rows && rows.length ? rows.length : 0);
-    const [ loading, setLoading ] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (id) {
-            setLoading(true);
-            getTableAction(id).then(res => {
-                if (res && res.status === 200) {
-                    setTitle(res.title);
-                    if (setRows && res.table) {
-                        setRows(res.table);
-                    }
-                    if (setValues && res.values) {
-                        setValues(res.values);
-                    }
-                }
-                setLoading(false);
-            })
+    const [ times, setTimes ] = useState<number>(() => {
+        if (preferences) {
+            const result = preferences.find(subArray => subArray[0].startsWith(`Specification[]-fill-all-columns-with-at-least`));
+            if (result) {
+                return parseInt(result[1], 10);
+            }
         }
-    }, [id])
+        return 0;
+    });
 
     useEffect(() => {
         setTimes(prevCount => {
@@ -62,9 +52,6 @@ export default function XForm ({ id, children, rows, setRows, values, setValues 
         }
     }, [aiState])
 
-    if (loading) {
-        return <p>Loading...</p>
-    }
     return (
         <form id={id ? id : "try"} name={id ? id : "try"}>
             <input type="text" name="user_id" id="user_id" value={id ? id : ""} hidden readOnly />
@@ -73,7 +60,9 @@ export default function XForm ({ id, children, rows, setRows, values, setValues 
             
             <input type="text" name="table_title" id="table_title" value={title} onChange={e => {
                 e.preventDefault();
-                setTitle(e.target.value);
+                if (title && setTitle) {
+                    setTitle(e.target.value);
+                }
             }}/>
             
             <XTable rows={rows} setRows={setRows} values={values}/>
@@ -85,7 +74,7 @@ export default function XForm ({ id, children, rows, setRows, values, setValues 
             }
 
             <label>
-                Fill each column with at least <input type="number" name={`Specification[]-fill-all-columns-with-at-least-${times}-values`} max={rows && rows.length} value={times} onChange={e => {
+                Fill each column with at least <input type="number" name={`Specification[]-fill-all-columns-with-at-least-${times}-values`} min={0} max={rows && rows.length} value={times} onChange={e => {
                     e.preventDefault();
                     setTimes(parseInt(e.target.value, 10) || 0);
                 }}/> times.
