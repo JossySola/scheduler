@@ -16,6 +16,6 @@ export default async function Page ({
     }
     
     return (
-        <p>Unauthorized</p>
+        <p>Unauthenticated</p>
     )
 }
