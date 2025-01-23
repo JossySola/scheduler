@@ -1,19 +1,40 @@
 "use client"
 import { useEffect, useState } from "react";
 
-export default function XItem ({ name, criteria = [], values = []} : {
+export default function XItem ({ name, preferences, criteria = [], values = []} : {
     name: string,
     criteria: Array<string>,
+    preferences?: Array<Array<string>>,
     values?: Array<string>,
 }) {
-    const [ disable, setDisable ] = useState<boolean>(false);
-    const [ enabledColumns, setEnabledColumns ] = useState<Array<boolean>>(() =>
-        criteria.map(() => false)
-    );
     const [ count, setCount ] = useState<number>(criteria.length);
-    const [ enabledValues, setEnabledValues ] = useState<Array<boolean>>(() => 
-        values.map(() => false)
-    );
+    const [ disable, setDisable ] = useState<boolean>(() => {
+        if (preferences) {
+            const result = preferences.find(subArray => subArray[0] === `Specification[${name}]-disable-on-table`);
+            if (result) {
+                return true;
+            }
+        }
+        return false;
+    });
+    const [ enabledColumns, setEnabledColumns ] = useState<Array<boolean>>(criteria.map(() => {
+        if (preferences) {
+            const result = preferences.find(subArray => subArray[0] === `Specification[${name}]-should-be-used-on`);
+            if (result) {
+                return true;
+            }
+        }
+        return false;
+    }));
+    const [ enabledValues, setEnabledValues ] = useState<Array<boolean>>(values.map(() => {
+        if (preferences) {
+            const result = preferences.find(subArray => subArray[0] === `Specification[${name}]-use-this-as-value`);
+            if (result) {
+                return true;
+            }
+        }
+        return false;
+    }));
 
     useEffect(() => {
         setCount(prevCount => (prevCount === criteria.length ? criteria.length : prevCount));
@@ -64,6 +85,7 @@ export default function XItem ({ name, criteria = [], values = []} : {
                 <input 
                 type="number" 
                 name={`Specification[${name}]-should-appear-this-amount-of-times`} 
+                min={0}
                 max={criteria.length} 
                 value={count} 
                 onChange={e => {

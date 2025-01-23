@@ -2,9 +2,10 @@
 import { SetStateAction, useState } from "react";
 import XItem from "./mol-XItem";
 
-export default function XList({ name, items, setItems, criteria, values, enableInput = true, enableRemoval = true } : 
+export default function XList({ name, preferences, items, setItems, criteria, values, enableInput = true, enableRemoval = true } : 
     { 
         name: string, 
+        preferences?: Array<Array<string>>,
         items?: Array<string>,
         setItems?: React.Dispatch<SetStateAction<string[]>>,
         criteria?: Array<string>,
@@ -58,7 +59,7 @@ export default function XList({ name, items, setItems, criteria, values, enableI
         <ol id={name}>
             <h3>{name}</h3>
             {
-                enableInput ? <div><input type="text" name="item" autoComplete="off" onChange={e => { 
+                enableInput ? <div><input type="text" name="list-input" autoComplete="off" onChange={e => { 
                     e.preventDefault();
                     setInput(e.target.value);
                 }} />
@@ -71,8 +72,10 @@ export default function XList({ name, items, setItems, criteria, values, enableI
             
             {
                 items ? items.map((item, index) => {
+                    const prefs = preferences?.filter(preference => preference[0].includes(item));
+
                     return <li key={index}>
-                        { criteria ? <XItem name={item} criteria={criteria} values={values} /> : null }
+                        { criteria ? <XItem name={item} preferences={prefs} criteria={criteria} values={values} /> : null }
                         {
                             enableRemoval ? <>
                             <input type="text" name={`ValueOption${index}:`} value={item} readOnly/>

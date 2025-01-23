@@ -1,5 +1,4 @@
 "use server"
-
 import { redirect } from "next/navigation";
 
 export async function SaveTableAction (state: { message: string }, formData: FormData) {
@@ -8,31 +7,24 @@ export async function SaveTableAction (state: { message: string }, formData: For
     console.log("[SaveTableAction] Unpacking...")
 
     const content = UNPACK(formData);
+    console.log("[SaveTableAction] Content:", content)
     
     if (!content) {
         return {
             message: "Some data is missing"
         }
     }
-        
-    const user_id = content.filter(item => item[0] === "user_id").filter(item => item !== undefined && item !== null)[0][1];  
     
-    if (!user_id) {
-        return {
-            message: "No current session"
-        }
-    }
-
-    const table_id = content.filter(item => item[0] === "table_id").filter(item => item !== undefined && item !== null)[0][1];
-    const user_email = content.filter(item => item[0] === "user_email").filter(item => item !== undefined && item !== null)[0][1];
-    const rows = SORT(content);
-    const values = content.filter(item => item[0].startsWith("ValueOption")).filter(item => item !== undefined && item !== null);
-    const specs = content.filter(item => item[0].startsWith("Specification[")).filter(item => item !== undefined && item !== null);
-
-    console.log("[SaveTableAction] Content:", content)
-    console.log("[SaveTableAction] User id:", user_id)
+    const table_id: string = content.filter(item => item[0] === "table_id").filter(item => item !== undefined && item !== null)[0][1];
+    const user_email: string = content.filter(item => item[0] === "user_email").filter(item => item !== undefined && item !== null)[0][1];
+    const rows: Array<Array<string>> = SORT(content);
+    const values: Array<Array<string>> = content.filter(item => item[0].startsWith("ValueOption")).filter(item => item !== undefined && item !== null);
+    const specs: Array<Array<string>> = content.filter(item => item[0].startsWith("Specification[")).filter(item => item !== undefined && item !== null);
     console.log("[SaveTableAction] Table id:", table_id)
     console.log("[SaveTableAction] Rows:", rows)
+    console.log("[SaveTableAction] Email:", user_email)
+    console.log("[SaveTableAction] Values:", values)
+    console.log("[SaveTableAction] Specs:", specs)
     console.log("[SaveTableAction] Fetching /api/table/save...")
     
     const payload = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/table/save`, {
@@ -41,7 +33,6 @@ export async function SaveTableAction (state: { message: string }, formData: For
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            user_id,
             user_email,
             table_id,
             title: formData.get("table_title"),
@@ -54,7 +45,7 @@ export async function SaveTableAction (state: { message: string }, formData: For
     if (payload.ok) {
         redirect(payload.url);
     }
-        
+    
     return {
         message: "Saved!"
     }
@@ -119,7 +110,7 @@ export async function UseAiAction (state: { message: string }, formData: FormDat
         response
     }
 }
-const UNPACK = (formData: FormData) => {
+const UNPACK = (formData: FormData): Array<[string, FormDataEntryValue]> => {
     let pack = [];
     for (const pair of formData.entries()) {
         if (pair[0].startsWith("$")) {
