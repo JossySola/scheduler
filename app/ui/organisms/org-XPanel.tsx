@@ -4,6 +4,7 @@ import XForm from "../molecules/mol-XForm";
 import XList from "../molecules/mol-XList";
 import { SessionProvider } from "next-auth/react";
 import { getTableAction } from "@/app/(routes)/table/actions";
+import { Timestamp } from "../atoms/atom-timestamp";
 
 export default function XPanel ({ id }:{ id?: string }) {
     const [ colHeaders, setColHeaders ] = useState<Array<string>>([]);
@@ -73,7 +74,7 @@ export default function XPanel ({ id }:{ id?: string }) {
                 timestamps ? <p>Created at { formatter.format(new Date(timestamps.created_at)) }</p> : null
             }
             {
-                timestamps ? <p>{ formatTimeAgo(timestamps.updated_at.toString()) }</p> : null
+                timestamps ? <Timestamp updated_at={timestamps.updated_at.toString()} /> : null
             }
             <XForm 
             id={id} 
@@ -102,26 +103,4 @@ export default function XPanel ({ id }:{ id?: string }) {
             </XForm>
         </SessionProvider>
     )
-}
-
-function formatTimeAgo (date: string) {
-    const now = new Date();
-    const updated = new Date(date);
-
-    if (isNaN(updated.getTime())) {
-        throw new Error("Invalid date passed");
-    }
-    const diffMs = now.getTime() - updated.getTime();
-    const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const diffWeeks = Math.floor(diffMs / 7);
-    const diffMonths = Math.floor(diffMs / 30);
-
-    if (diffMinutes < 1) return "Updated just now";
-    if (diffMinutes < 60) return `Updated ${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`;
-    if (diffHours < 24) return `Updated ${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-    if (diffDays < 7) return `Updated ${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-    if (diffWeeks < 4) return `Updated ${diffWeeks} week${diffWeeks > 1 ? "s" : ""} ago`;
-    return `Updated ${diffMonths} month${diffMonths > 1 ? "s" : ""} ago`;
 }
