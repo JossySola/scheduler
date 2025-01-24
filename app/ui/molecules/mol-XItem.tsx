@@ -7,44 +7,57 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     preferences?: Array<Array<string>>,
     values?: Array<string>,
 }) {
-    const [ count, setCount ] = useState<number>(criteria.length);
+    const [ count, setCount ] = useState<number>(() => {
+        if (preferences) {
+            const [ num ] = preferences.map(subArray => {
+                if (subArray[0].trim() === `Specification[${name}]-should-appear-this-amount-of-times`) {
+                    if (!subArray[1]) {
+                        return 0;
+                    }
+                    return parseInt(subArray[1]);
+                }
+            }).filter(value => value !== undefined);
+            return num;
+        }
+        if (criteria && criteria.length) criteria.length;
+        return 0;
+    });
     const [ disable, setDisable ] = useState<boolean>(() => {
         if (preferences) {
-            const result = preferences.find(subArray => subArray[0] === `Specification[${name}]-disable-on-table`);
+            const result = preferences.find(subArray => subArray[0].trim() === `Specification[${name}]-disable-on-table`);
             if (result) {
                 return true;
             }
         }
         return false;
     });
-    const [ enabledColumns, setEnabledColumns ] = useState<Array<boolean>>(criteria.map(() => {
+    const [ enabledColumns, setEnabledColumns ] = useState<Array<boolean>>(criteria.map(value => {
         if (preferences) {
-            const result = preferences.find(subArray => subArray[0] === `Specification[${name}]-should-be-used-on`);
+            const result = preferences.find(subArray => {
+                return (subArray[0].trim() === `Specification[${name}]-should-be-used-on` && subArray[1].trim() === value.trim())
+            });
             if (result) {
                 return true;
             }
         }
         return false;
     }));
-    const [ enabledValues, setEnabledValues ] = useState<Array<boolean>>(values.map(() => {
+    const [ enabledValues, setEnabledValues ] = useState<Array<boolean>>(values.map(value => {
         if (preferences) {
-            const result = preferences.find(subArray => subArray[0] === `Specification[${name}]-use-this-as-value`);
+            const result = preferences.find(subArray => {
+                return (subArray[0].trim() === `Specification[${name}]-use-this-as-value` && subArray[1].trim() === value.trim())
+            });
             if (result) {
                 return true;
             }
         }
         return false;
     }));
-
-    useEffect(() => {
-        setCount(prevCount => (prevCount === criteria.length ? criteria.length : prevCount));
-        setEnabledColumns(criteria.map(() => false));
-    }, [criteria]);
     
     useEffect(() => {
-        setEnabledValues(values.map(() => false));
-    }, [values]);
-
+        setCount(prevCount => (prevCount === criteria.length ? criteria.length : prevCount));
+    }, [criteria]);
+    
     return (
         <details>
             <summary>{name}</summary>
@@ -69,7 +82,6 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                             value={variable} 
                             checked={!!enabledColumns[index]}
                             onChange={(e => {
-                                e.preventDefault();
                                 setEnabledColumns(prev => 
                                     prev.map((col, colIndex) => colIndex === index ? !col : col )
                                 )
@@ -89,7 +101,6 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                 max={criteria.length} 
                 value={count} 
                 onChange={e => {
-                    e.preventDefault();
                     setCount(parseInt(e.target.value, 10) || 0);
                 }}/>
             </label>
@@ -105,7 +116,6 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                             value={value} 
                             checked={!!enabledValues[index]}
                             onChange={(e => {
-                                e.preventDefault();
                                 setEnabledValues(prev =>
                                     prev.map((col, colIndex) => colIndex === index ? !col : col )
                                 )
