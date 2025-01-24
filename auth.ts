@@ -88,46 +88,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     session: {
         strategy: "jwt"
     },
-    callbacks: {
-        async jwt({ token, user, account, trigger }) {
-            console.log("[Auth JWT] Starting...")
-            if (user) {
-                console.log("[Auth JWT] User object exists...")
-                if (user.picture && user.picture.data && user.picture.data.url) {
-                    console.log("[Auth JWT] user.picture.data.url exists...")
-                    token.image = user.picture.data.url;
-                } else if (user.picture) {
-                    console.log("[Auth JWT] user.picture exists...")
-                    token.image = user.picture;
-                } else {
-                    console.log("[Auth JWT] No picture property...")
-                    token.image = null;
-                }
-                if (account) {
-                    console.log("[Auth JWT] Account object exists...")
-                    token.provider = account.provider;
-                }
-                if (trigger) {
-                    console.log("[Auth JWT] Trigger object exists...")
-                    token.trigger = trigger;
-                }
-            }
-            console.log("[Auth JWT] Token:", token)
-            console.log("[Auth JWT] Exiting...")
-            return token;
-        },
-        async session({ session, token }) {
-            console.log("[Auth Session] Starting...")
-            if (session.user) {
-                console.log("[Auth Session] User object exists...")
-                session.user.image = token.image;
-                session.user.provider = token.provider;
-            }
-            console.log("[Auth Session] Session:", session)
-            console.log("[Auth Session] Exiting...")
-            return session;
-        },
-    },
     pages: {
         signIn: "/login",
     },
