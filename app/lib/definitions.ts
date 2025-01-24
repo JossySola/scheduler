@@ -1,3 +1,5 @@
+import { FieldDef } from "pg";
+
 export interface UtilResponse {
     message: string,
     ok: boolean,
@@ -36,6 +38,13 @@ export interface PostgreSQLError {
     file: string;
     line: number;
     routine: string;
+}
+export interface PostgreSQLResponse<T = any> {
+    command: string;
+    rowCount: number;
+    oid: number | null;
+    rows: T[];
+    fields: FieldDef[];
 }
 
 export function isPostgreSQLError(error: any): error is PostgreSQLError {
