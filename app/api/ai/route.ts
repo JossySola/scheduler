@@ -1,22 +1,19 @@
 import { openai } from "@ai-sdk/openai";
-import { generateObject, streamObject, streamText } from "ai";
+import { generateObject } from "ai";
 import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST (request: NextRequest) {
+export async function POST (request: NextRequest): Promise<NextResponse> {
     console.error("[/api/ai] Starting...")
     const payload = await request.json();
     console.error("[/api/ai] Payload:", payload);
-    const columns = payload.columns;
-    const rows = payload.rows;
-    const values = payload.values;
-    const specifications = payload.specifications;
+    const columns: Array<string> = payload.columns;
+    const rows: Array<Array<string>> = payload.rows;
+    const values: Array<string> = payload.values;
+    const specifications: Array<Array<string>> = payload.specifications;
 
     if (!rows || !columns || !values) {
-        return NextResponse.json({
-            status: 400,
-            statusText: "Some data is missing.",
-        })
+        return NextResponse.json({ error: "Some data is missing." }, { status: 400 })
     }
 
     try {
@@ -62,16 +59,12 @@ export async function POST (request: NextRequest) {
             `,
         });
         
-        return NextResponse.json({
-            status: 200,
+        return NextResponse.json({ 
             statusText: "Done",
             result: object.rows
-        })
+        }, { status: 200 })
         
     } catch (error) {
-        return NextResponse.json({
-            status: 400,
-            error: error
-        })
+        return NextResponse.json({ error: error }, { status: 400 })
     }
 }

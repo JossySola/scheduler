@@ -75,7 +75,6 @@ const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows, values } :
             id={`${rIndex}-${cIndex}-selection`} 
             value={value} 
             onChange={(e) => {
-                e.preventDefault();
                 setNewValue(() => {
                     return currentRows && currentRows.map((row, rowIndex) => {
                         if (rIndex !== rowIndex) {
@@ -102,7 +101,6 @@ const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows, values } :
     }
 
     return <input type="text" key={columnName} id={columnName} name={columnName} value={value} autoComplete="off" onChange={(e) => {
-        e.preventDefault();
         setNewValue(() => {
             return currentRows && currentRows.map((row, rowIndex) => {
                 if (rIndex !== rowIndex) {

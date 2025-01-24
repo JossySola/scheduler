@@ -16,7 +16,7 @@ export default function XTable ({ rows, setRows, values }:
             return [
                 ...prev,
                 rows && rows[0] && rows[0].length ? 
-                    rows[0].map(column => {
+                    rows[0].map(() => {
                         return "";
                     }) :
                     [""]
@@ -26,7 +26,7 @@ export default function XTable ({ rows, setRows, values }:
             return [
                 ...prev,
                 localRows && localRows[0] && localRows[0].length ? 
-                    localRows[0].map(column => {
+                    localRows[0].map(() => {
                         return "";
                     }) :
                     [""]
