@@ -12,7 +12,6 @@ export default function FormInputPassword () {
             <label htmlFor="password">Set a password:</label>
             <input type={reveal ? "text" : "password"} id="password" name="password" value={password} minLength={8} required 
             onChange={(e) => {
-                e.preventDefault();
                 const value = e.target.value;
                 setLength(value.length >= 8);
                 setPassword(e.target.value);
@@ -29,7 +28,6 @@ export default function FormInputPassword () {
             <label htmlFor="confirmpwd">Confirm password:</label>
             <input type={reveal ? "text" : "password"} id="confirm-new-password" name="confirmpwd" value={confirmation} autoComplete="new-password" minLength={8} required 
             onChange={e => {
-                e.preventDefault();
                 setConfirmation(e.target.value);
             }}/>
         </fieldset>

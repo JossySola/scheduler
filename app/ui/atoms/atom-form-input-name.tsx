@@ -10,7 +10,6 @@ export default function FormInputName () {
             <label htmlFor="name">Name:</label>
             <input type="text" id="name" name="name" value={name} minLength={3} maxLength={30} autoComplete="name" required
             onChange={(e => {
-                e.preventDefault();
                 setName(e.target.value);
             })} />
         </>
