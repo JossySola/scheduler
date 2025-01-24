@@ -59,8 +59,7 @@ export default function XList({ name, preferences, items, setItems, criteria, va
         <ol id={name}>
             <h3>{name}</h3>
             {
-                enableInput ? <div><input type="text" name="list-input" autoComplete="off" onChange={e => { 
-                    e.preventDefault();
+                enableInput ? <div><input type="text" name="list-input" autoComplete="off" onChange={e => {
                     setInput(e.target.value);
                 }} />
                 <button type="button" onClick={e => {
@@ -92,7 +91,7 @@ export default function XList({ name, preferences, items, setItems, criteria, va
                         { criteria ? <XItem name={item} criteria={criteria} values={values} /> : null }
                         {
                             enableRemoval ? <>
-                            <input type="text" name={`ValueOption${index}:`} value={item} readOnly/>
+                            <input type="text" name={`ValueOption${index}:`} value={item} />
                             <button type="button" onClick={(e) => {
                                 e.preventDefault();
                                 handleRemoveItem(item);
