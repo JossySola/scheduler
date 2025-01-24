@@ -1,5 +1,6 @@
 "use server"
 import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
 export async function SaveTableAction (state: { message: string }, formData: FormData) {
     console.log("[SaveTableAction] Starting...")
@@ -15,8 +16,8 @@ export async function SaveTableAction (state: { message: string }, formData: For
         }
     }
     
-    const table_id: string = content.filter(item => item[0] === "table_id").filter(item => item !== undefined && item !== null)[0][1];
-    const user_email: string = content.filter(item => item[0] === "user_email").filter(item => item !== undefined && item !== null)[0][1];
+    const table_id: string = content.filter(item => item[0] === "table_id").filter(item => item !== undefined && item !== null)[0][1].toString();
+    const user_email: string = content.filter(item => item[0] === "user_email").filter(item => item !== undefined && item !== null)[0][1].toString();
     const rows: Array<Array<string>> = SORT(content);
     const values: Array<Array<string>> = content.filter(item => item[0].startsWith("ValueOption")).filter(item => item !== undefined && item !== null);
     const specs: Array<Array<string>> = content.filter(item => item[0].startsWith("Specification[")).filter(item => item !== undefined && item !== null);
@@ -43,7 +44,9 @@ export async function SaveTableAction (state: { message: string }, formData: For
     })
     console.log("[SaveTableAction] Fetch result:", payload)
     if (payload.ok) {
-        redirect(payload.url);
+        if (!payload.url.includes("/api")) {
+            redirect(payload.url);
+        }
     }
     
     return {
@@ -85,7 +88,6 @@ export async function UseAiAction (state: { message: string }, formData: FormDat
         }
     }).filter(header => header !== undefined);
     console.error("[UseAiAction] Row Headers", rowHeaders)
-    
 
     const request = {
         columns,
@@ -110,19 +112,33 @@ export async function UseAiAction (state: { message: string }, formData: FormDat
         response
     }
 }
-const UNPACK = (formData: FormData): Array<[string, FormDataEntryValue]> => {
+export async function getTableAction (table_id: string) {
+    const session = await auth();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/table/${table_id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'client_email': `${session?.user?.email}`
+        }
+    });
+    const data = await response.json();
+    return data;
+}
+const UNPACK = (formData: FormData): Array<[string, string]> => {
     let pack = [];
     for (const pair of formData.entries()) {
         if (pair[0].startsWith("$")) {
             break;
         }
-        pack.push(pair)
+        if (typeof pair[1] === "string") {
+            pack.push(pair as [string, string]);
+        }
     }
     return pack;
 }
-const SORT = (pack: Array<[string, FormDataEntryValue]>) => {
+const SORT = (pack: Array<[string, string]>): string[][] => {
     let numRows = 0;
-    let newArray = [];
+    let newArray: string[][] = [];
 
     // Get how many columns are
     pack.forEach(([key, value]) => {
