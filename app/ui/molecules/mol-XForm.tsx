@@ -59,7 +59,6 @@ export default function XForm ({ id, preferences, title, setTitle, children, row
             <input type="text" name="table_id" id="table_id" value={params && params.id ? params.id : ""} hidden readOnly />
             
             <input type="text" name="table_title" id="table_title" value={title} onChange={e => {
-                e.preventDefault();
                 if (title && setTitle) {
                     setTitle(e.target.value);
                 }
@@ -75,7 +74,6 @@ export default function XForm ({ id, preferences, title, setTitle, children, row
 
             <label>
                 Fill each column with at least <input type="number" name={`Specification[]-fill-all-columns-with-at-least-${times}-values`} min={0} max={rows && rows.length} value={times} onChange={e => {
-                    e.preventDefault();
                     setTimes(parseInt(e.target.value, 10) || 0);
                 }}/> times.
             </label>
