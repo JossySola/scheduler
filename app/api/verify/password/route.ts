@@ -1,3 +1,5 @@
+"use server"
+import "server-only";
 import pool from "@/app/lib/mocks/db";
 import { NextRequest, NextResponse } from "next/server";
 import { Argon2id } from "oslo/password";

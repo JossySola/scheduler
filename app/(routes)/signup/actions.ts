@@ -1,6 +1,7 @@
 'use server'
+import "server-only";
 import pool from "@/app/lib/mocks/db";
-import { isPasswordPwned, sendEmailConfirmation } from "@/app/lib/utils-server";
+import { isPasswordPwned, sendEmailConfirmation } from "@/app/lib/utils";
 import { signIn } from "@/auth";
 import { z } from "zod";
 

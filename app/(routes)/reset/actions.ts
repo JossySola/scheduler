@@ -1,4 +1,6 @@
-import { isPasswordPwned } from "@/app/lib/utils-server";
+"use server"
+import "server-only";
+import { isPasswordPwned } from "@/app/lib/utils";
 
 export async function handleTokenConfirmation(token: string | undefined, email: string | undefined) {
     console.error("[handleTokenConfirmation] Starting...")

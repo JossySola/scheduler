@@ -1,3 +1,5 @@
+"user server"
+import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/mocks/db";
 import { z } from "zod";

@@ -1,4 +1,5 @@
 "use server"
+import "server-only";
 import { signIn } from "@/auth";
 import { redirect } from "next/navigation";
 
