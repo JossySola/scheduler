@@ -1,3 +1,4 @@
+import "server-only";
 import pool from "@/app/lib/mocks/db";
 import { NextRequest, NextResponse } from "next/server";
 

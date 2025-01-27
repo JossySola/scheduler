@@ -1,3 +1,5 @@
+"use server"
+import "server-only";
 import { CAPTCHAResponse } from "@/app/lib/definitions";
 import { NextRequest, NextResponse } from "next/server";
 

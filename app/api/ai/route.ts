@@ -1,3 +1,5 @@
+"use server"
+import "server-only";
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { z } from "zod";

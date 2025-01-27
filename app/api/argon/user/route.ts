@@ -1,4 +1,6 @@
-import { getUserFromDb } from "@/app/lib/utils-server";
+"use server"
+import "server-only";
+import { getUserFromDb } from "@/app/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST (request: NextRequest): Promise<NextResponse> {
