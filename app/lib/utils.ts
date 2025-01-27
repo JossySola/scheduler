@@ -63,7 +63,7 @@ export async function getUserFromDb (username: string, password: string): Promis
     throw new Error ("Invalid credentials");
   } catch (error) {
     return {
-      message: `${error}`,
+      message: "Invalid credentials",
       ok: false,
     }
   }
