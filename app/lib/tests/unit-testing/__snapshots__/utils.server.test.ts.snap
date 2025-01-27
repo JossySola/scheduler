@@ -36,7 +36,7 @@ exports[`<utils.ts> > <getUserFromDb> > User exists > Password === Hashed Passwo
 }
 `;
 
-exports[`<utils.ts> > <getUserFromDb> > User exists > SELECT * FROM users 1`] = `
+exports[`<utils.ts> > <getUserFromDb> > User exists > PostgreSQL Response 1`] = `
 {
   "email": "john@doe.com",
   "id": "1",
