@@ -9,7 +9,6 @@ export default function FormInputEmail () {
             <label htmlFor="email">Email:</label>
             <input type="email" id="email" name="email" value={email} placeholder="example@domain.com" autoComplete="email" required
             onChange={(e => {
-                e.preventDefault();
                 setEmail(e.target.value);
             })} />
         </>

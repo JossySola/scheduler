@@ -9,7 +9,6 @@ export default function FormInputBirthday () {
             <label htmlFor="birthday">Birthday:</label>
             <input type="date" id="birthday" name="birthday" value={birthday} max="2012-12-31" required
             onChange={(e => {
-                e.preventDefault();
                 setBirthday(e.target.value);
             })} />
         </>

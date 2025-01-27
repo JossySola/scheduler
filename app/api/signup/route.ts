@@ -1,21 +1,21 @@
+"use server"
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/mocks/db";
 import { Argon2id } from "oslo/password";
+import { isPostgreSQLError } from "@/app/lib/definitions";
 
-export async function POST (
-    request: NextRequest,
-) {
+export async function POST ( request: NextRequest ): Promise<NextResponse> {
     console.error("[/api/signup/POST] Starting...")
     const incoming = await request.json();
     console.error("[/api/signup/POST] JSON parse:", incoming)
-    const name = incoming.name;
-    const username = incoming.username;
-    const birthday = incoming.birthday ? incoming.birthday : null;
-    const email = incoming.email;
-    const password = incoming.password ? incoming.password : null;
-    const provider = incoming.provider ? incoming.provider : null;
-    const provider_id = incoming.provider_id ? incoming.provider_id : null;
+    const name: string = incoming.name;
+    const username: string = incoming.username;
+    const birthday: string = incoming.birthday ? incoming.birthday : null;
+    const email: string = incoming.email;
+    const password: string = incoming.password ? incoming.password : null;
+    const provider: string = incoming.provider ? incoming.provider : null;
+    const image: string = incoming.image ? incoming.image : null;
 
     const argon2id = new Argon2id()
     console.error("[/api/signup/POST] new Argon:", argon2id)
@@ -38,13 +38,7 @@ export async function POST (
                 console.error("[/api/signup/POST] Inserting new data...")
                 const insert = await pool.query(`
                     INSERT INTO scheduler_users (name, username, email, birthday, password)
-                        VALUES (
-                            $1,
-                            $2,
-                            $3,
-                            $4,
-                            $5
-                        );
+                    VALUES ($1, $2, $3, $4, $5);
                 `, [name, username, email, birthday, hash]);
                 console.error("[/api/signup/POST] Insert result:", insert)
                 resolve();
@@ -58,40 +52,43 @@ export async function POST (
                 console.error("[/api/signup/POST] Starting query...")
                 console.error("[/api/signup/POST] INSERT data to providers")
                 await pool.query(`
-                    INSERT INTO scheduler_users_providers (email, provider, provider_user_id)
+                    INSERT INTO scheduler_users_providers (email, provider)
                         VALUES (
                             $1,
-                            $2,
-                            $3
+                            $2
                         )
-                `, [email, provider, provider_id]);
+                `, [email, provider]);
+                const response = await pool.query(`
+                    UPDATE scheduler_users
+                    SET user_image = $1
+                    WHERE email = $2 AND user_image IS NULL;
+                `, [image, email]);
+                console.error(response)
             }
             console.error("[/api/signup/POST] Exiting .then block...")
         }).catch(error => {
             console.error("[/api/signup/POST] Entering .catch()...")
-            throw error;
+            return NextResponse.json({ error: `${error}` }, { status: 400 });
         })
         console.error("[/api/signup/POST] Exiting try block...")
-        return NextResponse.json({
-            status: 200,
-            statusText: "Success!"
-        })
-    } catch (error) {
+        return NextResponse.json({ statusText: "Success!" }, { status: 200 });
+    } catch (error: unknown) {
         console.error("[/api/signup/POST] Entering catch block...")
         console.error("[/api/signup/POST] Catch error:", error)
-        let message = '';
-        if (error.detail && error.detail.includes('already exists')) {
-            if (error.detail.includes('username')) {
-                message = 'Username already exists.'
-            } else if (error.detail.includes('email')) {
-                message = 'E-mail already used.'
+        
+        if (isPostgreSQLError(error)) {
+            let message = '';
+            if (error.detail && error.detail.includes('already exists')) {
+                if (error.detail.includes('username')) {
+                    message = 'Username already exists.'
+                } else if (error.detail.includes('email')) {
+                    message = 'E-mail already used.'
+                }
+            } else {
+                message = 'An unexpected error has occured from route.'
             }
-        } else {
-            message = 'An unexpected error has occured from route.'
+            return NextResponse.json({ error: message }, { status: 500 });
         }
-        return NextResponse.json({
-            status: 500,
-            statusText: message,
-        })
+        return NextResponse.json({ error }, { status: 500 });
     }
 }

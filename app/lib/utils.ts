@@ -3,51 +3,42 @@ import "server-only";
 import crypto, { randomBytes } from "crypto";
 import pool from "./mocks/db";
 import { Argon2id } from "oslo/password";
-import { auth, signOut } from "@/auth";
 import sgMail from "@sendgrid/mail";
 import { z } from "zod";
+import { UserResponse, UtilResponse } from "./definitions";
 
-export async function getUserFromDb (username: string, password: string) {
-  console.error("[getUserFromDb] Starting...")
-  console.error("[getUserFromDb] Checking if data is missing...")
+export async function getUserFromDb (username: string, password: string): Promise<UtilResponse & UserResponse> {
   if (!username || !password) {
-    console.error("[getUserFromDb] Some data is missing, exiting...")
     return {
       message: "Data missing",
       provider: "",
-      ok: false
+      ok: false,
     }
   }
-  console.error("[getUserFromDb] Entering try block...")
+  
   try {
-    console.error("[getUserFromDb] Starting query...")
-    console.error("[getUserFromDb] SELECT * WHERE username OR email...")
     const user = await pool.query(`
         SELECT * FROM scheduler_users 
             WHERE username = $1 OR email = $1;
     `, [username]);
-    console.error("[getUserFromDb] Query result:", user)
+    
     if (user.rowCount === 0) {
-      console.error("[getUserFromDb] Failed query, exiting...")
-        throw new Error ("User not found")
+      return {
+        message: "User not found",
+        provider: "",
+        ok: false,
+      }
     }
     
     const userRecord = user.rows[0];
-    console.error("[getUserFromDb] User row returned:", userRecord)
     
     if (userRecord.password === null) {
-      console.error("[getUserFromDb] User password is null")
-      console.error("[getUserFromDb] Starting query...")
-      console.error("[getUserFromDb] SELECT provider WHERE email...")
       const provider = await pool.query(`
         SELECT provider FROM scheduler_users_providers
         WHERE email = $1;
       `, [userRecord.email]);
-      console.error("[getUserFromDb] Query result:", provider)
       const name = provider.rowCount === 2 ? `${provider.rows[0].provider} and ${provider.rows[1].provider}` : `${provider.rows[0]}`;
-      console.error("[getUserFromDb] Provider name:", name)
-      console.error("[getUserFromDb] Returning with custom message...")
-      console.error("[getUserFromDb] Exiting...")
+
       return {
         message: `This account uses ${name} authentication.`,
         provider: name,
@@ -56,36 +47,28 @@ export async function getUserFromDb (username: string, password: string) {
     }
     
     const argon2id = new Argon2id();
-    console.error("[getUserFromDb] New Argon creation:", argon2id)
     const hashVerified = await argon2id.verify(userRecord.password, password);
-    console.error("[getUserFromDb] Hashed password verification:", hashVerified)
 
     if (hashVerified) {
-      console.error("[getUserFromDb] Password is correctly verified")
-      console.error("[getUserFromDb] Exiting...")
       return {
           id: userRecord.id,
           name: userRecord.name,
           username: userRecord.username,
           email: userRecord.email,
-          birthday: userRecord.birthday,
-          created_at: userRecord.created_at,
           role: userRecord.role,
-          verified: userRecord.verified,
+          message: "",
           ok: true
       };
     }
-    console.error("[getUserFromDb] Password verification returned failure")
-    console.error("[getUserFromDb] Exiting...")
     throw new Error ("Invalid credentials");
   } catch (error) {
-    console.error("[getUserFromDb] Entering catch block...")
-    console.error("[getUserFromDb] Exiting...")
-    return error;
+    return {
+      message: `${error}`,
+      ok: false,
+    }
   }
 }
-
-export async function isPasswordPwned (password: string) {
+export async function isPasswordPwned (password: string): Promise<number | UtilResponse> {
   console.error("[isPasswordPwned] Starting...")
     try {
       console.error("[isPasswordPwned] Entering try block...")
@@ -137,27 +120,14 @@ export async function isPasswordPwned (password: string) {
         };
     }
 }
-
-export async function getSession () {
-    const session = await auth();
-    return session;
-}
-
-export async function handleSignOut() {
-    await signOut({
-        redirect: true,
-        redirectTo: "/login"
-    });
-}
-
-export async function sendResetPasswordConfirmation(email: string | undefined) {
+export async function sendResetPasswordConfirmation(email: string | undefined): Promise<UtilResponse> {
   console.error("[sendResetPasswordConfirmation] Starting...")
   console.error("[sendResetPasswordConfirmation] Checking necessary data exists...")
   if (!email) {
     console.error("[sendResetPasswordConfirmation] Data is missing, exiting...")
     return {
-      status: 400,
-      statusText: 'Email must be provided'
+      ok: false,
+      message: 'Email must be provided'
     }
   }
   console.error("[sendResetPasswordConfirmation] Validating data with Zod...")
@@ -166,8 +136,8 @@ export async function sendResetPasswordConfirmation(email: string | undefined) {
   if (!validated) {
     console.error("[sendResetPasswordConfirmation] Validation unsuccessful, exiting...")
     return {
-      status: 400,
-      statusText: validated
+      ok: false,
+      message: validated
     }
   }
   console.error("[sendResetPasswordConfirmation] Starting query...")
@@ -180,15 +150,15 @@ export async function sendResetPasswordConfirmation(email: string | undefined) {
   if (confirming.rowCount === 0 || !confirming) {
     console.error("[sendResetPasswordConfirmation] Record not found, exiting...")
     return {
-      status: 400,
-      statusText: 'Email not found'
+      ok: false,
+      message: 'Email not found'
     }
   }
   console.error("[sendResetPasswordConfirmation] Generating random code...")
   const verification_code = randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 6); 
   console.error("[sendResetPasswordConfirmation] Code:", verification_code)
   console.error("[sendResetPasswordConfirmation] Setting sgMail API key...")
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   console.error("[sendResetPasswordConfirmation] Creating msg Object...")
   const msg = {
     to: `${email}`,
@@ -215,8 +185,8 @@ export async function sendResetPasswordConfirmation(email: string | undefined) {
     if (sending[0].statusCode !== 202) {
       console.error("[sendResetPasswordConfirmation] Send unsuccessful, exiting...")
       return {
-        status: 400,
-        statusText: 'Error at mail provider'
+        ok: false,
+        message: 'Error at mail provider'
       }
     }
     console.error("[sendResetPasswordConfirmation] Email sent, exiting...")
@@ -233,17 +203,14 @@ export async function sendResetPasswordConfirmation(email: string | undefined) {
       message: 'Server failure'
     }
   }
-
-  
 }
-
-export async function sendEmailConfirmation(email: string, name?: string) {
+export async function sendEmailConfirmation(email: string, name?: string): Promise<UtilResponse> {
   console.error("[sendEmailConfirmation] Starting...")
   console.error("[sendEmailConfirmation] Creating code...")
   const verification_code = randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 6);
   console.error("[sendEmailConfirmation] Code:", verification_code)
   console.error("[sendEmailConfirmation] Setting sgMail API key...")
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   console.error("[sendEmailConfirmation] Creating msg Object...")
   const msg = {
       to: `${email}`,

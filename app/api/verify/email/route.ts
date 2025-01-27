@@ -1,27 +1,25 @@
+"use server"
+import "server-only";
 import pool from "@/app/lib/mocks/db";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
     const payload = await request.json();
+    const confirmation_token: string = payload.confirmation_token;
+    const email: string = payload.email;
 
-    if (!payload || !payload.confirmation_token || !payload.email) {
-        return NextResponse.json({
-            status: 400,
-            statusText: 'Data missing'
-        })
+    if (!payload || !confirmation_token || !email) {
+        return NextResponse.json({ error: 'Data missing' }, { status: 400 });
     }
 
     const query = await pool.query(`
         UPDATE scheduler_users
             SET verified = true
             WHERE verified_token = $1 AND email = $2;
-    `, [payload.confirmation_token, payload.email]);
+    `, [confirmation_token, email]);
 
     if(!query || query.rowCount === 0) {
-        return NextResponse.json({
-            status: 400,
-            statusText: 'Invalid or expired token'
-        })
+        return NextResponse.json({ error: 'Invalid or expired token' }, { status: 400 });
     }
 
     await pool.query(`
@@ -30,8 +28,5 @@ export async function POST(request: NextRequest) {
             WHERE email = $1;
     `, [payload.email]);
 
-    return NextResponse.json({
-        status: 200,
-        statusText: 'Token validated'
-    })
+    return NextResponse.json({ statusText: 'Token validated' }, { status: 200 });
 }

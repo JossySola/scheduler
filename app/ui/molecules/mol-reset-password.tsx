@@ -31,7 +31,7 @@ export default function ResetPassword() {
 
                 const reset = await handlePasswordReset(password, confirmationPassword, email);
                 
-                if (reset.status === 200) {
+                if (reset) {
                     setResetSuccessful(true);
                     setMessage(reset.statusText);
                 } else {
@@ -55,7 +55,7 @@ export default function ResetPassword() {
             
                 const confirmation = await handleTokenConfirmation(token, email);
                 
-                if (confirmation.status === 200) {
+                if (confirmation) {
                     setTokenConfirmed(true);
                 } else {
                     setMessage(`${confirmation.statusText}`)

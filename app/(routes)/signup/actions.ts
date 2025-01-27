@@ -1,6 +1,7 @@
 'use server'
+import "server-only";
 import pool from "@/app/lib/mocks/db";
-import { isPasswordPwned, sendEmailConfirmation } from "@/app/lib/utils-server";
+import { isPasswordPwned, sendEmailConfirmation } from "@/app/lib/utils";
 import { signIn } from "@/auth";
 import { z } from "zod";
 
@@ -50,8 +51,7 @@ export async function validateAction (state: { message: string }, formData: Form
 
     const response = await request.json();
     console.error("[validateAction] Endpoint result:", response)
-    const userExists = response.status === 200
-        ? {
+    const userExists = request.status === 200 ? {
               error: {
                   issues: [{ message: response.statusText }],
               },
@@ -64,6 +64,16 @@ export async function validateAction (state: { message: string }, formData: Form
     console.error("[validateAction] Current errors:", errors)
     const exposedPassword = await isPasswordPwned(password.toString());
     console.error("[validateAction] Exposed password check result:", exposedPassword)
+    if (typeof exposedPassword !== 'number') {
+        console.error("[validateAction] Exposed password check result is not a number:", typeof exposedPassword)
+        console.error("[validateAction] Exiting...")
+        return {
+            message: exposedPassword.message,
+            passes: false,
+            descriptive: [...errors, { error: { issues: [{ message: exposedPassword.message }] } }],
+        }
+    }
+    
     if (exposedPassword !== 0) {
         console.error("[validateAction] Password is exposed")
         console.error("[validateAction] Exiting...")
@@ -74,15 +84,7 @@ export async function validateAction (state: { message: string }, formData: Form
         }
     }
     console.error("[validateAction] Password is not exposed")
-    if (typeof exposedPassword !== 'number') {
-        console.error("[validateAction] Exposed password check result is not a number:", typeof exposedPassword)
-        console.error("[validateAction] Exiting...")
-        return {
-            message: exposedPassword.message,
-            passes: false,
-            descriptive: [...errors, { error: { issues: [{ message: exposedPassword.message }] } }],
-        }
-    }
+    
     console.error("[validateAction] Starting to send email confirmation...")
     const send = await sendEmailConfirmation(email.toString(), name.toString());
     console.error("[validateAction] Email sender result:", send)
