@@ -45,9 +45,9 @@ describe("<utils.ts>", () => {
     afterEach(() => {
         vi.restoreAllMocks();
     })
-    describe("<getUserFromDb>", () => {
-        describe("!username || !password", () => {
-            test("message: Data missing", async () => {
+    describe("getUserFromDb()", () => {
+        describe("Checks missing data...", () => {
+            test("If missing, returns message", async () => {
                 // Setup
                 const expected = {
                     message: "Data missing",
@@ -63,8 +63,8 @@ describe("<utils.ts>", () => {
                 expect(result).toEqual(expected);
             })
         })
-        describe("User exists", () => {
-            test("PostgreSQL Response", async () => {
+        describe("If user exists...", () => {
+            test("Fetches user data from database", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
@@ -99,7 +99,7 @@ describe("<utils.ts>", () => {
                 expect(result).toMatchSnapshot();
                 expect(result).toEqual(expected);
             })
-            test("Password === Hashed Password", async () => {
+            test("Verifies password against hashed password", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
@@ -132,7 +132,7 @@ describe("<utils.ts>", () => {
                     ok: true,
                 })
             })
-            test("Password !== Hashed Password", async () => {
+            test("Throws error if password verification failed", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
@@ -151,13 +151,12 @@ describe("<utils.ts>", () => {
                     }]
                 })
                 
-
                 // Result
                 //expect(result).toThrowError("Invalid credentials");
             })
         })
-        describe("User does not exist", () => {
-            test("message: User not found", async () => {
+        describe("If user does NOT exist...", () => {
+            test("If not found, returns message", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
@@ -180,8 +179,8 @@ describe("<utils.ts>", () => {
                 expect(result).toEqual(expected);
             })
         })
-        describe("User exists && password = null", () => {
-            test("message: This account uses <Provider> authentication", async () => {
+        describe("If user exists BUT password is null...", () => {
+            test("Returns message and the external provider (Google | Facebook)", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
