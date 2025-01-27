@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`<utils.ts> > <getUserFromDb> > !username || !password > message: Data missing 1`] = `
+exports[`<utils.ts> > getUserFromDb() > Checks missing data... > If data is missing, returns message 1`] = `
 {
   "message": "Data missing",
   "ok": false,
@@ -8,7 +8,7 @@ exports[`<utils.ts> > <getUserFromDb> > !username || !password > message: Data m
 }
 `;
 
-exports[`<utils.ts> > <getUserFromDb> > User does not exist > message: User not found 1`] = `
+exports[`<utils.ts> > getUserFromDb() > If user does NOT exist... > Returns message 1`] = `
 {
   "message": "User not found",
   "ok": false,
@@ -16,7 +16,7 @@ exports[`<utils.ts> > <getUserFromDb> > User does not exist > message: User not 
 }
 `;
 
-exports[`<utils.ts> > <getUserFromDb> > User exists && password = null > message: This account uses <Provider> authentication 1`] = `
+exports[`<utils.ts> > getUserFromDb() > If user exists BUT password is null... > Returns message and the signup provider (Google | Facebook) 1`] = `
 {
   "message": "This account uses Google authentication.",
   "ok": false,
@@ -24,7 +24,7 @@ exports[`<utils.ts> > <getUserFromDb> > User exists && password = null > message
 }
 `;
 
-exports[`<utils.ts> > <getUserFromDb> > User exists > Password === Hashed Password 1`] = `
+exports[`<utils.ts> > getUserFromDb() > If user exists... > Fetches user data from database 1`] = `
 {
   "email": "john@doe.com",
   "id": "1",
@@ -36,7 +36,7 @@ exports[`<utils.ts> > <getUserFromDb> > User exists > Password === Hashed Passwo
 }
 `;
 
-exports[`<utils.ts> > <getUserFromDb> > User exists > PostgreSQL Response 1`] = `
+exports[`<utils.ts> > getUserFromDb() > If user exists... > Verifies password against hashed password 1`] = `
 {
   "email": "john@doe.com",
   "id": "1",

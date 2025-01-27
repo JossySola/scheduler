@@ -2,6 +2,7 @@ import { vi, expect, describe, afterEach, test } from "vitest";
 import * as Utils from "../../utils";
 import pool from "../../mocks/db";
 import { Argon2id } from "oslo/password";
+import { verify } from "crypto";
 
 vi.mock(import("server-only"), () => ({}))
 /*
@@ -37,7 +38,7 @@ vi.mock("../../mocks/db.ts", () => {
 vi.mock("oslo/password", () => {
     return {
         Argon2id: vi.fn(() => ({ 
-            verify: vi.fn().mockResolvedValueOnce(true) 
+            verify: vi.fn().mockResolvedValue(true) 
         }))
     }
 })
@@ -45,9 +46,9 @@ describe("<utils.ts>", () => {
     afterEach(() => {
         vi.restoreAllMocks();
     })
-    describe("<getUserFromDb>", () => {
-        describe("!username || !password", () => {
-            test("message: Data missing", async () => {
+    describe("getUserFromDb()", () => {
+        describe("Checks missing data...", () => {
+            test("If data is missing, returns message", async () => {
                 // Setup
                 const expected = {
                     message: "Data missing",
@@ -63,8 +64,8 @@ describe("<utils.ts>", () => {
                 expect(result).toEqual(expected);
             })
         })
-        describe("User exists", () => {
-            test("PostgreSQL Response", async () => {
+        describe("If user exists...", () => {
+            test("Fetches user data from database", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
@@ -99,7 +100,7 @@ describe("<utils.ts>", () => {
                 expect(result).toMatchSnapshot();
                 expect(result).toEqual(expected);
             })
-            test("Password === Hashed Password", async () => {
+            test("Verifies password against hashed password", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
@@ -132,7 +133,7 @@ describe("<utils.ts>", () => {
                     ok: true,
                 })
             })
-            test("Password !== Hashed Password", async () => {
+            test("Throws error and returns object if password verification failed", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
@@ -151,13 +152,17 @@ describe("<utils.ts>", () => {
                     }]
                 })
                 
-
+                vi.mocked(Argon2id).mockImplementation(() => ({
+                    verify: vi.fn().mockResolvedValueOnce(false)
+                }) as any);
+                const result = await Utils.getUserFromDb(username, password);
+                
                 // Result
-                //expect(result).toThrowError("Invalid credentials");
+                expect(result).toEqual({ message: "Invalid credentials", ok: false })
             })
         })
-        describe("User does not exist", () => {
-            test("message: User not found", async () => {
+        describe("If user does NOT exist...", () => {
+            test("Returns message", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
@@ -180,8 +185,8 @@ describe("<utils.ts>", () => {
                 expect(result).toEqual(expected);
             })
         })
-        describe("User exists && password = null", () => {
-            test("message: This account uses <Provider> authentication", async () => {
+        describe("If user exists BUT password is null...", () => {
+            test("Returns message and the signup provider (Google | Facebook)", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
