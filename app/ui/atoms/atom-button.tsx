@@ -1,13 +1,13 @@
 "use client"
-import { useCallback, useTransition } from "react";
+import { MouseEventHandler, useCallback, useTransition } from "react";
 
 export function Button({callback, text}: {
-    callback: () => void,
+    callback: (event: React.FormEvent<HTMLButtonElement>) => void,
     text: string | null,
 }) {
     return (
-        <button type="button" onClick={() => {
-            callback();
+        <button type="button" onClick={(e) => {
+            callback(e);
         }}>{text}</button>
     )
 }
@@ -23,8 +23,8 @@ export function SubmitButton({text, disabled, form, formaction, formenctype, for
     formtarget?: "_self" | "_blank" | "_parent" | "_top",
     isSubmitting?: boolean,
     isSubmitted?: boolean,
-    onClick?: () => void,
-    onSubmit?: () => void,
+    onClick?: MouseEventHandler<HTMLButtonElement> | undefined,
+    onSubmit?: MouseEventHandler<HTMLButtonElement> | undefined,
 }) {
     
     return <button 
@@ -56,9 +56,10 @@ export function ActionButton({action, text, disabled, form, formaction, formenct
     formtarget?: "_self" | "_blank" | "_parent" | "_top",
     isSubmitting?: boolean,
     isSubmitted?: boolean,
-    onClick?: () => void,
-    onSubmit?: () => void,
+    onClick?: MouseEventHandler<HTMLButtonElement> | undefined,
+    onSubmit?: MouseEventHandler<HTMLButtonElement> | undefined,
 }) {
+    "use client"
     const [ isPending, startTransition ] = useTransition();
     
     const handleClick = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -85,14 +86,13 @@ export function ActionButton({action, text, disabled, form, formaction, formenct
                             },
                             body: JSON.stringify({ token })
                         });
-
-                        const response = await request.json();
-                        if (response.status !== 200) {
+                        
+                        if (request.status !== 200) {
                             throw new Error("reCAPTCHA verification failed");
                         }
                         resolve();
                     })
-                    .catch((error) => {
+                    .catch((error: unknown) => {
                         console.error("Error executing reCAPTCHA: ", error);
                         throw error;
                     });
@@ -104,8 +104,8 @@ export function ActionButton({action, text, disabled, form, formaction, formenct
                 try {
                     if (typeof formaction === 'function') {
                         await formaction(formData);
-                        onClick?.();
-                        onSubmit?.();
+                        onClick?.(e);
+                        onSubmit?.(e);
                     }
                 } catch (error) {
                     console.error("Error during form submission: ", error);
@@ -128,5 +128,5 @@ export function ActionButton({action, text, disabled, form, formaction, formenct
             onSubmit={onSubmit}
             >
             {text}
-    </button>       
+    </button>
 }
