@@ -12,11 +12,13 @@ export async function middleware (request: NextRequest) {
     });
     console.error("[Middleware] Token:", token)
     console.error("[Middleware] nextUrl:", request.nextUrl)
+    /*
     if (request.nextUrl.pathname.includes("/api")) {
         return NextResponse.json({
             error: "Unauthorized"
         }, { status: 401 })
     }
+    */
     if (["/", "/login", "/signup", "/try"].includes(request.nextUrl.pathname)) {
         if (token) {
             return NextResponse.redirect(new URL("/dashboard", request.url));
