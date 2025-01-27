@@ -2,6 +2,7 @@ import { vi, expect, describe, afterEach, test } from "vitest";
 import * as Utils from "../../utils";
 import pool from "../../mocks/db";
 import { Argon2id } from "oslo/password";
+import { verify } from "crypto";
 
 vi.mock(import("server-only"), () => ({}))
 /*
@@ -37,7 +38,7 @@ vi.mock("../../mocks/db.ts", () => {
 vi.mock("oslo/password", () => {
     return {
         Argon2id: vi.fn(() => ({ 
-            verify: vi.fn().mockResolvedValueOnce(true) 
+            verify: vi.fn().mockResolvedValue(true) 
         }))
     }
 })
@@ -47,7 +48,7 @@ describe("<utils.ts>", () => {
     })
     describe("getUserFromDb()", () => {
         describe("Checks missing data...", () => {
-            test("If missing, returns message", async () => {
+            test("If data is missing, returns message", async () => {
                 // Setup
                 const expected = {
                     message: "Data missing",
@@ -132,7 +133,7 @@ describe("<utils.ts>", () => {
                     ok: true,
                 })
             })
-            test("Throws error if password verification failed", async () => {
+            test("Throws error and returns object if password verification failed", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
@@ -151,12 +152,17 @@ describe("<utils.ts>", () => {
                     }]
                 })
                 
+                vi.mocked(Argon2id).mockImplementation(() => ({
+                    verify: vi.fn().mockResolvedValueOnce(false)
+                }) as any);
+                const result = await Utils.getUserFromDb(username, password);
+                
                 // Result
-                //expect(result).toThrowError("Invalid credentials");
+                expect(result).toEqual({ message: "Invalid credentials", ok: false })
             })
         })
         describe("If user does NOT exist...", () => {
-            test("If not found, returns message", async () => {
+            test("Returns message", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
@@ -180,7 +186,7 @@ describe("<utils.ts>", () => {
             })
         })
         describe("If user exists BUT password is null...", () => {
-            test("Returns message and the external provider (Google | Facebook)", async () => {
+            test("Returns message and the signup provider (Google | Facebook)", async () => {
                 // Setup
                 const username = "John Doe";
                 const password = "j6Y4M8U{";
