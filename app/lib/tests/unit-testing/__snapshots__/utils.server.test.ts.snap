@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<utils.ts> > <getUserFromDb> > !username || !password > message: Data missing 1`] = `
+{
+  "message": "Data missing",
+  "ok": false,
+  "provider": "",
+}
+`;
+
+exports[`<utils.ts> > <getUserFromDb> > User does not exist > message: User not found 1`] = `
+{
+  "message": "User not found",
+  "ok": false,
+  "provider": "",
+}
+`;
+
+exports[`<utils.ts> > <getUserFromDb> > User exists && password = null > message: This account uses <Provider> authentication 1`] = `
+{
+  "message": "This account uses Google authentication.",
+  "ok": false,
+  "provider": "Google",
+}
+`;
+
+exports[`<utils.ts> > <getUserFromDb> > User exists > Password === Hashed Password 1`] = `
+{
+  "email": "john@doe.com",
+  "id": "1",
+  "message": "",
+  "name": "John Doe",
+  "ok": true,
+  "role": "user",
+  "username": "John Doe",
+}
+`;
+
+exports[`<utils.ts> > <getUserFromDb> > User exists > SELECT * FROM users 1`] = `
+{
+  "email": "john@doe.com",
+  "id": "1",
+  "message": "",
+  "name": "John Doe",
+  "ok": true,
+  "role": "user",
+  "username": "John Doe",
+}
+`;

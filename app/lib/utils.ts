@@ -8,46 +8,37 @@ import { z } from "zod";
 import { UserResponse, UtilResponse } from "./definitions";
 
 export async function getUserFromDb (username: string, password: string): Promise<UtilResponse & UserResponse> {
-  console.error("[getUserFromDb] Starting...")
-  console.error("[getUserFromDb] Checking if data is missing...")
   if (!username || !password) {
-    console.error("[getUserFromDb] Some data is missing, exiting...")
     return {
       message: "Data missing",
       provider: "",
-      ok: false
+      ok: false,
     }
   }
-  console.error("[getUserFromDb] Entering try block...")
+  
   try {
-    console.error("[getUserFromDb] Starting query...")
-    console.error("[getUserFromDb] SELECT * WHERE username OR email...")
     const user = await pool.query(`
         SELECT * FROM scheduler_users 
             WHERE username = $1 OR email = $1;
     `, [username]);
-    console.error("[getUserFromDb] Query result:", user)
+    
     if (user.rowCount === 0) {
-      console.error("[getUserFromDb] Failed query, exiting...")
-        throw new Error ("User not found")
+      return {
+        message: "User not found",
+        provider: "",
+        ok: false,
+      }
     }
     
     const userRecord = user.rows[0];
-    console.error("[getUserFromDb] User row returned:", userRecord)
     
     if (userRecord.password === null) {
-      console.error("[getUserFromDb] User password is null")
-      console.error("[getUserFromDb] Starting query...")
-      console.error("[getUserFromDb] SELECT provider WHERE email...")
       const provider = await pool.query(`
         SELECT provider FROM scheduler_users_providers
         WHERE email = $1;
       `, [userRecord.email]);
-      console.error("[getUserFromDb] Query result:", provider)
       const name = provider.rowCount === 2 ? `${provider.rows[0].provider} and ${provider.rows[1].provider}` : `${provider.rows[0]}`;
-      console.error("[getUserFromDb] Provider name:", name)
-      console.error("[getUserFromDb] Returning with custom message...")
-      console.error("[getUserFromDb] Exiting...")
+
       return {
         message: `This account uses ${name} authentication.`,
         provider: name,
@@ -56,13 +47,9 @@ export async function getUserFromDb (username: string, password: string): Promis
     }
     
     const argon2id = new Argon2id();
-    console.error("[getUserFromDb] New Argon creation:", argon2id)
     const hashVerified = await argon2id.verify(userRecord.password, password);
-    console.error("[getUserFromDb] Hashed password verification:", hashVerified)
 
     if (hashVerified) {
-      console.error("[getUserFromDb] Password is correctly verified")
-      console.error("[getUserFromDb] Exiting...")
       return {
           id: userRecord.id,
           name: userRecord.name,
@@ -73,8 +60,6 @@ export async function getUserFromDb (username: string, password: string): Promis
           ok: true
       };
     }
-    console.error("[getUserFromDb] Password verification returned failure")
-    console.error("[getUserFromDb] Exiting...")
     throw new Error ("Invalid credentials");
   } catch (error) {
     return {

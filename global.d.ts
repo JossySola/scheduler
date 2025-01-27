@@ -1,3 +1,5 @@
+declare module 'server-only';
+
 interface Window {
     grecaptcha: {
         ready: (callback: () => void) => void;
