@@ -2,7 +2,6 @@ import { vi, expect, describe, afterEach, test } from "vitest";
 import * as Utils from "../../utils";
 import pool from "../../mocks/db";
 import { Argon2id } from "oslo/password";
-import { verify } from "crypto";
 
 vi.mock(import("server-only"), () => ({}))
 /*
