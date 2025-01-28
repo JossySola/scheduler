@@ -25,7 +25,7 @@ vi.mock("crypto", () => {
         default: {
             createHash: vi.fn(() => ({
                 update: vi.fn().mockReturnThis(),
-                digest: vi.fn().mockReturnValue("5baa6"),
+                digest: vi.fn().mockReturnValue("000F6468C6E4D09C0C239A4C2769501B3DD"),
             })),
         },
         randomBytes: vi.fn(() => Buffer.from("mock-bytes")),
@@ -227,7 +227,6 @@ describe("<utils.ts>", () => {
 
         test("Creates SHA1 hash from the given password", async () => {
             // Setup
-            const password = "password";
             const updateMock = vi.fn().mockReturnThis();
             const digestMock = vi.fn().mockReturnValue("mock-digest");
             const createHash = vi.spyOn(crypto, "createHash").mockReturnValue({
@@ -236,44 +235,40 @@ describe("<utils.ts>", () => {
             } as unknown as Hash)
 
             // Implementation
-            await Utils.isPasswordPwned(password);
+            await Utils.isPasswordPwned("password");
 
             // Result
             expect(createHash).toHaveBeenCalledTimes(1);
             expect(createHash).toHaveBeenCalledWith("sha1");
-            expect(updateMock).toHaveBeenCalledWith(password);
+            expect(updateMock).toHaveBeenCalledWith("password");
             expect(digestMock).toHaveBeenCalledWith("hex");
         })
-        test("Slices hash to get the 'range' and 'suffix' parts", async () => {
+        test("Slices hash to get the 'range'", async () => {
             // Setup
-            const password = "password";
             const sliceSpy = vi.spyOn(String.prototype, "slice");
 
             // Implementation
-            await Utils.isPasswordPwned(password);
+            await Utils.isPasswordPwned("password");
 
             // Result
             expect(sliceSpy).toHaveBeenCalledWith(0,5);
-            expect(sliceSpy).toHaveBeenCalledWith(5);
         })
         test("Fetches from api.pwnedpasswords", async () => {
             // Setup
-            const password = "password";
             const fetchSpy = vi.spyOn(global, "fetch");
 
             // Implementation
-            await Utils.isPasswordPwned(password);
+            await Utils.isPasswordPwned("password");
 
             // Result
-            expect(fetchSpy).toHaveBeenCalledWith("https://api.pwnedpasswords.com/range/5baa6");
+            expect(fetchSpy).toHaveBeenCalledWith("https://api.pwnedpasswords.com/range/000F6");
         })
         test("Receives Response as 'text' and converts it to String with Response.text()", async () => {
             // Setup
             const spyOnResponse = vi.spyOn(Response.prototype, "text").mockResolvedValue(mockExposedPasswords);
-            const password = "password";
             
             // Implementation
-            await Utils.isPasswordPwned(password);
+            await Utils.isPasswordPwned("password");
 
             // Result
             expect(spyOnResponse).toHaveBeenCalledTimes(1);
@@ -284,10 +279,9 @@ describe("<utils.ts>", () => {
             test("Splits the substring on each linebreak (suffix)", async () => {
                 //Setup
                 const spyOnString = vi.spyOn(String.prototype, "split");
-                const password = "password";
 
                 // Implementation
-                await Utils.isPasswordPwned(password);
+                await Utils.isPasswordPwned("password");
 
                 // Result
                 expect(spyOnString).toHaveBeenCalledWith('\n');
@@ -295,24 +289,44 @@ describe("<utils.ts>", () => {
             test("Splits the sub-substring on each colon (count)", async () => {
                 //Setup
                 const spyOnString = vi.spyOn(String.prototype, "split");
-                const password = "password";
 
                 // Implementation
-                await Utils.isPasswordPwned(password);
+                await Utils.isPasswordPwned("password");
 
                 // Result
                 expect(spyOnString).toHaveBeenCalledWith(':');
             })
-            test("Uses parseInt to return the count if suffix to check is the same as the suffix being checked", async () => {
+            test("Uses parseInt to return the count number if suffix to check is the same as the suffix being checked", async () => {
                 //Setup
                 const spyOnInt = vi.spyOn(global, "parseInt");
-                const password = "password";
 
                 // Implementation
-                await Utils.isPasswordPwned(password);
+                await Utils.isPasswordPwned("password");
 
                 // Result
                 expect(spyOnInt).toHaveBeenCalled();
+            })
+            test("Returns the count number greater than 0, which means the password has been exposed", async () => {
+                // Setup
+
+                // Implementation
+                const result = await Utils.isPasswordPwned("password");
+
+                // Result
+                expect(result).toBe(789)
+            })
+            test("Returns 0, which means the password is NOT exposed", async () => {
+                // Setup
+                vi.spyOn(crypto, 'createHash').mockReturnValue({
+                    update: vi.fn().mockReturnThis(),
+                    digest: vi.fn().mockReturnValue("000F6468C6E4D09C7A239A4C2769501B3DD"),
+                } as unknown as crypto.Hash)
+                
+                // Implementation
+                const result = await Utils.isPasswordPwned("password");
+
+                // Result
+                expect(result).toBe(0)
             })
         })
     })
