@@ -69,35 +69,18 @@ export async function getUserFromDb (username: string, password: string): Promis
   }
 }
 export async function isPasswordPwned (password: string): Promise<number | UtilResponse> {
-  console.error("[isPasswordPwned] Starting...")
     try {
-      console.error("[isPasswordPwned] Entering try block...")
         // API requires password to be hashed with SHA1
-        console.error("[isPasswordPwned] Creating SHA1 hash...")
         const hashed = crypto.createHash('sha1').update(password).digest('hex');
-        console.error("[isPasswordPwned] Hash:", hashed)
         // "range" endpoint requires only the first 5 characters of the hashed password
-        console.error("[isPasswordPwned] Setting a range...")
         const range = hashed.slice(0,5);
-        console.error("[isPasswordPwned] Range:", range)
         // Slice gives the remaining hashed password after the string index 5
-        console.error("[isPasswordPwned] Setting the suffix...")
         const suffixToCheck = hashed.slice(5).toUpperCase();
-        console.error("[isPasswordPwned] Suffix:", suffixToCheck)
-        console.error("[isPasswordPwned] Fetching from /api.pwnedpasswords.com ...")
         const response = await fetch(`https://api.pwnedpasswords.com/range/${range}`);
         // The API returns a plain text response, not a JSON
         const text = await response.text();
-        console.error("[isPasswordPwned] Response parsed into text:", text)
         // For each \n break, convert the plain text into an Array
-        console.error("[isPasswordPwned] Splitting text...")
-        console.error("[isPasswordPwned] Split a text chunk for each space, and save it to an Array...")
         const lines = text.split('\n');
-        console.error("[isPasswordPwned] Starting iteration...")
-        console.error("[isPasswordPwned] For each element, split their value for each ':' found, and save them to an Array...")
-        console.error("[isPasswordPwned] The format of each line is... <suffix>:<count>")
-        console.error("[isPasswordPwned] After splitting in each iteration, it results an array of: [<suffix>,<count>]")
-        console.error("[isPasswordPwned] If the suffix from the array is equal to the suffix saved before, return the <count> in number")
         for (const line of lines) {
             // The format of each line is divided by a ":", the left part is the suffix and the right part is the count
             const [hashSuffix, count] = line.split(':');
@@ -108,12 +91,8 @@ export async function isPasswordPwned (password: string): Promise<number | UtilR
             }
         }
         // If the remaining part of the hashed password is not found on the list, return 0
-        console.error("[isPasswordPwned] After the iteration, there was no match found, returning 0, exiting...")
         return 0;
     } catch (error) {
-      console.error("[isPasswordPwned] Entering catch block...")
-      console.error("[isPasswordPwned] Error:", error)
-      console.error("[isPasswordPwned] Exiting...")
         return {
             message: "Unknown error from exposed password checking.",
             ok: false

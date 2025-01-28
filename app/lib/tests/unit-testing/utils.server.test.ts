@@ -1,32 +1,11 @@
-import { vi, expect, describe, afterEach, test } from "vitest";
+import { vi, expect, describe, afterEach, beforeEach, test, beforeAll } from "vitest";
 import * as Utils from "../../utils";
 import pool from "../../mocks/db";
 import { Argon2id } from "oslo/password";
+import mockExposedPasswords from "../../mocks/mock-exposed-passwords";
+import crypto, { Hash } from "crypto";
 
 vi.mock(import("server-only"), () => ({}))
-/*
- vi.mock is hoisted. In this case it mocks the module "../../mocks/db" before
- it is imported. Visually, vi.mock would be placed first before the imports
- above. After that, the "import pool from '../../mocks/db';" will be already mocked.
-
- In this case, "pool" is exported as default (pool instead of { pool }), the factory
- object has to return an object with a 'default' property. As I understand it, the 
- property "default" references "pool", and inside the property I can mock the "query" 
- method the real pool class has.
-
- Test example:
-    // Setup
-    vi.mocked(pool.query).mockImplementationOnce(() => ({ id: 1}));
-
-    // Implementation
-    pool.query(`SELECT * FROM users;`);
-
-    // Result
-    expect(pool.query).toBeCalled()
-    expect(pool.query).toReturnWith({ id: 1 })
-
-    Test passes ✅
-*/
 vi.mock("../../mocks/db.ts", () => {
     return {
         default: { // References "pool"
@@ -41,6 +20,23 @@ vi.mock("oslo/password", () => {
         }))
     }
 })
+vi.mock("crypto", () => {
+    return {
+        default: {
+            createHash: vi.fn(() => ({
+                update: vi.fn().mockReturnThis(),
+                digest: vi.fn().mockReturnValue("5baa6"),
+            })),
+        },
+        randomBytes: vi.fn(() => Buffer.from("mock-bytes")),
+    }
+})
+vi.mock("zod", () => {
+    return {
+        z: vi.fn(),
+    }
+})
+
 describe("<utils.ts>", () => {
     afterEach(() => {
         vi.restoreAllMocks();
@@ -213,6 +209,110 @@ describe("<utils.ts>", () => {
                     ok: false,
                 })
     
+            })
+        })
+    })
+    describe("isPasswordPwned()", () => {
+        // Context setup
+        const mockText = new Blob([mockExposedPasswords], { type: "text/plain" })
+        const mockResponse = new Response(mockText, {
+            status: 200,
+            headers: { 'Content-Type': 'text/plain' }
+        });
+        
+        beforeEach(() => {
+            global.fetch = vi.fn().mockResolvedValue(mockResponse);
+            vi.spyOn(Response.prototype, "text").mockResolvedValue(mockExposedPasswords);
+        })
+
+        test("Creates SHA1 hash from the given password", async () => {
+            // Setup
+            const password = "password";
+            const updateMock = vi.fn().mockReturnThis();
+            const digestMock = vi.fn().mockReturnValue("mock-digest");
+            const createHash = vi.spyOn(crypto, "createHash").mockReturnValue({
+                update: updateMock,
+                digest: digestMock,
+            } as unknown as Hash)
+
+            // Implementation
+            await Utils.isPasswordPwned(password);
+
+            // Result
+            expect(createHash).toHaveBeenCalledTimes(1);
+            expect(createHash).toHaveBeenCalledWith("sha1");
+            expect(updateMock).toHaveBeenCalledWith(password);
+            expect(digestMock).toHaveBeenCalledWith("hex");
+        })
+        test("Slices hash to get the 'range' and 'suffix' parts", async () => {
+            // Setup
+            const password = "password";
+            const sliceSpy = vi.spyOn(String.prototype, "slice");
+
+            // Implementation
+            await Utils.isPasswordPwned(password);
+
+            // Result
+            expect(sliceSpy).toHaveBeenCalledWith(0,5);
+            expect(sliceSpy).toHaveBeenCalledWith(5);
+        })
+        test("Fetches from api.pwnedpasswords", async () => {
+            // Setup
+            const password = "password";
+            const fetchSpy = vi.spyOn(global, "fetch");
+
+            // Implementation
+            await Utils.isPasswordPwned(password);
+
+            // Result
+            expect(fetchSpy).toHaveBeenCalledWith("https://api.pwnedpasswords.com/range/5baa6");
+        })
+        test("Receives Response as 'text' and converts it to String with Response.text()", async () => {
+            // Setup
+            const spyOnResponse = vi.spyOn(Response.prototype, "text").mockResolvedValue(mockExposedPasswords);
+            const password = "password";
+            
+            // Implementation
+            await Utils.isPasswordPwned(password);
+
+            // Result
+            expect(spyOnResponse).toHaveBeenCalledTimes(1);
+            expect(spyOnResponse).toHaveBeenCalledWith();
+            expect(spyOnResponse).toHaveResolvedWith(mockExposedPasswords);
+        })
+        describe("Splits String into substrings and returns them as an array", () => {
+            test("Splits the substring on each linebreak (suffix)", async () => {
+                //Setup
+                const spyOnString = vi.spyOn(String.prototype, "split");
+                const password = "password";
+
+                // Implementation
+                await Utils.isPasswordPwned(password);
+
+                // Result
+                expect(spyOnString).toHaveBeenCalledWith('\n');
+            })
+            test("Splits the sub-substring on each colon (count)", async () => {
+                //Setup
+                const spyOnString = vi.spyOn(String.prototype, "split");
+                const password = "password";
+
+                // Implementation
+                await Utils.isPasswordPwned(password);
+
+                // Result
+                expect(spyOnString).toHaveBeenCalledWith(':');
+            })
+            test("Uses parseInt to return the count if suffix to check is the same as the suffix being checked", async () => {
+                //Setup
+                const spyOnInt = vi.spyOn(global, "parseInt");
+                const password = "password";
+
+                // Implementation
+                await Utils.isPasswordPwned(password);
+
+                // Result
+                expect(spyOnInt).toHaveBeenCalled();
             })
         })
     })
