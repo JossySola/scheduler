@@ -242,6 +242,9 @@ describe("<utils.ts>", () => {
             expect(createHash).toHaveBeenCalledWith("sha1");
             expect(updateMock).toHaveBeenCalledWith("password");
             expect(digestMock).toHaveBeenCalledWith("hex");
+            expect(createHash).toMatchSnapshot();
+            expect(updateMock).toMatchSnapshot();
+            expect(digestMock).toMatchSnapshot();
         })
         test("Slices hash to get the 'range'", async () => {
             // Setup
@@ -252,6 +255,7 @@ describe("<utils.ts>", () => {
 
             // Result
             expect(sliceSpy).toHaveBeenCalledWith(0,5);
+            expect(sliceSpy).toMatchSnapshot();
         })
         test("Fetches from api.pwnedpasswords", async () => {
             // Setup
@@ -262,6 +266,7 @@ describe("<utils.ts>", () => {
 
             // Result
             expect(fetchSpy).toHaveBeenCalledWith("https://api.pwnedpasswords.com/range/000F6");
+            expect(fetchSpy).toMatchSnapshot();
         })
         test("Receives Response as 'text' and converts it to String with Response.text()", async () => {
             // Setup
@@ -274,6 +279,7 @@ describe("<utils.ts>", () => {
             expect(spyOnResponse).toHaveBeenCalledTimes(1);
             expect(spyOnResponse).toHaveBeenCalledWith();
             expect(spyOnResponse).toHaveResolvedWith(mockExposedPasswords);
+            expect(spyOnResponse).toMatchSnapshot();
         })
         describe("Splits String into substrings and returns them as an array", () => {
             test("Splits the substring on each linebreak (suffix)", async () => {
@@ -285,6 +291,7 @@ describe("<utils.ts>", () => {
 
                 // Result
                 expect(spyOnString).toHaveBeenCalledWith('\n');
+                expect(spyOnString).toMatchSnapshot();
             })
             test("Splits the sub-substring on each colon (count)", async () => {
                 //Setup
@@ -295,6 +302,7 @@ describe("<utils.ts>", () => {
 
                 // Result
                 expect(spyOnString).toHaveBeenCalledWith(':');
+                expect(spyOnString).toMatchSnapshot();
             })
             test("Uses parseInt to return the count number if suffix to check is the same as the suffix being checked", async () => {
                 //Setup
@@ -305,6 +313,7 @@ describe("<utils.ts>", () => {
 
                 // Result
                 expect(spyOnInt).toHaveBeenCalled();
+                expect(spyOnInt).toMatchSnapshot();
             })
             test("Returns the count number greater than 0, which means the password has been exposed", async () => {
                 // Setup
@@ -313,7 +322,8 @@ describe("<utils.ts>", () => {
                 const result = await Utils.isPasswordPwned("password");
 
                 // Result
-                expect(result).toBe(789)
+                expect(result).toBe(789);
+                expect(result).toMatchSnapshot();
             })
             test("Returns 0, which means the password is NOT exposed", async () => {
                 // Setup
@@ -326,8 +336,12 @@ describe("<utils.ts>", () => {
                 const result = await Utils.isPasswordPwned("password");
 
                 // Result
-                expect(result).toBe(0)
+                expect(result).toBe(0);
+                expect(result).toMatchSnapshot();
             })
         })
+    })
+    describe("sendResetPasswordConfirmation()", () => {
+
     })
 })
