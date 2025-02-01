@@ -2252,3 +2252,94 @@ exports[`<utils.ts> > isPasswordPwned() > Splits String into substrings and retu
   ],
 }
 `;
+
+exports[`<utils.ts> > sendEmailConfirmation() > Generates random token in base64 with a length of 6 characters 1`] = `
+{
+  "message": "Code sent!",
+  "ok": true,
+}
+`;
+
+exports[`<utils.ts> > sendEmailConfirmation() > If data is missing, returns object 1`] = `
+{
+  "message": "Email must be provided",
+  "ok": false,
+}
+`;
+
+exports[`<utils.ts> > sendEmailConfirmation() > Returns object from catch block if the query to insert the token to database fails 1`] = `
+{
+  "message": "Server failure",
+  "ok": false,
+}
+`;
+
+exports[`<utils.ts> > sendEmailConfirmation() > Returns object if sgMail.send() succeeds 1`] = `
+{
+  "message": "Code sent!",
+  "ok": true,
+}
+`;
+
+exports[`<utils.ts> > sendEmailConfirmation() > Sets API .env key to @sendgrid/mail (Twilio) 1`] = `
+{
+  "message": "Code sent!",
+  "ok": true,
+}
+`;
+
+exports[`<utils.ts> > sendResetPasswordConfirmation() > Generates random token in base64 with a length of 6 characters 1`] = `
+{
+  "message": "Code sent!",
+  "ok": true,
+}
+`;
+
+exports[`<utils.ts> > sendResetPasswordConfirmation() > If data is missing, returns object 1`] = `
+{
+  "message": "Email must be provided",
+  "ok": false,
+}
+`;
+
+exports[`<utils.ts> > sendResetPasswordConfirmation() > If email is invalidated by Zod, returns object 1`] = `
+{
+  "message": "Invalid e-mail",
+  "ok": false,
+}
+`;
+
+exports[`<utils.ts> > sendResetPasswordConfirmation() > If email is not found on database, returns object 1`] = `
+{
+  "message": "Email not found",
+  "ok": false,
+}
+`;
+
+exports[`<utils.ts> > sendResetPasswordConfirmation() > Returns object if sgMail.send() failed 1`] = `
+{
+  "message": "Error at mail provider",
+  "ok": false,
+}
+`;
+
+exports[`<utils.ts> > sendResetPasswordConfirmation() > Returns object if sgMail.send() succeeds 1`] = `
+{
+  "message": "Code sent!",
+  "ok": true,
+}
+`;
+
+exports[`<utils.ts> > sendResetPasswordConfirmation() > Sends email confirmation through sgMail.send() 1`] = `
+{
+  "message": "Code sent!",
+  "ok": true,
+}
+`;
+
+exports[`<utils.ts> > sendResetPasswordConfirmation() > Sets API .env key to @sendgrid/mail (Twilio) 1`] = `
+{
+  "message": "Code sent!",
+  "ok": true,
+}
+`;
