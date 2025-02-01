@@ -3,13 +3,14 @@ import * as Utils from "../../utils";
 import pool from "../../mocks/db";
 import { Argon2id } from "oslo/password";
 import mockExposedPasswords from "../../mocks/mock-exposed-passwords";
-import crypto, { Hash } from "crypto";
+import crypto, { Hash, randomBytes } from "crypto";
+import sgMail from "@sendgrid/mail";
 
 vi.mock(import("server-only"), () => ({}))
 vi.mock("../../mocks/db.ts", () => {
     return {
         default: { // References "pool"
-            query: vi.fn() // Mocks pool method
+            query: vi.fn()
         }
     }
 })
@@ -33,13 +34,65 @@ vi.mock("crypto", () => {
 })
 vi.mock("zod", () => {
     return {
-        z: vi.fn(),
+        z: {
+            string: vi.fn(() => ({
+                min: vi.fn(num => ({
+                    email: vi.fn(options => ({
+                        safeParse: vi.fn(email => {
+                            if (!email || email.length < num) {
+                                return options
+                            }
+                            if (!email.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i)) {
+                                return {
+                                    "success": false,
+                                    "error": {
+                                        "issues": [
+                                            {
+                                                code: "invalid_string",
+                                                message: options.message,
+                                                path: [],
+                                                validation: "email"
+                                            }
+                                        ]
+                                    }
+                                };
+                            }
+                            return { success: true, data: email };
+                        })
+                    }))
+                }))
+            }))
+        }
+    }
+})
+vi.mock("@sendgrid/mail", () => {
+    return {
+        default: {
+            setApiKey: vi.fn().mockImplementation(() => {}),
+            send: vi.fn().mockResolvedValueOnce([{
+                statusCode: 202,
+                body: Response,
+                headers: {}
+            }, {}]),
+        }
     }
 })
 
 describe("<utils.ts>", () => {
     afterEach(() => {
         vi.restoreAllMocks();
+    })
+    beforeEach(() => {
+        vi.mocked(pool.query).mockResolvedValue({
+            rowCount: 1,
+            rows: [],
+        } as unknown as ReturnType<typeof pool.query>);
+        vi.mocked(sgMail.send).mockResolvedValue([{
+            statusCode: 202,
+            body: Response,
+            headers: {}
+        }, {}]);
+        process.env.SENDGRID_API_KEY = "XXXYYYZZZ";
     })
     describe("getUserFromDb()", () => {
         describe("Checks missing data...", () => {
@@ -242,6 +295,9 @@ describe("<utils.ts>", () => {
             expect(createHash).toHaveBeenCalledWith("sha1");
             expect(updateMock).toHaveBeenCalledWith("password");
             expect(digestMock).toHaveBeenCalledWith("hex");
+            expect(createHash).toMatchSnapshot();
+            expect(updateMock).toMatchSnapshot();
+            expect(digestMock).toMatchSnapshot();
         })
         test("Slices hash to get the 'range'", async () => {
             // Setup
@@ -252,6 +308,7 @@ describe("<utils.ts>", () => {
 
             // Result
             expect(sliceSpy).toHaveBeenCalledWith(0,5);
+            expect(sliceSpy).toMatchSnapshot();
         })
         test("Fetches from api.pwnedpasswords", async () => {
             // Setup
@@ -262,6 +319,7 @@ describe("<utils.ts>", () => {
 
             // Result
             expect(fetchSpy).toHaveBeenCalledWith("https://api.pwnedpasswords.com/range/000F6");
+            expect(fetchSpy).toMatchSnapshot();
         })
         test("Receives Response as 'text' and converts it to String with Response.text()", async () => {
             // Setup
@@ -274,6 +332,7 @@ describe("<utils.ts>", () => {
             expect(spyOnResponse).toHaveBeenCalledTimes(1);
             expect(spyOnResponse).toHaveBeenCalledWith();
             expect(spyOnResponse).toHaveResolvedWith(mockExposedPasswords);
+            expect(spyOnResponse).toMatchSnapshot();
         })
         describe("Splits String into substrings and returns them as an array", () => {
             test("Splits the substring on each linebreak (suffix)", async () => {
@@ -285,6 +344,7 @@ describe("<utils.ts>", () => {
 
                 // Result
                 expect(spyOnString).toHaveBeenCalledWith('\n');
+                expect(spyOnString).toMatchSnapshot();
             })
             test("Splits the sub-substring on each colon (count)", async () => {
                 //Setup
@@ -295,6 +355,7 @@ describe("<utils.ts>", () => {
 
                 // Result
                 expect(spyOnString).toHaveBeenCalledWith(':');
+                expect(spyOnString).toMatchSnapshot();
             })
             test("Uses parseInt to return the count number if suffix to check is the same as the suffix being checked", async () => {
                 //Setup
@@ -305,6 +366,7 @@ describe("<utils.ts>", () => {
 
                 // Result
                 expect(spyOnInt).toHaveBeenCalled();
+                expect(spyOnInt).toMatchSnapshot();
             })
             test("Returns the count number greater than 0, which means the password has been exposed", async () => {
                 // Setup
@@ -313,7 +375,8 @@ describe("<utils.ts>", () => {
                 const result = await Utils.isPasswordPwned("password");
 
                 // Result
-                expect(result).toBe(789)
+                expect(result).toBe(789);
+                expect(result).toMatchSnapshot();
             })
             test("Returns 0, which means the password is NOT exposed", async () => {
                 // Setup
@@ -326,8 +389,175 @@ describe("<utils.ts>", () => {
                 const result = await Utils.isPasswordPwned("password");
 
                 // Result
-                expect(result).toBe(0)
+                expect(result).toBe(0);
+                expect(result).toMatchSnapshot();
             })
+        })
+    })
+    describe("sendResetPasswordConfirmation()", () => {
+        test("If data is missing, returns object", async () => {
+            // Setup
+            // Implementation
+            const result = await Utils.sendResetPasswordConfirmation();
+            // Result
+            expect(result).toEqual({
+                ok: false,
+                message: 'Email must be provided'
+            });
+            expect(result).toMatchSnapshot();
+        })
+        test("If email is invalidated by Zod, returns object", async () => {
+            // Setup
+            const invalidEmail = "invalid/email";
+
+            // Implementation
+            const result = await Utils.sendResetPasswordConfirmation(invalidEmail);
+            
+            // Result
+            expect(result).toEqual({
+                ok: false,
+                message: "Invalid e-mail"
+            })
+            expect(result).toMatchSnapshot();
+        })
+        test("If email is not found on database, returns object", async () => {
+            // Setup
+            vi.mocked(pool.query).mockResolvedValueOnce({
+                rowCount: 0,
+                rows: []
+            } as unknown as ReturnType<typeof pool.query>);
+
+            // Implementation
+            const result = await Utils.sendResetPasswordConfirmation("name@domain.com");
+
+            // Result
+            expect(result).toEqual({
+                ok: false,
+                message: "Email not found"
+            })
+            expect(result).toMatchSnapshot();
+        })
+        test("Generates random token in base64 with a length of 6 characters", async () => {
+            // Setup
+
+            // Implementation
+            const result = await Utils.sendResetPasswordConfirmation("name@domain.com");
+
+            // Result
+            expect(randomBytes).toHaveBeenCalledTimes(1);
+            expect(result).toMatchSnapshot();
+        })
+        test("Sets API .env key to @sendgrid/mail (Twilio)", async () => {
+            // Setup
+
+            // Implementation
+            const result = await Utils.sendResetPasswordConfirmation("name@domain.com");
+
+            // Result
+            expect(sgMail.setApiKey).toHaveBeenCalledTimes(1);
+            expect(result).toMatchSnapshot();
+        })
+        test("Sends email confirmation through sgMail.send()", async () => {
+            // Setup
+
+            // Implementation
+            const result = await Utils.sendResetPasswordConfirmation("name@domain.com");
+
+            // Result
+            expect(sgMail.send).toHaveBeenCalledTimes(1);
+            expect(result).toMatchSnapshot();
+        })
+        test("Returns object if sgMail.send() failed", async () => {
+            // Setup
+            vi.mocked(sgMail.send).mockResolvedValueOnce([{
+                statusCode: 500,
+                body: Response,
+                headers: {}
+            }, {}])
+
+            // Implementation
+            const result = await Utils.sendResetPasswordConfirmation("name@domain.com");
+
+            // Result
+            expect(result).toEqual({
+                ok: false,
+                message: "Error at mail provider"
+            })
+            expect(result).toMatchSnapshot();
+        })
+        test("Returns object if sgMail.send() succeeds", async () => {
+            // Setup
+
+            // Implementation
+            const result = await Utils.sendResetPasswordConfirmation("name@domain.com");
+
+            // Result
+            expect(result).toEqual({
+                ok: true,
+                message: "Code sent!"
+            })
+            expect(result).toMatchSnapshot();
+        })
+    })
+    describe("sendEmailConfirmation()", () => {
+        test("If data is missing, returns object", async () => {
+            // Setup
+            // Implementation
+            const result = await Utils.sendEmailConfirmation();
+            // Result
+            expect(result).toEqual({
+                ok: false,
+                message: 'Email must be provided'
+            });
+            expect(result).toMatchSnapshot();
+        })
+        test("Generates random token in base64 with a length of 6 characters", async () => {
+            // Setup
+
+            // Implementation
+            const result = await Utils.sendEmailConfirmation("name@domain.com");
+
+            // Result
+            expect(randomBytes).toHaveBeenCalledTimes(1);
+            expect(result).toMatchSnapshot();
+        })
+        test("Sets API .env key to @sendgrid/mail (Twilio)", async () => {
+            // Setup
+
+            // Implementation
+            const result = await Utils.sendEmailConfirmation("name@domain.com");
+
+            // Result
+            expect(sgMail.setApiKey).toHaveBeenCalledTimes(1);
+            expect(result).toMatchSnapshot();
+        })
+        test("Returns object from catch block if the query to insert the token to database fails", async () => {
+            // Setup
+            vi.mocked(pool.query).mockResolvedValueOnce({
+                rowCount: 0
+            } as unknown as ReturnType<typeof pool.query>)
+
+            // Implementation
+            const result = await Utils.sendEmailConfirmation("name@domain.com");
+            // Result
+            expect(result).toEqual({
+                ok: false,
+                message: "Server failure"
+            })
+            expect(result).toMatchSnapshot();
+        })
+        test("Returns object if sgMail.send() succeeds", async () => {
+            // Setup
+
+            // Implementation
+            const result = await Utils.sendEmailConfirmation("name@domain.com");
+
+            // Result
+            expect(result).toEqual({
+                ok: true,
+                message: "Code sent!"
+            })
+            expect(result).toMatchSnapshot();
         })
     })
 })
