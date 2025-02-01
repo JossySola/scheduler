@@ -100,83 +100,58 @@ export async function isPasswordPwned (password: string): Promise<number | UtilR
   }
 }
 export async function sendResetPasswordConfirmation(email: string | undefined): Promise<UtilResponse> {
-  console.error("[sendResetPasswordConfirmation] Starting...")
-  console.error("[sendResetPasswordConfirmation] Checking necessary data exists...")
   if (!email) {
-    console.error("[sendResetPasswordConfirmation] Data is missing, exiting...")
     return {
       ok: false,
       message: 'Email must be provided'
     }
   }
-  console.error("[sendResetPasswordConfirmation] Validating data with Zod...")
   const validated = z.string().min(1).email({ message: "Invalid e-mail" }).safeParse(email);
-  console.error("[sendResetPasswordConfirmation] Zod validation:", validated)
-  if (!validated) {
-    console.error("[sendResetPasswordConfirmation] Validation unsuccessful, exiting...")
+  if (!validated.success) {
     return {
       ok: false,
-      message: validated
+      message: validated.error?.issues?.[0]?.message || "Unknown validation error"
     }
   }
-  console.error("[sendResetPasswordConfirmation] Starting query...")
-  console.error("[sendResetPasswordConfirmation] SELECT email...")
   const confirming = await pool.query(`
       SELECT email FROM scheduler_users
         WHERE email = $1;
   `, [email])
-  console.error("[sendResetPasswordConfirmation] Query result:", confirming)
+  
   if (confirming.rowCount === 0 || !confirming) {
-    console.error("[sendResetPasswordConfirmation] Record not found, exiting...")
     return {
       ok: false,
       message: 'Email not found'
     }
   }
-  console.error("[sendResetPasswordConfirmation] Generating random code...")
-  const verification_code = randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 6); 
-  console.error("[sendResetPasswordConfirmation] Code:", verification_code)
-  console.error("[sendResetPasswordConfirmation] Setting sgMail API key...")
-  process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  console.error("[sendResetPasswordConfirmation] Creating msg Object...")
+  const verification_code = randomBytes(7).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 7);
   const msg = {
     to: `${email}`,
     from: 'no-reply@jossysola.com',
     subject: 'Scheduler: Reset password confirmation',
     text: `${verification_code}`
   }
-  console.error("[sendResetPasswordConfirmation] Entering try block...")
   try {
-    console.error("[sendResetPasswordConfirmation] Starting query...")
-    console.error("[sendResetPasswordConfirmation] INSERT token INTO confirmations")
+    process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const insertToken = await pool.query(`
       INSERT INTO scheduler_email_confirmation_tokens (token, email, expires_at)
         VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
     `, [verification_code, email]);
-    console.error("[sendResetPasswordConfirmation] Query result:", insertToken)
     if (insertToken.rowCount === 0) {
-      console.error("[sendResetPasswordConfirmation] Token failed to insert, exiting...")
       throw new Error('Server Error');
     }
-    console.error("[sendResetPasswordConfirmation] Sending email...")
     const sending = await sgMail.send(msg)
-    console.error("[sendResetPasswordConfirmation] Sender response:", sending)
     if (sending[0].statusCode !== 202) {
-      console.error("[sendResetPasswordConfirmation] Send unsuccessful, exiting...")
       return {
         ok: false,
         message: 'Error at mail provider'
       }
     }
-    console.error("[sendResetPasswordConfirmation] Email sent, exiting...")
     return {
       ok: true,
       message: 'Code sent!'
     }
   } catch (error) {
-    console.error("[sendResetPasswordConfirmation] Entering catch block...")
-    console.error("[sendResetPasswordConfirmation] Error:", error)
-    console.error("[sendResetPasswordConfirmation] Exiting...")
     return {
       ok: false,
       message: 'Server failure'
@@ -184,13 +159,14 @@ export async function sendResetPasswordConfirmation(email: string | undefined): 
   }
 }
 export async function sendEmailConfirmation(email: string, name?: string): Promise<UtilResponse> {
-  console.error("[sendEmailConfirmation] Starting...")
-  console.error("[sendEmailConfirmation] Creating code...")
+  if (!email) {
+    return {
+      ok: false,
+      message: 'Email must be provided'
+    }
+  }
+  
   const verification_code = randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 6);
-  console.error("[sendEmailConfirmation] Code:", verification_code)
-  console.error("[sendEmailConfirmation] Setting sgMail API key...")
-  process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  console.error("[sendEmailConfirmation] Creating msg Object...")
   const msg = {
       to: `${email}`,
       from: 'no-reply@jossysola.com',
@@ -378,39 +354,29 @@ export async function sendEmailConfirmation(email: string, name?: string): Promi
   
 </body></html>`
   }
-  console.error("[sendEmailConfirmation] Entering try block...")
   try {
-    console.error("[sendEmailConfirmation] Starting query...")
-    console.error("[sendEmailConfirmation] INSERT token INTO confirmations...")
+    process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const insertToken = await pool.query(`
       INSERT INTO scheduler_email_confirmation_tokens (token, email, expires_at)
         VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
     `, [verification_code, email]);
-    console.error("[sendEmailConfirmation] Query result:", insertToken)
+    
     if (insertToken.rowCount === 0) {
-      console.error("[sendEmailConfirmation] INSERT failed")
-      console.error("[sendEmailConfirmation] Exiting...")
-      throw new Error('Server Error');
+      throw new Error();
     }
-    console.error("[sendEmailConfirmation] Sending email...")
+    
     const sendConfirmation = await sgMail.send(msg)
     if (sendConfirmation[0].statusCode !== 202) {
-      console.error("[sendEmailConfirmation] Send failed, exiting...")
         return {
             ok: false,
             message: "The code couldn't be sent"
         }
     }
-    console.error("[sendEmailConfirmation] Email sent")
-    console.error("[sendEmailConfirmation] Exiting...")
     return {
       ok: true,
       message: 'Code sent!'
     }
   } catch (error) {
-    console.error("[sendEmailConfirmation] Entering catch block...")
-    console.error("[sendEmailConfirmation] Error:", error)
-    console.error("[sendEmailConfirmation] Exiting...")
     return {
       ok: false,
       message: 'Server failure'
