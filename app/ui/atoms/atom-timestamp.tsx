@@ -28,8 +28,8 @@ function formatTimeAgo (date: string) {
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const diffWeeks = Math.floor(diffMs / 7);
-    const diffMonths = Math.floor(diffMs / 30);
+    const diffWeeks = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 7));
+    const diffMonths = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 30));
 
     if (diffMinutes < 1) return "Updated just now";
     if (diffMinutes < 60) return `Updated ${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`;
