@@ -1,8 +1,9 @@
+"use server"
 import "server-only";
 import pool from "@/app/lib/mocks/db";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST (request: NextRequest): Promise<NextResponse> {
+export async function POST (request: NextRequest) {
     console.error("[/api/table/save] Starting...")
     const payload = await request.json();
     console.error("[/api/table/save] Payload:", payload);
