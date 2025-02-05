@@ -1,3 +1,5 @@
+"use server"
+import "server-only"
 import pool from "@/app/lib/mocks/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";

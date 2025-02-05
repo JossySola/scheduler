@@ -4,7 +4,7 @@ import pool from "@/app/lib/mocks/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function GET () {
+export async function GET() {
     const headersList = await headers();
     const email = headersList.get("user_email");
 
