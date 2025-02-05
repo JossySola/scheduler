@@ -3,43 +3,54 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "vitest",
+    "cy:open": "cypress open"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.0.18",
+    "@auth/pg-adapter": "^1.7.4",
+    "@sendgrid/mail": "^8.1.4",
+    "@types/react": "19.0.4",
+    "@types/react-dom": "19.0.2",
     "@vercel/postgres": "^0.10.0",
+    "ai": "^4.1.5",
     "auth": "^1.2.3",
-    "bcrypt": "^5.1.1",
-    "dotenv": "^16.4.5",
-    "next": "^15.0.4-canary.47",
+    "dotenv": "^16.4.7",
+    "next": "^15.2.0-canary.41",
     "next-auth": "^5.0.0-beta.25",
+    "oslo": "^1.2.1",
     "pg": "^8.13.1",
-    "react": "^19.0.0-rc-7283a213-20241206",
-    "react-dom": "^19.0.0-rc-7283a213-20241206",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "server-only": "^0.0.1",
-    "swr": "^2.2.5",
     "ts-node": "^10.9.2",
-    "uuid": "^10.0.0",
-    "zod": "^3.23.8"
+    "uuid": "^11.0.5",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
+    "@eslint/js": "^9.17.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.16.10",
-    "@types/react": "18.3.12",
-    "@types/react-dom": "18.3.1",
     "@types/uuid": "^10.0.0",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.16",
-    "jest": "^29.7.0",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "@vitest/coverage-v8": "3.0.4",
+    "@vitest/ui": "^2.1.8",
+    "cypress": "^14.0.0",
+    "eslint": "^9.19.0",
+    "eslint-config-next": "^15.1.6",
+    "eslint-plugin-react": "^7.37.4",
+    "globals": "^15.14.0",
+    "jsdom": "^26.0.0",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.21.0",
+    "vitest": "^3.0.4"
   },
   "overrides": {
-    "@types/react": "18.3.12",
-    "@types/react-dom": "18.3.1"
+    "@types/react": "19.0.4",
+    "@types/react-dom": "19.0.2"
   }
 }
