@@ -1,13 +1,5 @@
-import DangerButton from "@/app/ui/atoms/atom-danger-button";
-import DisconnectProviders from "@/app/ui/molecules/mol-disconnect-providers";
-import Link from "next/link";
+import Settings from "@/app/ui/molecules/mol-settings";
 
 export default async function Page () {
-    return (
-        <>
-        <Link href="/reset">Reset password</Link>
-        <DisconnectProviders />
-        <DangerButton />
-        </>
-    )
+    return <Settings />
 }
