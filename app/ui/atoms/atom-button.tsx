@@ -2,7 +2,7 @@
 import { MouseEventHandler, useCallback, useTransition } from "react";
 
 export function Button({callback, text}: {
-    callback: (event: React.FormEvent<HTMLButtonElement>) => void,
+    callback: (event: React.MouseEvent<HTMLButtonElement>) => void,
     text: string | null,
 }) {
     return (
