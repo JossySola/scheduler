@@ -8,17 +8,11 @@ export async function DeleteTableAction (formData: FormData) {
     const session = await auth();
 
     if (!table_id) {
-        return {
-            ok: false,
-            message: "No id provided"
-        }
+        return;
     }
 
     if (!session?.user || !session?.user?.email) {
-        return {
-            ok: false,
-            message: "No session found"
-        }
+        return;
     }
 
     const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/table/delete`, {

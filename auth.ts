@@ -1,3 +1,4 @@
+import "server-only"
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
@@ -9,50 +10,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         Google({
             clientId: process.env.AUTH_GOOGLE_ID,
             clientSecret: process.env.AUTH_GOOGLE_SECRET,
-            async profile(profile) {
-                console.log("[Auth Providers Google] Starting...")
-                console.log("[Auth Providers Google] Fetching /api/signup")
-                const signup = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        name: profile.name,
-                        username: profile.name,
-                        email: profile.email,
-                        provider: 'Google',
-                        image: profile.picture,
-                    })
-                })
-                console.log("[Auth Providers Google] Fetch result:", signup)
-                console.log("[Auth Providers Google] Exiting...")
-                return { ...profile };
-            }
         }),
         Facebook({
             clientId: process.env.AUTH_FACEBOOK_ID,
             clientSecret: process.env.AUTH_FACEBOOK_SECRET,
-            async profile(profile) {
-                console.log("[Auth Providers Facebook] Starting...")
-                console.log("[Auth Providers Facebook] Fetching /api/signup")
-                const signup = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        name: profile.name,
-                        username: profile.name,
-                        email: profile.email,
-                        provider: 'Facebook',
-                        image: profile.picture.data.url,
-                    })
-                })
-                console.log("[Auth Providers Facebook] Fetch result:", signup)
-                console.log("[Auth Providers Facebook] Exiting...")
-                return { ...profile };
-            }
         }),
         Credentials({
             credentials: {
@@ -85,6 +46,60 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         }),
     ],
+    callbacks: {
+        async jwt ({ token, account, profile, trigger }) {
+            if (trigger === 'signUp') {
+                if (account && profile) {
+                    if (account.provider && account.provider === 'google') {
+                        await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                name: profile.name,
+                                username: profile.name,
+                                email: profile.email,
+                                provider: 'Google',
+                                image: profile.picture.data.url
+                            })
+                        })
+                        token.googleAccessToken = account.access_token;
+                        token.googleSub = profile?.sub || account.providerAccountId;
+                    } else if (account.provider && account.provider === 'facebook') {
+                        await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                name: profile.name,
+                                username: profile.name,
+                                email: profile.email,
+                                provider: 'Facebook',
+                                image: profile.picture.data.url
+                            })
+                        })
+                        token.facebookAccessToken = account.access_token;
+                        token.facebookSub = profile?.sub || account.providerAccountId;
+                    }
+                }
+            }
+            
+            return token;
+        },
+        async session ({ session, token }) {
+            if (token.googleAccessToken && token.googleSub) {
+                session.googleAccessToken = token.googleAccessToken;
+                session.user.googleSub = token.googleSub;
+            }
+            if (token.facebookAccessToken && token.facebookSub) {
+                session.facebookAccessToken = token.facebookAccessToken;
+                session.user.facebookSub = token.facebookSub;
+            }
+            return session;
+        }
+    },
     session: {
         strategy: "jwt"
     },

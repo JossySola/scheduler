@@ -1,32 +1,28 @@
-"use server"
-import "server-only"
 import pool from "@/app/lib/mocks/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET () {
     const headersList = await headers();
-    const email = headersList.get("user_email");
+    const email = headersList.get("user_email")?.toString();
 
     if (!email) {
         return NextResponse.json({
-            error: "User email missing"
+            error: "No session provided"
         }, { status: 400 })
     }
 
-    const response = await pool.query(`
-        SELECT id as user_id
-        FROM scheduler_users
+    const query = await pool.query(`
+        SELECT provider FROM scheduler_users_providers
         WHERE email = $1;
     `, [email]);
-
-    if (response.rowCount === 0) {
+    if (query.rowCount === 0) {
         return NextResponse.json({
-            error: "User not found"
+            error: "No providers found"
         }, { status: 404 })
     }
-    
+
     return NextResponse.json({
-        data: response.rows[0]
-    }, { status: 200 })
+        data: query.rows
+    }, { status: 200 });
 }
