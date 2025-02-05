@@ -1,11 +1,10 @@
 "use client"
 import { RefObject } from "react"
-import { Button, SubmitButton } from "./atom-button";
+import { Button } from "./atom-button";
 
-export default function Dialog ({ ref, action, item_id }: {
+export default function Dialog ({ children, ref }: {
     ref: RefObject<HTMLDialogElement | null>,
-    action: (formData: FormData) => void,
-    item_id: string,
+    children: React.JSX.Element,
 }) {
     const handleCancel = (event: React.FormEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -13,15 +12,10 @@ export default function Dialog ({ ref, action, item_id }: {
             ref.current.close();
         }
     }
-    
+
     return (
         <dialog ref={ref}>
-            <p autoFocus>Please confirm this action</p>
-
-            <form action={action}>
-                <input type="text" name="item_id" value={item_id} readOnly hidden/>
-                <SubmitButton text="Confirm"/>
-            </form>
+            { children }
             <Button text="Cancel" callback={handleCancel} />
         </dialog>
     )
