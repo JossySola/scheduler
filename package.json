@@ -13,6 +13,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^1.0.18",
     "@auth/pg-adapter": "^1.7.4",
+    "@heroui/react": "^2.6.14",
     "@sendgrid/mail": "^8.1.4",
     "@types/react": "19.0.4",
     "@types/react-dom": "19.0.2",
@@ -20,6 +21,7 @@
     "ai": "^4.1.5",
     "auth": "^1.2.3",
     "dotenv": "^16.4.7",
+    "framer-motion": "^12.3.1",
     "next": "^15.2.0-canary.41",
     "next-auth": "^5.0.0-beta.25",
     "oslo": "^1.2.1",
