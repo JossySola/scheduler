@@ -10,10 +10,50 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         Google({
             clientId: process.env.AUTH_GOOGLE_ID,
             clientSecret: process.env.AUTH_GOOGLE_SECRET,
+            async profile(profile) {
+                const imageUrl = profile.picture;
+                try {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
+                        method: 'POST',
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            name: profile.name,
+                            username: profile.name,
+                            email: profile.email,
+                            provider: 'Google',
+                            image: imageUrl,
+                        })
+                    })
+                    if (!response.ok) console.error("Signup API request failed", await response.text());
+                } catch (error) {
+                    console.error("Error during signup API call:", error);
+                }
+                return { ...profile };
+            }
         }),
         Facebook({
             clientId: process.env.AUTH_FACEBOOK_ID,
             clientSecret: process.env.AUTH_FACEBOOK_SECRET,
+            async profile(profile) {
+                const imageUrl = profile.picture.data.url;
+                try {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
+                        method: 'POST',
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            name: profile.name,
+                            username: profile.name,
+                            email: profile.email,
+                            provider: 'Facebook',
+                            image: imageUrl,
+                        })
+                    })
+                    if (!response.ok) console.error("Signup API request failed", await response.text());
+                } catch (error) {
+                    console.error("Error during signup API call:", error);
+                }
+                return { ...profile };
+            }
         }),
         Credentials({
             credentials: {
@@ -21,9 +61,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                console.log("[Auth Credentials authorize] Starting...")
-                console.log("[Auth Credentials authorize] Credentials:", credentials)
-                console.log("[Auth Credentials authorize] Fetching /api/argon/user...")
                 const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/argon/user`, {
                     method: 'POST',
                     body: JSON.stringify({
@@ -31,57 +68,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         password: credentials.password,
                     })
                 });
-                console.log("[Auth Credentials authorize] Fetch response:", response)
                 
                 if (!response.ok) {
-                    console.log("[Auth Credentials authorize] Parsed response status is not 200")
-                    console.log("[Auth Credentials authorize] Exiting...")
                     throw new Error ("Invalid credentials.");
                 }
 
                 const data = await response.json();
-                console.log("[Auth Credentials authorize] JSON parse:", data)
-                console.log("[Auth Credentials authorize] Exiting...")
                 return data.user;
             },
         }),
     ],
     callbacks: {
-        async jwt ({ token, account, profile, trigger }) {
-            if (trigger === 'signUp') {
-                if (account && profile) {
-                    if (account.provider && account.provider === 'google') {
-                        await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
-                            method: 'POST',
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                name: profile.name,
-                                username: profile.name,
-                                email: profile.email,
-                                provider: 'Google',
-                                image: profile.picture.data.url
-                            })
-                        })
+        async jwt ({ token, account, profile }) {
+            if (account && profile) {
+                const provider = account.provider;
+                const isGoogle = provider === 'google';
+                const isFacebook = provider === 'facebook';
+
+                if (isGoogle || isFacebook) {
+                    if (isGoogle) {
                         token.googleAccessToken = account.access_token;
-                        token.googleSub = profile?.sub || account.providerAccountId;
-                    } else if (account.provider && account.provider === 'facebook') {
-                        await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
-                            method: 'POST',
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                name: profile.name,
-                                username: profile.name,
-                                email: profile.email,
-                                provider: 'Facebook',
-                                image: profile.picture.data.url
-                            })
-                        })
+                        token.googleSub = account.providerAccountId;
+                    } else if (isFacebook) {
                         token.facebookAccessToken = account.access_token;
-                        token.facebookSub = profile?.sub || account.providerAccountId;
+                        token.facebookSub = account.providerAccountId;
                     }
                 }
             }
@@ -89,6 +99,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return token;
         },
         async session ({ session, token }) {
+            session.user = session.user || {};
+
             if (token.googleAccessToken && token.googleSub) {
                 session.googleAccessToken = token.googleAccessToken;
                 session.user.googleSub = token.googleSub;
@@ -106,5 +118,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     pages: {
         signIn: "/login",
     },
-    debug: false,
+    debug: true,
 })
