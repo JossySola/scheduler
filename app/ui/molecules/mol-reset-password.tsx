@@ -1,9 +1,10 @@
 'use client'
-import { sendResetPasswordConfirmation } from "../../lib/utils-server";
+import { sendResetPasswordConfirmation } from "../../lib/utils";
 import { SubmitButton } from "@/app/ui/atoms/atom-button";
 import { useState } from "react";
 import { handlePasswordReset, handleTokenConfirmation } from "../../(routes)/reset/actions";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 export default function ResetPassword() {
     const [ email, setEmail ] = useState<string | undefined>('');
@@ -34,6 +35,7 @@ export default function ResetPassword() {
                 if (reset) {
                     setResetSuccessful(true);
                     setMessage(reset.statusText);
+                    signOut();
                 } else {
                     setMessage(`${reset.statusText}`)
                 }

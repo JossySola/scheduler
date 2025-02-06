@@ -2,13 +2,21 @@ import { auth } from "@/auth";
 
 export default async function UserProfile() {
     const session = await auth();
+    if (!session?.user || !session?.user.email) return null;
     
-    if (!session?.user) return null;
+    const imageRequest = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/user/image`, {
+        method: "GET",
+        headers: {
+            "user_email": session.user.email
+        }
+    });
+
+    const image = await imageRequest.json();
 
     return (
         <section>
             {
-                session.user.image ? <img src={session.user.image} /> : null
+                image.user_image ? <img src={image.user_image} /> : null
             }
             <h2>{session.user.name}</h2>
         </section>

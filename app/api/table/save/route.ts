@@ -1,8 +1,9 @@
+"use server"
 import "server-only";
 import pool from "@/app/lib/mocks/db";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST (request: NextRequest): Promise<NextResponse> {
+export async function POST (request: NextRequest) {
     console.error("[/api/table/save] Starting...")
     const payload = await request.json();
     console.error("[/api/table/save] Payload:", payload);
@@ -11,6 +12,7 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
     const title: string = payload.title;
     const values: string = JSON.stringify(payload.values);
     const specs: string = JSON.stringify(payload.specs);
+    const cols: string = JSON.stringify(payload.cols);
     const rows: string = JSON.stringify(payload.rows);
     const secret: string | undefined = process.env.NEXTAUTH_SECRET;
 
@@ -43,16 +45,17 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
         }
         
         const newTable = await pool.query(`
-            INSERT INTO scheduler_users_tables (user_id, table_name, table_data, table_specs, table_values)
+            INSERT INTO scheduler_users_tables (user_id, table_name, table_data, table_specs, table_values, table_cols)
             VALUES (
                 $1,
                 $2,
-                pgp_sym_encrypt($3, $6),
-                pgp_sym_encrypt($4, $6),
-                pgp_sym_encrypt($5, $6)
+                pgp_sym_encrypt($3, $7),
+                pgp_sym_encrypt($4, $7),
+                pgp_sym_encrypt($5, $7),
+                pgp_sym_encrypt($6, $7)
             )
             RETURNING id;
-        `, [id, title, rows, specs, values, secret]);
+        `, [id, title, rows, specs, values, cols, secret]);
         console.error("[/api/table/save] Table inserted?", newTable.rowCount ? "Yes" : "No");
 
         console.error("[/api/table/save] Adding +1 to num_tables...");
@@ -77,12 +80,13 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
     const fetching = await pool.query(`
         UPDATE scheduler_users_tables
         SET table_name = $1,
-            table_data = pgp_sym_encrypt($2, $5),
-            table_specs = pgp_sym_encrypt($3, $5),
-            table_values = pgp_sym_encrypt($4, $5),
+            table_data = pgp_sym_encrypt($2, $6),
+            table_specs = pgp_sym_encrypt($3, $6),
+            table_values = pgp_sym_encrypt($4, $6),
+            table_cols = pgp_sym_encrypt($5, $6),
             updated_at = NOW()
-        WHERE id = $6;
-    `, [title, rows, specs, values, secret, table_id]);
+        WHERE id = $7;
+    `, [title, rows, specs, values, cols, secret, table_id]);
     console.error("[/api/table/save] Fetch result:", fetching);
     
     console.error("[/api/table/save] Exiting...")

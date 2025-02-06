@@ -21,7 +21,8 @@ export async function SaveTableAction (state: { message: string }, formData: For
     const user_email: string = content.filter(item => item[0] === "user_email").filter(item => item !== undefined && item !== null)[0][1].toString();
     const rows: Array<Array<string>> = SORT(content);
     const values: Array<Array<string>> = content.filter(item => item[0].startsWith("ValueOption")).filter(item => item !== undefined && item !== null);
-    const specs: Array<Array<string>> = content.filter(item => item[0].startsWith("Specification[")).filter(item => item !== undefined && item !== null);
+    const specs: Array<Array<string>> = content.filter(item => item[0].startsWith("Specification:")).filter(item => item !== undefined && item !== null);
+    const cols: Array<number> = content.filter(item => item[0].startsWith("Specification:Column")).filter(item => item !== undefined && item !== null).map(item => parseInt(item[1], 10))
     console.log("[SaveTableAction] Table id:", table_id)
     console.log("[SaveTableAction] Rows:", rows)
     console.log("[SaveTableAction] Email:", user_email)
@@ -40,7 +41,8 @@ export async function SaveTableAction (state: { message: string }, formData: For
             title: formData.get("table_title"),
             rows,
             values,
-            specs
+            specs,
+            cols
         })
     })
     console.log("[SaveTableAction] Fetch result:", payload)
@@ -65,7 +67,7 @@ export async function UseAiAction (state: { message: string }, formData: FormDat
         }
     }
     const specifications = payload.map(row => {
-        if (row && row[0] && row[0].startsWith("Specification[")) {
+        if (row && row[0] && row[0].startsWith("Specification:")) {
             return row;
         }
     }).filter(key => key !== undefined);
