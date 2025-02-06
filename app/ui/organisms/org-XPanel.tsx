@@ -10,6 +10,7 @@ export default function XPanel ({ id }:{ id?: string }) {
     const [ colHeaders, setColHeaders ] = useState<Array<string>>([]);
     const [ rowHeaders, setRowHeaders ] = useState<Array<string>>([]);
     const [ rows, setRows ] = useState<Array<Array<string>>>([]);
+    const [ cols, setCols ] = useState<Array<number>>([]);
     const [ values, setValues ] = useState<Array<string>>([]);
     const [ preferences, setPreferences ] = useState<Array<Array<string>>>([]);
     const [ loading, setLoading ] = useState<boolean>(false);
@@ -53,6 +54,9 @@ export default function XPanel ({ id }:{ id?: string }) {
                     if (res.timestamps) {
                         setTimestamps(res.timestamps);
                     }
+                    if (res.cols) {
+                        setCols(res.cols);
+                    }
                 }
                 setLoading(false);
             })
@@ -83,7 +87,8 @@ export default function XPanel ({ id }:{ id?: string }) {
             values={values} 
             setValues={setValues}
             title={title}
-            setTitle={setTitle}>
+            setTitle={setTitle}
+            cols={cols}>
                 <>
                     <XList 
                     name="Rows" 

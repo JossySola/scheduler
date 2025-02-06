@@ -1,12 +1,25 @@
 "use client"
 import { v4 as uuidv4 } from "uuid";
-import { SetStateAction } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 
-export default function XRows ({
-    existingRows,
-    setRows,
-    values,
-}: { existingRows: Array<Array<string>>, setRows: React.Dispatch<SetStateAction<string[][]>>, values?: Array<string> }) {
+export default function XRows ({ existingRows, setRows, values, cols }: { 
+    existingRows: Array<Array<string>>, 
+    setRows: React.Dispatch<SetStateAction<string[][]>>, 
+    values?: Array<string>, 
+    cols?: Array<number> 
+}) {
+    const [ colsCriteria, setColsCriteria ] = useState<Array<number>>(existingRows.length ? 
+        existingRows[0].map(() => existingRows.length ) : []);
+
+    useEffect(() => {
+        if (cols) {
+            setColsCriteria(cols);
+        }
+    }, [])
+
+    useEffect(() => {
+        setColsCriteria(prev => [...prev, existingRows.length]);
+    }, [existingRows])
     // display rows dynamically based on data received
     // dynamically add and remove
     return (
@@ -23,6 +36,15 @@ export default function XRows ({
                                         return (
                                         <th scope="col" key={cIndex}>
                                             <RowInput rIndex={rIndex} cIndex={cIndex} value={column} setNewValue={setRows} currentRows={existingRows} />
+                                            <input type="number" name={`Specification:Column:${existingRows[0] ? existingRows[0][cIndex] : ""}-must-have-this-amount-of-cells-filled-in`} min={0} max={existingRows && existingRows.length ? existingRows.length - 1 : 0} value={colsCriteria[cIndex]} onChange={e => {
+                                                setColsCriteria(colsCriteria && colsCriteria.map((col, index) => {
+                                                    if (index === cIndex) {
+                                                        const num = parseInt(e.target.value, 10);
+                                                        return num;
+                                                    }
+                                                    return col;
+                                                }))
+                                            }}/>
                                         </th>)
                                     })
                                 }
