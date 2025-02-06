@@ -11,6 +11,7 @@ export default async function Page () {
             <>
                 <Link href="/table/new">Create new</Link>
                 <UserProfile />
+                <Link href="/profile/settings">Settings</Link>
             </>
         )
     }
