@@ -10,7 +10,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     const [ count, setCount ] = useState<number>(() => {
         if (preferences) {
             const [ num ] = preferences.map(subArray => {
-                if (subArray[0].trim() === `Specification[${name}]-should-appear-this-amount-of-times`) {
+                if (subArray[0].trim() === `Specification:Row-${name}-should-appear-this-amount-of-times`) {
                     if (!subArray[1]) {
                         return 0;
                     }
@@ -24,7 +24,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     });
     const [ disable, setDisable ] = useState<boolean>(() => {
         if (preferences) {
-            const result = preferences.find(subArray => subArray[0].trim() === `Specification[${name}]-disable-on-table`);
+            const result = preferences.find(subArray => subArray[0].trim() === `Specification:disable-Row-${name}-on-table`);
             if (result) {
                 return true;
             }
@@ -34,7 +34,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     const [ enabledColumns, setEnabledColumns ] = useState<Array<boolean>>(criteria.map(value => {
         if (preferences) {
             const result = preferences.find(subArray => {
-                return (subArray[0].trim() === `Specification[${name}]-should-be-used-on` && subArray[1].trim() === value.trim())
+                return (subArray[0].trim() === `Specification:Row-${name}-should-be-used-on` && subArray[1].trim() === value.trim())
             });
             if (result) {
                 return true;
@@ -45,7 +45,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     const [ enabledValues, setEnabledValues ] = useState<Array<boolean>>(values.map(value => {
         if (preferences) {
             const result = preferences.find(subArray => {
-                return (subArray[0].trim() === `Specification[${name}]-use-this-as-value` && subArray[1].trim() === value.trim())
+                return (subArray[0].trim() === `Specification:use-${name}-as-value` && subArray[1].trim() === value.trim())
             });
             if (result) {
                 return true;
@@ -65,7 +65,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                 Disable on all columns:
                 <input 
                 type="radio" 
-                name={`Specification[${name}]-disable-on-table`} 
+                name={`Specification:disable-Row-${name}-on-table`} 
                 value="Yes" 
                 checked={disable} 
                 onChange={() => setDisable(prev => !prev)}/>
@@ -78,7 +78,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                         return <label key={`${variable}-${index}`}>
                             <input 
                             type="checkbox" 
-                            name={`Specification[${name}]-should-be-used-on`} 
+                            name={`Specification:Row-${name}-should-be-used-on`} 
                             value={variable} 
                             checked={!!enabledColumns[index]}
                             onChange={(e => {
@@ -96,7 +96,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                 How many times it should appear (randomly)?
                 <input 
                 type="number" 
-                name={`Specification[${name}]-should-appear-this-amount-of-times`} 
+                name={`Specification:Row-${name}-should-appear-this-amount-of-times`} 
                 min={0}
                 max={criteria.length} 
                 value={count} 
@@ -112,7 +112,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                         return <label key={`${value}-${index}`}>
                             <input 
                             type="checkbox" 
-                            name={`Specification[${name}]-use-this-as-value`} 
+                            name={`Specification:use-${name}-as-value`} 
                             value={value} 
                             checked={!!enabledValues[index]}
                             onChange={(e => {
