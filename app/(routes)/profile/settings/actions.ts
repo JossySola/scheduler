@@ -14,6 +14,22 @@ export async function DeleteAccountAction (state: { message: "" }, formData: For
         };
     }
 
+    const providers = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/user/providers`, {
+        method: 'GET',
+        headers: {
+            "user_email": email
+        }
+    })
+    const providersResponse = await providers.json();
+    providersResponse.data && providersResponse.data.map(async (row: { provider: string }) => {
+        if (row.provider === "Google") {
+            await DisconnectGoogleAction();
+        }
+        if (row.provider === "Facebook") {
+            await DisconnectFacebookAction();
+        }
+    })
+
     const verify = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/verify/password`, {
         method: "POST",
         body: JSON.stringify({
@@ -45,6 +61,10 @@ export async function DisconnectGoogleAction () {
     const token = session?.googleAccessToken;
     const email = session?.user?.email;
     
+    if (!token || !email) {
+        return null;
+    }
+
     const request = await fetch(`https://oauth2.googleapis.com/revoke?token=${token}`, {
         method: 'POST',
         headers: {
@@ -76,6 +96,10 @@ export async function DisconnectFacebookAction () {
     const token = session?.facebookAccessToken;
     const sub = session?.user?.facebookSub;
     const email = session?.user?.email;
+
+    if (!token || !email || !sub) {
+        return null;
+    }
 
     const request = await fetch(`https://graph.facebook.com/${sub}/permissions`, {
         method: 'DELETE',
