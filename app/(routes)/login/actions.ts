@@ -23,14 +23,15 @@ export async function LogInAction (prevState: { message: string }, formData: For
         console.log("[LogInAction] Entering try block...")
         console.log("[LogInAction] Logging in...")
         console.log("[LogInAction] Exiting...")
-        const login = await signIn("credentials", {
+        await signIn("credentials", {
             username,
             password,
             redirect: true,
             redirectTo: "/dashboard"
         })
-        console.log("[LogInAction] Login result:", login)
-        console.log("[LogInAction] Redirecting...")
+        return {
+            message: "Logged in"
+        }
     } catch (error) {
         console.log("[LogInAction] Entering catch block...")
         console.log("[LogInAction] Error:", error)
