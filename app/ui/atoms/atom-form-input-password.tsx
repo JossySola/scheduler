@@ -20,6 +20,7 @@ export default function FormInputPassword () {
             <button type="button" onClick={() => {
                 setReveal(!reveal);
             }}>Reveal</button>
+            <p>We highly recommend using your <b>Password Manager</b> suggestion to create a strong password. This way, your password will be securely stored without the need to memorize it!</p>
 
             <section>
                 <p>{length ? '✔️' : '❌'} Has at least 8 characters</p>
