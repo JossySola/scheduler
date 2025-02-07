@@ -31,7 +31,6 @@ export async function LogInAction (prevState: { message: string }, formData: For
         })
         console.log("[LogInAction] Login result:", login)
         console.log("[LogInAction] Redirecting...")
-        //redirect("/dashboard");
     } catch (error) {
         console.log("[LogInAction] Entering catch block...")
         console.log("[LogInAction] Error:", error)
