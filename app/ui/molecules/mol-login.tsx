@@ -4,6 +4,7 @@ import { SubmitButton } from "../atoms/atom-button";
 import Password from "../atoms/atom-password";
 import Link from "next/link";
 import { LogInAction } from "@/app/(routes)/login/actions";
+import PasswordResetButton from "../atoms/atom-button-password-reset";
 
 export default function LogIn () {
     const [loginState, loginAction, pending] = useActionState(LogInAction, { message: "" });
@@ -18,7 +19,7 @@ export default function LogIn () {
                     Password
                     <Password />
                 </label>
-                <Link href={"/reset"}>Reset password</Link>
+                <PasswordResetButton />
                 <SubmitButton text="Log In" disabled={pending} />
                 <p aria-live="polite">{loginState.message}</p>
             </form>
