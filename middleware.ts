@@ -7,7 +7,7 @@ export async function middleware (request: NextRequest) {
         req: request,
         secret: secret
     });
-    if (["/", "/login", "/signup", "/try"].includes(request.nextUrl.pathname)) {
+    if (["/login", "/signup", "/try"].includes(request.nextUrl.pathname)) {
         if (token) {
             return NextResponse.redirect(new URL("/dashboard", request.url));
         }
