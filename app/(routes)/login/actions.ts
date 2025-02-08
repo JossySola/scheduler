@@ -4,6 +4,7 @@ import { auth, signIn } from "@/auth";
 import pool from "@/app/lib/mocks/db";
 import { randomUUID } from "crypto";
 import sgMail from "@sendgrid/mail";
+import { AuthError } from "next-auth";
 
 export async function LogInAction (prevState: { message: string }, formData: FormData) {
     console.log("[LogInAction] Starting...")
@@ -15,7 +16,7 @@ export async function LogInAction (prevState: { message: string }, formData: For
     if (!formData || !username || !password) {
         console.log("[LogInAction] There is data missing...")
         return {
-            message: "Data is missing"
+            message: "Data is missing/"
         }
     }
     
@@ -34,12 +35,19 @@ export async function LogInAction (prevState: { message: string }, formData: For
         }
     } catch (error) {
         console.log("[LogInAction] Entering catch block...")
-        console.log("[LogInAction] Error:", error)
-        console.log("[LogInAction] Exiting...")
+        console.log("[LogInAction] Error", error)
+
+        let errorMessage = "Unknown error/";
         if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
-            return {
-                message: "Invalid credentials"
+            if (error instanceof AuthError) {
+                errorMessage = `${error.message}/`;
+                if (error.cause?.next_attempt) {
+                    errorMessage += `/${error.cause.next_attempt}`;
+                }
+            } else if (error instanceof Error) {
+                errorMessage = `${error.message}/`;
             }
+            return { message: `${errorMessage}/` };
         }
         throw error;
     }
@@ -108,9 +116,15 @@ export async function SendResetEmailAction () {
             message: "Email sent!"
         }
     } catch (e) {
+        if (e instanceof Error) {
+            return {
+                ok: false,
+                message: e.message,
+            }
+        }
         return {
             ok: false,
-            message: e.message,
+            message: "Unknown error"
         }
     }
 }

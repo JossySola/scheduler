@@ -1,5 +1,5 @@
 import "server-only"
-import NextAuth from "next-auth";
+import NextAuth, { AuthError } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
@@ -61,20 +61,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/argon/user`, {
+                const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/argon/user`, {
                     method: 'POST',
                     body: JSON.stringify({
                         username: credentials.username,
                         password: credentials.password,
                     })
                 });
+                const response = await request.json();
                 
-                if (!response.ok) {
-                    throw new Error ("Invalid credentials.");
+                if (response.error || !request.ok) {
+                    throw new AuthError(response.error, { cause: { next_attempt: response.next_attempt } });
                 }
-
-                const data = await response.json();
-                return data.user;
+                
+                return response.user;
             },
         }),
     ],

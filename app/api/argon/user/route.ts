@@ -2,30 +2,60 @@
 import "server-only";
 import { getUserFromDb } from "@/app/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
+import pool from "@/app/lib/mocks/db";
 
 export async function POST (request: NextRequest): Promise<NextResponse> {
-    console.error("[/api/argon/user/POST] Starting...")
     const { username, password } = await request.json();
-    console.error("[/api/argon/user/POST] Parsed username:", username)
-    console.error("[/api/argon/user/POST] Parsed password:", password)
+    
     if (!username || !password) {
-        console.error("[/api/argon/user/POST] There is data missing, exiting...")
-        return NextResponse.json({ error: 'Missing username or password' }, { status: 409 })
+        return NextResponse.json({ error: 'Missing username or password./' }, { status: 409 })
+    }
+
+    const locked = await pool.query(`
+       SELECT next_attempt_allowed_at FROM scheduler_login_attempts WHERE email = $1;
+    `, [username]);
+
+    if (typeof locked.rowCount === 'number' && locked.rowCount > 0) {
+        const { next_attempt_allowed_at } = locked.rows[0];
+
+        if (next_attempt_allowed_at && new Date(next_attempt_allowed_at) > new Date()) {
+            return NextResponse.json({
+                error: "Wait for the timer to finish for another attempt./",
+                next_attempt: new Date(next_attempt_allowed_at).toISOString()
+            }, { status: 401 });
+        }
     }
 
     const user = await getUserFromDb(username, password);
-    console.error("[/api/argon/user/POST] Result from getUserFromDb:", user)
-    
+
     if (!user.ok) {
-        console.error("[/api/argon/user/POST] User ok property is not true")
         if (user.provider) {
-            console.error("[/api/argon/user/POST] There is a provider property:", user.provider);
-            console.error("[/api/argon/user/POST] Exiting...")
-            return NextResponse.json({ error: user.message }, { status: 400 })
+            return NextResponse.json({
+                error: `${user.message}/`
+            }, { status: 400 });
         }
-        console.error("[/api/argon/user/POST] Exiting...")
-        return NextResponse.json({ error: user.message }, { status: 400 })
+
+        const fail = await pool.query(`
+           INSERT INTO scheduler_login_attempts (email, attempts, last_attempt_at, next_attempt_allowed_at)
+           VALUES ($1, 1, NOW(), NOW() + INTERVAL '1 minute')
+           ON CONFLICT (email) DO UPDATE
+           SET attempts = scheduler_login_attempts.attempts + 1,
+                last_attempt_at = NOW(),
+                next_attempt_allowed_at = NOW() + (scheduler_login_attempts.attempts || ' minutes')::INTERVAL
+            RETURNING next_attempt_allowed_at;
+        `, [username]);
+
+        return NextResponse.json({
+            error: user.message,
+            next_attempt: fail.rows[0].next_attempt_allowed_at
+        }, { status: 401 });
     }
-    console.error("[/api/argon/user/POST] Exiting...")
-    return NextResponse.json({ user: user }, { status: 200 })
+
+    await pool.query(`
+       DELETE FROM scheduler_login_attempts WHERE email = $1; 
+    `, [username]);
+
+    return NextResponse.json({
+        user
+    }, { status: 200 });
 }
