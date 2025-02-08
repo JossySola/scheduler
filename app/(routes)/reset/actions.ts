@@ -30,6 +30,30 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         }
     }
 
+    const isTokenExpired = await pool.query(`
+       SELECT expires_at, used_at FROM scheduler_password_resets
+       WHERE email = $1 AND token = $2; 
+    `, [email, token]);
+    if (isTokenExpired.rowCount === 0) {
+        return {
+            message: "Token not found"
+        }
+    }
+    const { expires_at, used_at } = isTokenExpired.rows[0];
+    if (used_at) {
+        return {
+            message: "This token has already been used. Request a new one."
+        }
+    }
+    const expires = new Date(expires_at).toISOString();
+    const now = new Date().toISOString();
+    if (expires < now) {
+        return {
+            message: "The token has expired. Request a new one."
+        }
+    }
+
+
     const argon = new Argon2id();
     const oldPassword = await pool.query(`
        SELECT password FROM scheduler_users
