@@ -51,7 +51,7 @@ export default function XForm ({ id, cols, title, setTitle, children, rows, setR
                 : null
             }
 
-            <ActionButton text={aiPending ? "Creating..." : "Create"} formaction={aiAction} disabled={aiPending} action="autofill_table"/>
+            <ActionButton text={aiPending ? "Creating..." : "Generate with magic!"} formaction={aiAction} disabled={aiPending} action="autofill_table"/>
         </form>
     )
 }

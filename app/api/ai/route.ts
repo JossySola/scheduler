@@ -1,6 +1,6 @@
 "use server"
 import "server-only";
-import { openai } from "@ai-sdk/openai";
+import { anthropic } from '@ai-sdk/anthropic';
 import { generateObject } from "ai";
 import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
@@ -20,44 +20,62 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
 
     try {
         const { object } = await generateObject({
-            model: openai('gpt-4o'),
+            model: anthropic('claude-3-opus-20240229'),
             output: 'object',
             schema: z.object({
                 rows: z.array(z.array(z.string()))
             }),
             prompt: `
-                Generate a schedule / planner using the following data: 
+                You are a sophisticated scheduling algorithm designed to create strategic schedules/planners with the given data. Your task is to generate a schedule based on the provided information and specifications.
+
+                Generate a highly strategic schedule with the following data:
                 **Columns**: ${JSON.stringify(columns)}
                 **Rows**: ${JSON.stringify(rows)}
                 **Values**: ${JSON.stringify(values)}
-                **Specifications**: ${specifications ? JSON.stringify(specifications) : 'No specifications provided.'}
-                
-                ### Rules:
-                1. **Random Value Placement**:
-                - Distribute values **randomly** across the table.
-                - Use randomness in placement for each column and row while adhering to specifications.
+                In adittion, take in consideration the following specifications for this schedule:
+                **Specifications**: ${JSON.stringify(specifications)}
 
-                2. **Specification Enforcement**:
-                - If "Specification[<row header name>]-should-appear-this-amount-of-times" is specified, ensure the total occurrences of values in that row matches the specified count (e.g., "3" means exactly 3 values spread randomly).
-                - If "Specification[<row header name>]-fill-all-columns-with-at-least-<N>-values" is specified, ensure at least "<N>" unique values appear in every column of the row.
+                These are the specific requirements and constraints for the schedule. Each specification follows a format that you must interpret and apply correctly.
 
-                3. **Empty Cells**:
-                - Fill unused cells with an empty string ("''") after placing all required values.
+                Now, let's create the schedule following these steps:
+                1. Initialize the schedule with the column headers (days of the week).
+                2. Add row headers for each row.
+                3. Apply the specifications in this order:
+                a. Assign rows to specific columns as required.
+                b. Assign specific values to rows as specified.
+                c. Ensure each row appears the correct number of times.
+                d. Avoid scheduling rows on columns they should not work.
+                4. Fill the remaining slots randomly with the specified values in case there is not a specification dictating how many times the row should appear.
+                5. Fill unused cells with empty strings.
+                6. If there is a remote case where a criteria could not be meet, append this suffix: ^, to the value in question.
+                7. Rows specifications should be prioritized over columns specifications, regardless of the number of rows. For example: If there is only 1 row that has to appear 3 times in a table of 5 columns, the row should only have 3 columns filled with values.
 
-                4. **Conflict Resolution**:
-                - If both rules apply, prioritize "should-appear-this-amount-of-times".
+                Rules to follow:
+                1. **Randomness**
+                - Distribute the values randomly throughout the table ONLY IF it does not affect any specification.
+                2. **Emptiness**
+                - Fill unused cells with an empty string after placing all required values.
+                3.  **Output**
+                - Generate and return the output as a JavaScript Array of Arrays:
+                - The first array should contain the column headers.
+                - Each subsequent array represents a row.
+                - The first element of a row is the row header.
+                - The remaining elements of each row Array are the values for each column.
+                - The specification: "Specification:Row-<name>-should-appear-only-this-amount-of-times" means the row should appear no more than the specified amount, regardless of the column's specifications.
+                4. **Prioritization**
+                - Prioritize the specification: "Specification:Row-<name>-should-appear-only-this-amount-of-times" over "Specification:Column:<name>-must-have-this-amount-of-cells-filled-in", regardless of the amount of rows.
+                - If there are any "Specification:Row-<name>-use-this-value-specifically", ONLY use these specified values in the specified row. These values can be reused in the same row.
 
-                5. **Output Requirements**:
-                - Return the schedule as an array of arrays:
-                    - The first array contains column headers.
-                    - Each subsequent array represents a row:
-                        - The first element is the row header.
-                        - Remaining elements are the values for each column.
+                After creating the complete schedule, double-check your work against each specification to ensure all requirements are met.
 
-                ### Notes:
-                - Values should **not** appear in the same predictable order every time.
-                - Each execution should yield a different random arrangement of values.
-                - If multiple rows exist, repeat the process for each row.
+                Here's an example of how the output should be structured (note that this is a generic example and should not influence the actual content of the current generated schedule):
+
+                [
+                    ["Employees", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                    ["Employee1", "shift1", "shift2", "", "shift3", "shift4", "", ""],
+                    ["Employee2", "", "shift1", "shift2", "", "", "shift3", "shift4"],
+                    // ... more employees ...
+                ]
             `,
         });
         

@@ -10,7 +10,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     const [ count, setCount ] = useState<number>(() => {
         if (preferences) {
             const [ num ] = preferences.map(subArray => {
-                if (subArray[0].trim() === `Specification:Row-${name}-should-appear-this-amount-of-times`) {
+                if (subArray[0].trim() === `Specification:Row-${name}-should-appear-only-this-amount-of-times`) {
                     if (!subArray[1]) {
                         return 0;
                     }
@@ -45,7 +45,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     const [ enabledValues, setEnabledValues ] = useState<Array<boolean>>(values.map(value => {
         if (preferences) {
             const result = preferences.find(subArray => {
-                return (subArray[0].trim() === `Specification:use-${name}-as-value` && subArray[1].trim() === value.trim())
+                return (subArray[0].trim() === `Specification:Row-${name}-use-this-value-specifically` && subArray[1].trim() === value.trim())
             });
             if (result) {
                 return true;
@@ -93,10 +93,10 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
             </fieldset>
 
             <label>
-                How many times it should appear (randomly)?
+                How many times it should appear?
                 <input 
                 type="number" 
-                name={`Specification:Row-${name}-should-appear-this-amount-of-times`} 
+                name={`Specification:Row-${name}-should-appear-only-this-amount-of-times`} 
                 min={0}
                 max={criteria.length} 
                 value={count} 
@@ -112,7 +112,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                         return <label key={`${value}-${index}`}>
                             <input 
                             type="checkbox" 
-                            name={`Specification:use-${name}-as-value`} 
+                            name={`Specification:Row-${name}-use-this-value-specifically`} 
                             value={value} 
                             checked={!!enabledValues[index]}
                             onChange={(e => {

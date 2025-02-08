@@ -75,7 +75,7 @@ export default function XPanel ({ id }:{ id?: string }) {
     return (
         <SessionProvider>
             {
-                timestamps ? <p>Created at { formatter.format(new Date(timestamps.created_at)) }</p> : null
+                timestamps ? <p>Created on { formatter.format(new Date(timestamps.created_at)) }</p> : null
             }
             {
                 timestamps ? <Timestamp updated_at={timestamps.updated_at.toString()} /> : null
