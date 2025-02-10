@@ -2,9 +2,12 @@ import TableLink from "@/app/ui/molecules/mol-table-link";
 import { auth } from "@/auth"
 import { redirect } from "next/navigation";
 
-export default async function Page () {
+export default async function Page ({ params }: {
+    params: Promise<{ lang: string }>,
+}) {
     const session = await auth();
     const user_email = session?.user?.email ? session.user.email : null;
+    const lang = (await params).lang;
     
     if (user_email) {
         const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/user/id`, {
@@ -36,12 +39,12 @@ export default async function Page () {
                 )
             }
             return (
-                <p>No tables yet</p>
+                <p>{ lang === "es" ? "Aún no hay contenido para mostrar" : "No tables yet"}</p>
             )            
         }
         return (
             <p>User not found</p>
         )
     }
-    return redirect('/login');
+    return redirect(`/${lang}/login`);
 }

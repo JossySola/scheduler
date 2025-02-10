@@ -11,6 +11,7 @@
     "cy:open": "cypress open"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.1.6",
     "@ai-sdk/openai": "^1.0.18",
     "@auth/pg-adapter": "^1.7.4",
     "@heroui/react": "^2.6.14",

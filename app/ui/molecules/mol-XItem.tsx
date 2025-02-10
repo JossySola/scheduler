@@ -1,4 +1,5 @@
 "use client"
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function XItem ({ name, preferences, criteria = [], values = []} : {
@@ -7,10 +8,12 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     preferences?: Array<Array<string>>,
     values?: Array<string>,
 }) {
+    const params = useParams();
+    const { lang } = params;
     const [ count, setCount ] = useState<number>(() => {
         if (preferences) {
             const [ num ] = preferences.map(subArray => {
-                if (subArray[0].trim() === `Specification[${name}]-should-appear-this-amount-of-times`) {
+                if (subArray[0].trim() === `Specification:Row-${name}-should-appear-only-this-amount-of-times`) {
                     if (!subArray[1]) {
                         return 0;
                     }
@@ -24,7 +27,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     });
     const [ disable, setDisable ] = useState<boolean>(() => {
         if (preferences) {
-            const result = preferences.find(subArray => subArray[0].trim() === `Specification[${name}]-disable-on-table`);
+            const result = preferences.find(subArray => subArray[0].trim() === `Specification:disable-Row-${name}-on-table`);
             if (result) {
                 return true;
             }
@@ -34,7 +37,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     const [ enabledColumns, setEnabledColumns ] = useState<Array<boolean>>(criteria.map(value => {
         if (preferences) {
             const result = preferences.find(subArray => {
-                return (subArray[0].trim() === `Specification[${name}]-should-be-used-on` && subArray[1].trim() === value.trim())
+                return (subArray[0].trim() === `Specification:Row-${name}-should-be-used-on` && subArray[1].trim() === value.trim())
             });
             if (result) {
                 return true;
@@ -45,7 +48,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     const [ enabledValues, setEnabledValues ] = useState<Array<boolean>>(values.map(value => {
         if (preferences) {
             const result = preferences.find(subArray => {
-                return (subArray[0].trim() === `Specification[${name}]-use-this-as-value` && subArray[1].trim() === value.trim())
+                return (subArray[0].trim() === `Specification:Row-${name}-use-this-value-specifically` && subArray[1].trim() === value.trim())
             });
             if (result) {
                 return true;
@@ -62,26 +65,26 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
         <details>
             <summary>{name}</summary>
             <label>
-                Disable on all columns:
+                { lang === "es" ? "Deshabilitar en todas las columnas:" : "Disable on all columns:" }
                 <input 
                 type="radio" 
-                name={`Specification[${name}]-disable-on-table`} 
+                name={`Specification:disable-Row-${name}-on-table`} 
                 value="Yes" 
                 checked={disable} 
                 onChange={() => setDisable(prev => !prev)}/>
             </label>
 
             <fieldset>
-                <legend>Enable/disable in certain columns:</legend>
+                <legend>{ lang === "es" ? "Habilitar solo en ciertas columnas:" : "Enable/disable in certain columns:" }</legend>
                 {
                     criteria && criteria.map((variable, index) => {
                         return <label key={`${variable}-${index}`}>
                             <input 
                             type="checkbox" 
-                            name={`Specification[${name}]-should-be-used-on`} 
+                            name={`Specification:Row-${name}-should-be-used-on`} 
                             value={variable} 
                             checked={!!enabledColumns[index]}
-                            onChange={(e => {
+                            onChange={(() => {
                                 setEnabledColumns(prev => 
                                     prev.map((col, colIndex) => colIndex === index ? !col : col )
                                 )
@@ -93,10 +96,10 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
             </fieldset>
 
             <label>
-                How many times it should appear (randomly)?
+                { lang === "es" ? "¿Cuántas veces debería ser rellenado?" : "How many times it should appear?" }
                 <input 
                 type="number" 
-                name={`Specification[${name}]-should-appear-this-amount-of-times`} 
+                name={`Specification:Row-${name}-should-appear-only-this-amount-of-times`} 
                 min={0}
                 max={criteria.length} 
                 value={count} 
@@ -106,16 +109,16 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
             </label>
             
             <fieldset>
-                <legend>Prefer the following values:</legend>
+                <legend>{ lang === "es" ? "Preferir estos valores:" : "Prefer the following values:"}</legend>
                 {
                     values && values.map((value, index) => {
                         return <label key={`${value}-${index}`}>
                             <input 
                             type="checkbox" 
-                            name={`Specification[${name}]-use-this-as-value`} 
+                            name={`Specification:Row-${name}-use-this-value-specifically`} 
                             value={value} 
                             checked={!!enabledValues[index]}
-                            onChange={(e => {
+                            onChange={(() => {
                                 setEnabledValues(prev =>
                                     prev.map((col, colIndex) => colIndex === index ? !col : col )
                                 )

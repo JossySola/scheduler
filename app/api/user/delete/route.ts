@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
+    const locale = request.headers.get("x-user-locale") || "en";
     const headersList = await headers();
     const email = headersList.get("user_email");
 
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
             WHERE email = $1;
         `, [email]);
 
-        return NextResponse.redirect(new URL("/signup", request.url));
+        return NextResponse.redirect(new URL(`/${locale}/signup`, request.url));
 
     } catch (e) {
         return NextResponse.json({

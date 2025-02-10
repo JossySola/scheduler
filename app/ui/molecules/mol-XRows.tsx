@@ -1,14 +1,27 @@
 "use client"
 import { v4 as uuidv4 } from "uuid";
-import { SetStateAction } from "react";
+import { SetStateAction, useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
-export default function XRows ({
-    existingRows,
-    setRows,
-    values,
-}: { existingRows: Array<Array<string>>, setRows: React.Dispatch<SetStateAction<string[][]>>, values?: Array<string> }) {
-    // display rows dynamically based on data received
-    // dynamically add and remove
+export default function XRows ({ existingRows, setRows, values, cols }: { 
+    existingRows: Array<Array<string>>, 
+    setRows: React.Dispatch<SetStateAction<string[][]>>, 
+    values?: Array<string>, 
+    cols?: Array<number> 
+}) {
+    const [ colsCriteria, setColsCriteria ] = useState<Array<number>>(existingRows.length ? 
+        existingRows[0].map(() => existingRows.length ) : []);
+
+    useEffect(() => {
+        if (cols) {
+            setColsCriteria(cols);
+        }
+    }, [])
+
+    useEffect(() => {
+        setColsCriteria(prev => [...prev, existingRows.length]);
+    }, [existingRows])
+    
     return (
         <>
         {
@@ -23,6 +36,19 @@ export default function XRows ({
                                         return (
                                         <th scope="col" key={cIndex}>
                                             <RowInput rIndex={rIndex} cIndex={cIndex} value={column} setNewValue={setRows} currentRows={existingRows} />
+                                            {
+                                                cIndex !== 0 ? 
+                                                <input type="number" name={`Specification:Column:${existingRows[0] ? existingRows[0][cIndex] : ""}-must-have-this-amount-of-cells-filled-in`} min={0} max={existingRows && existingRows.length ? existingRows.length - 1 : 0} value={colsCriteria[cIndex]} onChange={e => {
+                                                    setColsCriteria(colsCriteria && colsCriteria.map((col, index) => {
+                                                        if (index === cIndex) {
+                                                            const num = parseInt(e.target.value, 10);
+                                                            return num;
+                                                        }
+                                                        return col;
+                                                    }))
+                                                }}/> : null
+                                            }
+                                            
                                         </th>)
                                     })
                                 }
@@ -66,6 +92,8 @@ const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows, values } :
         currentRows: Array<Array<string>>,
         values?: Array<string>,
     }) => {
+    const params = useParams();
+    const { lang } = params;
     const columnNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
     const columnName = `${columnNames[cIndex]}${rIndex}`;
 
@@ -90,7 +118,7 @@ const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows, values } :
                 })
             }}
             >
-                <option value="">Select</option>
+                <option value="">{lang === "es" ? "Seleccionar" : "Select"}</option>
                 {
                     values.map(value => {
                         return <option key={`${uuidv4()}`} value={value}>{value}</option>

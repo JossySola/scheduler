@@ -1,15 +1,19 @@
 "use client"
 import { useState, SetStateAction } from "react";
 import XRows from "./mol-XRows";
+import { useParams } from "next/navigation";
 
-export default function XTable ({ rows, setRows, values }:
+export default function XTable ({ rows, setRows, values, cols }:
     {
         rows?: Array<Array<string>>,
         setRows?: React.Dispatch<SetStateAction<string[][]>>,
         values?: Array<string>,
+        cols?: Array<number>
     }) {
     
     const [ localRows, setLocalRows ] = useState<Array<Array<string>>>([]);
+    const params = useParams();
+    const { lang } = params;
     
     const handleAddRow = () => {
         setRows && rows ? setRows(prev => {
@@ -91,13 +95,13 @@ export default function XTable ({ rows, setRows, values }:
     return (
         <>
         <table>
-            <XRows existingRows={rows ? rows : localRows} setRows={setRows ? setRows : setLocalRows} values={values ? values : []}/>
+            <XRows cols={cols} existingRows={rows ? rows : localRows} setRows={setRows ? setRows : setLocalRows} values={values ? values : []}/>
         </table>
-        <button type="button" name="add-row" id="add-row" onClick={() => handleAddRow()}>Add Row</button>
-        <button type="button" name="delete-row" id="delete-row" onClick={() => handleDeleteRow()}>Delete Row</button>
+        <button type="button" name="add-row" id="add-row" onClick={() => handleAddRow()}>{lang === "es" ? "Añadir Fila":"Add Row" }</button>
+        <button type="button" name="delete-row" id="delete-row" onClick={() => handleDeleteRow()}>{lang === "es" ? "Eliminar Fila":"Delete Row" }</button>
 
-        <button type="button" name="add-column" id="add-column" onClick={() => handleAddColumn()}>Add Column</button>
-        <button type="button" name="delete-column" id="delete-column" onClick={() => handleDeleteColumn()}>Delete Column</button>
+        <button type="button" name="add-column" id="add-column" onClick={() => handleAddColumn()}>{lang === "es" ? "Añadir Columna":"Add Column" }</button>
+        <button type="button" name="delete-column" id="delete-column" onClick={() => handleDeleteColumn()}>{lang === "es" ? "Eliminar Columna":"Delete Column" }</button>
         </>
     )
 }

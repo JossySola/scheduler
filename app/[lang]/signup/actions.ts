@@ -4,8 +4,12 @@ import pool from "@/app/lib/mocks/db";
 import { isPasswordPwned, sendEmailConfirmation } from "@/app/lib/utils";
 import { signIn } from "@/auth";
 import { z } from "zod";
+import { headers } from "next/headers";
 
 export async function validateAction (state: { message: string }, formData: FormData) {
+    const requestHeaders = headers();
+    const locale = (await requestHeaders).get("x-user-locale") || "en";
+
     const name = formData.get("name");
     const username = formData.get("username");
     const birthday = formData.get("birthday");
@@ -152,7 +156,7 @@ export async function confirmEmailAction (state: { message: string }, formData: 
         }
     }
     console.error("[confirmEmailAction] Starting handleLogin...")
-    const logging = await handleLogin(username, password);
+    const logging = await handleLogin(username, password, locale);
     console.error("[confirmEmailAction] Result while logging:", logging)
     console.error("[confirmEmailAction] Exiting...")
     return {
@@ -212,7 +216,7 @@ async function handleEmailConfirmation (token: string, email: string) {
     }
 }
 
-async function handleLogin (username: string, password: string) {
+async function handleLogin (username: string, password: string, locale: string) {
     console.error("[handleLogin] Starting...")
     console.error("[handleLogin] Checking if necessary data exist...")
     if (!username || !password) {
@@ -225,7 +229,7 @@ async function handleLogin (username: string, password: string) {
     console.error("[handleLogin] Signing in...")
     const signing = await signIn('credentials', {
         redirect: true,
-        redirectTo: '/dashboard',
+        redirectTo: `/${locale}/dashboard`,
         username,
         password,
     })

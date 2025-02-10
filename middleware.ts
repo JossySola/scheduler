@@ -1,37 +1,59 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getToken } from "next-auth/jwt";
 
-export async function middleware (request: NextRequest) {
-    console.error("[Middleware] Starting...");
+const locales = ['es', 'en'];
+const defaultLocale = "en";
+
+export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    if (pathname.startsWith("/api")) {
+        return NextResponse.next();
+    }
+
+    // Extract potential locale from the path
+    const pathnameParts = pathname.split("/");
+    const pathnameLocale = pathnameParts[1]; // First part after "/"
+    const locale = locales.includes(pathnameLocale) ? pathnameLocale : "en";
+    const response = NextResponse.next();
+    response.headers.set("x-user-locale", locale);
     
+
+    // Check if the path contains a supported locale
+    const isSupportedLocale = locales.includes(pathnameLocale);
+
+    // Detect the user's preferred language (from accept-language header)
+    const acceptLanguage = request.headers.get("accept-language") || defaultLocale;
+    const userLocale = acceptLanguage.split(",")[0].trim().slice(0, 2);
+
+    // If an unsupported locale is present in the URL, replace it
+    if (pathnameLocale && !isSupportedLocale) {
+        const redirectUrl = new URL(`/${defaultLocale}${pathname.substring(pathnameLocale.length + 1)}`, request.url);
+        return NextResponse.redirect(redirectUrl);
+    }
+
+    // If no locale is in the URL, detect the user's locale and redirect
+    if (!pathnameLocale) {
+        const finalLocale = locales.includes(userLocale) ? userLocale : defaultLocale;
+        const redirectUrl = new URL(`/${finalLocale}${pathname}`, request.url);
+        return NextResponse.redirect(redirectUrl);
+    }
+
+    // Authentication logic
     const secret = process.env.NEXTAUTH_SECRET;
-    console.error("[Middleware] Secret:", secret)
-    const token = await getToken({
-        req: request,
-        secret: secret
-    });
-    console.error("[Middleware] Token:", token)
-    console.error("[Middleware] nextUrl:", request.nextUrl)
-    /*
-    if (request.nextUrl.pathname.includes("/api")) {
-        return NextResponse.json({
-            error: "Unauthorized"
-        }, { status: 401 })
+    const token = await getToken({ req: request, secret });
+
+    if ([`/${locale}/login`, `/${locale}/signup`, `/${locale}/try`].includes(pathname) && token) {
+        return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
     }
-    */
-    if (["/", "/login", "/signup", "/try"].includes(request.nextUrl.pathname)) {
-        if (token) {
-            return NextResponse.redirect(new URL("/dashboard", request.url));
-        }
+
+    if ([`/${locale}/dashboard`, `/${locale}/table`].includes(pathname) && !token) {
+        return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
     }
-    if (["/dashboard", "/table"].includes(request.nextUrl.pathname)) {
-        if (!token) {
-            return NextResponse.redirect(new URL("/login", request.url));
-        }
-    }
-    console.error("[Middleware] Exiting...")
+
+    return response;
 }
 
 export const config = {
-    matcher: ['/', '/api', '/login', '/signup', '/try', '/dashboard', '/table'],
+    matcher: ["/((?!_next|auth|favicon.ico).*)"],
 }

@@ -50,6 +50,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         specs = JSON.parse(specs.rows[0].decrypted_specs.toString());
         console.error('[/api/table/[id]] Specs:', specs);
 
+        let cols = await pool.query(`
+            SELECT pgp_sym_decrypt_bytea(table_cols, $3) AS decrypted_cols
+            FROM scheduler_users_tables
+            WHERE user_id = $1 AND id = $2;
+        `, [client_id, table_id, process.env.NEXTAUTH_SECRET]);
+        cols = JSON.parse(cols.rows[0].decrypted_cols.toString());
+
+
         let values = await pool.query(`
             SELECT pgp_sym_decrypt_bytea(table_values, $3) AS decrypted_values
             FROM scheduler_users_tables
@@ -72,6 +80,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             table,
             specs,
             values,
+            cols,
             timestamps,
         }, { status: 200 });
     } catch (error) {
