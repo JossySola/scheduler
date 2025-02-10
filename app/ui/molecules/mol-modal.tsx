@@ -2,8 +2,9 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useRef } from "react";
 
-export default function Modal ({ children }: {
-    children: React.ReactNode
+export default function Modal ({ children, lang }: {
+    children: React.ReactNode,
+    lang: string,
 }) {
     const router = useRouter();
     const dialogRef = useRef<HTMLDialogElement | null>(null);
@@ -22,7 +23,7 @@ export default function Modal ({ children }: {
         <section>
             <dialog ref={dialogRef} onClose={onDismiss}>
                 { children }
-                <button type="button" onClick={onDismiss}>Close</button>
+                <button type="button" onClick={onDismiss}>{ lang === "es" ? "Cerrar" : "Close"}</button>
             </dialog>
         </section>
     )

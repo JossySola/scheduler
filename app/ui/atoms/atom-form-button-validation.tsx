@@ -1,5 +1,5 @@
 "use client"
-import { validateAction } from "@/app/(routes)/signup/actions";
+import { validateAction } from "@/app/[lang]/signup/actions";
 import { SetStateAction, useActionState, useEffect } from "react";
 import { ActionButton } from "./atom-button";
 

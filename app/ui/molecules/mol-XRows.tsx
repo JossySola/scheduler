@@ -1,6 +1,7 @@
 "use client"
 import { v4 as uuidv4 } from "uuid";
 import { SetStateAction, useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 export default function XRows ({ existingRows, setRows, values, cols }: { 
     existingRows: Array<Array<string>>, 
@@ -20,8 +21,7 @@ export default function XRows ({ existingRows, setRows, values, cols }: {
     useEffect(() => {
         setColsCriteria(prev => [...prev, existingRows.length]);
     }, [existingRows])
-    // display rows dynamically based on data received
-    // dynamically add and remove
+    
     return (
         <>
         {
@@ -88,6 +88,8 @@ const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows, values } :
         currentRows: Array<Array<string>>,
         values?: Array<string>,
     }) => {
+    const params = useParams();
+    const { lang } = params;
     const columnNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
     const columnName = `${columnNames[cIndex]}${rIndex}`;
 
@@ -112,7 +114,7 @@ const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows, values } :
                 })
             }}
             >
-                <option value="">Select</option>
+                <option value="">{lang === "es" ? "Seleccionar" : "Select"}</option>
                 {
                     values.map(value => {
                         return <option key={`${uuidv4()}`} value={value}>{value}</option>

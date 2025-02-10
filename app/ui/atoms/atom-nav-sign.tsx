@@ -11,7 +11,7 @@ export default async function SignNav () {
             {
                 session?.user ? <LogOutButton /> : (
                 <>
-                    <LogInButton />
+                    <LogInButton  />
                     <SignUpButton />
                 </>)
             }
