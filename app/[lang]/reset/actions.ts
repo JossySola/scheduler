@@ -4,8 +4,11 @@ import { isPasswordPwned } from "@/app/lib/utils";
 import { auth, signOut } from "@/auth";
 import { Argon2id } from "oslo/password";
 import pool from "@/app/lib/mocks/db";
+import { headers } from "next/headers";
 
 export async function passwordResetAction(prevState: { message: string }, formData: FormData) {
+    const requestHeaders = headers();
+    const locale = (await requestHeaders).get("x-user-locale") || "en";
     const password = formData.get("password")?.toString();
     const confirmation = formData.get("confirm-password")?.toString();
     const token = formData.get("token")?.toString();
@@ -106,7 +109,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
 
     await signOut({
         redirect: true,
-        redirectTo: "/login"
+        redirectTo: `/${locale}/login`
     });
 
     return {

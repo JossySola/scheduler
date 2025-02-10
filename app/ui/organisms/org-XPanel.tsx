@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import XForm from "../molecules/mol-XForm";
 import XList from "../molecules/mol-XList";
 import { SessionProvider } from "next-auth/react";
-import { getTableAction } from "@/app/(routes)/table/actions";
+import { getTableAction } from "@/app/[lang]/table/actions";
 import { Timestamp } from "../atoms/atom-timestamp";
+import { useParams } from "next/navigation";
 
 export default function XPanel ({ id }:{ id?: string }) {
     const [ colHeaders, setColHeaders ] = useState<Array<string>>([]);
@@ -15,7 +16,9 @@ export default function XPanel ({ id }:{ id?: string }) {
     const [ preferences, setPreferences ] = useState<Array<Array<string>>>([]);
     const [ loading, setLoading ] = useState<boolean>(false);
     const [ title, setTitle ] = useState<string>("Untitled table");
-    const [ timestamps, setTimestamps ] = useState<{ "created_at": number, "updated_at": number }>()
+    const [ timestamps, setTimestamps ] = useState<{ "created_at": number, "updated_at": number }>();
+    const params = useParams();
+    const { lang } = params;
     
     useEffect(() => {
         let update: Array<string> = [];
@@ -75,7 +78,7 @@ export default function XPanel ({ id }:{ id?: string }) {
     return (
         <SessionProvider>
             {
-                timestamps ? <p>Created on { formatter.format(new Date(timestamps.created_at)) }</p> : null
+                timestamps ? <p>{ lang === "es" ? "Creado en " : "Created on " }{ formatter.format(new Date(timestamps.created_at)) }</p> : null
             }
             {
                 timestamps ? <Timestamp updated_at={timestamps.updated_at.toString()} /> : null
@@ -91,7 +94,7 @@ export default function XPanel ({ id }:{ id?: string }) {
             cols={cols}>
                 <>
                     <XList 
-                    name="Rows" 
+                    name={ lang === "es" ? "Ajustes de Filas" : "Rows Settings" }
                     preferences={preferences}
                     items={rowHeaders}
                     setItems={setRowHeaders}
@@ -101,7 +104,7 @@ export default function XPanel ({ id }:{ id?: string }) {
                     enableRemoval={false} />
                     
                     <XList 
-                    name="Values"
+                    name={ lang === "es" ? "Valores" : "Values" }
                     items={values}
                     setItems={setValues} />
                 </>

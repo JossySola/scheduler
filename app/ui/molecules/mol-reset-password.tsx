@@ -1,7 +1,7 @@
 "use client"
 import { SubmitButton } from "@/app/ui/atoms/atom-button";
 import { useActionState, useState } from "react";
-import { passwordResetAction } from "../../(routes)/reset/actions";
+import { passwordResetAction } from "../../[lang]/reset/actions";
 
 export default function ResetPassword({ token }: {
     token: string

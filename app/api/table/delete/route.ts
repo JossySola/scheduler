@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/mocks/db";
 
 export async function GET (request: NextRequest) {
+    const locale = request.headers.get("x-user-locale") || "en";
     const headersList = await headers();
     const user_email = headersList.get("user_email")?.toString();
     const table_id = headersList.get("table_id")?.toString();
@@ -52,5 +53,5 @@ export async function GET (request: NextRequest) {
             error: "Failed to update count"
         }, { status: 500 });
     }
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
 }

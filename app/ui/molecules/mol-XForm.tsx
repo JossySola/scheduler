@@ -1,7 +1,7 @@
 "use client"
 import { useActionState, SetStateAction, useEffect } from "react";
 import XTable from "./mol-XTable";
-import { SaveTableAction, UseAiAction } from "@/app/(routes)/table/actions";
+import { SaveTableAction, UseAiAction } from "@/app/[lang]/table/actions";
 import { ActionButton } from "../atoms/atom-button";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -20,8 +20,13 @@ export default function XForm ({ id, cols, title, setTitle, children, rows, setR
      }) {
     const { data: session } = useSession();
     const params = useParams();
+    const { lang } = params;
     const [ saveState, saveAction, savePending ] = useActionState(SaveTableAction, { message: "" });
     const [ aiState, aiAction, aiPending ] = useActionState(UseAiAction, { message: ""} );
+    const saving = lang === "es" ? "Guardando..." : "Saving...";
+    const save = lang === "es" ? "Guardar" : "Save";
+    const creating = lang === "es" ? "Creando..." : "Creating...";
+    const create = lang === "es" ? "Crear" : "Create";
     
     useEffect(() => {
         if (aiState.response && aiState.response.result) {
@@ -47,11 +52,11 @@ export default function XForm ({ id, cols, title, setTitle, children, rows, setR
             { children }
             {
                 session?.user ? 
-                <ActionButton text={savePending ? "Saving..." : "Save"} formaction={saveAction} disabled={savePending} action="save_table"/> 
+                <ActionButton text={savePending ? saving : save} formaction={saveAction} disabled={savePending} action="save_table"/> 
                 : null
             }
 
-            <ActionButton text={aiPending ? "Creating..." : "Generate with magic!"} formaction={aiAction} disabled={aiPending} action="autofill_table"/>
+            <ActionButton text={aiPending ? creating : create} formaction={aiAction} disabled={aiPending} action="autofill_table"/>
         </form>
     )
 }

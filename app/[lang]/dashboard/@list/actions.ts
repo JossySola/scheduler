@@ -2,8 +2,11 @@
 import "server-only"
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 
 export async function DeleteTableAction (formData: FormData) {
+    const requestHeaders = headers();
+    const locale = (await requestHeaders).get("x-user-locale") || "en";
     const table_id = formData.get("item_id")?.toString();
     const session = await auth();
 
@@ -23,6 +26,6 @@ export async function DeleteTableAction (formData: FormData) {
         }
     })
     if (request.ok) {
-        redirect('/dashboard');
+        redirect(`/${locale}/dashboard`);
     }
 }

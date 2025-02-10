@@ -1,6 +1,7 @@
 "use client"
 import { SetStateAction, useState } from "react";
 import XItem from "./mol-XItem";
+import { useParams } from "next/navigation";
 
 export default function XList({ name, preferences, items, setItems, criteria, values, enableInput = true, enableRemoval = true } : 
     { 
@@ -15,6 +16,8 @@ export default function XList({ name, preferences, items, setItems, criteria, va
     }) {
     const [ localItems, setLocalItems ] = useState<Array<string>>([]);
     const [ input, setInput ] = useState<string>("");
+    const params = useParams();
+    const { lang } = params;
 
     const handleAddItem = (value: string) => {
         if (!value) {
@@ -66,7 +69,7 @@ export default function XList({ name, preferences, items, setItems, criteria, va
                     e.preventDefault();
                     handleAddItem(input);
                     setInput("");
-                }}>Add</button></div> : null
+                }}>{ lang === "es" ? "Añadir" : "Add" }</button></div> : null
             }
             
             {
@@ -81,7 +84,8 @@ export default function XList({ name, preferences, items, setItems, criteria, va
                             <button type="button" onClick={(e) => {
                                 e.preventDefault();
                                 handleRemoveItem(item);
-                                }}>Remove
+                            }}>
+                            { lang === "es" ? "Eliminar" : "Delete"}
                             </button></> : null
                         }
                         </li>
@@ -95,7 +99,8 @@ export default function XList({ name, preferences, items, setItems, criteria, va
                             <button type="button" onClick={(e) => {
                                 e.preventDefault();
                                 handleRemoveItem(item);
-                                }}>Remove
+                            }}>
+                            { lang === "es" ? "Eliminar" : "Delete"}
                             </button></> : null
                         }
                         </li>

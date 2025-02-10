@@ -4,6 +4,8 @@ import pool from "@/app/lib/mocks/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST (request: NextRequest) {
+    const locale = request.headers.get("x-user-locale") || "en";
+
     console.error("[/api/table/save] Starting...")
     const payload = await request.json();
     console.error("[/api/table/save] Payload:", payload);
@@ -73,7 +75,7 @@ export async function POST (request: NextRequest) {
         
         const newTableId: string = newTable.rows[0].id;
         console.error("[/api/table/save] Redirecting to new table route...");
-        return NextResponse.redirect(new URL(`/table/${newTableId}`, process.env.NEXT_PUBLIC_ORIGIN));
+        return NextResponse.redirect(new URL(`/${locale}/table/${newTableId}`, process.env.NEXT_PUBLIC_ORIGIN));
     }
     
     console.error("[/api/table/save] Fetching table by id...");

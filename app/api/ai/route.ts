@@ -32,11 +32,9 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
                 **Columns**: ${JSON.stringify(columns)}
                 **Rows**: ${JSON.stringify(rows)}
                 **Values**: ${JSON.stringify(values)}
-                In adittion, take in consideration the following specifications for this schedule:
-                **Specifications**: ${JSON.stringify(specifications)}
-
                 These are the specific requirements and constraints for the schedule. Each specification follows a format that you must interpret and apply correctly.
-
+                **Specifications**: ${JSON.stringify(specifications)}
+                
                 Now, let's create the schedule following these steps:
                 1. Initialize the schedule with the column headers (days of the week).
                 2. Add row headers for each row.

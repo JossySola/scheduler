@@ -2,8 +2,11 @@
 import "server-only";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { headers } from "next/headers";
 
 export async function SaveTableAction (state: { message: string }, formData: FormData) {
+    const requestHeaders = headers();
+    const locale = (await requestHeaders).get("x-user-locale") || "en";
     console.log("[SaveTableAction] Starting...")
     console.log("[SaveTableAction] Received:", formData)
     console.log("[SaveTableAction] Unpacking...")
@@ -48,7 +51,7 @@ export async function SaveTableAction (state: { message: string }, formData: For
     console.log("[SaveTableAction] Fetch result:", payload)
     if (payload.ok) {
         if (!payload.url.includes("/api")) {
-            redirect(payload.url);
+            redirect(`/${locale}/${payload.url}`);
         }
     }
     

@@ -5,8 +5,11 @@ import pool from "@/app/lib/mocks/db";
 import { randomUUID } from "crypto";
 import sgMail from "@sendgrid/mail";
 import { AuthError } from "next-auth";
+import { headers } from "next/headers";
 
 export async function LogInAction (prevState: { message: string }, formData: FormData) {
+    const requestHeaders = headers();
+    const locale = (await requestHeaders).get("x-user-locale") || "en";
     console.log("[LogInAction] Starting...")
     console.log("[LogInAction] formData:", formData)
 
@@ -28,7 +31,7 @@ export async function LogInAction (prevState: { message: string }, formData: For
             username,
             password,
             redirect: true,
-            redirectTo: "/dashboard"
+            redirectTo: `/${locale}/dashboard`
         })
         return {
             message: "Logged in"

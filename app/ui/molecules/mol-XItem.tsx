@@ -1,4 +1,5 @@
 "use client"
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function XItem ({ name, preferences, criteria = [], values = []} : {
@@ -7,6 +8,8 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     preferences?: Array<Array<string>>,
     values?: Array<string>,
 }) {
+    const params = useParams();
+    const { lang } = params;
     const [ count, setCount ] = useState<number>(() => {
         if (preferences) {
             const [ num ] = preferences.map(subArray => {
@@ -62,7 +65,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
         <details>
             <summary>{name}</summary>
             <label>
-                Disable on all columns:
+                { lang === "es" ? "Deshabilitar en todas las columnas:" : "Disable on all columns:" }
                 <input 
                 type="radio" 
                 name={`Specification:disable-Row-${name}-on-table`} 
@@ -72,7 +75,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
             </label>
 
             <fieldset>
-                <legend>Enable/disable in certain columns:</legend>
+                <legend>{ lang === "es" ? "Habilitar solo en ciertas columnas:" : "Enable/disable in certain columns:" }</legend>
                 {
                     criteria && criteria.map((variable, index) => {
                         return <label key={`${variable}-${index}`}>
@@ -81,7 +84,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                             name={`Specification:Row-${name}-should-be-used-on`} 
                             value={variable} 
                             checked={!!enabledColumns[index]}
-                            onChange={(e => {
+                            onChange={(() => {
                                 setEnabledColumns(prev => 
                                     prev.map((col, colIndex) => colIndex === index ? !col : col )
                                 )
@@ -93,7 +96,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
             </fieldset>
 
             <label>
-                How many times it should appear?
+                { lang === "es" ? "¿Cuántas veces debería ser rellenado?" : "How many times it should appear?" }
                 <input 
                 type="number" 
                 name={`Specification:Row-${name}-should-appear-only-this-amount-of-times`} 
@@ -106,7 +109,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
             </label>
             
             <fieldset>
-                <legend>Prefer the following values:</legend>
+                <legend>{ lang === "es" ? "Preferir estos valores:" : "Prefer the following values:"}</legend>
                 {
                     values && values.map((value, index) => {
                         return <label key={`${value}-${index}`}>
@@ -115,7 +118,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                             name={`Specification:Row-${name}-use-this-value-specifically`} 
                             value={value} 
                             checked={!!enabledValues[index]}
-                            onChange={(e => {
+                            onChange={(() => {
                                 setEnabledValues(prev =>
                                     prev.map((col, colIndex) => colIndex === index ? !col : col )
                                 )
