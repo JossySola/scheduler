@@ -1,4 +1,4 @@
-import "server-only"
+import "server-only";
 import NextAuth, { AuthError } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
@@ -110,7 +110,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.user.facebookSub = token.facebookSub;
             }
             return session;
-        }
+        },
+        async redirect({ url, baseUrl }) {
+            const defaultLocale = "en";
+            const urlObject = new URL(url, baseUrl);
+            const pathnameParts = urlObject.pathname.split("/");
+
+            const isLocalePresent = ["es", "en"].includes(pathnameParts[1]);
+            const locale = isLocalePresent ? pathnameParts[1] : defaultLocale;
+
+            if (url.startsWith("/login")) {
+                return `/${locale}/login`;
+            }
+            return url;
+        },
     },
     session: {
         strategy: "jwt"
