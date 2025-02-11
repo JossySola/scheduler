@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import localFont from "next/font/local";
 import "./globals.css";
+import { UIProvider } from "./providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,9 +31,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark text-foreground bg-background">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <UIProvider>
         {children}
+        </UIProvider>
       </body>
       <Script src="https://www.google.com/recaptcha/api.js?render=6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t" />
     </html>
