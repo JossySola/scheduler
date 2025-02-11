@@ -1,19 +1,22 @@
 "use client"
+import { Button } from "@heroui/react";
+import { useParams } from "next/navigation";
 import { MouseEventHandler, useCallback, useTransition } from "react";
 
-export function Button({callback, text}: {
+export function SecondaryButton({callback, text, className}: {
     callback: (event: React.MouseEvent<HTMLButtonElement>) => void,
     text: string | null,
+    className?: string,
 }) {
     return (
-        <button type="button" onClick={(e) => {
-            callback(e);
-        }}>{text}</button>
+        <Button onPress={callback} className={className}>{ text }</Button>
     )
 }
 
-export function SubmitButton({text, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick, onSubmit}: {
+export function SubmitButton({text, color = "", className, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick, onSubmit}: {
     text: string,
+    color?: string,
+    className?: string,
     disabled?: boolean,
     form?: string,
     formaction?: string | ((formData: FormData) => void | Promise<void>),
@@ -26,27 +29,55 @@ export function SubmitButton({text, disabled, form, formaction, formenctype, for
     onClick?: MouseEventHandler<HTMLButtonElement> | undefined,
     onSubmit?: MouseEventHandler<HTMLButtonElement> | undefined,
 }) {
-    
-    return <button 
-    type="submit"
-    disabled={disabled}
-    form={form}
-    formAction={formaction}
-    formEncType={formenctype}
-    formMethod={formmethod}
-    formNoValidate={formnovalidate}
-    formTarget={formtarget}
-    onClick={onClick}
-    onSubmit={onSubmit}
-    >
-    {text}{isSubmitting ? "Submitting...": null}{isSubmitted ? "Submitted!" : null}
-    </button> 
-        
+    const params = useParams();
+    const { lang } = params;
+    const submitting = lang === "es" ? "Enviando..." : "Submitting...";
+    const submitted = lang === "es" ? "Enviado!" : "Submitted!";
+
+    if (color) {
+        return <Button 
+        type="submit"
+        className={className} 
+        isLoading={isSubmitting}
+        color={color}
+        disabled={disabled} 
+        form={form} 
+        formAction={formaction} 
+        formEncType={formenctype} 
+        formMethod={formmethod} 
+        formNoValidate={formnovalidate} 
+        formTarget={formtarget} 
+        onPress={onClick} 
+        onSubmit={onSubmit}>
+            {text}
+            {isSubmitting ? submitting: null}
+            {isSubmitted ? submitted : null}
+    </Button>
+    }
+    return <Button 
+        type="submit" 
+        isLoading={isSubmitting}
+        className={`${className} bg-white text-black font-semibold`}
+        radius="md"
+        disabled={disabled} 
+        form={form} 
+        formAction={formaction} 
+        formEncType={formenctype} 
+        formMethod={formmethod} 
+        formNoValidate={formnovalidate} 
+        formTarget={formtarget} 
+        onPress={onClick} 
+        onSubmit={onSubmit}>
+            {text}
+            {isSubmitting ? submitting: null}
+            {isSubmitted ? submitted : null}
+    </Button>
 }
 
-export function ActionButton({action, text, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick, onSubmit}: {
+export function ActionButton({action, text, className, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick, onSubmit}: {
     action: string,
     text: string,
+    className?: string,
     disabled?: boolean,
     form?: string,
     formaction?: string | ((formData: FormData) => void | Promise<void>),
@@ -116,7 +147,10 @@ export function ActionButton({action, text, disabled, form, formaction, formenct
         }
     }, [action, formaction, onClick, onSubmit]);
 
-    return <button
+    return <Button
+            isLoading={isPending}
+            className={`${className} bg-black text-white w-fit`}
+            radius="md"
             disabled={disabled}
             form={form}
             formAction={formaction}
@@ -124,9 +158,9 @@ export function ActionButton({action, text, disabled, form, formaction, formenct
             formMethod={formmethod}
             formNoValidate={formnovalidate}
             formTarget={formtarget}
-            onClick={handleClick}
+            onPress={handleClick}
             onSubmit={onSubmit}
             >
             {text}
-    </button>
+    </Button>
 }

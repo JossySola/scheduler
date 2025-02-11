@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { Button, SubmitButton } from "../atoms/atom-button"
+import { SecondaryButton, SubmitButton } from "../atoms/atom-button"
 import Dialog from "../atoms/atom-dialog"
 import { useEffect, useRef, useState } from "react"
 import { DeleteTableAction } from "@/app/[lang]/dashboard/@list/actions"
@@ -42,7 +42,7 @@ export default function TableLink ({ table_id, table_name, updated_at }: {
                 </form>
             </Dialog>
             {
-                refAvailable && <Button text={ lang === "es" ? "Eliminar" : "Delete"} callback={handleDialog} />
+                refAvailable && <SecondaryButton text={ lang === "es" ? "Eliminar" : "Delete"} callback={handleDialog} />
             }
         </section>
     )
