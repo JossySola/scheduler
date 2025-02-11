@@ -1,14 +1,19 @@
-import { signIn } from "@/auth"
+"use client"
+import { Button } from "@heroui/react";
+import { signIn } from "next-auth/react";
+import { useParams } from "next/navigation";
+import { LogoFacebook } from "geist-icons";
 
-export default function FacebookSignIn ({ lang }: {
-    lang: string,
-}) {
+export default function FacebookSignIn () {
+    const params = useParams();
+    const { lang } = params;
+
     return (
-        <form action={async () => {
-            "use server"
-            await signIn("facebook", { redirect: true, redirectTo: `/${lang}/dashboard` });
-        }}>
-            <button type="submit">{ lang === "es" ? "Continúa con Facebook" : "Signin with Facebook" }</button>
-        </form>
+        <Button onPress={() => signIn("facebook", { redirect: true, redirectTo: `/${lang}/dashboard` })}
+        className="bg-white text-black shadow-md font-semibold m-1 w-full" 
+        endContent={<LogoFacebook color="#0866ff"/>}
+        >
+            { lang === "es" ? "Continúa con Facebook" : "Signin with Facebook" }
+        </Button>
     )
 }

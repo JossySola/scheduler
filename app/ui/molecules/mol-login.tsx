@@ -6,6 +6,7 @@ import Link from "next/link";
 import { LogInAction } from "@/app/[lang]/login/actions";
 import PasswordResetButton from "../atoms/atom-button-password-reset";
 import CountdownTimer from "../atoms/atom-timer-attempt";
+import { Form, Input } from "@heroui/react";
 
 export default function LogIn ({ lang }: {
     lang: string,
@@ -30,25 +31,30 @@ export default function LogIn ({ lang }: {
     
     
     return (
-        <>
-            <form action={loginAction}>
-                <label>
-                    { lang === "es" ? "Correo electrónico o nombre de usuario" : "E-mail or username" }
-                    <input name="username" id="username" type="text" autoComplete="username"/>
-                </label>
-                <label>
-                    { lang === "es" ? "Contraseña" : "Password" }
-                    <Password />
-                </label>
-                <PasswordResetButton />
-
+        <section className="w-full p-3 sm:w-[400px] flex flex-col justify-center items-center">
+            <h2 className="text-2xl font-semibold tracking-tight">{ lang === "es" ? "Iniciar sesión" : "Login" }</h2>
+            <Form action={loginAction} className="w-full flex-col items-center">
+                <Input
+                isRequired
+                isClearable
+                radius="sm"
+                size="lg"
+                variant="bordered"
+                name="username"
+                type="text"
+                autoComplete="email"
+                label={ lang === "es" ? "Correo electrónico o nombre de usuario" : "E-mail or username" } 
+                labelPlacement="outside" />
+                <Password />
                 <p aria-live="polite">{message}</p>
                 <CountdownTimer nextAttempt={timestamp} />
-                <SubmitButton text={ lang === "es" ? "Iniciar sesión" : "Login"} disabled={pending} />
-                
-            </form>
-
-            <p>{ lang === "es" ? "Si aún no tienes cuenta, " : "If you don't have an account yet, " }<Link href={"/signup"}>{ lang === "es" ? "Regístrate" : "Signup" }</Link></p>
-        </>
+                <SubmitButton className="w-full m-1" text={ lang === "es" ? "Iniciar sesión" : "Login"} disabled={pending} />
+            </Form>
+            <PasswordResetButton className="w-full m-1"/>
+            <p className="text-sm text-[#a1a1aa] m-2">
+                { lang === "es" ? "Si aún no tienes cuenta, " : "If you don't have an account yet, " }
+                <Link href={"/signup"}>{ lang === "es" ? "Regístrate" : "Signup" }</Link>
+            </p>
+        </section>
     )
 }

@@ -26,7 +26,7 @@ export default function CountdownTimer({ nextAttempt }: { nextAttempt: string })
         { lang === "es" ? "Espera " : "Wait "} 
         { minutesRemaining } 
         { minutesRemaining === 1 ? minute : minutes } 
-        { lang === "es" ? "antes de intentarlo de nuevo." : "before trying again." }</p>
+        { lang === "es" ? " antes de intentarlo de nuevo." : " before trying again." }</p>
 
     return null;
 }
