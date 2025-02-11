@@ -10,7 +10,6 @@ export default function Template({
         <>
             <SignNav />
             {children}
-            <Branding />
         </>
     )
 }
