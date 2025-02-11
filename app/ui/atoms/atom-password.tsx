@@ -16,7 +16,6 @@ export default function Password () {
         <Input 
         isRequired
         type={ isVisible ? "text" : "password" }
-        isClearable
         radius="sm"
         size="lg"
         variant="bordered"
