@@ -1,4 +1,5 @@
 "use client"
+import { Input } from "@heroui/react";
 import { useParams } from "next/navigation";
 import { useState } from "react"
 
@@ -8,12 +9,24 @@ export default function FormInputBirthday () {
     const { lang } = params;
 
     return (
-        <>
-            <label htmlFor="birthday">{ lang === "es" ? "Fecha de nacimiento:" : "Birthday:" }</label>
-            <input type="date" id="birthday" name="birthday" value={birthday} max="2012-12-31" required
-            onChange={(e => {
-                setBirthday(e.target.value);
-            })} />
-        </>
+        <Input 
+        name="birthday"
+        type="date"
+        value={birthday}
+        max="2012-12-31"
+        className="sm:w-[400px] m-2"
+        isRequired
+        radius="md"
+        variant="bordered"
+        label={ lang === "es" ? "Fecha de nacimiento " : "Birthday " }
+        size="lg"
+        onChange={(e => {
+            setBirthday(e.target.value);
+        })}
+        validate={value => {
+            if (!value) {
+                return lang === "es" ? "Por favor proporciona tu fecha de nacimiento" : "Please enter your birthday";
+            }
+        }}/>
     )
 }
