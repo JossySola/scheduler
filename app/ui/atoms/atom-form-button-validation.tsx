@@ -28,7 +28,7 @@ export default function FormButtonValidation ({
                     return <p key={index}>{nextState.message}</p>;
                 })
             }
-            <ActionButton text={text} action="signup_registration" form={formName} formaction={nextAction} disabled={pending}/>
+            <ActionButton text={text} type="submit" action="signup_registration" form={formName} formaction={nextAction} disabled={pending}/>
         </>
     )
 }
