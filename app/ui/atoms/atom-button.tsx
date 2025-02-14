@@ -9,7 +9,7 @@ export function SecondaryButton({callback, text, className}: {
     className?: string,
 }) {
     return (
-        <Button onPress={callback} className={className}>{ text }</Button>
+        <Button onPress={callback} className={`${className} text-md bg-transparent border-2 m-2`}>{ text }</Button>
     )
 }
 
@@ -37,7 +37,7 @@ export function SubmitButton({text, color = "", className, disabled, form, forma
     if (color) {
         return <Button 
         type="submit"
-        className={className} 
+        className={`${className} font-medium text-md`} 
         isLoading={isSubmitting}
         color={color}
         disabled={disabled} 
@@ -57,7 +57,7 @@ export function SubmitButton({text, color = "", className, disabled, form, forma
     return <Button 
         type="submit" 
         isLoading={isSubmitting}
-        className={`${className} bg-white text-black font-semibold`}
+        className={`${className} bg-white text-black font-medium text-md m-2`}
         radius="md"
         disabled={disabled} 
         form={form} 
@@ -74,9 +74,10 @@ export function SubmitButton({text, color = "", className, disabled, form, forma
     </Button>
 }
 
-export function ActionButton({action, text, className, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick, onSubmit}: {
+export function ActionButton({action, text, type, className, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick, onSubmit}: {
     action: string,
     text: string,
+    type?: "button" | "submit" | "reset",
     className?: string,
     disabled?: boolean,
     form?: string,
@@ -90,11 +91,13 @@ export function ActionButton({action, text, className, disabled, form, formactio
     onClick?: MouseEventHandler<HTMLButtonElement> | undefined,
     onSubmit?: MouseEventHandler<HTMLButtonElement> | undefined,
 }) {
-    "use client"
     const [ isPending, startTransition ] = useTransition();
     
     const handleClick = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+        
         const key = '6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t';
         if (!key) {
             console.error("Google reCAPTCHA key is missing.");
@@ -149,9 +152,10 @@ export function ActionButton({action, text, className, disabled, form, formactio
 
     return <Button
             isLoading={isPending}
-            className={`${className} bg-black text-white w-fit`}
+            className={`${className} bg-black text-white w-fit text-md border-2 m-2`}
             radius="md"
             disabled={disabled}
+            type={type}
             form={form}
             formAction={formaction}
             formEncType={formenctype}

@@ -16,7 +16,7 @@ export default function BasicInformation ({
     const { lang } = params;
 
     return (
-        <fieldset hidden={validated}>
+        <fieldset hidden={validated} className="w-full sm:w-[400px] p-3 flex flex-col items-center justify-center">
             <FormInputName />
             <FormInputUsername />
             <FormInputBirthday />
