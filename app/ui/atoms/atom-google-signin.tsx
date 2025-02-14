@@ -10,7 +10,7 @@ export default function GoogleSignIn () {
 
     return (
         <Button onPress={() => signIn("google", { redirect: true, redirectTo: `/${lang}/dashboard`})}
-        className="bg-white text-black shadow-md font-semibold m-1 w-full"
+        className="bg-white text-black shadow-md font-medium m-1 w-full text-md"
         endContent={<LogoGoogle />}>
             { lang === "es" ? "Continúa con Google" : "Signin with Google" }
         </Button>
