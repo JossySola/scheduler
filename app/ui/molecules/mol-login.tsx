@@ -31,8 +31,8 @@ export default function LogIn ({ lang }: {
     
     
     return (
-        <section className="w-full p-3 sm:w-[400px] flex flex-col justify-center items-center">
-            <h2 className="text-2xl font-semibold tracking-tight">{ lang === "es" ? "Iniciar sesión" : "Login" }</h2>
+        <section className="w-full p-3 sm:w-[400px] flex flex-col justify-center items-center pt-5">
+            <h2 className="tracking-tight">{ lang === "es" ? "Iniciar sesión" : "Login" }</h2>
             <Form action={loginAction} className="w-full flex-col items-center">
                 <Input
                 isRequired
