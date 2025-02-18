@@ -1,10 +1,12 @@
 "use client"
 import { Input } from "@heroui/react";
 import { useParams } from "next/navigation";
-import { useState } from "react"
+import { SetStateAction } from "react"
 
-export default function FormInputName () {
-    const [ name, setName ] = useState<string>('');
+export default function FormInputName ({ name, setName }: {
+    name: string,
+    setName: React.Dispatch<SetStateAction<string>>,
+}) {
     const params = useParams();
     const { lang } = params;
 
