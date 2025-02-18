@@ -7,22 +7,32 @@ import FormInputUsername from "../atoms/atom-form-input-username";
 import FormButtonValidation from "../atoms/atom-form-button-validation";
 import { SetStateAction } from "react";
 import { useParams } from "next/navigation";
+import { ArrowCircleRight } from "geist-icons";
 
-export default function BasicInformation ({
-    validated,
-    setValidated,
-}: { validated: boolean, setValidated: React.Dispatch<SetStateAction<boolean>>}) {
+export default function BasicInformation ({ validated, setValidated, name, setName, email, setEmail }: { 
+    validated: boolean, 
+    setValidated: React.Dispatch<SetStateAction<boolean>>,
+    name: string,
+    setName: React.Dispatch<SetStateAction<string>>,
+    email: string,
+    setEmail: React.Dispatch<SetStateAction<string>>
+}) {
     const params = useParams();
     const { lang } = params;
 
     return (
         <fieldset hidden={validated} className="w-full sm:w-[400px] p-3 flex flex-col items-center justify-center">
-            <FormInputName />
+            <FormInputName name={name} setName={setName} />
             <FormInputUsername />
             <FormInputBirthday />
-            <FormInputEmail />
+            <FormInputEmail email={email} setEmail={setEmail} />
             <FormInputPassword />
-            <FormButtonValidation text={ lang === "es" ? "Siguiente" : "Next" } formName="register" setValidated={setValidated}/>
+            <FormButtonValidation 
+                text={ lang === "es" ? "Siguiente" : "Next" } 
+                formName="register" 
+                setValidated={setValidated}
+                endContent={<ArrowCircleRight />}
+            />
         </fieldset>
     )
 }
