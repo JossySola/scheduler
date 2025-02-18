@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import localFont from "next/font/local";
 import "./globals.css";
 import { UIProvider } from "./providers";
@@ -32,12 +31,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark text-foreground bg-background">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased w-screen h-screen flex items-start`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased w-screen h-screen`}>
         <UIProvider>
         {children}
         </UIProvider>
       </body>
-      <Script src="https://www.google.com/recaptcha/api.js?render=6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t" />
     </html>
   );
 }
