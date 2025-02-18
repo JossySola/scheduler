@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
     const secret = process.env.NEXTAUTH_SECRET;
     const token = await getToken({ req: request, secret });
 
-    if ([`/${locale}/login`, `/${locale}/signup`, `/${locale}/try`].includes(pathname) && token) {
+    if ([`/${locale}/login`, `/${locale}/signup`].includes(pathname) && token) {
         return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
     }
 
