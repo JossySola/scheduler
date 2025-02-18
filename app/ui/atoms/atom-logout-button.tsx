@@ -8,9 +8,11 @@ export default function LogOutButton () {
     const { lang } = params;
 
     return (
-        <SecondaryButton text={ lang === "es" ? "Cerrar sesión" : "Sign out"} callback={signOut({
+        <SecondaryButton onPress={() => signOut({
             redirect: true,
             redirectTo: `/${lang}/login`
-        })}/>
+        })}>
+            { lang === "es" ? "Cerrar sesión" : "Sign out"}
+        </SecondaryButton>
     )
 }
