@@ -99,7 +99,7 @@ export async function isPasswordPwned (password: string): Promise<number | UtilR
       };
   }
 }
-export async function sendResetPasswordConfirmation(email: string | undefined): Promise<UtilResponse> {
+export async function sendResetPasswordConfirmation (email: string): Promise<UtilResponse> {
   if (!email) {
     return {
       ok: false,
@@ -115,7 +115,7 @@ export async function sendResetPasswordConfirmation(email: string | undefined): 
   }
   const confirming = await pool.query(`
       SELECT email FROM scheduler_users
-        WHERE email = $1;
+      WHERE email = $1;
   `, [email])
   
   if (confirming.rowCount === 0 || !confirming) {
@@ -124,7 +124,7 @@ export async function sendResetPasswordConfirmation(email: string | undefined): 
       message: 'Email not found'
     }
   }
-  const verification_code = randomBytes(7).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 7);
+  const verification_code = randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 6);
   const msg = {
     to: `${email}`,
     from: 'no-reply@jossysola.com',
@@ -135,7 +135,7 @@ export async function sendResetPasswordConfirmation(email: string | undefined): 
     process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const insertToken = await pool.query(`
       INSERT INTO scheduler_email_confirmation_tokens (token, email, expires_at)
-        VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
+      VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
     `, [verification_code, email]);
     if (insertToken.rowCount === 0) {
       throw new Error('Server Error');
@@ -158,11 +158,11 @@ export async function sendResetPasswordConfirmation(email: string | undefined): 
     }
   }
 }
-export async function sendEmailConfirmation(email: string, name?: string): Promise<UtilResponse> {
-  if (!email) {
+export async function sendEmailConfirmation(email: string, name: string): Promise<UtilResponse> {
+  if (!email || !name) {
     return {
       ok: false,
-      message: 'Email must be provided'
+      message: 'Data is missing'
     }
   }
   
@@ -358,11 +358,14 @@ export async function sendEmailConfirmation(email: string, name?: string): Promi
     process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const insertToken = await pool.query(`
       INSERT INTO scheduler_email_confirmation_tokens (token, email, expires_at)
-        VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
+        VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '1 minute');
     `, [verification_code, email]);
     
     if (insertToken.rowCount === 0) {
-      throw new Error();
+      return {
+        ok: false,
+        message: "Intern error"
+      };
     }
     
     const sendConfirmation = await sgMail.send(msg)
