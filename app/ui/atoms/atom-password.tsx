@@ -22,7 +22,7 @@ export default function Password () {
         variant="bordered"
         minLength={8}
         autoComplete="current-password"
-        label={ lang === "es" ? "Contraseña" : "Password" }
+        label={ lang === "es" ? "Contraseña " : "Password " }
         labelPlacement="outside"
         value={ password }
         onChange={ e => setPassword(e.target.value) }
