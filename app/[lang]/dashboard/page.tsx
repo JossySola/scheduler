@@ -1,7 +1,6 @@
 import UserProfile from "@/app/ui/atoms/atom-user-profile";
 import { auth } from "@/auth";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export default async function Page ({ params }: {
     params: Promise<{ lang: string }>
@@ -18,5 +17,4 @@ export default async function Page ({ params }: {
             </>
         )
     }
-    return redirect(`/${lang}/login`);
 }
