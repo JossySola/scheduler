@@ -1,170 +1,99 @@
-"use client"
-import { Button } from "@heroui/react";
-import { useParams } from "next/navigation";
-import { MouseEventHandler, useCallback, useTransition } from "react";
+import { Button, Link } from "@heroui/react";
+import { PressEvent } from "@react-types/shared";
 
-export function SecondaryButton({callback, text, className}: {
-    callback: (event: React.MouseEvent<HTMLButtonElement>) => void,
-    text: string | null,
+export function ActionButton ({ children, type = "button", loading = false, disabled = false, className, endContent, onPress }: {
+    children: string,
+    type?: "button" | "submit",
     className?: string,
+    disabled?: boolean,
+    loading?: boolean,
+    endContent?: React.JSX.Element,
+    onPress?: (e: PressEvent) => void
 }) {
+    if (onPress) {
+        return (
+            <Button
+            isDisabled={ disabled }
+            isLoading={ loading }
+            type={ type }
+            endContent={endContent && endContent}
+            onPress={(e) => onPress(e)}
+            className={`${className && className} bg-white text-black w-fit text-md border-2 m-2`}>
+            { children }
+            </Button>
+        )
+    }
     return (
-        <Button onPress={callback} className={`${className} text-md bg-transparent border-2 m-2`}>{ text }</Button>
+        <Button
+        isDisabled={ disabled }
+        isLoading={ loading }
+        type={ type }
+        endContent={ endContent && endContent }
+        className={`${className && className} bg-white text-black w-fit text-md border-2 m-2`}>
+            { children }
+        </Button>
     )
 }
-
-export function SubmitButton({text, color = "", className, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick, onSubmit}: {
-    text: string,
-    color?: string,
+export function SecondaryButton ({ children, type = "button", loading = false, disabled = false, className, startContent, endContent, onPress }: {
+    children: string,
+    type?: "button" | "submit",
     className?: string,
     disabled?: boolean,
-    form?: string,
-    formaction?: string | ((formData: FormData) => void | Promise<void>),
-    formenctype?: "application/x-www-form-urlencoded" | "multipart/form-data" | "text/plain",
-    formmethod?: "post" | "get" | "dialog",
-    formnovalidate?: boolean,
-    formtarget?: "_self" | "_blank" | "_parent" | "_top",
-    isSubmitting?: boolean,
-    isSubmitted?: boolean,
-    onClick?: MouseEventHandler<HTMLButtonElement> | undefined,
-    onSubmit?: MouseEventHandler<HTMLButtonElement> | undefined,
+    loading?: boolean,
+    startContent?: React.JSX.Element,
+    endContent?: React.JSX.Element,
+    onPress?: (e: PressEvent) => void
 }) {
-    const params = useParams();
-    const { lang } = params;
-    const submitting = lang === "es" ? "Enviando..." : "Submitting...";
-    const submitted = lang === "es" ? "Enviado!" : "Submitted!";
-
-    if (color) {
-        return <Button 
-        type="submit"
-        className={`${className} font-medium text-md`} 
-        isLoading={isSubmitting}
-        color={color}
-        disabled={disabled} 
-        form={form} 
-        formAction={formaction} 
-        formEncType={formenctype} 
-        formMethod={formmethod} 
-        formNoValidate={formnovalidate} 
-        formTarget={formtarget} 
-        onPress={onClick} 
-        onSubmit={onSubmit}>
-            {text}
-            {isSubmitting ? submitting: null}
-            {isSubmitted ? submitted : null}
-    </Button>
-    }
-    return <Button 
-        type="submit" 
-        isLoading={isSubmitting}
-        className={`${className} bg-white text-black font-medium text-md m-2`}
-        radius="md"
-        disabled={disabled} 
-        form={form} 
-        formAction={formaction} 
-        formEncType={formenctype} 
-        formMethod={formmethod} 
-        formNoValidate={formnovalidate} 
-        formTarget={formtarget} 
-        onPress={onClick} 
-        onSubmit={onSubmit}>
-            {text}
-            {isSubmitting ? submitting: null}
-            {isSubmitted ? submitted : null}
-    </Button>
+    return (
+        <Button
+        isDisabled={ disabled }
+        isLoading={ loading }
+        type={ type }
+        startContent={ startContent && startContent }
+        endContent={ endContent && endContent }
+        onPress={ onPress && onPress }
+        className={`${className && className} text-md bg-black text-white border-2 m-2`}>
+            { children }
+        </Button>
+    )
 }
-
-export function ActionButton({action, text, type, className, disabled, form, formaction, formenctype, formmethod, formnovalidate, formtarget, isSubmitting = false, isSubmitted = false, onClick, onSubmit}: {
-    action: string,
-    text: string,
-    type?: "button" | "submit" | "reset",
+export function PrimaryButton ({ children, type = "button", loading = false, disabled = false, className, startContent, endContent, onPress }: {
+    children: string,
+    type?: "button" | "submit",
     className?: string,
     disabled?: boolean,
-    form?: string,
-    formaction?: string | ((formData: FormData) => void | Promise<void>),
-    formenctype?: "application/x-www-form-urlencoded" | "multipart/form-data" | "text/plain",
-    formmethod?: "post" | "get" | "dialog",
-    formnovalidate?: boolean,
-    formtarget?: "_self" | "_blank" | "_parent" | "_top",
-    isSubmitting?: boolean,
-    isSubmitted?: boolean,
-    onClick?: MouseEventHandler<HTMLButtonElement> | undefined,
-    onSubmit?: MouseEventHandler<HTMLButtonElement> | undefined,
+    loading?: boolean,
+    startContent?: React.JSX.Element,
+    endContent?: React.JSX.Element,
+    onPress?: (e: PressEvent) => void
 }) {
-    const [ isPending, startTransition ] = useTransition();
-    
-    const handleClick = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
-        if (e.preventDefault) {
-            e.preventDefault();
-        }
-        
-        const key = '6LfEx5EqAAAAAN3Ri6bU8BynXkRlTqh6l6mHbl4t';
-        if (!key) {
-            console.error("Google reCAPTCHA key is missing.");
-            return;
-        }
-
-        const formElement = (e.currentTarget as HTMLButtonElement).form;
-        if (!formElement || !formaction) return;
-
-        try {
-            await new Promise<void>((resolve) => {
-                window.grecaptcha.ready(() => {
-                    window.grecaptcha
-                    .execute(key, { action })
-                    .then(async (token: string) => {
-                        const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/grecaptcha`, {
-                            method: 'POST',
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({ token })
-                        });
-                        
-                        if (request.status !== 200) {
-                            throw new Error("reCAPTCHA verification failed");
-                        }
-                        resolve();
-                    })
-                    .catch((error: unknown) => {
-                        console.error("Error executing reCAPTCHA: ", error);
-                        throw error;
-                    });
-                });
-            });
-            const formData = new FormData(formElement);
-
-            startTransition(async () => {
-                try {
-                    if (typeof formaction === 'function') {
-                        await formaction(formData);
-                        onClick?.(e);
-                        onSubmit?.(e);
-                    }
-                } catch (error) {
-                    console.error("Error during form submission: ", error);
-                }
-            });
-        } catch (error) {
-            console.error("Error during reCAPTCHA verification: ", error);
-        }
-    }, [action, formaction, onClick, onSubmit]);
-
-    return <Button
-            isLoading={isPending}
-            className={`${className} bg-black text-white w-fit text-md border-2 m-2`}
-            radius="md"
-            disabled={disabled}
-            type={type}
-            form={form}
-            formAction={formaction}
-            formEncType={formenctype}
-            formMethod={formmethod}
-            formNoValidate={formnovalidate}
-            formTarget={formtarget}
-            onPress={handleClick}
-            onSubmit={onSubmit}
-            >
-            {text}
-    </Button>
+    return (
+        <Button
+        isDisabled={ disabled }
+        isLoading={ loading }
+        type={ type }
+        startContent={ startContent && startContent }
+        endContent={ endContent && endContent }
+        onPress={ onPress && onPress }
+        className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg`}>
+            { children }
+        </Button>
+    )
+}
+export function PrimaryButtonAsLink ({ children, startContent, endContent, link } : {
+    children: string,
+    link: string,
+    startContent?: React.JSX.Element,
+    endContent?: React.JSX.Element
+}) {
+    return (
+        <Button
+        startContent={ startContent && startContent }
+        endContent={ endContent && endContent }
+        as={ Link }
+        href={ link }
+        className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg">
+            { children }
+        </Button>
+    )
 }
