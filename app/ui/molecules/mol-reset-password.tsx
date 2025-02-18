@@ -1,27 +1,26 @@
 "use client"
-import { SubmitButton } from "@/app/ui/atoms/atom-button";
-import { useActionState, useState } from "react";
+import { ActionButton } from "@/app/ui/atoms/atom-button";
+import { useActionState } from "react";
 import { passwordResetAction } from "../../[lang]/reset/actions";
+import FormInputPassword from "../atoms/atom-form-input-password";
+import { useParams } from "next/navigation";
 
 export default function ResetPassword({ token }: {
     token: string
 }) {
-const [ resetState, resetAction, pending ] = useActionState(passwordResetAction, { message: "" });
-const [ reveal, setReveal ] = useState<boolean>(false);
+    const [ resetState, resetAction, pending ] = useActionState(passwordResetAction, { message: "" });
+    const params = useParams();
+    const { lang } = params;
 
     return (
         <form action={resetAction}>
             <input type="text" name="token" value={token} readOnly hidden />
-            <input type={reveal ? "text" : "password"} name="password" id="password" autoComplete="new-password" required min={8}/>
-            <input type={reveal ? "text" : "password"} name="confirm-password" id="confirm-password" autoComplete="new-password" required min={8}/>
-            <button 
-                type="button" 
-                onClick={() => {
-                    setReveal(!reveal);
-            }}>Reveal</button>
+            <FormInputPassword />
             
-            <p aria-live="polite">{resetState.message}</p>
-            <SubmitButton text="Reset password" disabled={pending} />
+            <p aria-live="polite" className="text-danger">{resetState.message}</p>
+            <ActionButton loading={pending} disabled={pending}>
+                { lang === "es" ? "Cambiar contraseña" : "Change password" }
+            </ActionButton>
         </form>
     )
 }
