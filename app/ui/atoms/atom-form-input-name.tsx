@@ -27,11 +27,6 @@ export default function FormInputName ({ name, setName }: {
         size="lg"
         onChange={(e => {
             setName(e.target.value);
-        })}
-        validate={value => {
-            if (!value) {
-                return lang === "es" ? "Por favor ingresa tu nombre" : "Please enter your name"
-            }
-        }}/>
+        })}/>
     )
 }

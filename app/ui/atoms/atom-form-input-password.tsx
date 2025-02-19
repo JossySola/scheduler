@@ -40,12 +40,7 @@ export default function FormInputPassword () {
                         <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
                     )}
                 </button>
-            }
-            validate={value => {
-                if (value.length < 8) {
-                    return lang === "es" ? "Ingresa al menos 8 caracteres" : "Enter at least 8 characters";
-                }
-            }}/>
+            }/>
             {
                 lang === "es" ? 
                 <p data-slot="description" className="text-tiny text-yellow-500 mb-2 sm:w-[390px]">Recomendamos ampliamente utilizar tu <b>Administrador de Contraseñas</b> para crear una contraseña segura. De este modo, ¡la contraseña quedará guardada en tu dispositivo de manera segura y podrás utilizarla sin necesidad de memorizarla!</p> :
@@ -76,12 +71,7 @@ export default function FormInputPassword () {
                         <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
                     )}
                 </button>
-            }
-            validate={value => {
-                if (value !== password) {
-                    return lang === "es" ? "La confirmación y la contraseña deben ser idénticas" : "The confirmation and password must be the same";
-                }
-            }}/>
+            }/>
         </>
     )
 }

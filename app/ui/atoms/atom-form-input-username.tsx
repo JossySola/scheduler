@@ -25,14 +25,6 @@ export default function FormInputUsername () {
         size="lg"
         onChange={e => {
             setUsername(e.target.value);
-        }}
-        validate={value => {
-            if (!value) {
-                return lang === "es" ? "Por favor crea un nombre de usuario" : "Please enter a username"
-            }
-            if (value.length > 15) {
-                return lang === "es" ? "El nombre de usuario es muy largo, intenta con uno más corto" : "The username is too large, please try with a shorter username";
-            }
         }}/>
     )
 }
