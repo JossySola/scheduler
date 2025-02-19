@@ -1,22 +1,38 @@
 import { Button, Link } from "@heroui/react";
 import { PressEvent } from "@react-types/shared";
 
-export function ActionButton ({ children, type = "button", loading = false, disabled = false, className, endContent, onPress }: {
+export function ActionButton ({ children, type = "button", loading = false, disabled = false, className, endContent, onPress, formAction, form }: {
     children: string,
     type?: "button" | "submit",
     className?: string,
     disabled?: boolean,
     loading?: boolean,
     endContent?: React.JSX.Element,
-    onPress?: (e: PressEvent) => void
+    onPress?: (e: PressEvent) => void,
+    formAction?: (payload: FormData) => void,
+    form?: string,
 }) {
+    if (formAction) {
+        return (
+            <Button
+            isDisabled={ disabled }
+            isLoading={ loading }
+            type={ type }
+            endContent={ endContent && endContent }
+            formAction={ formAction }
+            form={form && form}
+            className={`${className && className} bg-white text-black w-fit text-md border-2 m-2`}>
+            { children }
+            </Button>
+        )
+    }
     if (onPress) {
         return (
             <Button
             isDisabled={ disabled }
             isLoading={ loading }
             type={ type }
-            endContent={endContent && endContent}
+            endContent={ endContent && endContent }
             onPress={(e) => onPress(e)}
             className={`${className && className} bg-white text-black w-fit text-md border-2 m-2`}>
             { children }
@@ -34,7 +50,7 @@ export function ActionButton ({ children, type = "button", loading = false, disa
         </Button>
     )
 }
-export function SecondaryButton ({ children, type = "button", loading = false, disabled = false, className, startContent, endContent, onPress }: {
+export function SecondaryButton ({ children, type = "button", loading = false, disabled = false, className, startContent, endContent, onPress, formAction, form }: {
     children: string,
     type?: "button" | "submit",
     className?: string,
@@ -42,8 +58,39 @@ export function SecondaryButton ({ children, type = "button", loading = false, d
     loading?: boolean,
     startContent?: React.JSX.Element,
     endContent?: React.JSX.Element,
-    onPress?: (e: PressEvent) => void
+    onPress?: (e: PressEvent) => void,
+    formAction?: (payload: FormData) => void,
+    form?: string,
 }) {
+    if (formAction) {
+        return (
+            <Button
+            isDisabled={ disabled }
+            isLoading={ loading }
+            type={ type }
+            startContent={ startContent && startContent }
+            endContent={ endContent && endContent }
+            formAction={ formAction }
+            form={form && form}
+            className={`${className && className} text-md bg-black text-white border-2 m-2`}>
+                { children }
+            </Button>
+        )
+    }
+    if (onPress) {
+        return (
+            <Button
+            isDisabled={ disabled }
+            isLoading={ loading }
+            type={ type }
+            startContent={ startContent && startContent }
+            endContent={ endContent && endContent }
+            onPress={ onPress }
+            className={`${className && className} text-md bg-black text-white border-2 m-2`}>
+                { children }
+            </Button>
+        )
+    }
     return (
         <Button
         isDisabled={ disabled }
@@ -51,13 +98,12 @@ export function SecondaryButton ({ children, type = "button", loading = false, d
         type={ type }
         startContent={ startContent && startContent }
         endContent={ endContent && endContent }
-        onPress={ onPress && onPress }
         className={`${className && className} text-md bg-black text-white border-2 m-2`}>
             { children }
         </Button>
     )
 }
-export function PrimaryButton ({ children, type = "button", loading = false, disabled = false, className, startContent, endContent, onPress }: {
+export function PrimaryButton ({ children, type = "button", loading = false, disabled = false, className, startContent, endContent, onPress, formAction, form }: {
     children: string,
     type?: "button" | "submit",
     className?: string,
@@ -65,8 +111,39 @@ export function PrimaryButton ({ children, type = "button", loading = false, dis
     loading?: boolean,
     startContent?: React.JSX.Element,
     endContent?: React.JSX.Element,
-    onPress?: (e: PressEvent) => void
+    onPress?: (e: PressEvent) => void,
+    formAction?: (payload: FormData) => void,
+    form?: string,
 }) {
+    if (formAction) {
+        return (
+            <Button
+            isDisabled={ disabled }
+            isLoading={ loading }
+            type={ type }
+            startContent={ startContent && startContent }
+            endContent={ endContent && endContent }
+            formAction={ formAction }
+            form={form && form}
+            className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg`}>
+                { children }
+            </Button>
+        )
+    }
+    if (onPress) {
+        return (
+            <Button
+            isDisabled={ disabled }
+            isLoading={ loading }
+            type={ type }
+            startContent={ startContent && startContent }
+            endContent={ endContent && endContent }
+            onPress={ onPress }
+            className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg`}>
+                { children }
+            </Button>
+        )
+    }
     return (
         <Button
         isDisabled={ disabled }
@@ -74,7 +151,6 @@ export function PrimaryButton ({ children, type = "button", loading = false, dis
         type={ type }
         startContent={ startContent && startContent }
         endContent={ endContent && endContent }
-        onPress={ onPress && onPress }
         className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg`}>
             { children }
         </Button>

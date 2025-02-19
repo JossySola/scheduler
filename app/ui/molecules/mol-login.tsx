@@ -63,7 +63,7 @@ export default function LogIn ({ lang }: {
                 <p aria-live="polite" className="text-danger">{message}</p>
 
                 <CountdownTimer nextAttempt={timestamp} />
-                <ActionButton disabled={pending} type="submit" className="w-full sm:w-full">
+                <ActionButton disabled={pending} loading={pending} type="submit" className="w-full sm:w-full">
                     { lang === "es" ? "Iniciar sesión" : "Login"}
                 </ActionButton>
             </Form>

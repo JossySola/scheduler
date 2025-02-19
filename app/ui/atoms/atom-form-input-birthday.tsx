@@ -22,11 +22,6 @@ export default function FormInputBirthday () {
         size="lg"
         onChange={(e => {
             setBirthday(e.target.value);
-        })}
-        validate={value => {
-            if (!value) {
-                return lang === "es" ? "Por favor proporciona tu fecha de nacimiento" : "Please enter your birthday";
-            }
-        }}/>
+        })}/>
     )
 }
