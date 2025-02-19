@@ -7,8 +7,8 @@ export default function CountdownTimer({ nextAttempt }: { nextAttempt: string })
     const [ minutesRemaining, setMinutesRemaining ] = useState<number | null>(null);
     const params = useParams();
     const { lang } = params;
-    const minute = lang === "es" ? "minuto" : "minute";
-    const minutes = lang === "es" ? "minutos" : "minutes";
+    const minute = lang === "es" ? " minuto" : " minute";
+    const minutes = lang === "es" ? " minutos" : " minutes";
 
     useEffect(() => {
         const updateTime = () => {
