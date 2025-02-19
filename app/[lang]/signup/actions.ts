@@ -19,26 +19,26 @@ export async function validateAction (state: { message: string }, formData: Form
     
     if (!name || !username || !birthday || !email || !password || !confirmation) {
         return {
-            message: "Some fields are empty",
+            message: locale === "es" ? "Hay campos sin llenar" : "Some fields are empty",
             passes: false
         };
     }
     
     if (password !== confirmation) {
         return {
-            message: "Password confirmation is incorrect",
+            message: locale === "es" ? "La confirmación de la contraseña es errónea" : "The password confirmation is incorrect",
             passes: false
         };
     }
 
-    const validName = z.string().min(3, { message: "Name too short" }).safeParse(name);
-    const validUsername = z.string().min(3, { message: "Username too short" }).safeParse(username);
+    const validName = z.string().min(3, { message: locale === "es" ? "El nombre es muy corto" : "Name too short" }).safeParse(name);
+    const validUsername = z.string().min(3, { message: locale === "es" ? "El nombre de usuario es muy corto" : "Username too short" }).safeParse(username);
     const validBirthday = z.preprocess(
         (value) => (typeof value === "string" ? new Date(value) : value),
-        z.date({ message: "Invalid date" })
+        z.date({ message: locale === "es" ? "Fecha inválida" : "Invalid date" })
     ).safeParse(birthday);
-    const validEmail = z.string().email({ message: "Invalid email address" }).safeParse(email);
-    const validPassword = z.string().min(8, { message: "Password must have at least 8 characters" }).safeParse(password);
+    const validEmail = z.string().email({ message: locale === "es" ? "Correo electrónico inválido" : "Invalid email address" }).safeParse(email);
+    const validPassword = z.string().min(8, { message: locale === "es" ? "La contraseña debe tener al menos 8 caracteres" : "Password must have at least 8 characters" }).safeParse(password);
     const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/verify/user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -69,9 +69,9 @@ export async function validateAction (state: { message: string }, formData: Form
     
     if (exposedPassword !== 0) {
         return {
-            message: 'After a password check, the password provided has been exposed in a data breach. For security reason, please choose a stronger password.',
+            message: locale === "es" ? 'Después de un análisis, la contraseña que utilizaste ha sido reportada en la lista de contraseñas expuestas. Por favor crea una contraseña más segura' : 'After a password check, the password provided has been exposed in a data breach. For security reason, please choose a stronger password.',
             passes: false,
-            descriptive: [...errors, { error: { issues: [{ message: 'After a password check, the password provided has been exposed in a data breach. For security reason, please choose a stronger password.' }] } }],
+            descriptive: [...errors, { error: { issues: [{ message: locale === "es" ? 'Después de un análisis, la contraseña que utilizaste ha sido reportada en la lista de contraseñas expuestas. Por favor crea una contraseña más segura' : 'After a password check, the password provided has been exposed in a data breach. For security reason, please choose a stronger password.' }] } }],
         }
     }
     
@@ -84,7 +84,7 @@ export async function validateAction (state: { message: string }, formData: Form
     const doesExist = await existQuery.json();
     
     if (doesExist.error === 'User not found') {
-        await sendEmailConfirmation(email.toString(), name.toString());
+        await sendEmailConfirmation(email.toString(), name.toString(), locale as "en" | "es");
     }
     
     return {
@@ -116,7 +116,7 @@ export async function confirmEmailAction (state: { message: string }, formData: 
                 "Please type the code sent to your email in the field above"
         }
     }
-    console.error("[confirmEmailAction] Checking if other data exist...")
+    
     if (!name || !username || !birthday || !email || !password) {
         console.error("[confirmEmailAction] Some data is missing, exiting...")
         return {
