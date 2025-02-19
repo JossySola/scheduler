@@ -187,7 +187,7 @@ export async function SendResetEmailAction (previousState: { message: string }, 
                     valign="top"
                     bgcolor="">
                     <div>
-        <h1 style="text-align: center;">Recuperaci&oacute;n de contrase&ntilde;a</h1>
+        <h2 style="text-align: center;">Recuperaci&oacute;n de contrase&ntilde;a</h2>
         </div>
 
                 </td>
@@ -441,7 +441,7 @@ export async function SendResetEmailAction (previousState: { message: string }, 
                     valign="top"
                     bgcolor="">
                     <div>
-        <h1 style="text-align: center;">Password Recovery</h1>
+        <h2 style="text-align: center;">Password Recovery</h2>
         </div>
 
                 </td>
