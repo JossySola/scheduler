@@ -1,6 +1,6 @@
 import UserProfile from "@/app/ui/atoms/atom-user-profile";
+import Settings from "@/app/ui/molecules/mol-settings";
 import { auth } from "@/auth";
-import Link from "next/link";
 
 export default async function Page ({ params }: {
     params: Promise<{ lang: string }>
@@ -8,13 +8,20 @@ export default async function Page ({ params }: {
     const session = await auth();
     const lang = (await params).lang;
     
-    if (session?.user) {
+    if (session?.user && session.user.email) {
+        const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/user/providers`, {
+            method: "GET",
+            headers: {
+                "user_email": session.user.email
+            }
+        })
+        const response = await request.json();
+
         return (
-            <>
-                <Link href={`/${lang}/table/new`}>{ lang === "es" ? "Crear nuevo" : "Create new" }</Link>
+            <section className="m-8 flex flex-row gap-6">
                 <UserProfile />
-                <Link href={`/${lang}/profile/settings`}>{ lang === "es" ? "Ajustes" : "Settings" }</Link>
-            </>
+                <Settings lang={lang} data={response.data}/>
+            </section>
         )
     }
 }
