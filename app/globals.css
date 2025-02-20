@@ -22,12 +22,21 @@ body {
   justify-content: center;
   align-items: start;
 }
-
+h1 {
+  font-size: 2rem;
+  margin: 0.5rem 0;
+}
 h2 {
   font-size: 1.5rem;
   line-height: calc(2 / 1.5);
   font-weight: 600;
-  margin: 1rem;
+  margin: 1rem 0;
+}
+h3 {
+  font-size: 1.3rem;
+  line-height: calc(2 / 1.5);
+  font-weight: 600;
+  margin: 1rem 0;
 }
 
 a {
