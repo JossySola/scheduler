@@ -1,7 +1,7 @@
 "use client"
 import { useActionState, useState } from "react"
-import { SecondaryButton, SubmitButton } from "./atom-button";
-import { DeleteAccountAction } from "@/app/[lang]/profile/settings/actions";
+import { ActionButton, SecondaryButton } from "./atom-button";
+import { DeleteAccountAction } from "@/app/[lang]/dashboard/actions";
 import { useParams } from "next/navigation";
 import {
     Modal,
@@ -26,13 +26,16 @@ export default function DangerButton () {
     
     return (
         <>
+        <ActionButton color="danger" onPress={onOpen}>{ lang === "es" ? "Eliminar cuenta" : "Delete account"}</ActionButton>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange} >
                 <ModalContent>
                     {onClose => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">{ lang === "es" ? "Advertencia:" : "Warning!"}</ModalHeader>
-                            <ModalBody>
-                                <Form action={deleteAction}>
+                            <ModalHeader className="flex flex-col gap-1 text-center">
+                                <h3 className="text-danger">{ lang === "es" ? "¡Advertencia! :" : "Warning!"}</h3>
+                            </ModalHeader>
+                            <ModalBody className="flex flex-col justify-center items-center">
+                                <Form action={deleteAction} className="m-5 flex flex-col items-center">
                                     <Input 
                                     isRequired
                                     size="lg"
@@ -61,19 +64,17 @@ export default function DangerButton () {
                                         )}
                                      </button>   
                                     }/>
-                                    <SubmitButton text="Confirm" disabled={pending} color="danger"/>
-                                    <SecondaryButton text={ lang === "es" ? "Cancelar" : "Cancel" } callback={onClose} />
+                                    <ActionButton loading={pending} disabled={pending} type="submit">{ lang === "es" ? "Confirmar" : "Confirm"}</ActionButton>
+                                    
                                 </Form>
                             </ModalBody>
                             <ModalFooter>
-                                
+                                <SecondaryButton onPress={onClose}>{ lang === "es" ? "Cancelar" : "Cancel" }</SecondaryButton>
                             </ModalFooter>
                         </>
                     )}
                 </ModalContent>
         </Modal>
-        
-        <SecondaryButton text={ lang === "es" ? "Eliminar cuenta" : "Delete account"} callback={onOpen} />
         </>
     )
 }
