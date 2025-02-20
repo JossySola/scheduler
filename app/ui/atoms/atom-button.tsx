@@ -1,8 +1,9 @@
 import { Button, Link } from "@heroui/react";
 import { PressEvent } from "@react-types/shared";
 
-export function ActionButton ({ children, type = "button", loading = false, disabled = false, className, endContent, onPress, formAction, form }: {
+export function ActionButton ({ children, type = "button", color, loading = false, disabled = false, className, endContent, onPress, formAction, form }: {
     children: string,
+    color?: "default" | "primary" | "secondary" | "success" | "warning" | "danger" | undefined,
     type?: "button" | "submit",
     className?: string,
     disabled?: boolean,
@@ -18,10 +19,11 @@ export function ActionButton ({ children, type = "button", loading = false, disa
             isDisabled={ disabled }
             isLoading={ loading }
             type={ type }
+            color={ color }
             endContent={ endContent && endContent }
             formAction={ formAction }
-            form={form && form}
-            className={`${className && className} bg-white text-black w-fit text-md border-2 m-2`}>
+            form={ form && form }
+            className={ !color ? `${className && className} bg-white text-black w-fit text-md border-2 m-2` : "text-md m-2" }>
             { children }
             </Button>
         )
@@ -32,9 +34,10 @@ export function ActionButton ({ children, type = "button", loading = false, disa
             isDisabled={ disabled }
             isLoading={ loading }
             type={ type }
+            color={ color }
             endContent={ endContent && endContent }
             onPress={(e) => onPress(e)}
-            className={`${className && className} bg-white text-black w-fit text-md border-2 m-2`}>
+            className={ !color ? `${className && className} bg-white text-black w-fit text-md border-2 m-2` : "text-md m-2" }>
             { children }
             </Button>
         )
@@ -44,15 +47,17 @@ export function ActionButton ({ children, type = "button", loading = false, disa
         isDisabled={ disabled }
         isLoading={ loading }
         type={ type }
+        color={ color }
         endContent={ endContent && endContent }
-        className={`${className && className} bg-white text-black w-fit text-md border-2 m-2`}>
+        className={ !color ? `${className && className} bg-white text-black w-fit text-md border-2 m-2` : "text-md m-2" }>
             { children }
         </Button>
     )
 }
-export function SecondaryButton ({ children, type = "button", loading = false, disabled = false, className, startContent, endContent, onPress, formAction, form }: {
+export function SecondaryButton ({ children, type = "button", color, loading = false, disabled = false, className, startContent, endContent, onPress, formAction, form }: {
     children: string,
     type?: "button" | "submit",
+    color?: "default" | "primary" | "secondary" | "success" | "warning" | "danger" | undefined,
     className?: string,
     disabled?: boolean,
     loading?: boolean,
@@ -68,11 +73,13 @@ export function SecondaryButton ({ children, type = "button", loading = false, d
             isDisabled={ disabled }
             isLoading={ loading }
             type={ type }
+            color={ color }
             startContent={ startContent && startContent }
             endContent={ endContent && endContent }
             formAction={ formAction }
-            form={form && form}
-            className={`${className && className} text-md bg-black text-white border-2 m-2`}>
+            form={ form && form }
+            variant="ghost"
+            className={ !color ? `${className && className}` : "text-md m-2" }>
                 { children }
             </Button>
         )
@@ -83,10 +90,12 @@ export function SecondaryButton ({ children, type = "button", loading = false, d
             isDisabled={ disabled }
             isLoading={ loading }
             type={ type }
+            color={ color }
             startContent={ startContent && startContent }
             endContent={ endContent && endContent }
             onPress={ onPress }
-            className={`${className && className} text-md bg-black text-white border-2 m-2`}>
+            variant="ghost"
+            className={ !color ? `${className && className}` : "text-md m-2" }>
                 { children }
             </Button>
         )
@@ -96,9 +105,11 @@ export function SecondaryButton ({ children, type = "button", loading = false, d
         isDisabled={ disabled }
         isLoading={ loading }
         type={ type }
+        color={ color }
         startContent={ startContent && startContent }
         endContent={ endContent && endContent }
-        className={`${className && className} text-md bg-black text-white border-2 m-2`}>
+        variant="ghost"
+        className={ !color ? `${className && className}` : "text-md m-2" }>
             { children }
         </Button>
     )
@@ -124,7 +135,7 @@ export function PrimaryButton ({ children, type = "button", loading = false, dis
             startContent={ startContent && startContent }
             endContent={ endContent && endContent }
             formAction={ formAction }
-            form={form && form}
+            form={ form && form }
             className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg`}>
                 { children }
             </Button>
