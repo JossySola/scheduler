@@ -1,4 +1,4 @@
-import TableLink from "@/app/ui/molecules/mol-table-link";
+import DashboardTable from "@/app/ui/molecules/mol-dashboard-table";
 import { auth } from "@/auth"
 import { redirect } from "next/navigation";
 
@@ -28,15 +28,7 @@ export default async function Page ({ params }: {
             const tables = await request.json();
 
             if (tables.data) {
-                return (
-                    <section>
-                        {
-                            tables.data && tables.data.map((table: { table_id: string, table_name: string, updated_at: string}, index: number) => {
-                                return <TableLink key={`${table.table_name}${index}`} table_id={table.table_id} table_name={table.table_name} updated_at={table.updated_at} />
-                            })
-                        }
-                    </section>
-                )
+                return tables.data && <DashboardTable rows={tables.data} lang={lang as "en" | "es"} />
             }
             return (
                 <p>{ lang === "es" ? "Aún no hay contenido para mostrar" : "No tables yet"}</p>
