@@ -1,8 +1,9 @@
 import { auth } from "@/auth";
+import UserBadge from "./atom-user-badge";
 
 export default async function UserProfile() {
     const session = await auth();
-    if (!session?.user || !session?.user.email) return null;
+    if (!session?.user || !session?.user.email || !session.user.name) return null;
     
     const imageRequest = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/user/image`, {
         method: "GET",
@@ -11,14 +12,11 @@ export default async function UserProfile() {
         }
     });
 
-    const image = await imageRequest.json();
+    const image = (await imageRequest.json()).user_image;
 
     return (
-        <section>
-            {
-                image.user_image ? <img src={image.user_image} /> : null
-            }
-            <h2>{session.user.name}</h2>
+        <section className="mb-5">
+            <UserBadge name={session.user.name} image={image} email={session.user.email}/>
         </section>
     )
 }
