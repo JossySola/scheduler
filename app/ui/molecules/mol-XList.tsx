@@ -2,6 +2,8 @@
 import { SetStateAction, useState } from "react";
 import XItem from "./mol-XItem";
 import { useParams } from "next/navigation";
+import { Button, Input } from "@heroui/react";
+import { PlusCircle, Trash } from "geist-icons";
 
 export default function XList({ name, preferences, items, setItems, criteria, values, enableInput = true, enableRemoval = true } : 
     { 
@@ -59,17 +61,31 @@ export default function XList({ name, preferences, items, setItems, criteria, va
     }
 
     return (
-        <ol id={name}>
+        <ol id={name} className="w-full flex flex-col items-center">
             <h3>{name}</h3>
             {
-                enableInput ? <div><input type="text" name="list-input" autoComplete="off" onChange={e => {
+                enableInput ? <div className="flex flex-row justify-center items-center gap-2">
+                    <Input 
+                    type="text" 
+                    name="list-input" 
+                    autoComplete="off" 
+                    placeholder={ lang === "es" ? "Ingresa un valor" : "Enter a value" }
+                    value={input}
+                    onChange={e => {
                     setInput(e.target.value);
                 }} />
-                <button type="button" onClick={e => {
-                    e.preventDefault();
+                <Button 
+                isIconOnly 
+                variant="flat"
+                aria-label="Add item" 
+                color="success"
+                onPress={() => {
                     handleAddItem(input);
                     setInput("");
-                }}>{ lang === "es" ? "Añadir" : "Add" }</button></div> : null
+                }}>
+                    <PlusCircle />
+                </Button>
+                </div> : null
             }
             
             {
@@ -79,14 +95,22 @@ export default function XList({ name, preferences, items, setItems, criteria, va
                     return <li key={index}>
                         { criteria ? <XItem name={item} preferences={prefs} criteria={criteria} values={values} /> : null }
                         {
-                            enableRemoval ? <>
-                            <input type="text" name={`ValueOption${index}:`} value={item} readOnly/>
-                            <button type="button" onClick={(e) => {
-                                e.preventDefault();
+                            enableRemoval ? <div className="m-4 flex flex-row justify-center items-center gap-2">
+                            <Input 
+                            name={`ValueOption${index}:`}
+                            value={item} 
+                            readOnly 
+                            isDisabled />
+                            <Button 
+                            isIconOnly 
+                            variant="flat"
+                            color="danger"
+                            onPress={() => {
                                 handleRemoveItem(item);
                             }}>
-                            { lang === "es" ? "Eliminar" : "Delete"}
-                            </button></> : null
+                                <Trash />
+                            </Button>
+                            </div> : null
                         }
                         </li>
                 }) : 
@@ -94,16 +118,23 @@ export default function XList({ name, preferences, items, setItems, criteria, va
                     return <li key={index}>
                         { criteria ? <XItem name={item} criteria={criteria} values={values} /> : null }
                         {
-                            enableRemoval ? <>
-                            <input type="text" name={`ValueOption${index}:`} value={item} />
-                            <button type="button" onClick={(e) => {
-                                e.preventDefault();
+                            enableRemoval ? <div className="m-4 flex flex-row justify-center items-center gap-2">
+                            <Input 
+                            name={`ValueOption${index}:`} 
+                            value={item}
+                            readOnly 
+                            isDisabled />
+                            <Button 
+                            isIconOnly 
+                            variant="flat"
+                            onPress={() => {
                                 handleRemoveItem(item);
                             }}>
                             { lang === "es" ? "Eliminar" : "Delete"}
-                            </button></> : null
+                            </Button>
+                            </div> : null
                         }
-                        </li>
+                    </li>
                 })
             }
         </ol>

@@ -2,6 +2,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { SetStateAction, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { Input, Select, SelectItem } from "@heroui/react";
 
 export default function XRows ({ existingRows, setRows, values, cols }: { 
     existingRows: Array<Array<string>>, 
@@ -11,6 +12,8 @@ export default function XRows ({ existingRows, setRows, values, cols }: {
 }) {
     const [ colsCriteria, setColsCriteria ] = useState<Array<number>>(existingRows.length ? 
         existingRows[0].map(() => existingRows.length ) : []);
+    const params = useParams();
+    const lang = params.lang ? params.lang : "en";
 
     useEffect(() => {
         if (cols) {
@@ -30,25 +33,35 @@ export default function XRows ({ existingRows, setRows, values, cols }: {
                 if (rIndex === 0) {
                     return (
                         <thead key={rIndex}>
-                            <tr>
+                            <tr className="flex flex-row items-start justify-start gap-2">
                                 {
                                     row && row.map((column, cIndex) => {
                                         return (
                                         <th scope="col" key={cIndex}>
                                             <RowInput rIndex={rIndex} cIndex={cIndex} value={column} setNewValue={setRows} currentRows={existingRows} />
                                             {
-                                                cIndex !== 0 ? 
-                                                <input type="number" name={`Specification:Column:${existingRows[0] ? existingRows[0][cIndex] : ""}-must-have-this-amount-of-cells-filled-in`} min={0} max={existingRows && existingRows.length ? existingRows.length - 1 : 0} value={colsCriteria[cIndex]} onChange={e => {
-                                                    setColsCriteria(colsCriteria && colsCriteria.map((col, index) => {
-                                                        if (index === cIndex) {
-                                                            const num = parseInt(e.target.value, 10);
-                                                            return num;
-                                                        }
-                                                        return col;
-                                                    }))
-                                                }}/> : null
-                                            }
-                                            
+                                                cIndex !== 0 ? (
+                                                    <>
+                                                    <label className="text-tiny">{ lang === "es" ? "Número de filas a llenar" : "Number of rows to fill" }</label>
+                                                    <input 
+                                                    className="bg-[transparent] text-center" 
+                                                    type="number" 
+                                                    name={`Specification:Column:${existingRows[0] ? existingRows[0][cIndex] : ""}-must-have-this-amount-of-cells-filled-in`} 
+                                                    min={0} 
+                                                    max={existingRows && existingRows.length ? existingRows.length - 1 : 0} 
+                                                    value={colsCriteria[cIndex]} 
+                                                    onChange={e => {
+                                                        setColsCriteria(colsCriteria && colsCriteria.map((col, index) => {
+                                                            if (index === cIndex) {
+                                                                const num = parseInt(e.target.value, 10);
+                                                                return num;
+                                                            }
+                                                            return col;
+                                                        }))
+                                                    }}/>
+                                                    </>
+                                                ) : null
+                                            }    
                                         </th>)
                                     })
                                 }
@@ -59,7 +72,7 @@ export default function XRows ({ existingRows, setRows, values, cols }: {
                 // If it is not the first row, create rows inside the table body
                 return (
                     <tbody key={rIndex}>
-                        <tr>
+                        <tr className="flex flex-row items-start justify-start gap-2">
                             {
                                 row && row.map((column, cIndex) => {
                                     if (cIndex === 0) {
@@ -99,10 +112,14 @@ const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows, values } :
 
     if (values && values.length) {
         return (
-            <select 
+            <Select 
+            className="w-max"
+            label={ lang === "es" ? "Seleccionar valor" : "Select value" }
+            variant="bordered"
+            selectedKeys={value}
+            size="sm"
             id={`${rIndex}-${cIndex}-selection`} 
-            value={value} 
-            onChange={(e) => {
+            onChange={() => {
                 setNewValue(() => {
                     return currentRows && currentRows.map((row, rowIndex) => {
                         if (rIndex !== rowIndex) {
@@ -118,28 +135,35 @@ const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows, values } :
                 })
             }}
             >
-                <option value="">{lang === "es" ? "Seleccionar" : "Select"}</option>
                 {
-                    values.map(value => {
-                        return <option key={`${uuidv4()}`} value={value}>{value}</option>
-                    })
+                    values.map(value => (<SelectItem key={value}>{value}</SelectItem>))
                 }
-            </select>
+            </Select>
         )
     }
 
-    return <input type="text" key={columnName} id={columnName} name={columnName} value={value} autoComplete="off" onChange={(e) => {
-        setNewValue(() => {
-            return currentRows && currentRows.map((row, rowIndex) => {
-                if (rIndex !== rowIndex) {
-                    return row;
-                }
-                return row && row.map((column, colIndex) => {
-                    if (cIndex !== colIndex) {
-                        return column;
+    return <Input
+            className="w-max"
+            variant="bordered" 
+            size="sm"
+            type="text" 
+            key={columnName} 
+            id={columnName} 
+            name={columnName} 
+            value={value} 
+            autoComplete="off" 
+            onChange={(e) => {
+            setNewValue(() => {
+                return currentRows && currentRows.map((row, rowIndex) => {
+                    if (rIndex !== rowIndex) {
+                        return row;
                     }
+                    return row && row.map((column, colIndex) => {
+                        if (cIndex !== colIndex) {
+                            return column;
+                        }
                     return e.target.value;
-                })
+                 })
             })
         })
     }}/>

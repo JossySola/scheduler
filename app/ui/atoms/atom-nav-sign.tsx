@@ -9,6 +9,7 @@ import {
     NavbarItem,
 } from "@heroui/navbar";
 import { SchedulerBlack, SchedulerWhite } from "./atom-branding";
+import HomeAtom from "./atom-home";
 
 
 export default async function SignNav () {
@@ -28,9 +29,15 @@ export default async function SignNav () {
             <NavbarContent justify="end">
             {
                 session?.user ? 
+                <>
+                <NavbarItem>
+                    <HomeAtom />
+                </NavbarItem>
                 <NavbarItem>
                     <LogOutButton />
-                </NavbarItem> : (
+                </NavbarItem>
+                </>
+                 : (
                 <>
                 <NavbarItem>
                     <LogInButton  />

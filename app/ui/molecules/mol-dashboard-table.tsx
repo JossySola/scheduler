@@ -27,7 +27,7 @@ export default function DashboardTable ({ rows, lang }: {
                             <TableCell><Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/${row.table_id}`}>{row.table_name}</Link></TableCell>
                             <TableCell><Timestamp updated_at={row.updated_at}/></TableCell>
                             <TableCell>
-                                <DeleteTableModal table_id={row.table_id} />
+                                <DeleteTableModal table_id={row.table_id} table_name={row.table_name} />
                             </TableCell>
                         </TableRow>
                         )
