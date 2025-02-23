@@ -14,7 +14,7 @@
     "@ai-sdk/anthropic": "^1.1.8",
     "@ai-sdk/openai": "^1.1.11",
     "@auth/pg-adapter": "^1.7.4",
-    "@heroui/react": "^2.6.14",
+    "@heroui/react": "^2.7.2",
     "@heroui/theme": "^2.4.6",
     "@sendgrid/mail": "^8.1.4",
     "@types/react": "^19.0.4",
@@ -26,7 +26,7 @@
     "framer-motion": "^12.4.3",
     "geist": "^1.3.1",
     "geist-icons": "^1.2.3",
-    "next": "^15.2.0-canary.65",
+    "next": "^15.2.0-canary.70",
     "next-auth": "^5.0.0-beta.25",
     "oslo": "^1.2.1",
     "pg": "^8.13.3",
@@ -53,6 +53,6 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.24.0",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.6"
   }
 }
