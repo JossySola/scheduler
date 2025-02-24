@@ -40,7 +40,6 @@ export default function XForm ({ id, cols, title, setTitle, children, rows, setR
 
     return (
         <Form className="flex flex-col items-center gap-12 w-full">
-            <input type="text" name="user_id" id="user_id" value={id ? id : ""} hidden readOnly />
             <input type="text" name="user_email" id="user_email" value={session?.user?.email ? session.user.email : ""} hidden readOnly />
             <input type="text" name="table_id" id="table_id" value={params && params.id ? params.id : ""} hidden readOnly />
             <Divider orientation="horizontal" className="m-4"/>

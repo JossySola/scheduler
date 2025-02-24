@@ -113,20 +113,20 @@ export default function XPanel ({ id }:{ id?: string }) {
                 setTitle={setTitle}
                 cols={cols}>
                     <>
-                        <SecondaryButton onPress={onOpen} endContent={<SettingsGear width="16px" />}>{ lang === "es" ? "Ajustes" : "Settings"}</SecondaryButton>
+                        <SecondaryButton onPress={onOpen} endContent={<SettingsGear width="16px" />}>{ lang === "es" ? "Especificaciones" : "Criteria"}</SecondaryButton>
                         <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
                             <DrawerContent>
                                 {onClose => (
                                     <>
-                                    <DrawerHeader className="flex flex-col justify-center items-center gap-1">{ lang === "es" ? "Ajustes de tabla" : "Schedule Settings"}</DrawerHeader>
+                                    <DrawerHeader className="flex flex-col justify-center items-center gap-1">{ lang === "es" ? "Especificaciones" : "Schedule Specs"}</DrawerHeader>
                                     <DrawerBody>
                                     <XList 
-                                    name={ lang === "es" ? "Valores" : "Values" }
+                                    name={ lang === "es" ? "Valores a usar" : "Values to use" }
                                     items={values}
                                     setItems={setValues} />
                                     <Divider />
                                     <XList 
-                                    name={ lang === "es" ? "Ajustes de Filas" : "Rows Settings" }
+                                    name={ lang === "es" ? "Configuración de Filas" : "Rows Settings" }
                                     preferences={preferences}
                                     items={rowHeaders}
                                     setItems={setRowHeaders}

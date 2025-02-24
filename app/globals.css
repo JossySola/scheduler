@@ -38,9 +38,18 @@ h3 {
   font-weight: 600;
   margin: 1rem 0;
 }
-
 a {
   text-decoration: underline;
+}
+details > summary {
+  cursor: pointer;
+  text-align: center;
+  list-style-type: '▶️';
+}
+details[open] > summary {
+  cursor: pointer;
+  text-align: center;
+  list-style-type: '🔽';
 }
 
 @layer utilities {

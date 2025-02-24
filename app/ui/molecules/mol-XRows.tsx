@@ -1,5 +1,4 @@
 "use client"
-import { v4 as uuidv4 } from "uuid";
 import { SetStateAction, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Input, Select, SelectItem } from "@heroui/react";
@@ -33,11 +32,11 @@ export default function XRows ({ existingRows, setRows, values, cols }: {
                 if (rIndex === 0) {
                     return (
                         <thead key={rIndex}>
-                            <tr className="flex flex-row items-start justify-start gap-2">
+                            <tr>
                                 {
                                     row && row.map((column, cIndex) => {
                                         return (
-                                        <th scope="col" key={cIndex}>
+                                        <th scope="col" key={cIndex} className="align-top p-1">
                                             <RowInput rIndex={rIndex} cIndex={cIndex} value={column} setNewValue={setRows} currentRows={existingRows} />
                                             {
                                                 cIndex !== 0 ? (
@@ -72,17 +71,17 @@ export default function XRows ({ existingRows, setRows, values, cols }: {
                 // If it is not the first row, create rows inside the table body
                 return (
                     <tbody key={rIndex}>
-                        <tr className="flex flex-row items-start justify-start gap-2">
+                        <tr>
                             {
                                 row && row.map((column, cIndex) => {
                                     if (cIndex === 0) {
                                         return (
-                                        <th scope="row" key={cIndex}>
+                                        <th scope="row" key={cIndex} className="align-top p-1">
                                             <RowInput rIndex={rIndex} cIndex={cIndex} value={column} setNewValue={setRows} currentRows={existingRows} />
                                         </th>)
                                     }
                                     return (
-                                    <td key={cIndex}>
+                                    <td key={cIndex} className="align-top p-1">
                                         <RowInput rIndex={rIndex} cIndex={cIndex} value={column} setNewValue={setRows} currentRows={existingRows} values={values && values} />
                                     </td>)
                                 })
@@ -113,12 +112,14 @@ const RowInput = ({ rIndex, cIndex, value, setNewValue, currentRows, values } :
     if (values && values.length) {
         return (
             <Select 
-            className="w-max"
+            className="w-full"
             label={ lang === "es" ? "Seleccionar valor" : "Select value" }
             variant="bordered"
             selectedKeys={value}
             size="sm"
-            id={`${rIndex}-${cIndex}-selection`} 
+            key={columnName}
+            id={columnName} 
+            name={columnName}
             onChange={() => {
                 setNewValue(() => {
                     return currentRows && currentRows.map((row, rowIndex) => {
