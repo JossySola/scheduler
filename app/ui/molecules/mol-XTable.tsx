@@ -96,16 +96,16 @@ export default function XTable ({ rows, setRows, values, cols }:
 
     return (
         <section className="grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-4 overflow-x-auto w-[90vw]">
-            <fieldset className="col-start-2 flex flex-row gap-1 h-fit sticky left-0">
-                <Button name="delete-column" id="delete-column" variant="flat" endContent={<MinusSquareSmall />} onPress={() => handleDeleteColumn()}>{lang === "es" ? "Eliminar Columna":"Delete Column" }</Button>
-                <Button name="add-column" id="add-column" variant="flat" endContent={<PlusSquareSmall color="#FF990A" />} onPress={() => handleAddColumn()}>{lang === "es" ? "Añadir Columna":"Add Column" }</Button>
+            <fieldset className="col-start-2 flex flex-row gap-1 h-fit">
+                <Button name="delete-column" id="delete-column" variant="faded" endContent={<MinusSquareSmall />} onPress={() => handleDeleteColumn()}>{lang === "es" ? "Eliminar Columna":"Delete Column" }</Button>
+                <Button name="add-column" id="add-column" variant="faded" endContent={<PlusSquareSmall color="#FF990A" />} onPress={() => handleAddColumn()}>{lang === "es" ? "Añadir Columna":"Add Column" }</Button>
             </fieldset>
             
-            <fieldset className="col-start-1 flex flex-col gap-1 w-fit sticky left-0">
-                <Button name="delete-row" id="delete-row" variant="flat" endContent={<MinusSquareSmall />} onPress={() => handleDeleteRow()}>{lang === "es" ? "Eliminar Fila":"Delete Row" }</Button>
-                <Button name="add-row" id="add-row" variant="flat" endContent={<PlusSquareSmall color="#FF990A" />} onPress={() => handleAddRow()}>{lang === "es" ? "Añadir Fila":"Add Row" }</Button>
+            <fieldset className="col-start-1 flex flex-col gap-1 w-fit">
+                <Button name="delete-row" id="delete-row" className="backdrop-blur-sm" variant="faded" endContent={<MinusSquareSmall />} onPress={() => handleDeleteRow()}>{lang === "es" ? "Eliminar Fila":"Delete Row" }</Button>
+                <Button name="add-row" id="add-row" className="backdrop-blur-sm" variant="faded" endContent={<PlusSquareSmall color="#FF990A" />} onPress={() => handleAddRow()}>{lang === "es" ? "Añadir Fila":"Add Row" }</Button>
             </fieldset>
-            <table className="col-start-2 row-start-2">
+            <table className="col-start-2 row-start-2 mb-6">
                 <XRows cols={cols} existingRows={rows ? rows : localRows} setRows={setRows ? setRows : setLocalRows} values={values ? values : []}/>
             </table>
         </section>
