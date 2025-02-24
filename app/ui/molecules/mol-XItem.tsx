@@ -65,8 +65,11 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
     }, [criteria]);
     
     return (
-        <section>
-            <h3 className="text-center">{ lang === "es" ? `Especificaciones de la fila "${name}"` : `"${name}" row criteria` }</h3>
+        <details className="mb-3">
+            <summary className="text-xl">
+                { lang === "es" ? `Especificaciones de la fila "${name}"` : `"${name}" row criteria` }
+            </summary>
+            
             <Switch className="m-4" color="danger" isSelected={disable} onValueChange={setDisable} name={`Specification:disable-Row-${name}-on-table`}>
                 { lang === "es" ? "Deshabilitar en todas las columnas" : "Disable on all columns" }
             </Switch>
@@ -75,6 +78,7 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
             className="m-4"
             label={ lang === "es" ? "Habilitar solo en ciertas columnas:" : "Enable/disable on certain columns:" }
             value={enabledColumns}
+            isDisabled={disable}
             onValueChange={setEnabledColumns}>
                 {
                     criteria && criteria.map((variable, index) => {
@@ -84,17 +88,19 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
             </CheckboxGroup>
 
             <NumberInput 
-            label={ lang === "es" ? "¿Cuántas veces debería ser en la tabla?" : "How many times it should appear on the schedule?" }
+            label={ lang === "es" ? "¿Cuántas veces debería aparecer en la tabla?" : "How many times should it appear on the schedule?" }
             labelPlacement="outside-left"
             value={count}
             minValue={0}
             maxValue={criteria.length}
+            isDisabled={disable}
             onValueChange={setCount}/>
             
             <CheckboxGroup
             className="m-4"
             label={ lang === "es" ? "Preferir usar estos valores en la fila:" : "Prefer the following values to use in this row:"}
             value={enabledValues}
+            isDisabled={disable}
             onValueChange={setEnabledValues}>
                 {
                     values && values.map((variable, index) => {
@@ -105,6 +111,6 @@ export default function XItem ({ name, preferences, criteria = [], values = []} 
                 }
             </CheckboxGroup>
             <Divider />
-        </section>
+        </details>
     )
 }
