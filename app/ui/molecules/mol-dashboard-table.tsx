@@ -1,5 +1,5 @@
 "use client"
-import { Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
+import { Button, Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
 import { Timestamp } from "../atoms/atom-timestamp";
 import Link from "next/link";
 import { Link as HeroLink } from "@heroui/react";
@@ -13,6 +13,7 @@ export default function DashboardTable ({ rows, lang }: {
     return (
         <section className="p-8">
             <Button as={HeroLink} href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/new`} color="success" className="text-white mt-3 mb-3" endContent={<PlusCircle />}>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
+            <Chip className="m-3" variant="dot" color="warning">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
             <Table aria-label="Dashboard table">
                 <TableHeader>
                     <TableColumn>{ lang === "es" ? "Nombre" : "Name" }</TableColumn>
