@@ -1,33 +1,36 @@
 'use server'
 import "server-only";
 import pool from "@/app/lib/mocks/db";
-import { isPasswordPwned, sendEmailConfirmation } from "@/app/lib/utils";
+import { isPasswordPwned } from "@/app/lib/utils";
+import sgMail from "@sendgrid/mail";
+import { randomBytes } from "crypto";
 import { signIn } from "@/auth";
 import { z } from "zod";
 import { headers } from "next/headers";
+import { UtilResponse } from "@/app/lib/definitions";
 
 export async function validateAction (state: { message: string }, formData: FormData) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
 
-    const name = formData.get("name");
-    const username = formData.get("username");
-    const birthday = formData.get("birthday");
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const confirmation = formData.get("confirmpwd");
+    const name = formData.get("name")?.toString();
+    const username = formData.get("username")?.toString();
+    const birthday = formData.get("birthday")?.toString();
+    const email = formData.get("email")?.toString();
+    const password = formData.get("password")?.toString();
+    const confirmation = formData.get("confirmpwd")?.toString();
     
     if (!name || !username || !birthday || !email || !password || !confirmation) {
         return {
-            message: locale === "es" ? "Hay campos sin llenar" : "Some fields are empty",
-            passes: false
+            ok: false,
+            message: locale === "es" ? "Hay campos sin llenar" : "Some fields are empty"
         };
     }
     
     if (password !== confirmation) {
         return {
-            message: locale === "es" ? "La confirmación de la contraseña es errónea" : "The password confirmation is incorrect",
-            passes: false
+            ok: false,
+            message: locale === "es" ? "La confirmación de la contraseña es errónea" : "The password confirmation is incorrect"
         };
     }
 
@@ -37,8 +40,9 @@ export async function validateAction (state: { message: string }, formData: Form
         (value) => (typeof value === "string" ? new Date(value) : value),
         z.date({ message: locale === "es" ? "Fecha inválida" : "Invalid date" })
     ).safeParse(birthday);
-    const validEmail = z.string().email({ message: locale === "es" ? "Correo electrónico inválido" : "Invalid email address" }).safeParse(email);
+    const validEmail = z.string().min(1).email({ message: locale === "es" ? "Correo electrónico inválido" : "Invalid email address" }).safeParse(email);
     const validPassword = z.string().min(8, { message: locale === "es" ? "La contraseña debe tener al menos 8 caracteres" : "Password must have at least 8 characters" }).safeParse(password);
+    
     const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/verify/user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -61,16 +65,16 @@ export async function validateAction (state: { message: string }, formData: Form
     const exposedPassword = await isPasswordPwned(password.toString());
     if (typeof exposedPassword !== 'number') {
         return {
+            ok: false,
             message: exposedPassword.message,
-            passes: false,
             descriptive: [...errors, { error: { issues: [{ message: exposedPassword.message }] } }],
         }
     }
     
     if (exposedPassword !== 0) {
         return {
+            ok: false,
             message: locale === "es" ? 'Después de un análisis, la contraseña que utilizaste ha sido reportada en la lista de contraseñas expuestas. Por favor crea una contraseña más segura' : 'After a password check, the password provided has been exposed in a data breach. For security reason, please choose a stronger password.',
-            passes: false,
             descriptive: [...errors, { error: { issues: [{ message: locale === "es" ? 'Después de un análisis, la contraseña que utilizaste ha sido reportada en la lista de contraseñas expuestas. Por favor crea una contraseña más segura' : 'After a password check, the password provided has been exposed in a data breach. For security reason, please choose a stronger password.' }] } }],
         }
     }
@@ -84,17 +88,17 @@ export async function validateAction (state: { message: string }, formData: Form
     const doesExist = await existQuery.json();
     
     if (doesExist.error === 'User not found') {
-        await sendEmailConfirmation(email.toString(), name.toString(), locale as "en" | "es");
+        await sendTokenAction(formData, locale as "en" | "es");
     }
     
     return {
+        ok: true,
         message: errors.length ? "Validation failed" : "Validation successful",
-        passes: errors.length ? false : true,
         descriptive: errors,
     };
 }
 
-export async function confirmEmailAction (state: { message: string }, formData: FormData) {
+export async function verifyTokenAction (state: { message: string }, formData: FormData) {
     const token = formData.get('confirmation-token')?.toString();
     const name = formData.get('name')?.toString();
     const username = formData.get('username')?.toString();
@@ -170,6 +174,477 @@ export async function confirmEmailAction (state: { message: string }, formData: 
         "Signup process successfuly complete"
     }
 }
+
+export async function sendTokenAction (formData: FormData, lang: "es" | "en"): Promise<UtilResponse> {
+    const name = formData.get("name")?.toString();
+    const email = formData.get("email")?.toString();
+
+    if (!email || !name || !lang) {
+      return {
+        ok: false,
+        message: 'Data is missing'
+      }
+    }
+    
+    const verification_code = randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 6);
+  
+    const msgEN = {
+      to: `${email}`,
+      from: 'no-reply@jossysola.com',
+      subject: 'Scheduler: Confirm your e-mail',
+      html: `
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+      <html data-editor-version="2" class="sg-campaigns" xmlns="http://www.w3.org/1999/xhtml">
+          <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+            <!--[if !mso]><!-->
+            <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+            <!--<![endif]-->
+            <!--[if (gte mso 9)|(IE)]>
+            <xml>
+              <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+              </o:OfficeDocumentSettings>
+            </xml>
+            <![endif]-->
+            <!--[if (gte mso 9)|(IE)]>
+        <style type="text/css">
+          body {width: 600px;margin: 0 auto;}
+          table {border-collapse: collapse;}
+          table, td {mso-table-lspace: 0pt;mso-table-rspace: 0pt;}
+          img {-ms-interpolation-mode: bicubic;}
+        </style>
+      <![endif]-->
+            <style type="text/css">
+          body, p, div {
+            font-family: trebuchet ms,helvetica,sans-serif;
+            font-size: 14px;
+          }
+          body {
+            color: #313139;
+          }
+          body a {
+            color: #1188E6;
+            text-decoration: none;
+          }
+          p { margin: 0; padding: 0; }
+          table.wrapper {
+            width:100% !important;
+            table-layout: fixed;
+            -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+          }
+          img.max-width {
+            max-width: 100% !important;
+          }
+          .column.of-2 {
+            width: 50%;
+          }
+          .column.of-3 {
+            width: 33.333%;
+          }
+          .column.of-4 {
+            width: 25%;
+          }
+          ul ul ul ul  {
+            list-style-type: disc !important;
+          }
+          ol ol {
+            list-style-type: lower-roman !important;
+          }
+          ol ol ol {
+            list-style-type: lower-latin !important;
+          }
+          ol ol ol ol {
+            list-style-type: decimal !important;
+          }
+          @media screen and (max-width:480px) {
+            .preheader .rightColumnContent,
+            .footer .rightColumnContent {
+              text-align: left !important;
+            }
+            .preheader .rightColumnContent div,
+            .preheader .rightColumnContent span,
+            .footer .rightColumnContent div,
+            .footer .rightColumnContent span {
+              text-align: left !important;
+            }
+            .preheader .rightColumnContent,
+            .preheader .leftColumnContent {
+              font-size: 80% !important;
+              padding: 5px 0;
+            }
+            table.wrapper-mobile {
+              width: 100% !important;
+              table-layout: fixed;
+            }
+            img.max-width {
+              height: auto !important;
+              max-width: 100% !important;
+            }
+            a.bulletproof-button {
+              display: block !important;
+              width: auto !important;
+              font-size: 80%;
+              padding-left: 0 !important;
+              padding-right: 0 !important;
+            }
+            .columns {
+              width: 100% !important;
+            }
+            .column {
+              display: block !important;
+              width: 100% !important;
+              padding-left: 0 !important;
+              padding-right: 0 !important;
+              margin-left: 0 !important;
+              margin-right: 0 !important;
+            }
+            .social-icon-column {
+              display: inline-block !important;
+            }
+          }
+        </style>
+            <!--user entered Head Start-->
+          
+          <!--End Head user entered-->
+          </head>
+          <body>
+            <center class="wrapper" data-link-color="#1188E6" data-body-style="font-size:14px; font-family:trebuchet ms,helvetica,sans-serif; color:#313139; background-color:#FFFFFF;">
+              <div class="webkit">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%" class="wrapper" bgcolor="#FFFFFF">
+                  <tr>
+                    <td valign="top" bgcolor="#FFFFFF" width="100%">
+                      <table width="100%" role="content-container" class="outer" align="center" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td width="100%">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                              <tr>
+                                <td>
+                                  <!--[if mso]>
+          <center>
+          <table><tr><td width="600">
+        <![endif]-->
+                                          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px;" align="center">
+                                            <tr>
+                                              <td role="modules-container" style="padding:0px 0px 0px 0px; color:#313139; text-align:left;" bgcolor="#FFFFFF" width="100%" align="left"><table class="module preheader preheader-hide" role="module" data-type="preheader" border="0" cellpadding="0" cellspacing="0" width="100%" style="display: none !important; mso-hide: all; visibility: hidden; opacity: 0; color: transparent; height: 0; width: 0;">
+          <tr>
+            <td role="module-content">
+              <p>Complete your signup process</p>
+            </td>
+          </tr>
+        </table><table class="wrapper" role="module" data-type="image" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="k7kNAoP42RzSE3548Pb9qi">
+            <tr>
+              <td style="font-size:6px; line-height:10px; padding:0px 0px 0px 0px;" valign="top" align="center">
+                <a href="https://scheduler.jossysola.com"><img class="max-width" border="0" style="display:block; color:#000000; text-decoration:none; font-family:Helvetica, arial, sans-serif; font-size:16px;" src="https://d375w6nzl58bw0.cloudfront.net/uploads/fe9956381f4ff77d654e980c6682f71f6afed535aec4ca776b38fe081887e010.png" alt="" width="240" height="" data-proportionally-constrained="false" data-responsive="false"></a>
+              </td>
+            </tr>
+          </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-mc-module-version="2019-10-22" data-muid="hMHE9bJVUTwMzeHTbzCDTa">
+            <tr>
+              <td style="padding:18px 0px 18px 0px; line-height:30px; text-align:inherit;" height="100%" valign="top" bgcolor=""><div><h2 style="text-align: center">Welcome ${name}!</h2><div></div></div></td>
+            </tr>
+          </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-mc-module-version="2019-10-22" data-muid="kXZBA9yKCY1Ma7D4z9Bs9o">
+            <tr>
+              <td style="padding:18px 0px 18px 0px; line-height:20px; text-align:inherit;" height="100%" valign="top" bgcolor=""><div><div style="font-family: inherit; text-align: center"><span style="font-size: 18px">Enter the next code into the website to confirm your email and complete the sign up process:</span></div><div></div></div></td>
+            </tr>
+          </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="b9d76e66-ee13-4fdb-a1d8-5d72aac2f7be" data-mc-module-version="2019-10-22">
+          <tbody>
+            <tr>
+              <td style="padding:18px 0px 18px 0px; line-height:23px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><h3 style="text-align: center"><span style="font-size: 18px; color: #09a8dd; font-family: georgia, serif">${verification_code}</span></h3><div></div></div></td>
+            </tr>
+          </tbody>
+        </table><table class="module" role="module" data-type="divider" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="e5b3ec51-1a80-4db1-bc13-3b02130d386e">
+          <tbody>
+            <tr>
+              <td style="padding:0px 0px 0px 0px;" role="module-content" height="100%" valign="top" bgcolor="">
+                <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" height="1px" style="line-height:1px; font-size:1px;">
+                  <tbody>
+                    <tr>
+                      <td style="padding:0px 0px 1px 0px;" bgcolor="#afafaf"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="46a52f7d-38af-4cf6-bb2f-75c1e46cdc67" data-mc-module-version="2019-10-22">
+          <tbody>
+            <tr>
+              <td style="padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center">If you didn't start this signup process please omit this e-mail.</div><div></div></div></td>
+            </tr>
+          </tbody>
+        </table></td>
+                                            </tr>
+                                          </table>
+                                          <!--[if mso]>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </center>
+                                  <![endif]-->
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </center>
+          </body>
+        </html>`
+    }
+    const msgES = {
+      to: `${email}`,
+      from: 'no-reply@jossysola.com',
+      subject: 'Scheduler: Confirma tu correo electrónico',
+      html: `
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+      <html data-editor-version="2" class="sg-campaigns" xmlns="http://www.w3.org/1999/xhtml">
+          <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+            <!--[if !mso]><!-->
+            <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+            <!--<![endif]-->
+            <!--[if (gte mso 9)|(IE)]>
+            <xml>
+              <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+              </o:OfficeDocumentSettings>
+            </xml>
+            <![endif]-->
+            <!--[if (gte mso 9)|(IE)]>
+        <style type="text/css">
+          body {width: 600px;margin: 0 auto;}
+          table {border-collapse: collapse;}
+          table, td {mso-table-lspace: 0pt;mso-table-rspace: 0pt;}
+          img {-ms-interpolation-mode: bicubic;}
+        </style>
+      <![endif]-->
+            <style type="text/css">
+          body, p, div {
+            font-family: trebuchet ms,helvetica,sans-serif;
+            font-size: 14px;
+          }
+          body {
+            color: #313139;
+          }
+          body a {
+            color: #1188E6;
+            text-decoration: none;
+          }
+          p { margin: 0; padding: 0; }
+          table.wrapper {
+            width:100% !important;
+            table-layout: fixed;
+            -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+          }
+          img.max-width {
+            max-width: 100% !important;
+          }
+          .column.of-2 {
+            width: 50%;
+          }
+          .column.of-3 {
+            width: 33.333%;
+          }
+          .column.of-4 {
+            width: 25%;
+          }
+          ul ul ul ul  {
+            list-style-type: disc !important;
+          }
+          ol ol {
+            list-style-type: lower-roman !important;
+          }
+          ol ol ol {
+            list-style-type: lower-latin !important;
+          }
+          ol ol ol ol {
+            list-style-type: decimal !important;
+          }
+          @media screen and (max-width:480px) {
+            .preheader .rightColumnContent,
+            .footer .rightColumnContent {
+              text-align: left !important;
+            }
+            .preheader .rightColumnContent div,
+            .preheader .rightColumnContent span,
+            .footer .rightColumnContent div,
+            .footer .rightColumnContent span {
+              text-align: left !important;
+            }
+            .preheader .rightColumnContent,
+            .preheader .leftColumnContent {
+              font-size: 80% !important;
+              padding: 5px 0;
+            }
+            table.wrapper-mobile {
+              width: 100% !important;
+              table-layout: fixed;
+            }
+            img.max-width {
+              height: auto !important;
+              max-width: 100% !important;
+            }
+            a.bulletproof-button {
+              display: block !important;
+              width: auto !important;
+              font-size: 80%;
+              padding-left: 0 !important;
+              padding-right: 0 !important;
+            }
+            .columns {
+              width: 100% !important;
+            }
+            .column {
+              display: block !important;
+              width: 100% !important;
+              padding-left: 0 !important;
+              padding-right: 0 !important;
+              margin-left: 0 !important;
+              margin-right: 0 !important;
+            }
+            .social-icon-column {
+              display: inline-block !important;
+            }
+          }
+        </style>
+            <!--user entered Head Start-->
+          
+          <!--End Head user entered-->
+          </head>
+          <body>
+            <center class="wrapper" data-link-color="#1188E6" data-body-style="font-size:14px; font-family:trebuchet ms,helvetica,sans-serif; color:#313139; background-color:#FFFFFF;">
+              <div class="webkit">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%" class="wrapper" bgcolor="#FFFFFF">
+                  <tr>
+                    <td valign="top" bgcolor="#FFFFFF" width="100%">
+                      <table width="100%" role="content-container" class="outer" align="center" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td width="100%">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                              <tr>
+                                <td>
+                                  <!--[if mso]>
+          <center>
+          <table><tr><td width="600">
+        <![endif]-->
+                                          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px;" align="center">
+                                            <tr>
+                                              <td role="modules-container" style="padding:0px 0px 0px 0px; color:#313139; text-align:left;" bgcolor="#FFFFFF" width="100%" align="left"><table class="module preheader preheader-hide" role="module" data-type="preheader" border="0" cellpadding="0" cellspacing="0" width="100%" style="display: none !important; mso-hide: all; visibility: hidden; opacity: 0; color: transparent; height: 0; width: 0;">
+          <tr>
+            <td role="module-content">
+              <p>Completa el proceso de registro</p>
+            </td>
+          </tr>
+        </table><table class="wrapper" role="module" data-type="image" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="k7kNAoP42RzSE3548Pb9qi">
+            <tr>
+              <td style="font-size:6px; line-height:10px; padding:0px 0px 0px 0px;" valign="top" align="center">
+                <a href="https://scheduler.jossysola.com"><img class="max-width" border="0" style="display:block; color:#000000; text-decoration:none; font-family:Helvetica, arial, sans-serif; font-size:16px;" src="https://d375w6nzl58bw0.cloudfront.net/uploads/fe9956381f4ff77d654e980c6682f71f6afed535aec4ca776b38fe081887e010.png" alt="" width="240" height="" data-proportionally-constrained="false" data-responsive="false"></a>
+              </td>
+            </tr>
+          </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-mc-module-version="2019-10-22" data-muid="hMHE9bJVUTwMzeHTbzCDTa">
+            <tr>
+              <td style="padding:18px 0px 18px 0px; line-height:30px; text-align:inherit;" height="100%" valign="top" bgcolor=""><div><h2 style="text-align: center">¡Bienvenidx ${name}!</h2><div></div></div></td>
+            </tr>
+          </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-mc-module-version="2019-10-22" data-muid="kXZBA9yKCY1Ma7D4z9Bs9o">
+            <tr>
+              <td style="padding:18px 0px 18px 0px; line-height:20px; text-align:inherit;" height="100%" valign="top" bgcolor=""><div><div style="font-family: inherit; text-align: center"><span style="font-size: 18px">Ingresa el siguiente código en la página para confirmar tu correo electrónico y completar el proceso de registro:</span></div><div></div></div></td>
+            </tr>
+          </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="b9d76e66-ee13-4fdb-a1d8-5d72aac2f7be" data-mc-module-version="2019-10-22">
+          <tbody>
+            <tr>
+              <td style="padding:18px 0px 18px 0px; line-height:23px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><h3 style="text-align: center"><span style="font-size: 18px; color: #09a8dd; font-family: georgia, serif">${verification_code}</span></h3><div></div></div></td>
+            </tr>
+          </tbody>
+        </table><table class="module" role="module" data-type="divider" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="e5b3ec51-1a80-4db1-bc13-3b02130d386e">
+          <tbody>
+            <tr>
+              <td style="padding:0px 0px 0px 0px;" role="module-content" height="100%" valign="top" bgcolor="">
+                <table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" height="1px" style="line-height:1px; font-size:1px;">
+                  <tbody>
+                    <tr>
+                      <td style="padding:0px 0px 1px 0px;" bgcolor="#afafaf"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="46a52f7d-38af-4cf6-bb2f-75c1e46cdc67" data-mc-module-version="2019-10-22">
+          <tbody>
+            <tr>
+              <td style="padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center">Si no iniciaste el proceso de registro, por favor omite este mensaje.</div><div></div></div></td>
+            </tr>
+          </tbody>
+        </table></td>
+                                            </tr>
+                                          </table>
+                                          <!--[if mso]>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </center>
+                                  <![endif]-->
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </center>
+          </body>
+        </html>`
+    }
+
+    try {
+      process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      const insertToken = await pool.query(`
+        INSERT INTO scheduler_email_confirmation_tokens (token, email, expires_at)
+          VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '1 minute');
+      `, [verification_code, email]);
+      
+      if (insertToken.rowCount === 0) {
+        return {
+          ok: false,
+          message: lang === "es" ? "Error inesperado, inténtalo más tarde" : "Unexpected error, try again later"
+        };
+      }
+      
+      const sendConfirmation = await sgMail.send(lang === "es" ? msgES : msgEN);
+      if (sendConfirmation[0].statusCode !== 202) {
+          return {
+              ok: false,
+              message: lang === "es" ? "El correo electrónico no pudo ser enviado" : "The e-mail could not be sent"
+          }
+      }
+      return {
+        ok: true,
+        message: lang === "es" ? "¡Código enviado!" : "Code sent!"
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        message: lang === "es" ? "Error en el servidor" : "Server Error"
+      }
+    }
+  }
 
 async function handleEmailConfirmation (token: string, email: string) {
     const headerList = await headers();
