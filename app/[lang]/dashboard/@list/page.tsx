@@ -1,5 +1,5 @@
 import DashboardTable from "@/app/ui/molecules/mol-dashboard-table";
-import { auth } from "@/auth"
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 export default async function Page ({ params }: {
@@ -28,10 +28,10 @@ export default async function Page ({ params }: {
             const tables = await request.json();
 
             if (tables.data) {
-                return tables.data && <DashboardTable rows={tables.data} lang={lang as "en" | "es"} />
+                return tables.data && <DashboardTable rows={tables.data} lang={lang as "en" | "es"}/>
             }
             return (
-                <p>{ lang === "es" ? "Aún no hay contenido para mostrar" : "No tables yet"}</p>
+                <p>{ lang === "es" ? "Aún no hay contenido para mostrar" : "No tables yet" }</p>
             )            
         }
         return (
