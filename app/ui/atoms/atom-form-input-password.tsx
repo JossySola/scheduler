@@ -7,7 +7,6 @@ import { EyeFilledIcon, EyeSlashFilledIcon } from "./atom-eyeslash";
 export default function FormInputPassword () {
     const [ password, setPassword ] = useState<string>('');
     const [ confirmation, setConfirmation ] = useState<string>('');
-
     const [ isVisible, setIsVisible ] = useState<boolean>(false);
     const params = useParams();
     const { lang } = params;

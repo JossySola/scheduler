@@ -1,12 +1,11 @@
 "use client"
 import { Button } from "@heroui/react";
 import { signIn } from "next-auth/react";
-import { useParams } from "next/navigation";
 import { LogoGoogle } from "geist-icons";
 
-export default function GoogleSignIn () {
-    const params = useParams();
-    const { lang } = params;
+export default function GoogleSignIn ({ lang }: {
+    lang: "en" | "es"
+}) {
 
     return (
         <Button onPress={() => signIn("google", { redirect: true, redirectTo: `/${lang}/dashboard`})}

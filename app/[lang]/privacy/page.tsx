@@ -1,5 +1,4 @@
 import { Code, Divider } from "@heroui/react";
-import { Link as HeroLink } from "@heroui/react";
 import Link from "next/link";
 
 export default function Page () {
@@ -94,7 +93,7 @@ export default function Page () {
 
             <h2>10. Contact Us</h2>
 
-            <p>If you have any questions about this Privacy Policy, please contact us at <HeroLink isBlock showAnchorIcon href="https://github.com/JossySola" target="_blank" color="foreground" underline="always">GitHub</HeroLink>.</p>
+            <p>If you have any questions about this Privacy Policy, please contact us at {<Link href="https://github.com/JossySola">GitHub</Link>}.</p>
             <Divider className="my-4"/>
             <footer className="text-tiny" id="footer">
                 <p><sup>1</sup> <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> is a service that provides a list of passwords previously exposed in data breaches. This is used to avoid the use of unsuitable passwords.</p>

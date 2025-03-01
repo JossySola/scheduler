@@ -6,7 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { getTableAction } from "@/app/[lang]/table/actions";
 import { Timestamp } from "../atoms/atom-timestamp";
 import { useParams } from "next/navigation";
-import { Button, Divider, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Link, useDisclosure } from "@heroui/react";
+import { Button, Divider, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, useDisclosure } from "@heroui/react";
 import { SecondaryButton } from "../atoms/atom-button";
 import { ArrowCircleLeft, SettingsGear } from "geist-icons";
 import { useRouter } from "next/navigation";

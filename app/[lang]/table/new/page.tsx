@@ -1,15 +1,23 @@
-import XPanel from "@/app/ui/organisms/org-XPanel";
-import { auth } from "@/auth"
+import TableNameInput from "@/app/ui/atoms/atom-table-name-input";
+import YTable from "@/app/ui/molecules/mol-YTable";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
-export default async function Page () {
+export default async function Page ({ params }: {
+    params: Promise<{ lang: string }>
+}) {
+    const lang = (await params).lang;
     const session = await auth();
 
-    if (session?.user) {
+    if (session && session.user) {
         return (
-            <XPanel id={session.user.id}/>
+            <main className="w-full mt-10">
+                <form className="flex flex-col justify-center items-center">
+                    <TableNameInput name={ lang === "es" ? "Sin título" : "No title yet" } />
+                    <YTable lang={ lang } />
+                </form>
+            </main>
         )
     }
-    return (
-        <p>Unauthorized</p>
-    )
+    redirect(`/${lang}/login`);
 }

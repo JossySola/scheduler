@@ -4,16 +4,17 @@ import pool from "@/app/lib/mocks/db";
 import { randomUUID } from "crypto";
 import sgMail from "@sendgrid/mail";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-export async function SendResetEmailAction (previousState: { message: string }, formData: FormData) {
+export async function SendResetEmailAction (formData: FormData) {
     const email = formData.get("email")?.toString();
     const requestHeaders = await headers();
     const lang = requestHeaders.get("x-user-locale") || "en";
+    const responseUrl = new URL(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/recover`)
 
     if (!email) {
-        return {
-            message: lang === "es" ? "Por favor, ingresa tu correo electrónico para continuar" : "Please enter your e-mail to continue"
-        }
+        responseUrl.searchParams.append("error", "400")
+        redirect(responseUrl.toString());
     };
 
     const query = await pool.query(`
@@ -24,15 +25,14 @@ export async function SendResetEmailAction (previousState: { message: string }, 
     const userExists = query.rows[0].exists;
 
     if (!userExists) {
-        return {
-            message: lang === "es" ? "Usuario no encontrado" : "User not found"
-        }
+        responseUrl.searchParams.append("error", "404");
+        redirect(responseUrl.toString());
     };
 
     const token = randomUUID();
-    const url = new URL(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/reset/q`);
-    url.searchParams.append('email', email);
-    url.searchParams.append('token', token);
+    const resetUrl = new URL(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/reset/q`);
+    resetUrl.searchParams.append('email', email);
+    resetUrl.searchParams.append('token', token);
 
     const messageES = {
         to: `${email}`,
@@ -205,7 +205,7 @@ export async function SendResetEmailAction (previousState: { message: string }, 
                 </td>
             </tr>
             </table>
-        <table border="0" cellPadding="0" cellSpacing="0" class="module" data-role="module-button" data-type="button" role="module" style="table-layout:fixed" width="100%"><tbody><tr><td align="center" bgcolor="" class="outer-td" style="padding:0px 0px 0px 0px"><table border="0" cellPadding="0" cellSpacing="0" class="button-css__deep-table___2OZyb wrapper-mobile" style="text-align:center"><tbody><tr><td align="center" bgcolor="#333333" class="inner-td" style="border-radius:6px;font-size:16px;text-align:center;background-color:inherit"><a href="${url.toString()}" style="background-color:#333333;border:1px solid #333333;border-color:#333333;border-radius:6px;border-width:1px;color:#ffffff;display:inline-block;font-family:arial,helvetica,sans-serif;font-size:16px;font-weight:normal;letter-spacing:0px;line-height:16px;padding:12px 18px 12px 18px;text-align:center;text-decoration:none" target="_blank">Cambiar contraseña</a></td></tr></tbody></table></td></tr></tbody></table>
+        <table border="0" cellPadding="0" cellSpacing="0" class="module" data-role="module-button" data-type="button" role="module" style="table-layout:fixed" width="100%"><tbody><tr><td align="center" bgcolor="" class="outer-td" style="padding:0px 0px 0px 0px"><table border="0" cellPadding="0" cellSpacing="0" class="button-css__deep-table___2OZyb wrapper-mobile" style="text-align:center"><tbody><tr><td align="center" bgcolor="#333333" class="inner-td" style="border-radius:6px;font-size:16px;text-align:center;background-color:inherit"><a href="${resetUrl.toString()}" style="background-color:#333333;border:1px solid #333333;border-color:#333333;border-radius:6px;border-width:1px;color:#ffffff;display:inline-block;font-family:arial,helvetica,sans-serif;font-size:16px;font-weight:normal;letter-spacing:0px;line-height:16px;padding:12px 18px 12px 18px;text-align:center;text-decoration:none" target="_blank">Cambiar contraseña</a></td></tr></tbody></table></td></tr></tbody></table>
             <table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
             <tr>
                 <td style="padding:18px 0px 18px 0px;line-height:22px;text-align:inherit;"
@@ -459,7 +459,7 @@ export async function SendResetEmailAction (previousState: { message: string }, 
                 </td>
             </tr>
             </table>
-        <table border="0" cellPadding="0" cellSpacing="0" class="module" data-role="module-button" data-type="button" role="module" style="table-layout:fixed" width="100%"><tbody><tr><td align="center" class="outer-td" style="padding:0px 0px 0px 0px"><table border="0" cellPadding="0" cellSpacing="0" class="button-css__deep-table___2OZyb wrapper-mobile" style="text-align:center"><tbody><tr><td align="center" bgcolor="#333333" class="inner-td" style="border-radius:6px;font-size:16px;text-align:center;background-color:inherit"><a href="${url.toString()}" style="background-color:#333333;border:1px solid #333333;border-color:#333333;border-radius:6px;border-width:1px;color:#ffffff;display:inline-block;font-family:arial,helvetica,sans-serif;font-size:16px;font-weight:normal;letter-spacing:0px;line-height:16px;padding:12px 18px 12px 18px;text-align:center;text-decoration:none" target="_blank">Reset password</a></td></tr></tbody></table></td></tr></tbody></table>
+        <table border="0" cellPadding="0" cellSpacing="0" class="module" data-role="module-button" data-type="button" role="module" style="table-layout:fixed" width="100%"><tbody><tr><td align="center" class="outer-td" style="padding:0px 0px 0px 0px"><table border="0" cellPadding="0" cellSpacing="0" class="button-css__deep-table___2OZyb wrapper-mobile" style="text-align:center"><tbody><tr><td align="center" bgcolor="#333333" class="inner-td" style="border-radius:6px;font-size:16px;text-align:center;background-color:inherit"><a href="${resetUrl.toString()}" style="background-color:#333333;border:1px solid #333333;border-color:#333333;border-radius:6px;border-width:1px;color:#ffffff;display:inline-block;font-family:arial,helvetica,sans-serif;font-size:16px;font-weight:normal;letter-spacing:0px;line-height:16px;padding:12px 18px 12px 18px;text-align:center;text-decoration:none" target="_blank">Reset password</a></td></tr></tbody></table></td></tr></tbody></table>
             <table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
             <tr>
                 <td style="padding:18px 0px 18px 0px;line-height:22px;text-align:inherit;"
@@ -568,17 +568,11 @@ export async function SendResetEmailAction (previousState: { message: string }, 
         if (sending[0].statusCode !== 202) {
             throw new Error("Failed sending email");
         }
-        return {
-            message: lang === "es" ? "¡Correo enviado!" : "Email sent!"
-        }
+        
+        responseUrl.searchParams.append("code", "200");
+        redirect(responseUrl.toString());
     } catch (e) {
-        if (e instanceof Error) {
-            return {
-                message: e.message,
-            }
-        }
-        return {
-            message: lang === "es" ? "Error desconocido, inténtalo más tarde" : "Unknown error, try again later"
-        }
+        responseUrl.searchParams.append("error", "500");
+        redirect(responseUrl.toString());
     }
 }

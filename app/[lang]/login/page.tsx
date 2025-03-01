@@ -9,7 +9,7 @@ export default async function Page ({ params }: {
     return (
         <section className="w-full flex flex-col items-center">
             <LogIn lang={lang} />
-            <SignInProviders lang={lang} />
+            <SignInProviders lang= {lang as "en" | "es" } />
         </section>
         
     )

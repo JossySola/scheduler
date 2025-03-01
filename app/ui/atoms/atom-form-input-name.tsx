@@ -1,20 +1,15 @@
 "use client"
 import { Input } from "@heroui/react";
 import { useParams } from "next/navigation";
-import { SetStateAction } from "react"
 
-export default function FormInputName ({ name, setName }: {
-    name: string,
-    setName: React.Dispatch<SetStateAction<string>>,
-}) {
+export default function FormInputName () {
     const params = useParams();
-    const { lang } = params;
+    const lang = params.lang;
 
     return (
         <Input 
         name="name"
         type="text"
-        value={name}
         maxLength={30}
         autoComplete="name"
         className="sm:w-[400px] m-2"
@@ -24,9 +19,6 @@ export default function FormInputName ({ name, setName }: {
         variant="bordered"
         label={ lang === "es" ? "Nombre " : "Name " }
         labelPlacement="outside"
-        size="lg"
-        onChange={(e => {
-            setName(e.target.value);
-        })}/>
+        size="lg"/>
     )
 }
