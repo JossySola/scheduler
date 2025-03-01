@@ -8,11 +8,7 @@ export default async function Page ({
     const session = await auth();
 
     if (id && session) {
-        return (
-            <>
-            <XPanel id={id} />
-            </>
-        )
+        return <XPanel id={id} />
     }
     
     return (
