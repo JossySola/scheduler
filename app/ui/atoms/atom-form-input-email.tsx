@@ -1,20 +1,15 @@
 "use client"
 import { Input } from "@heroui/react";
 import { useParams } from "next/navigation";
-import { SetStateAction } from "react"
 
-export default function FormInputEmail ({ email, setEmail }: {
-    email: string,
-    setEmail: React.Dispatch<SetStateAction<string>>
-}) {
+export default function FormInputEmail () {
     const params = useParams();
-    const { lang } = params;
-
+    const lang = params.lang;
+    
     return (
         <Input 
         name="email"
         type="email"
-        value={email}
         autoComplete="email"
         className="sm:w-[400px] m-2"
         isRequired
@@ -23,9 +18,6 @@ export default function FormInputEmail ({ email, setEmail }: {
         variant="bordered"
         label={ lang === "es" ? "Correo electrónico: " : "Email: " }
         labelPlacement="outside"
-        size="lg"
-        onChange={(e => {
-            setEmail(e.target.value);
-        })}/>
+        size="lg"/>
     )
 }
