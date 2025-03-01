@@ -1,12 +1,11 @@
 "use client"
 import { Button } from "@heroui/react";
 import { signIn } from "next-auth/react";
-import { useParams } from "next/navigation";
 import { LogoFacebook } from "geist-icons";
 
-export default function FacebookSignIn () {
-    const params = useParams();
-    const { lang } = params;
+export default function FacebookSignIn ({ lang }: {
+    lang: "en" | "es"
+}) {
 
     return (
         <Button onPress={() => signIn("facebook", { redirect: true, redirectTo: `/${lang}/dashboard` })}
