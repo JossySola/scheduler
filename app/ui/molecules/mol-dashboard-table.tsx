@@ -14,7 +14,7 @@ export default function DashboardTable ({ rows, lang }: {
         <section className="p-8">
             <Button as={HeroLink} href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/new`} color="success" className="text-white mt-3 mb-3" endContent={<PlusCircle />}>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
             <Chip className="m-3" variant="dot" color="warning">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
-            <Table aria-label="Dashboard table">
+            <Table aria-label="Dashboard table" className="shadow-lg">
                 <TableHeader>
                     <TableColumn>{ lang === "es" ? "Nombre" : "Name" }</TableColumn>
                     <TableColumn>{ lang === "es" ? "Última modificación" : "Last Update" }</TableColumn>
