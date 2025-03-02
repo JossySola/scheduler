@@ -64,12 +64,12 @@ export function useRows (rows?: string[][] | undefined): [
 
 export function useDynamicTableData (rows: Array<Array<string>>, passedValues?: Array<string>, passedCriteria?: Array<string>): [ values: string[], 
     setValues: React.Dispatch<SetStateAction<string[]>>,
-    criteria: string[],
-    setCriteria: React.Dispatch<SetStateAction<string[]>>,
+    columns: string[],
+    setColumns: React.Dispatch<SetStateAction<string[]>>,
     rowHeaders: string[],
     ] {
     const [ values, setValues ] = useState<Array<string>>([]);
-    const [ criteria, setCriteria ] = useState<Array<string>>([]);
+    const [ columns, setColumns ] = useState<Array<string>>([]);
     const [ rowHeaders, setRowHeaders ] = useState<Array<string>>([]);
 
     useEffect(() => {
@@ -77,20 +77,20 @@ export function useDynamicTableData (rows: Array<Array<string>>, passedValues?: 
             setValues(passedValues);
         }
         if (passedCriteria) {
-            setCriteria(passedCriteria);
+            setColumns(passedCriteria);
         }
     }, []);
 
     useEffect(() => {
         setRowHeaders(rows.map(row => row[0]));
-        setCriteria(rows[0]);
+        setColumns(rows[0]);
     }, [rows])
 
     return [
         values,
         setValues,
-        criteria,
-        setCriteria,
+        columns,
+        setColumns,
         rowHeaders,
     ]
 }
