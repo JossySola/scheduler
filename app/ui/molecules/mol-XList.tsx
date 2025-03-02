@@ -61,7 +61,7 @@ export default function XList({ name, preferences, items, setItems, criteria, va
     }
 
     return (
-        <ol id={name} className="w-fit flex flex-col items-center">
+        <ol id={name} className="w-fit flex flex-col justify-center items-center mr-10 ml-10">
             <h3>{name}</h3>
             {
                 enableInput ? <div className="flex flex-row justify-center items-center gap-2">
