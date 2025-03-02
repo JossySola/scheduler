@@ -47,7 +47,7 @@ export default function TableTabCard ({ columns, values, tab, lang, specs, setSp
                     {
                         columns && columns.map((variable, index) => {
                             if (index !== 0) {
-                                return <Checkbox key={`${variable}${index}`} name={`Specification:Row-${tab}-should-be-used-on`} value={variable}>{ variable ? variable : lang === "es" ? <i>Sin valor</i> : <i>No value</i> }</Checkbox>
+                                return <Checkbox key={`${variable}${index}`} name={`Specification:Row-${tab}-should-be-used-on`} value={variable}>{ variable ? variable : lang === "es" ? <i>Sin nombre</i> : <i>No name yet</i> }</Checkbox>
                             }
                             return null
                         })

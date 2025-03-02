@@ -1,18 +1,27 @@
 "use client"
 import { SetStateAction, useEffect, useState } from "react";
 
-export function useRows (rows?: string[][] | undefined): [
+export function useRows (rows?: string[][] | undefined, passedValues?: string[] | undefined): [
     string[][],
     React.Dispatch<SetStateAction<string[][]>>, 
     () => void,
-    () => never[] | undefined,
     () => void,
-    () => never[] | undefined,
+    () => void,
+    () => void,
+    string[],
+    React.Dispatch<SetStateAction<string[]>>,
 ] {
     const [ localRows, setLocalRows ] = useState<Array<Array<string>>>([]);
-    
+    const [ values, setValues ] = useState<Array<string>>([]);
+
     useEffect(() => {
         if (rows) setLocalRows(rows);
+    }, []);
+
+    useEffect(() => {
+        if (passedValues) {
+            setValues(passedValues);
+        }
     }, []);
     
     const handleAddColumn = () => {
@@ -36,20 +45,16 @@ export function useRows (rows?: string[][] | undefined): [
         );
     };
     const handleDeleteColumn = () => {
-        if (!localRows.length) {
-            return [];
-        }
-        setLocalRows(localRows && localRows.map(row => {
-            const temp = [...row];
-            temp.pop();
-            return temp;
-        }));
+        setLocalRows(prev => {
+            if (!prev.length) prev;
+            return prev.map(row => row.slice(0, -1));
+        });
     };
     const handleDeleteRow = () => {
-        if (!localRows.length) {
-            return [];
-        }
-        setLocalRows(localRows.filter((_, index) => index !== localRows.length - 1));
+        setLocalRows(prev => {
+            if(!prev.length) prev;
+            return prev.slice(0, -1);
+        })
     };
 
     return [ 
@@ -59,38 +64,7 @@ export function useRows (rows?: string[][] | undefined): [
         handleDeleteColumn, 
         handleAddRow, 
         handleDeleteRow,
-    ]
-}
-
-export function useDynamicTableData (rows: Array<Array<string>>, passedValues?: Array<string>, passedCriteria?: Array<string>): [ values: string[], 
-    setValues: React.Dispatch<SetStateAction<string[]>>,
-    columns: string[],
-    setColumns: React.Dispatch<SetStateAction<string[]>>,
-    rowHeaders: string[],
-    ] {
-    const [ values, setValues ] = useState<Array<string>>([]);
-    const [ columns, setColumns ] = useState<Array<string>>([]);
-    const [ rowHeaders, setRowHeaders ] = useState<Array<string>>([]);
-
-    useEffect(() => {
-        if (passedValues) {
-            setValues(passedValues);
-        }
-        if (passedCriteria) {
-            setColumns(passedCriteria);
-        }
-    }, []);
-
-    useEffect(() => {
-        setRowHeaders(rows.map(row => row[0]));
-        setColumns(rows[0]);
-    }, [rows])
-
-    return [
         values,
-        setValues,
-        columns,
-        setColumns,
-        rowHeaders,
+        setValues
     ]
 }
