@@ -47,6 +47,8 @@ export interface PostgreSQLResponse<T = any> {
     fields: FieldDef[];
 }
 
+export type asyncActionStateResponse = [state: Awaited<{ message: string}>, dispatch: (payload: FormData) => void, isPending: boolean];
+
 export function isPostgreSQLError(error: any): error is PostgreSQLError {
     return typeof error === "object" && error !== null && "severity" in error && "sqlstate" in error;
 }

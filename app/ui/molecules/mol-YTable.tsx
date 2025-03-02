@@ -21,8 +21,8 @@ export default function YTable ({ lang, rows }: {
     const [
         values,
         setValues,
-        criteria,
-        setCriteria,
+        columns,
+        setColumns,
         rowHeaders
     ] = useDynamicTableData(localRows); // This custom hook handles additional table data as Values and Criteria.
 
@@ -108,18 +108,20 @@ export default function YTable ({ lang, rows }: {
             </table>
         </fieldset>
         
-        <fieldset className="w-full flex flex-col justify-center items-center gap-12 sm:flex-row sm:items-start">
-            <TableTabs 
-            name={ lang === "es" ? "Configuración de Filas" : "Rows Settings" }
-            lang={ lang as "en" | "es" }
-            values={ values }
-            criteria={ criteria }
-            tabs={ rowHeaders } />
-
+        <fieldset className="w-full flex flex-col justify-center items-center gap-10 sm:gap-0 sm:flex-row sm:items-start ">
             <XList 
             name={ lang === "es" ? "Valores a usar" : "Values to use" }
             items={ values }
             setItems={ setValues } />
+
+            <fieldset className="rounded-medium border-2 border-default border-medium p-[16px] m-3">
+                <TableTabs 
+                name={ lang === "es" ? "Configuración de Filas" : "Rows Settings" }
+                lang={ lang as "en" | "es" }
+                values={ values }
+                columns={ columns }
+                tabs={ rowHeaders } />
+            </fieldset>
         </fieldset>
         </>
     )
