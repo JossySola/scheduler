@@ -2,6 +2,8 @@
 import { Divider, Tab, Tabs } from "@heroui/react";
 import TableTabCard from "../atoms/atom-table-card";
 import { useState } from "react";
+import { TabsData } from "./mol-YTable";
+import TableButtonAi from "../atoms/atom-table-button-ai";
 
 export type Specs = {
     disable: Array<boolean>,
@@ -10,12 +12,12 @@ export type Specs = {
     enabledColumns: Array<Array<string>>,
 }
 
-export default function TableTabs ({ name, tabs, lang, values, columns }: {
+export default function TableTabs ({ name, lang, values, tabsData, children }: {
     name: string,
-    tabs: Array<string>,
     lang: "en" | "es",
     values: Array<string>,
-    columns: Array<string>,
+    children: React.JSX.Element,
+    tabsData: TabsData,
 }) {
     const [ specs, setSpecs ] = useState<Specs>({
         disable: [],
@@ -26,17 +28,18 @@ export default function TableTabs ({ name, tabs, lang, values, columns }: {
 
     return (
         <section className="flex flex-col items-center">
-            <h4 className="m-2">{ lang === "es" ? "Generar con IA" : "Generate with AI" }</h4>
+            { children }
+            
             <Divider orientation="horizontal" />
             <h3>{ name }</h3>
             {
-                tabs && tabs.length ? <Tabs aria-label={ name }>
+                tabsData.tabs && tabsData.tabs.length ? <Tabs aria-label={ name }>
                 {
-                    tabs.map((tab, index) => {
+                    tabsData.tabs.map((tab, index) => {
                         if (index !== 0) {
                             return (
                             <Tab key={index} title={tab ? tab : lang === "es" ? "Sin nombre" : "No name" }>
-                                <TableTabCard key={index} columns={columns} values={values} tab={tab} lang={lang} specs={specs} setSpecs={setSpecs} index={index}/>
+                                <TableTabCard key={index} columns={tabsData.cols} values={values} tab={tab} lang={lang} specs={specs} setSpecs={setSpecs} index={index}/>
                             </Tab> )
                         }
                     })
@@ -44,7 +47,7 @@ export default function TableTabs ({ name, tabs, lang, values, columns }: {
                 </Tabs>
                  : lang === "es" ? <p>Aún no hay filas por mostrar</p> : <p>There are no rows yet</p>
             }
-            
+            <TableButtonAi lang={ lang } />
         </section>
     )
 }
