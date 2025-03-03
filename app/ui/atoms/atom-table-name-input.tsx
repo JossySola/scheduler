@@ -10,10 +10,12 @@ export default function TableNameInput ({ name }: {
         name="table_title" 
         id="table_title"
         variant="underlined"
-        size="lg"
         className="w-fit"
         autoComplete="off"
         defaultValue={name}
+        classNames={{
+            input: ["text-xl"]
+        }}
         isClearable />
     }
     return <Input 
@@ -21,8 +23,10 @@ export default function TableNameInput ({ name }: {
     name="table_title" 
     id="table_title"
     variant="underlined"
-    size="lg"
     className="w-fit"
     autoComplete="off"
+    classNames={{
+        input: ["text-xl"]
+    }}
     isClearable />
 }

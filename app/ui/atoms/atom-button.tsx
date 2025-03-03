@@ -80,7 +80,7 @@ export function SecondaryButton ({ children, type = "button", color, loading = f
             formAction={ formAction }
             form={ form && form }
             variant="ghost"
-            className={ !color ? `${className && className}` : "text-md m-2" }>
+            className={ !color ? `${className && className} m-5` : "text-md m-5" }>
                 { children }
             </Button>
         )
@@ -96,7 +96,7 @@ export function SecondaryButton ({ children, type = "button", color, loading = f
             endContent={ endContent && endContent }
             onPress={ onPress }
             variant="ghost"
-            className={ !color ? `${className && className}` : "text-md m-2" }>
+            className={ !color ? `${className && className} m-5` : "text-md m-5" }>
                 { children }
             </Button>
         )
@@ -110,7 +110,7 @@ export function SecondaryButton ({ children, type = "button", color, loading = f
         startContent={ startContent && startContent }
         endContent={ endContent && endContent }
         variant="ghost"
-        className={ !color ? `${className && className}` : "text-md m-2" }>
+        className={ !color ? `${className && className} m-5` : "text-md m-5" }>
             { children }
         </Button>
     )

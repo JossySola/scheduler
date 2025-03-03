@@ -78,7 +78,7 @@ export default function XList({ name, preferences, items, setItems, criteria, va
                 isIconOnly 
                 variant="flat"
                 aria-label="Add item" 
-                color="success"
+                color="primary"
                 onPress={() => {
                     handleAddItem(input);
                     setInput("");
