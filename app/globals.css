@@ -57,3 +57,12 @@ details[open] > summary {
     text-wrap: balance;
   }
 }
+@layer components {
+  .magicBorder {
+    border-color: none;
+    border-image: linear-gradient(94deg, #0090F7, #BA62FC, #F2416B, #F55600);
+    border-image-slice: 1;
+    border-style: solid;
+    border-width: 1px;
+  }
+}
