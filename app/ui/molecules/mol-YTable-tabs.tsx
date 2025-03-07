@@ -1,53 +1,57 @@
 "use client"
-import { Divider, Tab, Tabs } from "@heroui/react";
+import { Tab, Tabs } from "@heroui/react";
 import TableTabCard from "../atoms/atom-table-card";
-import { useState } from "react";
-import { TabsData } from "./mol-YTable";
 import TableButtonAi from "../atoms/atom-table-button-ai";
+import { Specs } from "@/app/hooks/custom";
+import { useState } from "react";
 
-export type Specs = {
+export type LocalSpecs = {
     disable: Array<boolean>,
     count: Array<number>,
     enabledValues: Array<Array<string>>,
     enabledColumns: Array<Array<string>>,
 }
 
-export default function TableTabs ({ name, lang, values, tabsData, children }: {
+export default function TableTabs ({ name, lang, values, rowsHeaders, colHeaders, specs }: {
     name: string,
     lang: "en" | "es",
     values: Array<string>,
-    children: React.JSX.Element,
-    tabsData: TabsData,
+    rowsHeaders: Array<string>,
+    colHeaders: Array<string>,
+    specs: Specs[],
 }) {
-    const [ specs, setSpecs ] = useState<Specs>({
+    const [ localSpecs, setLocalSpecs ] = useState<LocalSpecs>({
         disable: [],
         count: [],
         enabledValues: [],
         enabledColumns: [],
     })
-
     return (
         <section className="flex flex-col items-center">
-            { children }
-            
-            <Divider orientation="horizontal" />
             <h3>{ name }</h3>
+            <Tabs aria-label={ name }>
             {
-                tabsData.tabs && tabsData.tabs.length ? <Tabs aria-label={ name }>
-                {
-                    tabsData.tabs.map((tab, index) => {
-                        if (index !== 0) {
-                            return (
-                            <Tab key={index} title={tab ? tab : lang === "es" ? "Sin nombre" : "No name" }>
-                                <TableTabCard key={index} columns={tabsData.cols} values={values} tab={tab} lang={lang} specs={specs} setSpecs={setSpecs} index={index}/>
-                            </Tab> )
-                        }
-                    })
-                }
-                </Tabs>
-                 : lang === "es" ? <p>Aún no hay filas por mostrar</p> : <p>There are no rows yet</p>
+                rowsHeaders.map((header, index) => {
+                    if (index > 0) {
+                        return (
+                            <Tab key={ `tab-${index}` } title={ header ? header : lang === "es" ? "Sin nombre" : "No name" } className="overflow-hidden">
+                                <TableTabCard 
+                                key={ `card-${index}` }
+                                columns={ colHeaders }
+                                values={ values }
+                                tab={ header }
+                                lang={ lang }
+                                index={ index }
+                                specs={ specs[index] }
+                                localSpecs={ localSpecs }
+                                setLocalSpecs={ setLocalSpecs } />
+                            </Tab>
+                        )
+                    }
+                })
             }
-            <TableButtonAi lang={ lang } />
+            </Tabs>
+            <TableButtonAi lang={ lang } isDisabled={ rowsHeaders && rowsHeaders.length < 2 } />
         </section>
     )
 }
