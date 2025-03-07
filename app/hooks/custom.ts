@@ -1,61 +1,95 @@
 "use client"
 import { SetStateAction, useEffect, useState } from "react";
 
-export function useRows (rows?: string[][] | undefined, storedValues?: string[] | undefined, storedSpecs?: number[] | undefined): [
+export type Specs = {
+    disable:boolean,
+    count: number,
+    enabledValues: Array<string>,
+    enabledColumns: Array<string>,
+}
+export function useRows (rows?: string[][], storedValues?: string[], storedSpecs?: Specs[], storedColSpecs?: number[]): [
+    // map
     string[][],
-    React.Dispatch<SetStateAction<string[][]>>, 
-    number[],
-    React.Dispatch<SetStateAction<number[]>>,
-    () => void,
-    () => void,
-    () => void,
-    () => void,
+    // headers
     string[],
     React.Dispatch<SetStateAction<string[]>>,
-    
+    string[],
+    React.Dispatch<SetStateAction<string[]>>,
+    // specs
+    Specs[],
+    number[],
+    // values
+    string[],
+    React.Dispatch<SetStateAction<string[]>>,
+    // handlers
+    () => void,
+    () => void,
+    () => void,
+    () => void,
 ] {
-    const [ localRows, setLocalRows ] = useState<Array<Array<string>>>([]);
     const [ values, setValues ] = useState<Array<string>>([]);
+    const [ specs, setSpecs ] = useState<Array<Specs>>([]);
     const [ colSpecs, setColSpecs ] = useState<Array<number>>([]);
+    const [ colHeaders, setColHeaders ] = useState<Array<string>>([]);
+    const [ rowHeaders, setRowsHeaders ] = useState<Array<string>>([]);
+
+    const [ map, setMap ] = useState<Array<Array<string>>>([]);
 
     useEffect(() => {
-        if (rows) setLocalRows(rows);
-    }, []);
-
-    useEffect(() => {
-        if (storedValues) {
-            setValues(storedValues);
+        if (rows) {
+            setMap(() => rows.map(row => {
+                return row.map(() => {
+                    return "";
+                })
+            }))
         }
     }, []);
 
     useEffect(() => {
-        if (storedSpecs) {
-            setColSpecs(storedSpecs);
-        }
+        if (rows) {
+            setColHeaders(rows[0]);
+            setRowsHeaders(rows.map(header => header[0]));
+        };
+    }, []);
+    useEffect(() => {
+        setColHeaders(map[0]);
+        setRowsHeaders(map && map.map(header => header[0]));
+    }, [map])
+
+    useEffect(() => {
+        if (storedValues) setValues(storedValues);
+    }, []);
+
+    useEffect(() => {
+        if (storedSpecs) setSpecs(specs);
+    })
+
+    useEffect(() => {
+        if (storedColSpecs) setColSpecs(storedColSpecs);
     }, []);
     
     const handleAddColumn = () => {
-        if (!localRows.length) {
-            return setLocalRows([[""]]);
+        if (!map.length) {
+            return setMap([[""]]);
         }
-        setLocalRows(() => 
-            localRows && localRows.map(row => [...row, ""])
+        setMap(() => 
+            map && map.map(row => [...row, ""])
         );
     };
     const handleAddRow = () => {
-        if (!localRows.length) {
-            return setLocalRows([[""]]);
+        if (!map.length) {
+            return setMap([[""]]);
         }
-        setLocalRows(prev => 
+        setMap(prev => 
             [...prev, 
-            localRows[0] && localRows[0].length ? 
-            localRows[0].map(() => {
+            map[0] && map[0].length ? 
+            map[0].map(() => {
                 return '';
             }) : ['']]
         );
     };
     const handleDeleteColumn = () => {
-        setLocalRows(prev => {
+        setMap(prev => {
             if (!prev.length) prev;
             if (prev[0] && prev[0].length === 1) {
                 return [];
@@ -64,7 +98,7 @@ export function useRows (rows?: string[][] | undefined, storedValues?: string[] 
         });
     };
     const handleDeleteRow = () => {
-        setLocalRows(prev => {
+        setMap(prev => {
             if(!prev.length) prev;
             if (prev.length && prev.length === 1) {
                 return [];
@@ -72,17 +106,19 @@ export function useRows (rows?: string[][] | undefined, storedValues?: string[] 
             return prev.slice(0, -1);
         })
     };
-
     return [ 
-        localRows, 
-        setLocalRows, 
+        map,
+        colHeaders,
+        setColHeaders,
+        rowHeaders,
+        setRowsHeaders,
+        specs,
         colSpecs,
-        setColSpecs,
+        values,
+        setValues,
         handleAddColumn, 
         handleDeleteColumn, 
         handleAddRow, 
         handleDeleteRow,
-        values,
-        setValues,
     ]
 }
