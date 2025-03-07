@@ -4,8 +4,9 @@ import { useActionState } from "react"
 import { PrimaryButton } from "./atom-button";
 import { Box } from "geist-icons";
 
-export default function TableButtonAi ({ lang }: {
-    lang: "en" | "es"
+export default function TableButtonAi ({ lang, isDisabled }: {
+    lang: "en" | "es",
+    isDisabled?: boolean,
 }) {
     const [ genState, genAction, genPending ] = useActionState(UseAiAction, { message: "" });
 
@@ -16,7 +17,7 @@ export default function TableButtonAi ({ lang }: {
         formAction={ genAction }
         type="submit"
         endContent={ <Box /> }
-        disabled={ genPending }
+        disabled={ genPending || isDisabled }
         loading={ genPending }>
             { lang === "es" ? "Generar" : "Generate" }
         </PrimaryButton>

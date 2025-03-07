@@ -1,6 +1,8 @@
+import pool from "@/app/lib/mocks/db";
 import UserProfile from "@/app/ui/atoms/atom-user-profile";
 import Settings from "@/app/ui/molecules/mol-settings";
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function Page ({ params }: {
     params: Promise<{ lang: string }>
@@ -9,19 +11,18 @@ export default async function Page ({ params }: {
     const lang = (await params).lang;
     
     if (session?.user && session.user.email) {
-        const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/user/providers`, {
-            method: "GET",
-            headers: {
-                "user_email": session.user.email
-            }
-        })
-        const response = await request.json();
+        const providers = await pool.query(`
+            SELECT provider FROM scheduler_users_providers
+            WHERE email = $1;
+        `, [session.user.email]);
+        const providersResponse = providers.rows ?? [];
 
         return (
             <section className="m-8 flex flex-row gap-6">
                 <UserProfile />
-                <Settings lang={lang} data={response.data}/>
+                <Settings lang={lang} data={providersResponse}/>
             </section>
         )
     }
+    redirect(`/${lang}/login`);
 }

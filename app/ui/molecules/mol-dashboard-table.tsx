@@ -7,16 +7,25 @@ import { PlusCircle } from "geist-icons";
 import DeleteTableModal from "./mol-delete-table-modal";
 
 export default function DashboardTable ({ rows, lang }: {
-    rows: Array<{ table_id: string, table_name: string, updated_at: string}>,
+    rows: Array<{ table_id: string, table_name: string, updated_at: string, created_at: string }>,
     lang: "en" | "es",
 }) {
     return (
         <section className="p-8">
-            <Button as={HeroLink} href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/new`} color="success" className="text-white mt-3 mb-3" endContent={<PlusCircle />}>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
-            <Chip className="m-3" variant="dot" color="warning">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
+            <Button as={HeroLink} href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/new`} color="success" className="text-white mt-3 mb-3" endContent={<PlusCircle />} disabled={ rows && rows.length === 3 }>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
+            {
+                rows && rows.length === 0 && <Chip className="m-3" variant="dot" color="success">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
+            }
+            {
+                rows && rows.length === 2 && <Chip className="m-3" variant="dot" color="warning">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
+            }
+            {
+                rows && rows.length === 3 && <Chip className="m-3" variant="dot" color="danger">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
+            }
             <Table aria-label="Dashboard table" className="shadow-lg">
                 <TableHeader>
                     <TableColumn>{ lang === "es" ? "Nombre" : "Name" }</TableColumn>
+                    <TableColumn>{ lang === "es" ? "Fecha de creación" : "Created at" }</TableColumn>
                     <TableColumn>{ lang === "es" ? "Última modificación" : "Last Update" }</TableColumn>
                     <TableColumn>{ lang === "es" ? "Acción" : "Action" }</TableColumn>
                 </TableHeader>
@@ -26,6 +35,7 @@ export default function DashboardTable ({ rows, lang }: {
                         return (
                         <TableRow key={`${row.table_name}${index}`}>
                             <TableCell><Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/${row.table_id}`}>{row.table_name}</Link></TableCell>
+                            <TableCell><Timestamp updated_at={row.created_at}/></TableCell>
                             <TableCell><Timestamp updated_at={row.updated_at}/></TableCell>
                             <TableCell>
                                 <DeleteTableModal table_id={row.table_id} table_name={row.table_name} />

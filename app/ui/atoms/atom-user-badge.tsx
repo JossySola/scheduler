@@ -8,6 +8,7 @@ export default function UserBadge({name, image, email}: {
 }) {
     return (
         <User
+          className="mb-5"
           avatarProps={{
             src: image,
           }}

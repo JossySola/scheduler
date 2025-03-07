@@ -6,10 +6,14 @@ declare module "next-auth" {
         facebookAccessToken?: string;
         googleSub?: string;
         facebookSub?: string;
+        username?: string;
     }
     interface User extends DefaultUser {
         googleSub?: string;
         facebookSub?: string;
+        username?: string;
+        image?: string;
+        id?: string;
     }
 }
 
@@ -19,5 +23,8 @@ declare module "next-auth/jwt" {
         facebookAccessToken?: string;
         googleSub?: string;
         facebookSub?: string;
+        username?: string;
+        image?: string;
+        id?: string;
     }
 }

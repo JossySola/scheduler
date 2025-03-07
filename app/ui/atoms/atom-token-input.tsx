@@ -18,18 +18,9 @@ export default function ExpiringTokenInput ({ lang }: {
 
     return (
         <>
-        <Input
-        minLength={6}
-        maxLength={6}
-        name="confirmation-token"
-        id="confirmation-token"
-        variant="flat"
-        radius="md"
-        size="lg"
-        isRequired
-        isClearable />
         <div className="w-full flex flex-row justify-center items-center mt-2 mb-2">
             <CircularProgress 
+            aria-label="timer-progress"
             color="danger"
             showValueLabel={true} 
             formatOptions={{ style: "unit", unit: "second" }}
