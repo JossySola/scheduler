@@ -5,8 +5,7 @@ import { useParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { PlusCircle, Trash } from "geist-icons";
 
-export default function XList({ name, preferences, items, setItems, criteria, values, enableInput = true, enableRemoval = true } : 
-    { 
+export default function XList({ name, preferences, items, setItems, criteria, values, enableInput = true, enableRemoval = true } : { 
         name: string, 
         preferences?: Array<Array<string>>,
         items?: Array<string>,
@@ -15,7 +14,7 @@ export default function XList({ name, preferences, items, setItems, criteria, va
         values?: Array<string>,
         enableInput?: boolean,
         enableRemoval?: boolean,
-    }) {
+}) {
     const [ localItems, setLocalItems ] = useState<Array<string>>([]);
     const [ input, setInput ] = useState<string>("");
     const params = useParams();
