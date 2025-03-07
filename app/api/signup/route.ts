@@ -5,55 +5,30 @@ import pool from "@/app/lib/mocks/db";
 import { Argon2id } from "oslo/password";
 import { isPostgreSQLError } from "@/app/lib/definitions";
 
-export async function POST ( request: NextRequest ): Promise<NextResponse> {
+export async function POST ( request: NextRequest ) {
     const incoming = await request.json();
     
-    const name: string = incoming.name;
-    const username: string = incoming.username;
-    const birthday: string = incoming.birthday ? incoming.birthday : null;
-    const email: string = incoming.email;
-    const password: string = incoming.password ? incoming.password : null;
-    const provider: string = incoming.provider ? incoming.provider : null;
-    const image: string = incoming.image ? incoming.image : null;
-
-    const argon2id = new Argon2id()
-    const hash = password !== null ? await argon2id.hash(incoming.password) : null;
+    const name: string = incoming.name.toString();
+    const username: string = incoming.username.toString();
+    const birthday: string = incoming.birthday.toString();
+    const email: string = incoming.email.toString();
+    const password: string = incoming.password.toString();
+    const secret: string | undefined = process.env.NEXTAUTH_SECRET;
+    const argon2id = new Argon2id();
+    const hash = await argon2id.hash(password);
     
     try {
-        await new Promise<void>(async resolve => {
-            const check = await pool.query(`
-                SELECT email FROM scheduler_users
-                WHERE email = $1 OR username = $2;
-            `, [email, username]);
+        if (secret) {
+            const registerUser = await pool.query(`
+                INSERT INTO scheduler_users (name, username, email, birthday, password)
+                VALUES ($1, $2, $3, $4::DATE, pgp_sym_encrypt($5, $6));
+            `, [name, username, email, birthday, hash, secret]);
             
-            if (check.rowCount === 0) {
-                const insert = await pool.query(`
-                    INSERT INTO scheduler_users (name, username, email, birthday, password)
-                    VALUES ($1, $2, $3, $4, $5);
-                `, [name, username, email, birthday, hash]);
-                resolve();
+            if (registerUser.rowCount === 0) {
+                return NextResponse.json({ statusText: "Internal Error" }, { status: 500 });
             }
-            resolve();
-        }).then(async (result) => {
-            if (provider) {
-                await pool.query(`
-                    INSERT INTO scheduler_users_providers (email, provider)
-                        VALUES (
-                            $1,
-                            $2
-                        );
-                `, [email, provider]);
-
-                await pool.query(`
-                    UPDATE scheduler_users
-                    SET user_image = $1
-                    WHERE email = $2 AND user_image IS NULL;
-                `, [image, email]);
-            }
-        }).catch(error => {
-            return NextResponse.json({ error: `${error}` }, { status: 400 });
-        })
-        return NextResponse.json({ statusText: "Success!" }, { status: 200 });
+            return NextResponse.json({ statusText: "Success!" }, { status: 200 });
+        }
     } catch (error: unknown) {
         if (isPostgreSQLError(error)) {
             let message = '';
