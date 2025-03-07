@@ -1,8 +1,12 @@
 "use client"
 import { Input } from "@heroui/react";
 import { useParams } from "next/navigation";
+import { SetStateAction } from "react";
 
-export default function FormInputUsername () {
+export default function FormInputUsername ({ username, setUsername }: {
+    username: string,
+    setUsername: React.Dispatch<SetStateAction<string>>,
+}) {
     const params = useParams();
     const lang = params.lang;
     
@@ -19,6 +23,8 @@ export default function FormInputUsername () {
         variant="bordered"
         label={ lang === "es" ? "Nombre de usuario " : "Username " }
         labelPlacement="outside"
-        size="lg"/>
+        size="lg"
+        value={ username }
+        onChange={e => setUsername(e.target.value) }/>
     )
 }

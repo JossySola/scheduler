@@ -1,8 +1,12 @@
 "use client"
 import { Input } from "@heroui/react";
 import { useParams } from "next/navigation";
+import { SetStateAction } from "react";
 
-export default function FormInputEmail () {
+export default function FormInputEmail ({ email, setEmail }: {
+    email: string,
+    setEmail: React.Dispatch<SetStateAction<string>>,
+}) {
     const params = useParams();
     const lang = params.lang;
     
@@ -18,6 +22,8 @@ export default function FormInputEmail () {
         variant="bordered"
         label={ lang === "es" ? "Correo electrónico: " : "Email: " }
         labelPlacement="outside"
-        size="lg"/>
+        size="lg"
+        value={ email }
+        onChange={e => setEmail(e.target.value) }/>
     )
 }
