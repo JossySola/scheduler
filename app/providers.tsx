@@ -1,5 +1,5 @@
 "use client"
-import { HeroUIProvider } from '@heroui/react';
+import { HeroUIProvider, ToastProvider } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 
 declare module "@react-types/shared" {
@@ -15,6 +15,7 @@ export function UIProvider ({ children }: {
 
     return (
         <HeroUIProvider navigate={router.push}>
+            <ToastProvider placement='bottom-center' />
             { children }
         </HeroUIProvider>
     )

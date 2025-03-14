@@ -21,17 +21,17 @@ export async function validateAction (state: { message: string }, formData: Form
     const confirmation = formData.get("confirmpwd")?.toString();
     
     if (!name || !username || !birthday || !email || !password || !confirmation) {
-        return {
-            ok: false,
-            message: locale === "es" ? "Hay campos sin llenar" : "Some fields are empty"
-        };
+      return {
+        ok: false,
+        message: locale === "es" ? "Hay campos sin llenar" : "Some fields are empty"
+      };
     }
     
     if (password !== confirmation) {
-        return {
-            ok: false,
-            message: locale === "es" ? "La confirmación de la contraseña es errónea" : "The password confirmation is incorrect"
-        };
+      return {
+        ok: false,
+        message: locale === "es" ? "La confirmación de la contraseña es errónea" : "The password confirmation is incorrect"
+      };
     }
 
     const validName = z.string().min(3, { message: locale === "es" ? "El nombre es muy corto" : "Name too short" }).safeParse(name);
@@ -43,58 +43,51 @@ export async function validateAction (state: { message: string }, formData: Form
     const validEmail = z.string().min(1).email({ message: locale === "es" ? "Correo electrónico inválido" : "Invalid email address" }).safeParse(email);
     const validPassword = z.string().min(8, { message: locale === "es" ? "La contraseña debe tener al menos 8 caracteres" : "Password must have at least 8 characters" }).safeParse(password);
     
-    const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/verify/user`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            username,
-            email,
-        }),
-    });
-
-    const response = await request.json();
-    const userExists = request.status === 200 ? {
-              error: {
-                  issues: [{ message: response.statusText }],
-              },
-          }
-    : { success: true };
+    const user = await pool.query(`
+      SELECT id FROM scheduler_users
+      WHERE email = $1 OR username = $2;
+    `, [email, username]);
+    const userExists = user.rowCount && user.rows[0].id ? {
+      error: {
+        issues: [{ message: locale === "es" ? "Usuario ya existe" : "User already exists" }]
+      }
+    } : { success: true };
+    
     const errors = [userExists, validName, validUsername, validBirthday, validEmail, validPassword]
-    .filter((result) => !result.success);
+    .filter(result => !result.success);
 
     const exposedPassword = await isPasswordPwned(password.toString());
     if (typeof exposedPassword !== 'number') {
-        return {
-            ok: false,
-            message: exposedPassword.message,
-            descriptive: [...errors, { error: { issues: [{ message: exposedPassword.message }] } }],
-        }
+      return {
+        ok: false,
+        message: exposedPassword.message,
+        descriptive: [...errors, { error: { issues: [{ message: exposedPassword.message }] } }],
+      }
     }
     
     if (exposedPassword !== 0) {
-        return {
-            ok: false,
-            message: locale === "es" ? 'Después de un análisis, la contraseña que utilizaste ha sido reportada en la lista de contraseñas expuestas. Por favor crea una contraseña más segura' : 'After a password check, the password provided has been exposed in a data breach. For security reason, please choose a stronger password.',
-            descriptive: [...errors, { error: { issues: [{ message: locale === "es" ? 'Después de un análisis, la contraseña que utilizaste ha sido reportada en la lista de contraseñas expuestas. Por favor crea una contraseña más segura' : 'After a password check, the password provided has been exposed in a data breach. For security reason, please choose a stronger password.' }] } }],
-        }
+      return {
+        ok: false,
+        message: locale === "es" ? 'Después de un análisis de seguridad, la contraseña que utilizaste ha sido expuesta previamente. Por favor crea una nueva contraseña más segura' : 'After a password check, the password provided has been exposed in a data breach. For security reason, please choose a stronger password.',
+        descriptive: [...errors, { error: { issues: [{ message: locale === "es" ? 'Después de un análisis, la contraseña que utilizaste ha sido reportada en la lista de contraseñas expuestas. Por favor crea una contraseña más segura' : 'After a password check, the password provided has been exposed in a data breach. For security reason, please choose a stronger password.' }] } }],
+      }
     }
     
-    const existQuery = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/user/id`, {
-        method: 'GET', 
-        headers: {
-            "user_email": email.toString()
-        }
-    })
-    const doesExist = await existQuery.json();
-    
-    if (doesExist.error === 'User not found') {
-        await sendTokenAction(formData, locale as "en" | "es");
+    if (!user.rowCount) {
+      await sendTokenAction(formData, locale as "en" | "es");
     }
     
+    if(errors && errors.length) {
+      return {
+        ok: false,
+        message: "",
+        descriptive: errors[0].error?.issues
+      }
+    }
     return {
-        ok: true,
-        message: errors.length ? "Validation failed" : "Validation successful",
-        descriptive: errors,
+      ok: true,
+      message: errors.length ? "Validation failed" : "Validation successful",
+      descriptive: errors,
     };
 }
 
@@ -105,14 +98,9 @@ export async function verifyTokenAction (state: { message: string }, formData: F
     const birthday = formData.get('birthday')?.toString();
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
-
     const requestHeaders = await headers();
     const locale = requestHeaders.get("x-user-locale")?.toString() || "en";
-
-    console.error("[confirmEmailAction] Starting...")
-    console.error("[confirmEmailAction] Checking if token exists...")
     if (!token) {
-        console.error("[confirmEmailAction] Token doesn't exist, exiting...")
         return {
             ok: false,
             message: locale === "es" ? 
@@ -120,9 +108,7 @@ export async function verifyTokenAction (state: { message: string }, formData: F
                 "Please type the code sent to your email in the field above"
         }
     }
-    
     if (!name || !username || !birthday || !email || !password) {
-        console.error("[confirmEmailAction] Some data is missing, exiting...")
         return {
             ok: false,
             message: locale === "es" ? 
@@ -130,16 +116,15 @@ export async function verifyTokenAction (state: { message: string }, formData: F
             "Some data is missing"
         }
     }
-    console.error("[confirmEmailAction] Entering handleEmailConfirmation...")
+    
     const confirm = await handleEmailConfirmation(token, email);
-    console.error("[confirmEmailAction] Function result:", confirm)
     if (confirm.ok === false) {
         return {
             ok: false,
             message: confirm.message
         }
     }
-    console.error("[confirmEmailAction] Connecting to /api/signup...")
+    
     const signup = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/signup`, {
         method: 'POST',
         headers: {
@@ -153,9 +138,7 @@ export async function verifyTokenAction (state: { message: string }, formData: F
             password,
         })
     })
-    console.error("[confirmEmailAction] Endpoint result:", signup)
-    if (signup.status !== 200 || !signup.ok) {
-        console.error("[confirmEmailAction] Endpoint result failed:", signup)
+    if (!signup.ok || signup.status !== 200) {
         return {
             ok: false,
             message: locale === "es" ? 
@@ -163,10 +146,7 @@ export async function verifyTokenAction (state: { message: string }, formData: F
             "Failed to register record"
         }
     }
-    console.error("[confirmEmailAction] Starting handleLogin...")
-    const logging = await handleLogin(username, password, locale);
-    console.error("[confirmEmailAction] Result while logging:", logging)
-    console.error("[confirmEmailAction] Exiting...")
+    await handleLogin(username, password, locale);
     return {
         ok: true,
         message: locale === "es" ? 

@@ -2,56 +2,37 @@
 import { Tab, Tabs } from "@heroui/react";
 import TableTabCard from "../atoms/atom-table-card";
 import TableButtonAi from "../atoms/atom-table-button-ai";
-import { Specs } from "@/app/hooks/custom";
-import { useState } from "react";
+import { useContext } from "react";
+import { TableHandlersContext, TableHandlersType } from "@/app/[lang]/table/context";
+import { useParams } from "next/navigation";
 
-export type LocalSpecs = {
-    disable: Array<boolean>,
-    count: Array<number>,
-    enabledValues: Array<Array<string>>,
-    enabledColumns: Array<Array<string>>,
-}
-
-export default function TableTabs ({ name, lang, values, rowsHeaders, colHeaders, specs }: {
+export default function TableTabs ({ name, setGeneratedTable }: { 
     name: string,
-    lang: "en" | "es",
-    values: Array<string>,
-    rowsHeaders: Array<string>,
-    colHeaders: Array<string>,
-    specs: Specs[],
+    setGeneratedTable?: Array<Array<string>> | Array<undefined> | undefined,
 }) {
-    const [ localSpecs, setLocalSpecs ] = useState<LocalSpecs>({
-        disable: [],
-        count: [],
-        enabledValues: [],
-        enabledColumns: [],
-    })
+    const { rowHeaders }: TableHandlersType = useContext(TableHandlersContext);
+    const params = useParams();
+    const lang = params.lang;
     return (
-        <section className="flex flex-col items-center">
+        <section className="w-full flex flex-col items-center">
             <h3>{ name }</h3>
             <Tabs aria-label={ name }>
             {
-                rowsHeaders.map((header, index) => {
-                    if (index > 0) {
+                rowHeaders && rowHeaders.map((header, rowIndex) => {
+                    if (rowIndex > 0) {
                         return (
-                            <Tab key={ `tab-${index}` } title={ header ? header : lang === "es" ? "Sin nombre" : "No name" } className="overflow-hidden">
+                            <Tab key={ `tab-${rowIndex}` } title={ header ? header : lang === "es" ? "Sin nombre" : "No name" } className="overflow-hidden">
                                 <TableTabCard 
-                                key={ `card-${index}` }
-                                columns={ colHeaders }
-                                values={ values }
-                                tab={ header }
-                                lang={ lang }
-                                index={ index }
-                                specs={ specs[index] }
-                                localSpecs={ localSpecs }
-                                setLocalSpecs={ setLocalSpecs } />
+                                key={ `card-${rowIndex}` }
+                                name={ header ? header : lang === "es" ? "Sin nombre" : "No name" }
+                                rowIndex={ rowIndex } />
                             </Tab>
                         )
                     }
                 })
             }
             </Tabs>
-            <TableButtonAi lang={ lang } isDisabled={ rowsHeaders && rowsHeaders.length < 2 } />
+            <TableButtonAi isDisabled={ rowHeaders && rowHeaders.length < 2 } />
         </section>
     )
 }

@@ -1,26 +1,14 @@
 "use client"
-import { SetStateAction } from "react";
+import { useParams } from "next/navigation";
 import TableTabs from "./mol-YTable-tabs";
-import { Specs } from "@/app/hooks/custom";
 
-export default function AISection ({ lang, values, colHeaders, rowHeaders, specs }: {
-    lang: "es" | "en",
-    values: string[],
-    colHeaders: string[],
-    rowHeaders: string[],
-    specs: Specs[],
-    
-}) {
-
+export default function AISection () {
+    const params = useParams();
+    const lang = params.lang;
     return (
-        <fieldset className="magicBorder p-[16px] m-3">
+        <fieldset className="w-full magicBorder sm:w-fit">
             <TableTabs 
-            name={ lang === "es" ? "Configuración de Filas" : "Rows Settings" }
-            lang={ lang as "en" | "es" }
-            values={ values }
-            specs={ specs }
-            colHeaders={ colHeaders }
-            rowsHeaders={ rowHeaders } />
+            name={ lang === "es" ? "Configuración de Filas" : "Rows Settings" } />
         </fieldset>
     )
 }

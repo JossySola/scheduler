@@ -22,7 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                       WHERE scheduler_users.email = $1
                       AND (scheduler_users_providers.provider = $2 OR scheduler_users_providers.provider IS NULL);
                     `, [profile.email, 'Google']);
-                    if (doesUserExist.rows.length > 0) {
+                    if (doesUserExist.rows.length > 0 && doesUserExist.rows[0].provider === 'Google') {
                         profile.id = doesUserExist.rows[0].id;
                         profile.image = profile.picture;
                         return { ... profile };
@@ -85,7 +85,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                       WHERE scheduler_users.email = $1
                       AND (scheduler_users_providers.provider = $2 OR scheduler_users_providers.provider IS NULL);
                     `, [profile.email, 'Facebook']);
-                    if (doesUserExist.rows.length > 0) {
+                    if (doesUserExist.rows.length > 0 && doesUserExist.rows[0].provider === 'Facebook') {
                         profile.id = doesUserExist.rows[0].id;
                         profile.image = profile.picture.data.url;
                         return { ... profile };
@@ -213,8 +213,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     }
                 }
                 token.id = profile.id as string;
-                console.log("JWT Callback - Profile:", profile);
-                console.log("JWT Callback - Token before:", token);
 
             }
             if (user) {
@@ -246,8 +244,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.facebookAccessToken = token.facebookAccessToken;
                 session.user.facebookSub = token.facebookSub;
             }
-            console.log("Session Callback - Token:", token);
-            console.log("Session Callback - Session before:", session);
 
             return session;
         },
