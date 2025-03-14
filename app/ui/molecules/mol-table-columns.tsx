@@ -1,24 +1,22 @@
 "use client"
+import { TableHandlersContext, TableHandlersType, TableSpecsContext, TableSpecsType } from "@/app/[lang]/table/context";
 import { Input, NumberInput } from "@heroui/react";
-import { SetStateAction, useState } from "react";
+import { useParams } from "next/navigation";
+import { useContext, useState } from "react";
 
-export default function TableColumn ({ setColHeaders, maxValue, placeholder, headerIndex, value, lang, colSpec }: {
-    setColHeaders: React.Dispatch<SetStateAction<string[]>>,
-    maxValue: number,
-    placeholder: string,
+export default function TableColumn ({ headerIndex, value }: {
     headerIndex: number,
     value?: string,
-    lang: "es" | "en",
-    storedRows?: string[][],
-    colSpec: number,
 }) {
     const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-    const [ cell, setCell ] = useState<string>(value ?? "");
-    const [ number, setNumber ] = useState<number>(colSpec ?? 0);
+    const params = useParams();
+    const lang = params.lang;
+    const { setColumnHeaders, rowHeaders }: TableHandlersType = useContext(TableHandlersContext);
+    const { colSpecs, setColSpecs }: TableSpecsType = useContext(TableSpecsContext);
+    const [ text, setText ] = useState<string>(value ?? " ");
     return (
         <th scope="col">
             <span className="text-tiny">{`${colLetters[headerIndex]}`}</span>
-
             <div className="flex flex-row items-center gap-2">
                 {
                     headerIndex === 0 && <span className="text-tiny">0</span>
@@ -31,22 +29,22 @@ export default function TableColumn ({ setColHeaders, maxValue, placeholder, hea
                         "h-[40px]"
                     ]
                 }}
-                value={ cell }
+                value={ text }
                 variant="flat"
+                autoComplete="off"
                 onChange={ e => {
-                    setCell(e.target.value);
-                    setColHeaders(prev => {
-                        let clone = [...prev];
-                        clone[headerIndex] = e.target.value;
-                        return clone;
+                    setText(e.target.value);
+                    setColumnHeaders && setColumnHeaders(prev => {
+                        let duplicate = [...prev];
+                        duplicate[headerIndex] = e.target.value;
+                        return duplicate;
                     });
-                } } />
+                }} />
             </div>
-            
-
             {
                 headerIndex !== 0 && 
                 <NumberInput 
+                aria-label="Number of rows to fill"
                 classNames={{
                     input: [
                         "w-1/6",
@@ -66,16 +64,24 @@ export default function TableColumn ({ setColHeaders, maxValue, placeholder, hea
                         "w-[186px]"
                     ]
                 }}
-                name={`Specification:Column:${value ? value : cell}-must-have-this-amount-of-cells-filled-in`}
+                name={`Specification: Column ${colLetters[headerIndex]} named <'${ value ? value : text }'>, must have this fixed amount of rows filled in:`}
                 variant="bordered"
                 radius="full"
                 size="sm"
                 description={ lang === "es" ? "Número de filas a llenar en esta columna" : "Amount of rows to fill in this column" }
                 minValue={ 0 } 
-                maxValue={ maxValue }
-                placeholder={ placeholder }
-                value={ number }
-                onValueChange={ setNumber }/>
+                maxValue={ rowHeaders && rowHeaders.length -1 }
+                value={ colSpecs && colSpecs[headerIndex] ? colSpecs[headerIndex] : rowHeaders && rowHeaders.length -1 }
+                onValueChange={ n => {
+                    if (setColSpecs) {
+                        setColSpecs(prev => {
+                            if (!prev) [ n ];
+                            let duplicate = [...prev];
+                            duplicate[headerIndex] = n;
+                            return duplicate;
+                        })
+                    }
+                }}/>
             }
         </th>
     )
