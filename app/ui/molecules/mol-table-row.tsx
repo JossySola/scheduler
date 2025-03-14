@@ -1,17 +1,20 @@
 "use client"
-import { SetStateAction, useState } from "react";
+import { useContext, useState } from "react";
 import { Input, Select, SelectItem } from "@heroui/react";
+import { useParams } from "next/navigation";
+import { TableHandlersContext, TableHandlersType, TableSpecsContext, TableSpecsType } from "@/app/[lang]/table/context";
 
-export default function TableRow ({ setRowsHeaders, rowIndex, colIndex, value, values, lang }: {
-    setRowsHeaders: React.Dispatch<SetStateAction<string[]>>,
+export default function TableRow ({ rowIndex, colIndex, value }: {
     rowIndex: number,
     colIndex: number,
     value: string,
-    values: string[],
-    lang: "en" | "es",
 }) {
     const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-    const [ cell, setCell ] = useState<string>(value ?? "");
+    const params = useParams();
+    const lang = params.lang;
+    const { setRowHeaders }: TableHandlersType = useContext(TableHandlersContext);
+    const { values }: TableSpecsType = useContext(TableSpecsContext);
+    const [ text, setText ] = useState<string>(value ?? " ");
 
     return (
         <>
@@ -30,14 +33,14 @@ export default function TableRow ({ setRowsHeaders, rowIndex, colIndex, value, v
                 variant="flat"
                 size="sm"
                 type="text"
-                value={ cell } 
+                value={ text || " " } 
                 autoComplete="off" 
                 onChange={ e => {
-                    setCell(e.target.value);
-                    setRowsHeaders(prev => {
-                        let clone = [...prev];
-                        clone[rowIndex] = e.target.value;
-                        return clone;
+                    setText(e.target.value);
+                    setRowHeaders && setRowHeaders (prev => {
+                        let duplicate = [...prev];
+                        duplicate[rowIndex] = e.target.value;
+                        return duplicate;
                     })
                 }} />
             </th> : 
@@ -52,10 +55,11 @@ export default function TableRow ({ setRowsHeaders, rowIndex, colIndex, value, v
                     ]
                 }}
                 placeholder={ lang === "es" ? "Selecciona un valor" : "Select a value" }
-                selectedKeys={ [cell] }
-                value={ cell }
+                selectedKeys={ [text] }
+                value={ text || " " }
+                color={ text && text.endsWith("^") ? "warning" : "default" }
                 variant="bordered"
-                onChange={ e => setCell(e.target.value) }>
+                onChange={ e => setText(e.target.value) }>
                     {
                         values.map((value, index) => {
                             return <SelectItem key={`${value}-${index}`}>{ value }</SelectItem>
@@ -83,9 +87,10 @@ export default function TableRow ({ setRowsHeaders, rowIndex, colIndex, value, v
             variant="bordered"
             size="sm"
             type="text"
-            value={ cell } 
+            value={ text && text.endsWith("^") ? text.slice(0, -1) : text || " " } 
+            color={ text && text.endsWith("^") ? "warning" : "default" }
             autoComplete="off" 
-            onValueChange={ setCell } />
+            onValueChange={ setText } />
             </td>
         }
         </>
