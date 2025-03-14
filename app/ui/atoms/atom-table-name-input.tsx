@@ -10,7 +10,7 @@ export default function TableNameInput ({ name }: {
         name="table_title" 
         id="table_title"
         variant="underlined"
-        className="w-fit"
+        className="w-fit self-start ml-7 sm:self-center"
         autoComplete="off"
         defaultValue={name}
         classNames={{
@@ -23,7 +23,7 @@ export default function TableNameInput ({ name }: {
     name="table_title" 
     id="table_title"
     variant="underlined"
-    className="w-fit"
+    className="w-fit self-start ml-7 sm:self-center"
     autoComplete="off"
     classNames={{
         input: ["text-xl"]
