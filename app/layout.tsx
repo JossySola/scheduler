@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark text-foreground bg-background">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased w-screen h-screen`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-full sm:w-screen sm:h-screen`}>
         <UIProvider>
         {children}
         </UIProvider>
