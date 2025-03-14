@@ -13,7 +13,7 @@ import { z } from "zod";
 export async function SaveTableAction (
     previousState: { message: string, ok: boolean }, 
     formData: FormData, 
-    statesObject: { values: Array<string>, colSpecs: Array<number>, specs: Array<Specs> },
+    statesObject: { values: Array<string> | undefined, colSpecs: Array<number> | undefined, specs: Array<Specs> | undefined },
     ) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
