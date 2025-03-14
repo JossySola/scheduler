@@ -2,50 +2,42 @@
 import "server-only";
 import pool from "@/app/lib/mocks/db";
 import { NextRequest, NextResponse } from "next/server";
+import { redirect } from "next/navigation";
 
-export async function POST (request: NextRequest) {
+export async function POST (request: NextRequest): Promise<NextResponse> {
     const locale = request.headers.get("x-user-locale") || "en";
-
-    console.error("[/api/table/save] Starting...")
     const payload = await request.json();
-    console.error("[/api/table/save] Payload:", payload);
-    const user_email: string = payload.user_email;
+    const user_id: string = payload.user_id;
     const table_id: string = payload.table_id;
-    const title: string = payload.title;
-    const values: string = JSON.stringify(payload.values);
-    const specs: string = JSON.stringify(payload.specs);
-    const cols: string = JSON.stringify(payload.cols);
+    const title: string = payload.table_title;
     const rows: string = JSON.stringify(payload.rows);
+    const values: string = JSON.stringify(payload.values);
+    const colSpecs: string = JSON.stringify(payload.colSpecs);
+    const specs: string = JSON.stringify(payload.specs);
     const secret: string | undefined = process.env.NEXTAUTH_SECRET;
-
     if (!secret) {
         return NextResponse.json({ error: "Internal Error" }, { status: 500 });
     }
-
-    console.error("[/api/table/save] ROWS:", rows)
-    console.error("[/api/table/save] VALUES:", values)
-    console.error("[/api/table/save] SPECS:", specs)
-
-    const tableLimit = await pool.query(`
-        SELECT num_tables, id FROM scheduler_users
-        WHERE $1 = email;
-    `, [user_email]);
-    console.error("[/api/table/save] Limit:", tableLimit.rows);
-    if (tableLimit.rowCount === 0) {
-        console.error("[/api/table/save] No user found, exiting...");
-        return NextResponse.json({ error: "User not found" }, { status: 404 })
-    }
-    const { num_tables, id }: { num_tables: number, id: string } = tableLimit.rows[0];
-    console.error("[/api/table/save] num_tables:", num_tables);
-    console.error("[/api/table/save] user id:", id);
-
     if (!table_id) {
-        console.error("[/api/table/save] No table id, creating new table...");
-        if (num_tables >= 3) {
-            console.error("[/api/table/save] Number of tables limit reached, exiting...");
-            return NextResponse.json({ error: "Number of tables limit reached" }, { status: 400 })
+        if (!user_id) {
+            return NextResponse.json({
+                error: "Unauthorized"
+            }, { status: 401 });
         }
-        
+        const getNumTables = await pool.query(`
+            SELECT num_tables FROM scheduler_users
+            WHERE id = $1;
+        `, [user_id]);
+        if (getNumTables.rowCount === 0) {
+            return NextResponse.json({
+                error: "User not found"
+            }, { status: 404 });
+        }
+        if(getNumTables.rows[0].num_tables === 3) {
+            return NextResponse.json({
+                error: "Maximum num of tables reached"
+            }, { status: 403 });
+        }
         const newTable = await pool.query(`
             INSERT INTO scheduler_users_tables (user_id, table_name, table_data, table_specs, table_values, table_cols)
             VALUES (
@@ -57,29 +49,26 @@ export async function POST (request: NextRequest) {
                 pgp_sym_encrypt($6, $7)
             )
             RETURNING id;
-        `, [id, title, rows, specs, values, cols, secret]);
-        console.error("[/api/table/save] Table inserted?", newTable.rowCount ? "Yes" : "No");
-
-        console.error("[/api/table/save] Adding +1 to num_tables...");
-        const response = await pool.query(`
+        `, [user_id, title, rows, specs, values, colSpecs, secret]);
+        if (newTable.rowCount === 0) {
+            return NextResponse.json({
+                error: "Failed to insert"
+            }, { status: 500 });
+        }
+        const updateCount = await pool.query(`
             UPDATE scheduler_users
             SET num_tables = COALESCE(num_tables, 0) + 1
             WHERE id = $1;
-        `, [id]);
-        console.error(`SAVE ROUTE: ${response}`)
-
-        if (newTable.rowCount === 0) {
-            console.error("[/api/table/save] Failed to create new table, exiting...");
-            return NextResponse.json({ error: "Unexpected error occurred" }, { status: 400 })
-        }
-        
-        const newTableId: string = newTable.rows[0].id;
-        console.error("[/api/table/save] Redirecting to new table route...");
-        return NextResponse.redirect(new URL(`/${locale}/table/${newTableId}`, process.env.NEXT_PUBLIC_ORIGIN));
+        `, [user_id]);
+        return redirect(`/${locale}/table/${newTable.rows[0].id}`);
     }
-    
-    console.error("[/api/table/save] Fetching table by id...");
-    const fetching = await pool.query(`
+
+    if (!user_id) {
+        return NextResponse.json({
+            error: "Unauthenticated or missing id"
+        }, { status: 400 });
+    }
+    const update = await pool.query(`
         UPDATE scheduler_users_tables
         SET table_name = $1,
             table_data = pgp_sym_encrypt($2, $6),
@@ -87,10 +76,12 @@ export async function POST (request: NextRequest) {
             table_values = pgp_sym_encrypt($4, $6),
             table_cols = pgp_sym_encrypt($5, $6),
             updated_at = NOW()
-        WHERE id = $7;
-    `, [title, rows, specs, values, cols, secret, table_id]);
-    console.error("[/api/table/save] Fetch result:", fetching);
-    
-    console.error("[/api/table/save] Exiting...")
-    return NextResponse.json({ statusText: "Saved!" }, { status: 200 })
+        WHERE id = $7 AND user_id = $8;
+    `, [title, rows, specs, values, colSpecs, secret, table_id, user_id]);
+    if (update.rowCount === 0) {
+        return NextResponse.json({
+            error: "Failed to update"
+        }, { status: 400 });
+    }
+    return NextResponse.json(" ", { status: 200 });
 }
