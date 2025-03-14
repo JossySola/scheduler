@@ -49,7 +49,7 @@ export default function YTable ({ lang, storedRows }: {
                                         return <TableRow 
                                         rowIndex={ rowIndex } 
                                         colIndex={ columnIndex } 
-                                        value={ storedRows ? storedRows[rowIndex][columnIndex] : row } 
+                                        value={ storedRows && storedRows[rowIndex] ? storedRows[rowIndex][columnIndex] : row } 
                                         key={ columnIndex } />
                                     })
                                 }
