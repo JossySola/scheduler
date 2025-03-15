@@ -1,26 +1,24 @@
 "use client"
-import { UseAiAction } from "@/app/[lang]/table/actions"
-import { useActionState } from "react"
+import { TableAiGenerationContext, TableAiGenerationType } from "@/app/[lang]/table/context";
 import { PrimaryButton } from "./atom-button";
 import { Box } from "geist-icons";
+import { useParams } from "next/navigation";
+import { useContext } from "react";
 
-export default function TableButtonAi ({ lang, isDisabled }: {
-    lang: "en" | "es",
-    isDisabled?: boolean,
+export default function TableButtonAi ({ isDisabled }: {
+    isDisabled?: boolean 
 }) {
-    const [ genState, genAction, genPending ] = useActionState(UseAiAction, { message: "" });
-
+    const params = useParams();
+    const lang = params.lang;
+    const { generateTableUseObject, isLoading }: TableAiGenerationType = useContext(TableAiGenerationContext);
     return (
-        <>
-        <p aria-live="polite" className="text-danger">{ genState.message }</p>
-        <PrimaryButton 
-        formAction={ genAction }
+        <PrimaryButton
         type="submit"
+        formAction={ (formData) => generateTableUseObject && generateTableUseObject(formData) }
         endContent={ <Box /> }
-        disabled={ genPending || isDisabled }
-        loading={ genPending }>
+        disabled={ isLoading || isDisabled }
+        loading={ isLoading || isDisabled }>
             { lang === "es" ? "Generar" : "Generate" }
         </PrimaryButton>
-        </>
     )
 }
