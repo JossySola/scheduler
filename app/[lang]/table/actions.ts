@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { Specs } from "@/app/hooks/custom";
 import { streamObject } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
-import { createStreamableValue } from 'ai/rsc';
+import { createStreamableValue, StreamableValue } from 'ai/rsc';
 import { z } from "zod";
 
 export async function SaveTableAction (
@@ -98,71 +98,84 @@ export async function SaveTableAction (
     }
     
 }
-export async function UseAiAction (formData: FormData, submit: (input: any) => void) {
-    const session = await auth();
 
-    if (session) {
-        const entries = [...formData.entries()];
+const recentAIOutputs: Array<{
+    timestamp: Date,
+    output: StreamableValue<any, any>,
+}> = [];
+const MAX_HISTORY_SIZE = 5;
+export async function generateTableAction (formData: FormData) {
+    let historyText = "";
+    if (recentAIOutputs.length > 0) {
+        historyText = "Previous outputs I've generated (DO NOT REPEAT THESE PATTERNS):\n";
+        recentAIOutputs.forEach((item, index) => {
+          historyText += `Output ${index + 1}: ${JSON.stringify(item.output)}\n`;
+        });
+    }
 
-        let payload = {
-            rows: [[]],
-            values: entries && entries.map(entry => {
-                if (entry[0].startsWith("ValueOption")) {
-                    return entry;
-                }
-            }).filter(entry => entry !== undefined),
-            specs: entries && entries.map(entry => {
-                if (entry[0].startsWith("Specification")) {
-                    return entry;
-                }
-            }).filter(entry => entry !== undefined),
-        }
-        const tableEntries = entries
-        .filter(([key]) => /^[A-Z][0-9]+$/.test(key)) // Filters out all input fields whose name are not <Letter><Number> format
-        .map(([key, value]) => ({ key, value })); // Returns an Array of objects containing the key-value pairs]
-        tableEntries.forEach(({ key, value }) => {
-            const rowIndex = Number(key.slice(1));
-            if (!payload.rows[rowIndex]) payload.rows[rowIndex] = [];
-            payload.rows[rowIndex].push(value.toString() as never);
-        })
-        
-        /*
-        const stream = createStreamableValue();
-        const generation = async () => {
-            const { partialObjectStream } = streamObject({
-                model: anthropic('claude-3-opus-20240229'),
-                output: 'object',
-                schema: z.object({
-                    rows: z.array(z.array(z.string()))
-                }),
-                prompt: `
-                    You are a sophisticated scheduling algorithm designed to create strategic schedules/planners with the given data. Your task is to generate a schedule based on the provided information and specifications.
+    const entries = [...formData.entries()];
+    let payload = {
+        rows: [[]],
+        values: entries && entries.map(entry => {
+            if (entry[0].startsWith("ValueOption")) {
+                return entry;
+            }
+        }).filter(entry => entry !== undefined),
+        specs: entries && entries.map(entry => {
+            if (entry[0].startsWith("Specification")) {
+                return entry;
+            }
+        }).filter(entry => entry !== undefined),
+    }
+
+    const tableEntries = entries
+    .filter(([key]) => /^[A-Z][0-9]+$/.test(key)) // Filters out all input fields whose name are not <Letter><Number> format
+    .map(([key, value]) => ({ key, value })); // Returns an Array of objects containing the key-value pairs]
+    tableEntries.forEach(({ key, value }) => {
+        const rowIndex = Number(key.slice(1));
+        if (!payload.rows[rowIndex]) payload.rows[rowIndex] = [];
+        payload.rows[rowIndex].push(value.toString() as never);
+    })
     
-                    Generate a highly strategic schedule with the following data:
-                    **Column Headers**: ${JSON.stringify(payload && payload.rows && payload.rows[0])}
-                    **Rows Header**: ${JSON.stringify(payload && payload.rows ? payload.rows.map((row: Array<string>, index: number) => {
-                        if (index !== 0) {
-                            return row[0]; 
-                        }
-                    }): [])}
-                    **Values**: ${JSON.stringify(payload.values)}
-                    These are the specific requirements and constraints for the schedule. Each specification follows a format that you must interpret and apply correctly.
-                    **Specifications**: ${JSON.stringify(payload.specs)}
-                    
-                    Now, let's create the schedule following these steps:
-                    1. Initialize the schedule with the column headers.
-                    2. Add row headers for each row.
-                    3. Apply the specifications in this order:
-                        a. Assign rows to specific columns as required.
-                        b. Assign specific values to rows as specified.
-                        c. Ensure each row appears the correct number of times.
-                        d. Avoid scheduling rows on columns they should not work.
-                    4. Fill the remaining slots randomly with the specified values in case there is not a specification dictating how many times the row should appear.
-                    5. Fill unused cells with empty strings.
-                    6. If there is a remote case where a criteria could not be meet, append this suffix: ^, to the value in question.
-                    7. Rows specifications should be prioritized over columns specifications, regardless of the number of rows. For example: If there is only 1 row that has to appear 3 times in a table of 5 columns, the row should only have 3 columns filled with values.
-    
-                    Rules to follow:
+    const stream = createStreamableValue();
+    ( async () => {
+        const { partialObjectStream } = streamObject({
+            model: anthropic('claude-3-opus-20240229'),
+            temperature: 1,
+            output: 'object',
+            schema: z.object({
+                rows: z.array(z.array(z.string()))
+            }),
+            prompt: `
+                ${historyText}
+
+                You are a sophisticated scheduling algorithm designed to create strategic schedules/planners with the given data. Your task is to generate a schedule based on the provided information and specifications.
+
+                Generate a highly strategic schedule with the following data:
+                **Column Headers**: ${JSON.stringify(payload.rows && payload.rows[0])}
+                **Rows Header**: ${JSON.stringify(payload.rows ? payload.rows.map((row: Array<string>, index: number) => {
+                    if (index !== 0) {
+                        return row[0]; 
+                    }
+                }): [])}
+                **Values**: ${JSON.stringify(payload.values)}
+                These are the specific requirements and constraints for the schedule. Each specification follows a format that you must interpret and apply correctly.
+                **Specifications**: ${JSON.stringify(payload.specs)}
+                
+                Now, let's create the schedule following these steps:
+                1. Initialize the schedule with the column headers.
+                2. Add row headers for each row.
+                3. Apply the specifications in this order:
+                    a. Assign rows to specific columns as required.
+                    b. Assign specific values to rows as specified.
+                    c. Ensure each row appears the correct number of times.
+                    d. Avoid scheduling rows on columns they should not work.
+                4. Fill the remaining slots randomly with the specified values in case there is not a specification dictating how many times the row should appear.
+                5. Fill unused cells with empty strings.
+                6. If there is a remote case where a criteria could not be meet, append this suffix: ^, to the value in question.
+                7. Rows specifications should be prioritized over columns specifications, regardless of the number of rows. For example: If there is only 1 row that has to appear 3 times in a table of 5 columns, the row should only have 3 columns filled with values.
+
+                Rules to follow:
                     1. **Randomness**
                     - Distribute the values randomly throughout the table ONLY IF it does not affect any specification.
                     2. **Emptiness**
@@ -173,31 +186,36 @@ export async function UseAiAction (formData: FormData, submit: (input: any) => v
                     - Each subsequent array represents a row.
                     - The first element of a row is the row header.
                     - The remaining elements of each row Array are the values for each column.
-                    - The specification: "Specification:Row-<name>-should-appear-only-this-amount-of-times" means the row should appear no more than the specified amount, regardless of the column's specifications.
+                    - The specification: "Specification: Row <index> named <name>, should be used this fixed amount of times:" means the row should appear no more than the specified amount, regardless of the column's specifications.
                     4. **Prioritization**
-                    - Prioritize the specification: "Specification:Row-<name>-should-appear-only-this-amount-of-times" over "Specification:Column:<name>-must-have-this-amount-of-cells-filled-in", regardless of the amount of rows.
-                    - If there are any "Specification:Row-<name>-use-this-value-specifically", ONLY use these specified values in the specified row. These values can be reused in the same row.
-    
-                    After creating the complete schedule, double-check your work against each specification to ensure all requirements are met.
-    
-                    Here's an example of how the output should be structured (note that this is a generic example and should not influence the actual content of the current generated schedule):
-    
-                    [
-                        ["Employees", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-                        ["Employee1", "shift1", "shift2", "", "shift3", "shift4", "", ""],
-                        ["Employee2", "", "shift1", "shift2", "", "", "shift3", "shift4"],
-                        // ... more employees ...
-                    ]
-                `,
-            })
-            for await (const partialObject of partialObjectStream) {
-                stream.update(partialObject);
-            }
-            stream.done();
+                    - Prioritize the specification: "Specification: Row <index> named <name>, should be used this fixed amount of times:" over "Specification: Column <index> named <name>, must have this fixed amount of rows filled in:", regardless of the amount of rows.
+                    - If there are any "Specification: Row <index> named <name>, has this value assigned:", ONLY use these specified values in the specified row. These values can be reused in the same row.
+
+                After creating the complete schedule, double-check your work against each specification to ensure all requirements are met.
+
+                Here's an example of how the output should be structured (note that this is a generic example and should not influence the actual content of the current generated schedule):
+
+                [
+                    ["Employees", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                    ["Employee1", "shift1", "shift2", "", "shift3", "shift4", "", ""],
+                    ["Employee2", "", "shift1", "shift2", "", "", "shift3", "shift4"],
+                    // ... more employees ...
+                ]
+            `,
+        })
+        for await (const partialObject of partialObjectStream) {
+            stream.update(partialObject);
         }
-        await generation();
-        return { object: stream.value }
-        */
+        stream.done();
+    })();
+
+    recentAIOutputs.push({
+        timestamp: new Date(),
+        output: stream.value,
+    })
+    if (recentAIOutputs.length > MAX_HISTORY_SIZE) {
+        recentAIOutputs.shift();
     }
-    return { object: { rows: [] } }
+    
+    return { object: stream.value }
 }
