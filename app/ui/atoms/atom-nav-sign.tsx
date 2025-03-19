@@ -16,7 +16,7 @@ export default async function SignNav () {
     const session = await auth();
 
     return (
-        <Navbar className="bg-transparent w-screen pt-2" shouldHideOnScroll>
+        <Navbar className="bg-transparent pt-2" shouldHideOnScroll>
             <NavbarContent justify="start">
                 <NavbarBrand className="hidden dark:inline-block">
                     <SchedulerWhite />
