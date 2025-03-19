@@ -33,8 +33,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             VALUES (
                                 $1,
                                 $2
-                            )
-                            ON CONFLICT (email, provider) DO NOTHING;
+                            );
                         `, [profile.email, 'Google']);
                         if (registerUserProvider.rowCount !== 0) {
                             profile.id = doesUserExist.rows[0].id;

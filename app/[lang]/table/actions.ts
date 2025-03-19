@@ -5,9 +5,9 @@ import { auth } from "@/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { Specs } from "@/app/hooks/custom";
-import { streamObject } from "ai";
+import { generateObject } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
-import { createStreamableValue, StreamableValue } from 'ai/rsc';
+import { StreamableValue } from 'ai/rsc';
 import { z } from "zod";
 
 export async function SaveTableAction (
@@ -104,7 +104,7 @@ const recentAIOutputs: Array<{
     output: StreamableValue<any, any>,
 }> = [];
 const MAX_HISTORY_SIZE = 5;
-export async function generateTableAction (formData: FormData) {
+export async function generateTableAction (previousState: { rows: Array<Array<string>>, conflicts: Array<string> },formData: FormData) {
     let historyText = "";
     if (recentAIOutputs.length > 0) {
         historyText = "Previous outputs I've generated (DO NOT REPEAT THESE PATTERNS):\n";
@@ -136,86 +136,66 @@ export async function generateTableAction (formData: FormData) {
         if (!payload.rows[rowIndex]) payload.rows[rowIndex] = [];
         payload.rows[rowIndex].push(value.toString() as never);
     })
-    
-    const stream = createStreamableValue();
-    ( async () => {
-        const { partialObjectStream } = streamObject({
-            model: anthropic('claude-3-opus-20240229'),
-            temperature: 1,
-            output: 'object',
-            schema: z.object({
-                rows: z.array(z.array(z.string()))
-            }),
-            prompt: `
-                ${historyText}
-
-                You are a sophisticated scheduling algorithm designed to create strategic schedules/planners with the given data. Your task is to generate a schedule based on the provided information and specifications.
-
-                Generate a highly strategic schedule with the following data:
-                **Column Headers**: ${JSON.stringify(payload.rows && payload.rows[0])}
-                **Rows Header**: ${JSON.stringify(payload.rows ? payload.rows.map((row: Array<string>, index: number) => {
-                    if (index !== 0) {
-                        return row[0]; 
-                    }
-                }): [])}
-                **Values**: ${JSON.stringify(payload.values)}
-                These are the specific requirements and constraints for the schedule. Each specification follows a format that you must interpret and apply correctly.
-                **Specifications**: ${JSON.stringify(payload.specs)}
-                
-                Now, let's create the schedule following these steps:
-                1. Initialize the schedule with the column headers.
-                2. Add row headers for each row.
-                3. Apply the specifications in this order:
-                    a. Assign rows to specific columns as required.
-                    b. Assign specific values to rows as specified.
-                    c. Ensure each row appears the correct number of times.
-                    d. Avoid scheduling rows on columns they should not work.
-                4. Fill the remaining slots randomly with the specified values in case there is not a specification dictating how many times the row should appear.
-                5. Fill unused cells with empty strings.
-                6. If there is a remote case where a criteria could not be meet, append this suffix: ^, to the value in question.
-                7. Rows specifications should be prioritized over columns specifications, regardless of the number of rows. For example: If there is only 1 row that has to appear 3 times in a table of 5 columns, the row should only have 3 columns filled with values.
-
-                Rules to follow:
-                    1. **Randomness**
-                    - Distribute the values randomly throughout the table ONLY IF it does not affect any specification.
-                    2. **Emptiness**
-                    - Fill unused cells with an empty string after placing all required values.
-                    3.  **Output**
-                    - Generate and return the output as a JavaScript Array of Arrays:
-                    - The first array should contain the column headers.
-                    - Each subsequent array represents a row.
-                    - The first element of a row is the row header.
-                    - The remaining elements of each row Array are the values for each column.
-                    - The specification: "Specification: Row <index> named <name>, should be used this fixed amount of times:" means the row should appear no more than the specified amount, regardless of the column's specifications.
-                    4. **Prioritization**
-                    - Prioritize the specification: "Specification: Row <index> named <name>, should be used this fixed amount of times:" over "Specification: Column <index> named <name>, must have this fixed amount of rows filled in:", regardless of the amount of rows.
-                    - If there are any "Specification: Row <index> named <name>, has this value assigned:", ONLY use these specified values in the specified row. These values can be reused in the same row.
-
-                After creating the complete schedule, double-check your work against each specification to ensure all requirements are met.
-
-                Here's an example of how the output should be structured (note that this is a generic example and should not influence the actual content of the current generated schedule):
-
-                [
+    const { object } = await generateObject({
+        model: anthropic('claude-3-opus-20240229'),
+        temperature: 1,
+        output: 'object',
+        schema: z.object({
+            rows: z.array(z.array(z.string())),
+            conflicts: z.array(z.string()),
+        }),
+        prompt: `
+            ${historyText}
+            You are a sophisticated scheduling algorithm designed to create strategic schedules/planners with the given data. Your task is to generate a schedule based on the provided information and specifications.
+            Generate a highly strategic schedule with the following data:
+            **Column Headers**: ${JSON.stringify(payload.rows && payload.rows[0])}
+            **Rows Header**: ${JSON.stringify(payload.rows ? payload.rows.map((row: Array<string>, index: number) => {
+                if (index !== 0) {
+                    return row[0]; 
+                }
+            }): [])}
+            **Values**: ${JSON.stringify(payload.values)}
+            These are the specific requirements and constraints for the schedule. Each specification follows a format that you must interpret and apply correctly.
+            **Specifications**: ${JSON.stringify(payload.specs)}
+            
+            Now, let's create the schedule following these steps:
+            1. Initialize the schedule with the column headers.
+            2. Add row headers and follow these steps for each row:
+                a. If the header row does not have a name, fill all its columns with empty strings and move into the next row.
+                b. Check if the row has this specification: "Specification: Row <index> named <name>, disable on the entire table", if so fill all the columns with empty strings. Otherwise, go to the next step.
+                c. For the current row to work with, check if there are specifications for which columns to fill: "Specification: Row <index> named <name>, is meant to be used on this column:"
+                d. Check if there is a row specification: "Specification: Row <index> named <name>, should be used this fixed amount of times:", The specification means the row should appear no more than the specified amount, regardless of the column's specifications.
+                e. If there is a conflict between the specification: "Specification: Row <index> named <name>, is meant to be used on this column:" where N columns must be filled in the row, and the specification: "Specification: Row <index> named <name>, should be used this fixed amount of times:", prioritize this specification: "Specification: Row <index> named <name>, is meant to be used on this column:" and fill those columns
+                f. Check if there is a row specification: "Specification: Row <index> named <name>, has this value assigned:". If there are values meant to be used in this row, it's mandatory to use them all on the row in a random order. If there are more columns to fill than values to use, reuse them randomly. If there are no values assigned for this row, use values from the provided list randomly. If this specification has a conflict with: "Specification: Row <index> named <name>, should be used this fixed amount of times:", prioritize this last specification.
+            3. Once all rows have been filled check for each column's specification: "Specification: Column <index> named <name>, must have this fixed amount of rows filled in:". If there are more values filled than the amount assigned, check each row's specification: "Specification: Row <index> named <name>, is meant to be used on this column:". If there is a row that don't have this specification, replace the value on the column with an empty string. If there is a row specification assigning the column to be filled with a value, leave the value and make an annotation about this conflict in an array called "conflicts".
+            4. Fill unused columns with empty strings.
+            5. After completing all the table, analyze the result and perform any improvement to better meet the criteria given. Remember that the specifications given is the most important to give a strategic result.
+            6. Finish the output as an Object, a property called "rows" for the table, and "conflicts" for any conflicts met that couldn't be handled (note that this is a generic example and should not influence the actual content of the current generated schedule):
+            {
+                rows: [
                     ["Employees", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
                     ["Employee1", "shift1", "shift2", "", "shift3", "shift4", "", ""],
                     ["Employee2", "", "shift1", "shift2", "", "", "shift3", "shift4"],
                     // ... more employees ...
-                ]
-            `,
-        })
-        for await (const partialObject of partialObjectStream) {
-            stream.update(partialObject);
-        }
-        stream.done();
-    })();
-
-    recentAIOutputs.push({
-        timestamp: new Date(),
-        output: stream.value,
+                ],
+                conflicts: ["The specification in column <name> could not be met because [...]", "The specification in row <name> could not be met because [...]"],
+            }
+            Rules to follow:
+                1. **Randomness**
+                - Distribute the values randomly throughout the table ONLY IF it does not affect row any specification.
+                2. **Emptiness**
+                - Fill unused cells with an empty string after placing all required values.
+                3.  **Output**
+                - Generate and return the output as a JavaScript Object. A property called "rows" is an Array of Arrays, and a second property called "conflicts" with all annotations of specifications that could not be met.
+                - The first array should contain the column headers.
+                - Each subsequent array represents a row.
+                - The first element of a row is the row header.
+                - The remaining elements of each row Array are the values for each column.
+                4. **Prioritization**
+                - Prioritize the specification: "Specification: Row <index> named <name>, should be used this fixed amount of times:" over "Specification: Column <index> named <name>, must have this fixed amount of rows filled in:", regardless of the amount of rows.
+                - If there are any "Specification: Row <index> named <name>, has this value assigned:", ONLY use these specified values in the specified row. These values can be reused in the same row.
+            Make a second analysis to confirm that the rules are followed.
+        `,
     })
-    if (recentAIOutputs.length > MAX_HISTORY_SIZE) {
-        recentAIOutputs.shift();
-    }
-    
-    return { object: stream.value }
+    return object;
 }

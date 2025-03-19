@@ -6,9 +6,8 @@ import { useContext } from "react";
 import { TableHandlersContext, TableHandlersType } from "@/app/[lang]/table/context";
 import { useParams } from "next/navigation";
 
-export default function TableTabs ({ name, setGeneratedTable }: { 
+export default function TableTabs ({ name }: { 
     name: string,
-    setGeneratedTable?: Array<Array<string>> | Array<undefined> | undefined,
 }) {
     const { rowHeaders }: TableHandlersType = useContext(TableHandlersContext);
     const params = useParams();
@@ -21,7 +20,7 @@ export default function TableTabs ({ name, setGeneratedTable }: {
                 rowHeaders && rowHeaders.map((header, rowIndex) => {
                     if (rowIndex > 0) {
                         return (
-                            <Tab key={ `tab-${rowIndex}` } title={ header ? header : lang === "es" ? "Sin nombre" : "No name" } className="overflow-hidden">
+                            <Tab key={ `tab-${rowIndex}` } title={ header ? header : lang === "es" ? "Sin nombre" : "No name" }>
                                 <TableTabCard 
                                 key={ `card-${rowIndex}` }
                                 name={ header ? header : lang === "es" ? "Sin nombre" : "No name" }

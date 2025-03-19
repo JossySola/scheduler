@@ -135,7 +135,7 @@ export function PrimaryButton ({ children, type = "button", loading = false, dis
             type={ type }
             startContent={ startContent && startContent }
             endContent={ endContent && endContent }
-            formAction={ formAction }
+            formAction={ formData => formAction(formData) }
             form={ form && form }
             className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg m-5`}>
                 { children }
