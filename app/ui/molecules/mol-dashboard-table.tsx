@@ -13,18 +13,21 @@ export default function DashboardTable ({ rows, lang }: {
     const months = lang === "es" ? ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"] : 
     ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Octubre", "November", "December"];
     return (
-        <section className="p-8">
-            <Button as={HeroLink} href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/new`} color="success" className="text-white mt-3 mb-3" endContent={<PlusCircle />} disabled={ rows && rows.length === 3 }>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
-            {
-                rows && rows.length === 0 || rows.length === 1 && <Chip className="m-3" variant="dot" color="success">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
-            }
-            {
-                rows && rows.length === 2 && <Chip className="m-3" variant="dot" color="warning">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
-            }
-            {
-                rows && rows.length === 3 && <Chip className="m-3" variant="dot" color="danger">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
-            }
-            <Table aria-label="Dashboard table" className="shadow-lg">
+        <section className="w-full">
+            <section className="flex flex-col items-center sm:flex-row">
+                <Button as={HeroLink} href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/new`} color="success" className="text-white mt-3 mb-3" endContent={<PlusCircle />} disabled={ rows && rows.length === 3 }>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
+                {
+                    rows && rows.length === 0 || rows.length === 1 && <Chip className="m-3" variant="dot" color="success">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
+                }
+                {
+                    rows && rows.length === 2 && <Chip className="m-3" variant="dot" color="warning">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
+                }
+                {
+                    rows && rows.length === 3 && <Chip className="m-3" variant="dot" color="danger">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
+                }
+            </section>
+            
+            <Table aria-label="Dashboard table" className="w-full shadow-lg">
                 <TableHeader>
                     <TableColumn>{ lang === "es" ? "Nombre" : "Name" }</TableColumn>
                     <TableColumn>{ lang === "es" ? "Fecha de creación" : "Created on" }</TableColumn>
