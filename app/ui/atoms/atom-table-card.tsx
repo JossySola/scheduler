@@ -14,7 +14,7 @@ export default function TableTabCard ({ rowIndex, name }: {
     const lang = params.lang;
 
     return (
-        <Card>
+        <Card className="p-3">
             <CardBody key={ rowIndex }>
                 <Switch 
                 className="m-4" 
@@ -44,7 +44,7 @@ export default function TableTabCard ({ rowIndex, name }: {
                             if (index !== 0) {
                                 return <Checkbox 
                                 key={`cols-${variable}-${index}`} 
-                                name={`Specification: Row ${index} named <'${name}'>, is allowed to be used on column:`} 
+                                name={`Specification: Row ${index} named <'${name}'>, is meant to be used on this column:`} 
                                 value={variable}>
                                     { variable ? variable : lang === "es" ? <i>Sin nombre</i> : <i>No name yet</i> }
                                 </Checkbox>
