@@ -1,11 +1,12 @@
 "use client"
-import { Specs, useAI, useTableHandlers, useTableSpecs } from "@/app/hooks/custom";
+import { Specs, useAnthropic, useTableHandlers, useTableSpecs } from "@/app/hooks/custom";
 import YTable from "./mol-YTable";
 import TableButtonSave from "../atoms/atom-table-button-save";
-import { TableSpecsContext, TableHandlersContext, TableAiGenerationContext } from "@/app/[lang]/table/context";
+import { TableSpecsContext, TableHandlersContext, AnthropicGenerationContext } from "@/app/[lang]/table/context";
 import { useEffect } from "react";
 import AISection from "./mol-AI-section";
 import XList from "./mol-XList";
+import CriteriaConflicts from "../atoms/atom-ai-conflicts";
 
 export default function TableWithProvider ({ storedRows, storedSpecs, storedValues, storedColSpecs, lang }: {
     lang: "en" | "es",
@@ -33,14 +34,10 @@ export default function TableWithProvider ({ storedRows, storedSpecs, storedValu
         handleDeleteRow,
     } = useTableHandlers(setSpecs);
     const {
-        object,
-        submit,
-        isLoading,
-        generation,
-        setGeneration,
-        generateTableRSC,
-        generateTableUseObject,
-    } = useAI();
+        anthropicAction,
+        anthropicState,
+        anthropicPending
+    } = useAnthropic();
     
     useEffect(() => {
         if (storedSpecs) setSpecs(storedSpecs);
@@ -71,15 +68,17 @@ export default function TableWithProvider ({ storedRows, storedSpecs, storedValu
                 handleDeleteColumn,
                 handleDeleteRow,
             }}>
-                <TableAiGenerationContext.Provider value={{
-                    object,
-                    submit,
-                    isLoading,
-                    generation,
-                    setGeneration,
-                    generateTableRSC,
-                    generateTableUseObject,
+                <AnthropicGenerationContext.Provider value={{
+                    anthropicAction,
+                    anthropicPending,
+                    anthropicState,
                 }}>
+                    <section className="w-full h-fit h-max-[160px] overflow-y-scroll pl-5 pr-5 mt-3">
+                    {
+                        anthropicState && anthropicState.conflicts && anthropicState.conflicts.map((value, index) => <CriteriaConflicts key={ index } text={ value } />)
+                    }
+                    </section>
+                    
                     <YTable 
                     lang={ lang }
                     storedRows={ storedRows } />
@@ -89,7 +88,7 @@ export default function TableWithProvider ({ storedRows, storedSpecs, storedValu
                         <XList name={ lang === "es" ? "Valores a usar" : "Values to use" } />
                         <AISection />
                     </fieldset>
-                </TableAiGenerationContext.Provider>
+                </AnthropicGenerationContext.Provider>
             </TableHandlersContext.Provider>
         </TableSpecsContext.Provider>
     )
