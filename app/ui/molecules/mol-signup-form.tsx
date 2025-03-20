@@ -10,6 +10,7 @@ import FormInputPassword from "../atoms/atom-form-input-password";
 import { ArrowCircleRight, CheckCircle } from "geist-icons";
 import { validateAction, verifyTokenAction } from "@/app/[lang]/signup/actions";
 import ExpiringTokenInput from "../atoms/atom-token-input";
+import { ActionButton } from "../atoms/atom-button";
 
 export default function SignupForm ({ lang }: {
     lang: "en" | "es"
@@ -29,7 +30,7 @@ export default function SignupForm ({ lang }: {
     }, [validateState]);
 
     return (
-        <form id="register" className="w-screen sm:w-[400px] p-5 flex flex-col items-center justify-center">
+        <form id="register" className="w-full sm:w-[400px] p-3 flex flex-col items-center justify-center">
             <fieldset style={{ display: validated ? "none" : "flexbox" }} className="w-full sm:w-[400px] p-3 flex flex-col items-center justify-center">
                 <FormInputName name={ name } setName={ setName } />
                 <FormInputUsername username={ username } setUsername={ setUsername } />
@@ -42,15 +43,15 @@ export default function SignupForm ({ lang }: {
                         return <p aria-live="polite" className="text-danger text-center" key={index}>{ error.message }</p>
                     })
                 }
-                <Button 
+                <ActionButton 
                 className="bg-white text-black m-3" 
                 type="submit" 
-                isDisabled={ validatePending } 
-                isLoading={ validatePending } 
+                disabled={ validatePending } 
+                loading={ validatePending } 
                 formAction={ validateForm }
                 endContent={<ArrowCircleRight />}>
                     { lang === "es" ? "Siguiente" : "Next" }
-                </Button>
+                </ActionButton>
                 <SignInProviders lang={ lang.toString() as "en" | "es" } />
             </fieldset>
             {
