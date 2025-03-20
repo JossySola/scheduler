@@ -13,8 +13,8 @@ export default function DashboardTable ({ rows, lang }: {
     const months = lang === "es" ? ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"] : 
     ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Octubre", "November", "December"];
     return (
-        <section className="w-full">
-            <section className="flex flex-col items-center sm:flex-row">
+        <section className="w-full p-5 pt-0 sm:p-10 sm:pt-0">
+            <section className="flex items-center justify-center flex-row sm:justify-start">
                 <Button as={HeroLink} href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/new`} color="success" className="text-white mt-3 mb-3" endContent={<PlusCircle />} disabled={ rows && rows.length === 3 }>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
                 {
                     rows && rows.length === 0 || rows.length === 1 && <Chip className="m-3" variant="dot" color="success">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
