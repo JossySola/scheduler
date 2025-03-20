@@ -1,7 +1,10 @@
 import { Code, Divider } from "@heroui/react";
 import Link from "next/link";
 
-export default function Page () {
+export default async function Page ({ params }: {
+    params: Promise<{ lang: "es" | "en" }>
+}) {
+    const lang = (await params).lang;
     return (
         <section className="m-10 p-5 text-base/7">
             
@@ -35,6 +38,7 @@ export default function Page () {
                         <li>Recommended use of a Password Manager’s suggested password.</li>
                         <li>Checked against the <Code size="sm">Have I Been Pwned API <a href="#footer"><sup>1</sup></a></Code> to verify it hasn’t been exposed in data breaches.</li>
                         <li>Hashed using <Code size="sm">Argon2id <a href="#footer"><sup>2</sup></a></Code> before storage (we never store raw passwords).</li>
+                        <li>As a second security layer, the hashed password is encrypted before being stored in the database.</li>
                     </ul>
                 </li>
                 <li>
@@ -93,7 +97,7 @@ export default function Page () {
 
             <h2>10. Contact Us</h2>
 
-            <p>If you have any questions about this Privacy Policy, please contact us at {<Link href="https://github.com/JossySola">GitHub</Link>}.</p>
+            <p>If you have any questions about this Privacy Policy, please contact us {<Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`}>here</Link>}.</p>
             <Divider className="my-4"/>
             <footer className="text-tiny" id="footer">
                 <p><sup>1</sup> <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> is a service that provides a list of passwords previously exposed in data breaches. This is used to avoid the use of unsuitable passwords.</p>

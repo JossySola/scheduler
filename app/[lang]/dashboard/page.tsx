@@ -18,7 +18,7 @@ export default async function Page ({ params }: {
         const providersResponse = providers.rows ?? [];
 
         return (
-            <section className="m-8 flex flex-row gap-6">
+            <section className="w-full flex flex-row justify-center gap-6 p-5 sm:justify-start sm:p-10">
                 <UserProfile />
                 <Settings lang={lang} data={providersResponse}/>
             </section>

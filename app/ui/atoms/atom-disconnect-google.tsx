@@ -3,7 +3,7 @@ import { useState } from "react"
 import { ActionButton, SecondaryButton } from "./atom-button";
 import { DisconnectGoogleAction } from "@/app/[lang]/dashboard/actions";
 import { useParams } from "next/navigation";
-import { BreadcrumbItem, Breadcrumbs, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
+import { BreadcrumbItem, Breadcrumbs, Button, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { LogoGoogle } from "geist-icons";
 
 export default function DisconnectGoogle () {
@@ -15,7 +15,7 @@ export default function DisconnectGoogle () {
     return (
         <>
         {
-            !disconnected ? <ActionButton endContent={<LogoGoogle />} onPress={onOpen}>{ lang === "es" ? "Desconectar Google" : "Disconnect from Google" }</ActionButton> : null
+            !disconnected ? <Button className="bg-white border-1 border-black" endContent={<LogoGoogle />} onPress={onOpen}>{ lang === "es" ? "Desconectar Google" : "Disconnect from Google" }</Button> : null
         }
         
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

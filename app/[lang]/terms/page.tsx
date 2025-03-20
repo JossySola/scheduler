@@ -1,7 +1,10 @@
 import { Code, Divider } from "@heroui/react";
 import Link from "next/link";
 
-export default function Page () {
+export default async function Page ({ params }: {
+    params: Promise<{ lang: "es" | "en"}>
+}) {
+    const lang = (await params).lang;
     return (
         <section className="m-10 p-5 text-base/7">
 
@@ -25,8 +28,8 @@ export default function Page () {
             
             <ul className="pl-8 list-disc">
                 <li>Your password must be at least 8 characters long.</li>
-                <li>It is recommended to use a Password Manager’s suggestion.</li>
-                <li>All passwords are checked against <Code size="sm">Have I Been Pwned API <a href="#footer"><sup>1</sup></a></Code> for security and hashed using <Code size="sm">Argon2id <a href="#footer"><sup>2</sup></a></Code> before storage.</li>
+                <li>It is highly recommended to use the Password Manager’s suggestion, as it is able to offer the strongest password suggestions.</li>
+                <li>All passwords are checked against <Code size="sm">Have I Been Pwned API <a href="#footer"><sup>1</sup></a></Code> for security, hashed using <Code size="sm">Argon2id <a href="#footer"><sup>2</sup></a></Code> and encrypted before storage.</li>
             </ul>
 
             <h2>4. User-Generated Content (Schedules & Tables)</h2>
@@ -49,6 +52,7 @@ export default function Page () {
             <ul className="pl-8 list-disc">
                 <li>Our web app provides <Code size="sm">AI-generated <a href="#footer"><sup>4</sup></a></Code> scheduling assistance through an external service.</li>
                 <li>We do not guarantee the accuracy, reliability, or effectiveness of AI-generated schedules.</li>
+                <li>By using the "Generate" AI feature, you agree to their <Link href="https://www.anthropic.com/legal/consumer-terms">Terms & Conditions</Link>.</li>
             </ul>
 
             <h2>7. Prohibited Activities</h2>
@@ -57,7 +61,7 @@ export default function Page () {
             
             <ul className="pl-8 list-disc">
                 <li>Use the service for illegal, fraudulent, or harmful activities.</li>
-                <li>Attempt to gain unauthorized access to other accounts.</li>
+                <li>Attempt to gain unauthorized access to other accounts and/or confidential data.</li>
                 <li>Interfere with the platform’s functionality (e.g., hacking, exploiting vulnerabilities).</li>
             </ul>
             
@@ -82,7 +86,7 @@ export default function Page () {
 
             <h2>11. Contact Information</h2>
             
-            <p>If you have any questions or concerns about these terms, please contact us at {<Link href="https://github.com/JossySola">GitHub</Link>}</p>
+            <p>If you have any questions or concerns about these terms, please contact us {<Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`}>here</Link>}.</p>
             <Divider className="my-4"/>
             <footer className="text-tiny" id="footer">
                 <p><sup>1</sup> <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> is a service that provides a list of passwords previously exposed in data breaches. This is used to avoid the use of unsuitable passwords.</p>

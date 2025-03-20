@@ -10,19 +10,24 @@ import {
 } from "@heroui/navbar";
 import { SchedulerBlack, SchedulerWhite } from "./atom-branding";
 import HomeAtom from "./atom-home";
+import Link from "next/link";
 
 
 export default async function SignNav () {
     const session = await auth();
 
     return (
-        <Navbar className="bg-transparent pt-2" shouldHideOnScroll>
+        <Navbar className="bg-transparent" shouldHideOnScroll>
             <NavbarContent justify="start">
                 <NavbarBrand className="hidden dark:inline-block">
-                    <SchedulerWhite />
+                    <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/`}>
+                        <SchedulerWhite height={25} />
+                    </Link>
                 </NavbarBrand>
                 <NavbarBrand className="dark:hidden">
-                    <SchedulerBlack />
+                    <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/`}>
+                        <SchedulerBlack height={25} />
+                    </Link>
                 </NavbarBrand>
             </NavbarContent>
 
