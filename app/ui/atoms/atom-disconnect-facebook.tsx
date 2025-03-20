@@ -3,7 +3,7 @@ import { useState } from "react"
 import { ActionButton, SecondaryButton } from "./atom-button";
 import { DisconnectFacebookAction } from "@/app/[lang]/dashboard/actions";
 import { useParams } from "next/navigation";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { LogoFacebook } from "geist-icons";
 
 export default function DisconnectFacebook () {
@@ -15,7 +15,7 @@ export default function DisconnectFacebook () {
     return (
         <>
         {
-            !disconnected ? <ActionButton endContent={<LogoFacebook color="#0866ff"/>} onPress={onOpen}>{ lang === "es" ? "Desconectar Facebook" : "Disconnect from Facebook"}</ActionButton> : null
+            !disconnected ? <Button className="bg-white border-1 border-black" endContent={<LogoFacebook color="#0866ff"/>} onPress={onOpen}>{ lang === "es" ? "Desconectar Facebook" : "Disconnect from Facebook"}</Button> : null
         }
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
@@ -45,7 +45,8 @@ export default function DisconnectFacebook () {
                             if (response === 200) {
                                 setDisconnected(true);
                             }
-                        }}>{ lang === "es" ? "Desconectar" : "Disconnect"}</ActionButton>
+                        }}>{ lang === "es" ? "Desconectar" : "Disconnect"}
+                        </ActionButton>
                         <SecondaryButton onPress={onClose}>{ lang === "es" ? "Cancelar" : "Cancel" }</SecondaryButton>
                     </ModalFooter>
                     </>
