@@ -22,11 +22,17 @@ const config: Config = {
       themes: {
         light: {
           layout: {},
-          colors: {},
+          colors: {
+            background: "#ffffff",
+            foreground: "#2f2f2f",
+          },
         },
         dark: {
           layout: {},
-          colors: {},
+          colors: {
+            background: "#1A1A1A",
+            foreground: "#fafafa",
+          },
         },
       },
     })
