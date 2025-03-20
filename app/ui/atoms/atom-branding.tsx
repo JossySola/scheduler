@@ -1,6 +1,6 @@
-export const SchedulerWhite = () => {
+export const SchedulerWhite = ({height}: {height: number}) => {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" height="25px" viewBox="0 0 192.92093 29.448113" version="1.1" id="scheduler-white">
+        <svg xmlns="http://www.w3.org/2000/svg" height={`${height}px`} viewBox="0 0 192.92093 29.448113" version="1.1" id="scheduler-white">
         <defs id="defs1"/>
         <g id="scheduler-logo" style={{ display: "inline" }} transform="translate(-38.479878,-117.73221)">
             <g id="scheduler" 
@@ -86,9 +86,9 @@ export const SchedulerWhite = () => {
     )
 }
 
-export const SchedulerBlack = () => {
+export const SchedulerBlack = ({height}: {height: number}) => {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" height="25px" viewBox="0 0 192.92093 29.448113" version="1.1" id="scheduler-black">
+        <svg xmlns="http://www.w3.org/2000/svg" height={`${height}px`} viewBox="0 0 192.92093 29.448113" version="1.1" id="scheduler-black">
         <defs id="defs1"/>
         <g id="scheduler-logo" style={{ display: "inline" }} transform="translate(-38.479878,-117.73221)">
             <g id="scheduler" style={{
