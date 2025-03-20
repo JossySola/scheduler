@@ -60,7 +60,7 @@ export default function FormInputPassword ({ password, setPassword, confirmation
             radius="md"
             variant="bordered"
             label={ lang === "es" ? "Confirmar contraseña: " : "Confirm password: " }
-            description={ lang === "es" ? <p>Al completar el proceso de registro e/o iniciando sesión con algún proveedor externo, aceptas nuestros <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/terms`}>Términos y Condiciones</Link>.</p> : <p>By completing the sign in process and/or signing in with an external provider, you agree with our <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/terms`}>Terms & Conditions</Link>.</p> }
+            description={ lang === "es" ? <p>Al completar el proceso de registro e/o iniciando sesión con algún proveedor externo, aceptas nuestros <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/terms`}>Términos y Condiciones</Link>.</p> : <p>By completing the sign up process and/or signing in with an external provider, you agree with our <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/terms`}>Terms & Conditions</Link>.</p> }
             labelPlacement="outside"
             size="lg"
             onChange={e => setConfirmation(e.target.value) }
