@@ -32,7 +32,7 @@ export default function DangerButton () {
                     {onClose => (
                         <>
                             <ModalHeader className="flex flex-col gap-1 text-center">
-                                <h3 className="text-danger">{ lang === "es" ? "¡Advertencia! :" : "Warning!"}</h3>
+                                <h3 className="text-danger">{ lang === "es" ? "¡Advertencia!" : "Warning!"}</h3>
                             </ModalHeader>
                             <ModalBody className="flex flex-col justify-center items-center">
                                 <Form action={deleteAction} className="m-5 flex flex-col items-center">
@@ -42,7 +42,7 @@ export default function DangerButton () {
                                     type={isVisible ? "text" : "password"}
                                     autoComplete="current-password"
                                     errorMessage={ lang === "es" ? "Ingresa tu contraseña para confirmar" : "Enter your password to confirm" }
-                                    label={ lang === "es" ? "Confirma esta acción ya que ésta no será reversible:" : "Confirm this action as this will be irreversible:" }
+                                    label={ lang === "es" ? "Confirma esta acción ya que ésta será permanente e irreversible:" : "Confirm this action as this will be irreversible:" }
                                     labelPlacement="outside" 
                                     placeholder={ lang === "es" ? "Ingresa tu contraseña" : "Enter your password" }
                                     validate={() => {
