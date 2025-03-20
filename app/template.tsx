@@ -1,6 +1,7 @@
+import Footer from "./ui/atoms/atom-footer";
 import SignNav from "./ui/atoms/atom-nav-sign";
 
-export default function Template({
+export default async function Template({
     children
 }: Readonly<{
     children: React.ReactNode;
@@ -9,6 +10,7 @@ export default function Template({
         <>
             <SignNav />
             {children}
+            <Footer />
         </>
     )
 }
