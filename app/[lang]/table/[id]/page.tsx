@@ -23,7 +23,7 @@ export default async function Page ({ params }: {
         })
         const response = await storedTable.json();
         return (
-            <main className="w-screen mt-10">
+            <main className="mt-10">
                 <form className="flex flex-col justify-center items-center relative">
                     <input type="text" value={`${id}`} aria-label="table-id" id="table_id" name="table_id" hidden readOnly/>
                     <TableNameInput name={ response.title } />
