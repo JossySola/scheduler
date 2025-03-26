@@ -180,7 +180,7 @@ export function PrimaryButtonAsLink ({ children, startContent, endContent, link 
         endContent={ endContent && endContent }
         as={ Link }
         href={ link }
-        className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg">
+        className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg text-[2rem] p-8">
             { children }
         </Button>
     )
