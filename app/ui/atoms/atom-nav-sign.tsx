@@ -8,7 +8,7 @@ import {
     NavbarContent,
     NavbarItem,
 } from "@heroui/navbar";
-import { SchedulerBlack, SchedulerWhite } from "./atom-branding";
+import { SchedulerBlack, SchedulerIcon, SchedulerWhite } from "./atom-branding";
 import HomeAtom from "./atom-home";
 import Link from "next/link";
 
@@ -19,12 +19,17 @@ export default async function SignNav () {
     return (
         <Navbar className="bg-transparent" shouldHideOnScroll>
             <NavbarContent justify="start">
-                <NavbarBrand className="hidden dark:inline-block">
+                <NavbarBrand className="sm:hidden">
+                    <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/`}>
+                        <SchedulerIcon />
+                    </Link>
+                </NavbarBrand>
+                <NavbarBrand className="hidden sm:dark:inline-block">
                     <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/`}>
                         <SchedulerWhite height={25} />
                     </Link>
                 </NavbarBrand>
-                <NavbarBrand className="dark:hidden">
+                <NavbarBrand className="hidden dark:hidden sm:inline-block">
                     <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/`}>
                         <SchedulerBlack height={25} />
                     </Link>
@@ -35,22 +40,22 @@ export default async function SignNav () {
             {
                 session?.user ? 
                 <>
-                <NavbarItem>
-                    <HomeAtom />
-                </NavbarItem>
-                <NavbarItem>
-                    <LogOutButton />
-                </NavbarItem>
+                    <NavbarItem>
+                        <HomeAtom />
+                    </NavbarItem>
+                    <NavbarItem>
+                        <LogOutButton />
+                    </NavbarItem>
                 </>
-                 : (
+                 :
                 <>
-                <NavbarItem>
-                    <LogInButton  />
-                </NavbarItem>
-                <NavbarItem>
-                    <SignUpButton />
-                </NavbarItem>
-                </>)
+                    <NavbarItem>
+                        <LogInButton  />
+                    </NavbarItem>
+                    <NavbarItem>
+                        <SignUpButton />
+                    </NavbarItem>
+                </>
             }
             </NavbarContent>
         </Navbar>
