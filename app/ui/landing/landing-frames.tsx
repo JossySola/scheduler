@@ -58,18 +58,21 @@ export default function Frames ({ lang }: {
                 </motion.span>
             </motion.p>
 
+            <motion.div className="p-6">
             {
                 lang === "es" ?
-                <motion.p className="text-[1.8rem]">para que Claude <AnthropicBig/> generare un plan estratégico <sup className="text-[1rem]">1</sup> 🔥 de acuerdo a las especificaciones configuradas</motion.p> :
-                <motion.p className="text-[1.8rem]">And Claude <AnthropicBig /> will generate a strategic plan <sup className="text-[1rem]">1</sup> 🔥 based on the data you provided!</motion.p>
+                <motion.p className="text-[1.8rem]">para que Claude <AnthropicBig/> genere un plan estratégico <a href="#legal-1"><sup className="text-[1rem]">1</sup></a> 🔥 de acuerdo a las especificaciones configuradas</motion.p> :
+                <motion.p className="text-[1.8rem]">And Claude <AnthropicBig /> will generate a strategic plan <a href="#legal-1"><sup className="text-[1rem]">1</sup></a> 🔥 based on the data you provided!</motion.p>
             }
             {
                 lang === "es" ?
-                <motion.p className="text-[1.8rem]">Sin embargo, puedes usar la aplicación sin necesidad de utilizar la IA para crear tus horarios, planes o tablas <sup className="text-[1rem]">2</sup>.</motion.p> :
-                <motion.p className="text-[1.8rem]">However, you can use this web application without utilizing the AI to create your schedules, plans or tables <sup className="text-[1rem]">2</sup>.</motion.p>
+                <motion.p className="text-[1.8rem]">Sin embargo, puedes usar la aplicación sin necesidad de utilizar la IA para crear tus horarios, planes o tablas <a href="#legal-2"><sup className="text-[1rem]">2</sup></a>.</motion.p> :
+                <motion.p className="text-[1.8rem]">However, you can use this web application without utilizing the AI to create your schedules, plans or tables <a href="#legal-2"><sup className="text-[1rem]">2</sup></a>.</motion.p>
             }
+            </motion.div>
+            
 
-            <motion.h3 className="text-[1.5rem] text-center">{ lang === "es" ? "¡Regístrate gratis!" : "Signup for free!" } <sup className="text-[1rem]">3</sup>😊</motion.h3>
+            <motion.h3 className="text-[1.5rem] text-center">{ lang === "es" ? "¡Regístrate gratis!" : "Signup for free!" } <a href="#legal-3"><sup className="text-[1rem]">3</sup></a>😊</motion.h3>
             
             <PrimaryButtonAsLink link={`${lang}/signup`}>
                 { lang === "es" ? "Registrarse" : "Signup" }
