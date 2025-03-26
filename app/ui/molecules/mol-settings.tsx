@@ -26,7 +26,6 @@ export default function Settings ({ lang, data }: {
                             <h3 className="mr-3 text-center">{ lang === "es" ? "Ajustes de Cuenta" : "Account Settings"}</h3>
                         </ModalHeader>
                         <ModalBody className="flex flex-col items-center">
-                            <ActionButton onPress={() => redirect(`/${lang}/recover`)}>{ lang === "es" ? "Restaurar contraseña" : "Reset password" }</ActionButton>
                             {
                                 data && data.map((row: { provider: string }) => {
                                     if (row.provider === "Google") {
@@ -37,6 +36,7 @@ export default function Settings ({ lang, data }: {
                                     }
                                 })
                             }
+                            <ActionButton onPress={() => redirect(`/${lang}/recover`)}>{ lang === "es" ? "Restaurar contraseña" : "Reset password" }</ActionButton>
                             <DangerButton />
                         </ModalBody>
                         <ModalFooter>

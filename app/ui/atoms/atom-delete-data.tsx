@@ -13,7 +13,7 @@ export default function DeleteDataList() {
             "This action is permanent and irreversible. Deleting your account will erase all your personal data from the database, as well as all schedules made by you and release any connection with Google and/or Facebook."}</p>
             <ol className="list-decimal w-full ml-5">
                 <li>
-                    <h3>{ lang === "es" ? "En tu panel, ve a 'Ajustes' haciendo click en el ícono de engrane que está a lado de tu nombre" : "On your dashboard, go to 'Settings' by clicking on the gear icon next to your name" }</h3>
+                    <h3>{ lang === "es" ? "En tu panel, ve a 'Ajustes' haciendo click en el ícono de engrane que está a lado de tu nombre de usuario" : "On your dashboard, go to 'Settings' by clicking on the gear icon next to your username" }</h3>
                     <Card className="w-fit bg-[#d4d4d8]">
                         <CardBody>
                             <SettingsGearFill />
@@ -45,7 +45,7 @@ export default function DeleteDataList() {
             <b className="text-[#f31260]">{lang === "es" ? "Esta acción no elimina tus datos ni tu cuenta." : "This action does not delete your data or your account." }</b>
             <ol className="list-decimal w-full ml-5">
             <li>
-                    <h3>{ lang === "es" ? "En tu panel, ve a 'Ajustes' haciendo click en el ícono de engrane que está a lado de tu nombre" : "On your dashboard, go to 'Settings' by clicking on the gear icon next to your name" }</h3>
+                    <h3>{ lang === "es" ? "En tu panel, ve a 'Ajustes' haciendo click en el ícono de engrane que está a lado de tu nombre de usuario" : "On your dashboard, go to 'Settings' by clicking on the gear icon next to your username" }</h3>
                     <Card className="w-fit bg-[#d4d4d8]">
                         <CardBody>
                             <SettingsGearFill />
@@ -80,7 +80,7 @@ export default function DeleteDataList() {
             <b className="text-[#f31260]">{lang === "es" ? "Esta acción no elimina tus datos ni tu cuenta." : "This action does not delete your data or your account." }</b>
             <ol className="list-decimal w-full ml-5">
                 <li>
-                    <h3>{ lang === "es" ? "En tu panel, ve a 'Ajustes' haciendo click en el ícono de engrane que está a lado de tu nombre" : "On your dashboard, go to 'Settings' by clicking on the gear icon next to your name" }</h3>
+                    <h3>{ lang === "es" ? "En tu panel, ve a 'Ajustes' haciendo click en el ícono de engrane que está a lado de tu nombre de usuario" : "On your dashboard, go to 'Settings' by clicking on the gear icon next to your username" }</h3>
                     <Card className="w-fit bg-[#d4d4d8]">
                         <CardBody>
                             <SettingsGearFill />
