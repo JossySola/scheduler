@@ -38,7 +38,7 @@ export default function MonitorFrames ({ lang }: {
     })
 
     const opacityTable = useTransform(tableProgress, [0, 0.5, 0.8, 0.9, 1], [0, 1, 1, 1, 0]);
-    const opacityValues = useTransform(valuesProgress, [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0]);
+    const opacityValues = useTransform(valuesProgress, [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0]);
     const opacitySpecs = useTransform(specsProgress, [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0]);
     const position = useTransform(endProgress, [0, 1], ["sticky", "relative"]);
 
@@ -58,7 +58,7 @@ export default function MonitorFrames ({ lang }: {
                     style={{
                         opacity: tableInView ? opacityTable : 0,
                     }}
-                    className="text-[2.5rem] text-center">
+                    className="text-[2.5rem] text-center m-5">
                         { lang === "es" ? "Llena los títulos de tus columnas y filas..." : "Fill out your column and row headers..." }
                     </motion.h2>
                     <FrameTable lang={ lang } ref={ refTable } />
@@ -69,7 +69,7 @@ export default function MonitorFrames ({ lang }: {
                     style={{
                         opacity: valuesInView ? opacityValues : 0,
                     }}
-                    className="text-[2.5rem] text-center">
+                    className="text-[2.5rem] text-center m-5">
                         { lang === "es" ? "...ingresa los valores que usarás" : "...enter the values you'll use" }
                     </motion.h2>
                     <FrameValues lang={ lang } ref={ refValues } />
@@ -80,7 +80,7 @@ export default function MonitorFrames ({ lang }: {
                     style={{
                         opacity: specsInView ? opacitySpecs : 0,
                     }}
-                    className="text-[2.5rem] text-center">
+                    className="text-[2.5rem] text-center m-5">
                         { lang === "es" ? "...y configura las especificaciones de cada fila" : "...and set the criteria for each row" }
                     </motion.h2>
                     <FrameSpecs lang={ lang } ref={ refSpecs } />
