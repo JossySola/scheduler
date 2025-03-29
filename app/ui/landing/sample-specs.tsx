@@ -1,13 +1,10 @@
 "use client"
-import { Checkbox, CheckboxGroup, NumberInput, Switch } from "@heroui/react"
-import { motion } from "framer-motion"
-import { useState } from "react";
+import { Checkbox, CheckboxGroup, NumberInput, Switch } from "@heroui/react";
+import { motion } from "framer-motion";
 
 export default function SampleSpecs ({ lang }: {
     lang: "en" | "es"
 }) {
-    const [ disable, setDisable ] = useState<boolean>(true);
-
     return (
         <motion.div className="bg-white rounded-xl shadow-xl w-fit sm:w-[500px] flex flex-col justify-center items-center gap-1 p-8">
             <motion.h3>{ lang === "es" ? "Configuración de Filas" : "Rows Settings" }</motion.h3>
@@ -39,15 +36,15 @@ export default function SampleSpecs ({ lang }: {
                         
                         <Switch 
                         color="danger"
-                        isSelected={ disable }
-                        onValueChange={ setDisable }
+                        isReadOnly
                         className="m-4">
                             { lang === "es" ? "Deshabilitar en todas las columnas" : "Disable on all columns" }
                         </Switch>
 
                         <CheckboxGroup
+                        isReadOnly
                         className="m-4"
-                        isDisabled={ disable }
+                        defaultValue={["Wednesday", "Thursday", "Friday"]}
                         label={ lang === "es" ? "Habilitar solo en ciertas columnas:" : "Enable/disable on certain columns:" }>
                             <Checkbox value="Monday">{ lang === "es" ? "Lunes" : "Monday" }</Checkbox>
                             <Checkbox value="Tuesday">{ lang === "es" ? "Martes" : "Tuesday" }</Checkbox>
@@ -59,14 +56,15 @@ export default function SampleSpecs ({ lang }: {
                         </CheckboxGroup>
 
                         <NumberInput 
+                        isReadOnly
+                        defaultValue={3}
                         minValue={ 0 }
-                        isDisabled={ disable }
                         label={ lang === "es" ? "¿Cuántas veces debería aparecer en la tabla?" : "How many times should it appear on the schedule?" }
                         labelPlacement="outside-left"/>
 
                         <CheckboxGroup
+                        defaultValue={["12:00-21:00", "13:00-22:00"]}
                         className="m-4"
-                        isDisabled={ disable }
                         label={ lang === "es" ? "Preferir usar estos valores en la fila:" : "Prefer the following values to use in this row:"}>
                             <Checkbox value="10:00-19:00">10:00-19:00</Checkbox>
                             <Checkbox value="11:00-20:00">11:00-20:00</Checkbox>
