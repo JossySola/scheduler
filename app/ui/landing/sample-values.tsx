@@ -54,17 +54,17 @@ export default function SampleValues ({ lang }: {
             variants={ container }
             initial="hidden"
             whileInView="visible"
-            className="w-fit flex flex-col justify-center items-center">
-                <motion.li variants={ item }>
+            className="w-full flex flex-col justify-center items-center">
+                <motion.li className="w-full" variants={ item }>
                     <HourValue value="10:00-19:00" />
                 </motion.li>
-                <motion.li variants={ item }>
+                <motion.li className="w-full" variants={ item }>
                     <HourValue value="11:00-20:00" />
                 </motion.li>
-                <motion.li variants={ item }>
+                <motion.li className="w-full" variants={ item }>
                     <HourValue value="12:00-21:00" />
                 </motion.li>
-                <motion.li variants={ item }>
+                <motion.li className="w-full" variants={ item }>
                     <HourValue value="13:00-22:00" />
                 </motion.li>
             </motion.ul>
