@@ -1,4 +1,4 @@
-import TableNameInput from "@/app/ui/atoms/atom-table-name-input";
+import { BackButton } from "@/app/ui/atoms/atom-button-back";
 import TableWithProvider from "@/app/ui/molecules/mol-provider-table";
 import { auth } from "@/auth";
 
@@ -21,18 +21,30 @@ export default async function Page ({ params }: {
                 user_id: session.user.id
             }
         })
+        
         const response = await storedTable.json();
+        const rows = decryptToString(response.rows);
+        const specs = decryptToString(response.specs);
+        const values = decryptToString(response.values);
+        const colSpecs = decryptToString(response.colSpecs);
+        
+        if (response.error || !response) {
+            return <section className="flex flex-col justify-center items-center">
+                <BackButton />
+                <h2 className="text-center">{ lang === "es" ? "Tabla no encontrada" : "Schedule not found" }</h2>
+            </section>
+        }
         return (
             <main className="mt-10">
                 <form className="flex flex-col justify-center items-center relative">
-                    <input type="text" value={`${id}`} aria-label="table-id" id="table_id" name="table_id" hidden readOnly/>
-                    <TableNameInput name={ response.title } />
+                    <input type="text" name="table_id" value={ id } readOnly hidden />
                     <TableWithProvider 
                     lang={ lang }
-                    storedRows={ decryptToString(response.rows) }
-                    storedSpecs={ decryptToString(response.specs) }
-                    storedValues={ decryptToString(response.values) }
-                    storedColSpecs={ decryptToString(response.colSpecs) } />
+                    storedTitle={ response.title }
+                    storedRows={ rows }
+                    storedSpecs={ specs }
+                    storedValues={ values }
+                    storedColSpecs={ colSpecs } />
                 </form>
             </main>
         )
