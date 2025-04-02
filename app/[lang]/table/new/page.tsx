@@ -1,5 +1,4 @@
 import pool from "@/app/lib/mocks/db";
-import TableNameInput from "@/app/ui/atoms/atom-table-name-input";
 import TableWithProvider from "@/app/ui/molecules/mol-provider-table";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -22,7 +21,6 @@ export default async function Page ({ params }: {
                 return (
                     <main className="w-screen mt-10">
                         <form className="flex flex-col justify-center items-center relative">
-                            <TableNameInput name={ lang === "es" ? "Sin título" : "No title yet" } />
                             <TableWithProvider lang={ lang } />
                         </form>
                     </main>
