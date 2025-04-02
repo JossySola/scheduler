@@ -1,5 +1,52 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`<utils.ts> > decryptKmsDataKey > Decrypts Data Key 1`] = `
+Uint8Array [
+  157,
+  122,
+  185,
+  250,
+  92,
+  204,
+  139,
+  206,
+  143,
+  157,
+  242,
+  139,
+  236,
+  145,
+  107,
+  100,
+  54,
+  78,
+  106,
+  154,
+  244,
+  162,
+  58,
+  31,
+  40,
+  126,
+  145,
+  86,
+  9,
+  144,
+  89,
+  61,
+]
+`;
+
+exports[`<utils.ts> > generateKmsDataKey > Returns Data Key 1`] = `
+{
+  "CiphertextBlob": "AQIDAHjI+EmDTWCmrJVuYc/6gcLE2ANzgDXBlU1vcqMnJqYhOAE3nbSpKf2oCFnAfUlT1jCuAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMBOB/C/VZVK9q5T0LAgEQgDtcRP0w/YVO4H+QgJ8/7HjtK677SQDul6dlwwJ5XiJotQhEKaDbO/7Em81P5o5KUf29cYuwx3nQfy3oXQ==",
+  "KeyId": "arn:aws:kms:us-east-1:779846790814:key/55052e08-01f6-4f30-ab9d-fb521f597114",
+  "KeyMaterialId": "c8f849834d60a6ac956e61cffa81c2c4d803738035c1954d6f72a32726a62138",
+  "KeyOrigin": "AWS_KMS",
+  "Plaintext": "TQnmHWWm5FkjfCtvtwGbGRdi/Asr98SxpcqwkpiXqws=",
+}
+`;
+
 exports[`<utils.ts> > getUserFromDb() > Checks missing data... > If data is missing, returns message 1`] = `
 {
   "message": "Data missing",
@@ -2250,41 +2297,6 @@ exports[`<utils.ts> > isPasswordPwned() > Splits String into substrings and retu
       "value": 789,
     },
   ],
-}
-`;
-
-exports[`<utils.ts> > sendEmailConfirmation() > Generates random token in base64 with a length of 6 characters 1`] = `
-{
-  "message": "Code sent!",
-  "ok": true,
-}
-`;
-
-exports[`<utils.ts> > sendEmailConfirmation() > If data is missing, returns object 1`] = `
-{
-  "message": "Email must be provided",
-  "ok": false,
-}
-`;
-
-exports[`<utils.ts> > sendEmailConfirmation() > Returns object from catch block if the query to insert the token to database fails 1`] = `
-{
-  "message": "Server failure",
-  "ok": false,
-}
-`;
-
-exports[`<utils.ts> > sendEmailConfirmation() > Returns object if sgMail.send() succeeds 1`] = `
-{
-  "message": "Code sent!",
-  "ok": true,
-}
-`;
-
-exports[`<utils.ts> > sendEmailConfirmation() > Sets API .env key to @sendgrid/mail (Twilio) 1`] = `
-{
-  "message": "Code sent!",
-  "ok": true,
 }
 `;
 

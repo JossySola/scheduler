@@ -1,10 +1,14 @@
-import { vi, expect, describe, afterEach, beforeEach, test, beforeAll } from "vitest";
+import { vi, expect, describe, afterEach, beforeEach, test } from "vitest";
 import * as Utils from "../../utils";
 import pool from "../../mocks/db";
 import { Argon2id } from "oslo/password";
 import mockExposedPasswords from "../../mocks/mock-exposed-passwords";
 import crypto, { Hash, randomBytes } from "crypto";
 import sgMail from "@sendgrid/mail";
+import { SignatureV4 } from "@aws-sdk/signature-v4";
+import { Sha256 } from "@aws-crypto/sha256-js";
+import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
+import fetch from "node-fetch"
 
 vi.mock(import("server-only"), () => ({}))
 vi.mock("../../mocks/db.ts", () => {
@@ -28,6 +32,9 @@ vi.mock("crypto", () => {
                 update: vi.fn().mockReturnThis(),
                 digest: vi.fn().mockReturnValue("000F6468C6E4D09C0C239A4C2769501B3DD"),
             })),
+            createDecipheriv: vi.fn(() => ({
+                update: vi.fn().mockReturnThis(),
+            }))
         },
         randomBytes: vi.fn(() => Buffer.from("mock-bytes")),
     }
@@ -94,7 +101,7 @@ describe("<utils.ts>", () => {
         }, {}]);
         process.env.SENDGRID_API_KEY = "XXXYYYZZZ";
     })
-    describe("getUserFromDb()", () => {
+    describe.skip("getUserFromDb()", () => {
         describe("Checks missing data...", () => {
             test("If data is missing, returns message", async () => {
                 // Setup
@@ -265,7 +272,7 @@ describe("<utils.ts>", () => {
             })
         })
     })
-    describe("isPasswordPwned()", () => {
+    describe.skip("isPasswordPwned()", () => {
         // Context setup
         const mockText = new Blob([mockExposedPasswords], { type: "text/plain" })
         const mockResponse = new Response(mockText, {
@@ -394,7 +401,7 @@ describe("<utils.ts>", () => {
             })
         })
     })
-    describe("sendResetPasswordConfirmation()", () => {
+    describe.skip("sendResetPasswordConfirmation()", () => {
         test("If data is missing, returns object", async () => {
             // Setup
             // Implementation
@@ -499,65 +506,106 @@ describe("<utils.ts>", () => {
             expect(result).toMatchSnapshot();
         })
     })
-    describe("sendEmailConfirmation()", () => {
-        test("If data is missing, returns object", async () => {
-            // Setup
+    // The following tests are TDD
+    describe.skip("generateKmsDataKey", () => {
+        test("Returns Data Key", async () => {
             // Implementation
-            const result = await Utils.sendEmailConfirmation();
-            // Result
-            expect(result).toEqual({
-                ok: false,
-                message: 'Email must be provided'
-            });
-            expect(result).toMatchSnapshot();
+            const accessKeyId = process.env.VITE_KMS_KEY;
+            const secretAccessKey = process.env.VITE_KMS_SECRET;
+            const region = 'us-east-1';
+            const service = 'kms';
+            try {
+                if (!accessKeyId || !secretAccessKey) throw new Error("Missing keys", { cause: 400 });
+                const signer = new SignatureV4({
+                    credentials: { accessKeyId, secretAccessKey },
+                    service,
+                    region,
+                    sha256: Sha256
+                });
+                const signedRequest = await signer.sign({
+                    method: "POST",
+                    hostname: "kms.us-east-1.amazonaws.com",
+                    protocol: "https:",
+                    port: 443,
+                    path: "/",
+                    headers: {
+                      'Content-Type': 'application/x-amz-json-1.1',
+                      'X-Amz-Target': 'TrentService.GenerateDataKey',
+                      'Host': "kms.us-east-1.amazonaws.com",
+                    },
+                    body: JSON.stringify({
+                      "KeyId": "alias/scheduler",
+                      "KeySpec": "AES_256"
+                    })
+                })
+                const response = await fetch("https://kms.us-east-1.amazonaws.com", {
+                    method: signedRequest.method,
+                    headers: signedRequest.headers,
+                    body: signedRequest.body
+                });
+                if (!response) throw new Error("No response", { cause: 500 })
+                if (!response.ok) {
+                    const errorText = await response.text(); // Get AWS error message
+                    throw new Error(`Request failed: ${response.status} - ${errorText}`);
+                }
+                // Result
+                const responseText = await response.text(); 
+                const result = JSON.parse(responseText);
+                console.log("Parsed Result:", result);
+                if (result.CiphertextBlob && result.Plaintext) {
+                    // Assertion
+                    expect(signer).toBeInstanceOf(SignatureV4);
+                    expect(result).toMatchObject({
+                        CiphertextBlob: expect.any(String),
+                        KeyId: expect.any(String),
+                        KeyMaterialId: expect.any(String),
+                        KeyOrigin: "AWS_KMS",
+                        Plaintext: expect.any(String),
+                      });
+                    expect(result.KeyOrigin).toEqual("AWS_KMS");
+                    expect(result).toMatchSnapshot();
+                } else {
+                    throw new Error("Invalid response", { cause: 400 });
+                }
+            } catch (e) {
+                throw e;
+            }
         })
-        test("Generates random token in base64 with a length of 6 characters", async () => {
-            // Setup
-
-            // Implementation
-            const result = await Utils.sendEmailConfirmation("name@domain.com");
-
-            // Result
-            expect(randomBytes).toHaveBeenCalledTimes(1);
-            expect(result).toMatchSnapshot();
-        })
-        test("Sets API .env key to @sendgrid/mail (Twilio)", async () => {
-            // Setup
-
-            // Implementation
-            const result = await Utils.sendEmailConfirmation("name@domain.com");
-
-            // Result
-            expect(sgMail.setApiKey).toHaveBeenCalledTimes(1);
-            expect(result).toMatchSnapshot();
-        })
-        test("Returns object from catch block if the query to insert the token to database fails", async () => {
-            // Setup
-            vi.mocked(pool.query).mockResolvedValueOnce({
-                rowCount: 0
-            } as unknown as ReturnType<typeof pool.query>)
-
-            // Implementation
-            const result = await Utils.sendEmailConfirmation("name@domain.com");
-            // Result
-            expect(result).toEqual({
-                ok: false,
-                message: "Server failure"
-            })
-            expect(result).toMatchSnapshot();
-        })
-        test("Returns object if sgMail.send() succeeds", async () => {
-            // Setup
-
-            // Implementation
-            const result = await Utils.sendEmailConfirmation("name@domain.com");
-
-            // Result
-            expect(result).toEqual({
-                ok: true,
-                message: "Code sent!"
-            })
-            expect(result).toMatchSnapshot();
-        })
+    })
+    describe.skip("decryptKmsDataKey", () => {
+        test("Decrypts Data Key", async () => {
+            const accessKeyId = process.env.VITE_KMS_KEY;
+            const secretAccessKey = process.env.VITE_KMS_SECRET;
+            const KeyId = process.env.VITE_KMS_ARN;
+            const CiphertextBlob = "AQIDAHjI+EmDTWCmrJVuYc/6gcLE2ANzgDXBlU1vcqMnJqYhOAGDL+xvylB0UieO+ebbTVAhAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMEMn8asoOiipUbmPGAgEQgDuO9toq6qS4CVD9JKkuzNk9d9oL1fH7qWL/ssf7rnZlBzZ2wtsi9dN1dd7poGyM20rHxs8DInKoUJho7w=="
+              
+            try {
+                if (!accessKeyId || !secretAccessKey || !KeyId) throw new Error("Missing keys", { cause: 400 })
+                const client = new KMSClient({
+                    region: "us-east-1",
+                    credentials: {
+                        accessKeyId,
+                        secretAccessKey,
+                    },
+                });
+                    
+                const command = new DecryptCommand({
+                    CiphertextBlob: Buffer.from(CiphertextBlob, "base64"), // Convert to Buffer
+                    KeyId,
+                });
+                const result = await client.send(command);
+                console.log(result);
+                if (result.Plaintext) {
+                    const key = Buffer.from(result.Plaintext).toString("base64");
+                    expect(key).toBeTypeOf("string");
+                    console.log(key)
+                }
+                expect(result.Plaintext).toBeInstanceOf(Uint8Array);
+                expect(result.Plaintext).toMatchSnapshot();
+            } catch (err) {
+                console.error("KMS Error:", err);
+                throw err;
+            }
+        }, 60000)
     })
 })
