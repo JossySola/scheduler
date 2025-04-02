@@ -18,16 +18,14 @@ export default function TableTabs ({ name }: {
             <Tabs aria-label={ name }>
             {
                 rowHeaders && rowHeaders.map((header, rowIndex) => {
-                    if (rowIndex > 0) {
-                        return (
-                            <Tab key={ `tab-${rowIndex}` } title={ header ? header : lang === "es" ? "Sin nombre" : "No name" }>
-                                <TableTabCard 
-                                key={ `card-${rowIndex}` }
-                                name={ header ? header : lang === "es" ? "Sin nombre" : "No name" }
-                                rowIndex={ rowIndex } />
-                            </Tab>
-                        )
-                    }
+                    return (
+                        <Tab key={ `tab-${rowIndex}` } title={ header ? header : lang === "es" ? "Sin nombre" : "No name" }>
+                            <TableTabCard 
+                            key={ `card-${rowIndex}` }
+                            name={ header ? header : lang === "es" ? "Sin nombre" : "No name" }
+                            rowIndex={ rowIndex } />
+                        </Tab>
+                    )
                 })
             }
             </Tabs>
