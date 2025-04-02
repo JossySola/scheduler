@@ -19,7 +19,7 @@ export default async function Page({ params, searchParams }: {
                     return lang === "es" ? "Usuario no encontrado" : "User not found";
                 }
                 case '500': {
-                    return lang === "es" ? "Error interno, inténtalo más tarde" : "Interal error, try again later";
+                    return lang === "es" ? "Error interno, inténtalo más tarde" : "Internal error, try again later";
                 }
                 default: lang === "es" ? "Error desconocido, inténtalo más tarde" : "Unknown error, try again later";
             }

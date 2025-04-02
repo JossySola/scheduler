@@ -554,7 +554,6 @@ export async function SendResetEmailAction (formData: FormData) {
 
     try {
         process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY); 
-
         const query = await pool.query(`
            INSERT INTO scheduler_password_resets
            (email, token, expires_at) 
@@ -563,16 +562,13 @@ export async function SendResetEmailAction (formData: FormData) {
         if (query.rowCount === 0) {
             throw new Error("Failed insertion");
         }
-
         const sending = await sgMail.send(lang === "es" ? messageES : messageEN);
         if (sending[0].statusCode !== 202) {
             throw new Error("Failed sending email");
         }
-        
         responseUrl.searchParams.append("code", "200");
-        redirect(responseUrl.toString());
     } catch (e) {
         responseUrl.searchParams.append("error", "500");
-        redirect(responseUrl.toString());
     }
+    redirect(responseUrl.pathname + responseUrl.search);
 }
