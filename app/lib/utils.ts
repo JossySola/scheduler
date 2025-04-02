@@ -5,7 +5,10 @@ import pool from "./mocks/db";
 import { Argon2id } from "oslo/password";
 import sgMail from "@sendgrid/mail";
 import { z } from "zod";
-import { asyncActionStateResponse, UserResponse, UtilResponse } from "./definitions";
+import { KMSDataKey, UserResponse, UtilResponse } from "./definitions";
+import { SignatureV4 } from "@aws-sdk/signature-v4";
+import { Sha256 } from "@aws-crypto/sha256-js";
+import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
 
 export async function getUserFromDb (username: string, password: string): Promise<UtilResponse & UserResponse> {
   if (!username || !password) {
@@ -158,20 +161,78 @@ export async function sendResetPasswordConfirmation (email: string): Promise<Uti
     }
   }
 }
-export async function useAsyncActionState (
-  action: (state: { message: string, ok?: boolean, descriptive?: unknown }, payload: FormData) => { message: string, ok?: boolean, descriptive?: unknown } | Promise<{ message: string, ok?: boolean, descriptive?: unknown }>, 
-  initialState: { message: string, ok?: boolean, descriptive?: unknown }): 
-  Promise<asyncActionStateResponse> {
-    return new Promise( resolve => {
-      let isPending = true;
-      let state = initialState;
-
-      const dispatch = async (payload: FormData) => {
-        'use server'
-        state = await action(state, payload);
-        isPending = false;
-      }
-
-      resolve([state, dispatch, isPending]);
+export async function generateKmsDataKey (): Promise<KMSDataKey | null> {
+  const accessKeyId = process.env.AWS_KMS_KEY;
+  const secretAccessKey = process.env.AWS_KMS_SECRET;
+  const region = 'us-east-1';
+  const service = 'kms';
+  try {
+    if (!accessKeyId || !secretAccessKey) throw new Error("Missing keys", { cause: 400 });
+    const signer = new SignatureV4({
+      credentials: { accessKeyId, secretAccessKey },
+      service,
+      region,
+      sha256: Sha256
     });
+    const signedRequest = await signer.sign({
+      method: "POST",
+      hostname: "kms.us-east-1.amazonaws.com",
+      protocol: "https:",
+      port: 443,
+      path: "/",
+      headers: {
+        'Content-Type': 'application/x-amz-json-1.1',
+        'X-Amz-Target': 'TrentService.GenerateDataKey',
+        'Host': "kms.us-east-1.amazonaws.com",
+      },
+      body: JSON.stringify({
+        "KeyId": "alias/scheduler",
+        "KeySpec": "AES_256"
+      })
+    })
+    const response = await fetch("https://kms.us-east-1.amazonaws.com", {
+      method: signedRequest.method,
+      headers: signedRequest.headers,
+      body: signedRequest.body
+    });
+    if (!response) throw new Error("No response", { cause: 500 })
+    if (!response.ok) {
+      const errorText = await response.text(); // Get AWS error message
+      throw new Error(`Request failed: ${response.status} - ${errorText}`);
+    }
+    const data: KMSDataKey = await response.json();
+    if (data.CiphertextBlob && data.Plaintext) {
+      return data;
+    } else {
+      throw new Error("Invalid response", { cause: 400 });
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+export async function decryptKmsDataKey (CiphertextBlob: string) {
+  const accessKeyId = process.env.AWS_KMS_KEY;
+  const secretAccessKey = process.env.AWS_KMS_SECRET;
+  const KeyId = process.env.AWS_KMS_ARN;
+  try {
+    if (!accessKeyId || !secretAccessKey || !KeyId) throw new Error("Missing keys", { cause: 400 })
+    const client = new KMSClient({
+      region: "us-east-1",
+      credentials: {
+          accessKeyId,
+          secretAccessKey,
+      },
+    });
+        
+    const command = new DecryptCommand({
+      CiphertextBlob: Buffer.from(CiphertextBlob, "base64"), // Convert to Buffer
+      KeyId,
+    });
+    const result = await client.send(command);
+    if (result.Plaintext) {
+      return Buffer.from(result.Plaintext).toString("base64");
+    }
+  } catch (err) {
+    throw err;
+  }
 }
