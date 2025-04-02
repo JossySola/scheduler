@@ -42,19 +42,18 @@ export default function YTable ({ lang, storedRows }: {
                 <tbody className="flex flex-col gap-1">
                 {
                     rowHeaders && rowHeaders.map((row: string, rowIndex: number) => {
-                        if (rowIndex !== 0) {
                             return <tr className="flex flex-row gap-2" key={ rowIndex }>
                                 {
                                     columnHeaders && columnHeaders.map((_: string, columnIndex: number) => {
                                         return <TableRow 
                                         rowIndex={ rowIndex } 
                                         colIndex={ columnIndex } 
-                                        value={ storedRows && storedRows[rowIndex] ? storedRows[rowIndex][columnIndex] : row } 
+                                        value={ storedRows && storedRows[rowIndex] ? storedRows[rowIndex][columnIndex] : 
+                                            columnIndex === 0 ? row : "" } 
                                         key={ columnIndex } />
                                     })
                                 }
                             </tr>
-                        }
                     })
                 }
                 </tbody>

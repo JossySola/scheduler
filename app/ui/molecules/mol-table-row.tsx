@@ -12,18 +12,15 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
     const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
     const params = useParams();
     const lang = params.lang;
-    const { setRowHeaders }: TableHandlersType = useContext(TableHandlersContext);
+    const { setRowHeaders, rowHeaders }: TableHandlersType = useContext(TableHandlersContext);
     const { anthropicState }: AnthropicGenerationType = useContext(AnthropicGenerationContext);
     const { values }: TableSpecsType = useContext(TableSpecsContext);
-    const [ text, setText ] = useState<string>(" ");
+    const [ text, setText ] = useState<string>(() => rowIndex !== 0 && value ? value : "");
+    let error: string = "";
     
     // Combined effect to handle both initial and AI-updated values
     
     useEffect(() => {
-        // Handle initial value
-        if (value && value.trim() !== " ") {
-            setText(value);
-        }
         if (anthropicState && anthropicState.rows.length) {
             setText(anthropicState.rows[rowIndex][colIndex]);
         }
@@ -56,14 +53,22 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
         return findClosestValue(text, values);
     }, [text, values]);
 
+    if (colIndex === 0) {
+        rowHeaders?.forEach(((header, index) => {
+            if (index !== rowIndex && header === text && text !== "") {
+                error = lang === "es" ? "Duplicado" : "Duplicate";
+            }
+        }))
+    }
+
     return (
         <>
         {
             // Row Header
             colIndex === 0 ? <th scope="row" className="flex flex-row items-center gap-2">
-                <span className="text-tiny">{ rowIndex }</span>
+                <span className="text-tiny">{ rowIndex + 1 }</span>
                 <Input 
-                name={`${colLetters[colIndex]}${rowIndex}`}
+                name={`${colLetters[colIndex]}${rowIndex +1}`}
                 classNames={{
                     inputWrapper: [
                         "w-[200px]",
@@ -74,21 +79,25 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
                 variant="flat"
                 size="sm"
                 type="text"
-                value={ text || " " } 
+                value={ text || "" } 
                 autoComplete="off" 
                 onChange={ e => {
                     setText(e.target.value);
                     setRowHeaders && setRowHeaders (prev => {
                         let duplicate = [...prev];
                         duplicate[rowIndex] = e.target.value;
-                        return duplicate;
+                        return [...duplicate];
                     })
-                }} />
+                }}
+                errorMessage={() => (
+                    <span className="text-tiny">{ error }</span>
+                )} 
+                isInvalid={ error && error.length > 0 ? true : false } />
             </th> : 
             // Select Input
             values && values.length ? <td>
                 <Select
-                name={`${colLetters[colIndex]}${rowIndex}`}
+                name={`${colLetters[colIndex]}${rowIndex +1}`}
                 className="max-w-xs"
                 classNames={{
                     innerWrapper: [
@@ -99,7 +108,7 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
                 placeholder={ lang === "es" ? "Selecciona un valor" : "Select a value" }
                 selectedKeys={matchedValue ? new Set([matchedValue]) : new Set()}
                 defaultSelectedKeys={matchedValue ? new Set([matchedValue]) : new Set()}
-                color={ text && text.endsWith("^") ? "warning" : "default" }
+                color={ "default" }
                 variant="bordered"
                 onChange={ e => setText(e.target.value) }>
                     {
@@ -113,29 +122,29 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
             </td> : 
             // Normal Input
             <td>
-            <Input 
-            name={`${colLetters[colIndex]}${rowIndex}`}
-            classNames={{
-                inputWrapper: [
-                    "w-[200px]",
-                    "h-[40px]"
-                ],
-                innerWrapper: [
-                    "w-[184px]",
-                    "h-[40px]"
-                ],
-                input: [
-                    "w-[184px]",
-                    "h-[20px]"
-                ]
-            }}
-            variant="bordered"
-            size="sm"
-            type="text"
-            value={ text && text.endsWith("^") ? text.slice(0, -1) : text || " " } 
-            color={ text && text.endsWith("^") ? "warning" : "default" }
-            autoComplete="off" 
-            onValueChange={ setText } />
+                <Input 
+                name={`${colLetters[colIndex]}${rowIndex +1}`}
+                classNames={{
+                    inputWrapper: [
+                        "w-[200px]",
+                        "h-[40px]"
+                    ],
+                    innerWrapper: [
+                        "w-[184px]",
+                        "h-[40px]"
+                    ],
+                    input: [
+                        "w-[184px]",
+                        "h-[20px]"
+                    ]
+                }}
+                variant="bordered"
+                size="sm"
+                type="text"
+                value={ text ?? " " } 
+                color={ "default" }
+                autoComplete="off" 
+                onValueChange={ setText } />
             </td>
         }
         </>

@@ -26,6 +26,17 @@ export async function validateAction (state: { message: string }, formData: Form
         message: locale === "es" ? "Hay campos sin llenar" : "Some fields are empty"
       };
     }
+
+    const isBlocked = await pool.query(`
+      SELECT email FROM scheduler_blocked_emails
+      WHERE email = $1;
+    `, [email]);
+    if (isBlocked.rows.length) {
+        return {
+          ok: false,
+          message: locale === "es" ? "Este correo electrónico ha sido bloqueado. Por favor contáctanos." : "This e-mail has been blocked. Please contact us.",
+        }
+    }
     
     if (password !== confirmation) {
       return {
@@ -629,12 +640,7 @@ export async function sendTokenAction (formData: FormData, lang: "es" | "en"): P
 async function handleEmailConfirmation (token: string, email: string) {
     const headerList = await headers();
     const lang = headerList.get("x-user-locale")?.toString() || "en";
-
-    console.error("[handleEmailConfirmation] Starting...")
-    console.error("[handleEmailConfirmation] Checking if data exist...")
     if (!token || !email) {
-        console.error("[handleEmailConfirmation] Some data don't exist")
-        console.error("[handleEmailConfirmation] Exiting...")
         return {
             ok: false,
             message: lang === "es" ? 
@@ -642,8 +648,6 @@ async function handleEmailConfirmation (token: string, email: string) {
             "Data missing"
         }
     }
-    console.error("[handleEmailConfirmation] Starting query...")
-    console.error("[handleEmailConfirmation] SELECT token WHERE token AND email")
     const confirming = await pool.query(`
         SELECT token 
         FROM scheduler_email_confirmation_tokens
@@ -651,10 +655,7 @@ async function handleEmailConfirmation (token: string, email: string) {
             AND token = $2 
             AND expires_at > NOW();
     `, [email, token]);
-    console.error("[handleEmailConfirmation] Query result:", confirming)
     if (!confirming || confirming.rowCount === 0) {
-        console.error("[handleEmailConfirmation] Query failed")
-        console.error("[handleEmailConfirmation] Exiting...")
         return {
             ok: false,
             message: lang === "es" ? 
@@ -662,16 +663,11 @@ async function handleEmailConfirmation (token: string, email: string) {
             "The code is incorrect or has expired"
         }
     }
-    console.error("[handleEmailConfirmation] Starting query...")
-    console.error("[handleEmailConfirmation] DELETE row")
     const deleting = await pool.query(`
         DELETE FROM scheduler_email_confirmation_tokens
         WHERE email = $1 AND token = $2;
     `, [email, token]);
-    console.error("[handleEmailConfirmation] Query result:", deleting)
     if (deleting.rowCount === 0) {
-        console.error("[handleEmailConfirmation] Query failed")
-        console.error("[handleEmailConfirmation] Exiting...")
         return {
             ok: false,
             message: lang === "es" ? 
@@ -679,7 +675,6 @@ async function handleEmailConfirmation (token: string, email: string) {
             "Failed to consume"
         }
     }
-    console.error("[handleEmailConfirmation] Exiting...")
     return {
         ok: true,
         message: lang === "es" ? 
@@ -691,10 +686,7 @@ async function handleEmailConfirmation (token: string, email: string) {
 async function handleLogin (username: string, password: string, locale: string) {
     const headerList = await headers();
     const lang = headerList.get("x-user-locale")?.toString() || "en";
-    console.error("[handleLogin] Starting...")
-    console.error("[handleLogin] Checking if necessary data exist...")
     if (!username || !password) {
-        console.error("[handleLogin] Some data is missing, exiting...")
         return {
             ok: false,
             message: lang === "es" ? 
@@ -702,12 +694,10 @@ async function handleLogin (username: string, password: string, locale: string) 
             "Failed to login"
         }
     }
-    console.error("[handleLogin] Signing in...")
     const signing = await signIn('credentials', {
         redirect: true,
         redirectTo: `/${locale}/dashboard`,
         username,
         password,
     })
-    console.error("[handleLogin] Signin result:", signing)
 }

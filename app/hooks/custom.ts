@@ -27,14 +27,14 @@ export function useTableHandlers (setSpecs: React.Dispatch<SetStateAction<Array<
     const [ rowHeaders, setRowHeaders ] = useState<Array<string>>([]);
 
     const handleAddColumn = (): void => {
-        setColumnHeaders(prev => prev ? [...prev, ""] : [""]);
+        return setColumnHeaders(prev => !prev ? [""] : [...prev, ""] );
     }
     const handleAddRow = (): void => {
-        if (!rowHeaders.length) setColumnHeaders([""]);
-        setRowHeaders(prev => [...prev, ""]);
+        if (!columnHeaders.length) return setColumnHeaders([""]);
+        setRowHeaders(prev => !prev ? [""] : [...prev, ""]);
         setSpecs(prev => [...prev, {
             disable: false,
-            count: columnHeaders && columnHeaders.length,
+            count: columnHeaders && columnHeaders.length ? columnHeaders.length : 0,
             enabledValues: [],
             enabledColumns: [],
         }])

@@ -46,12 +46,19 @@ export async function GET(request: NextRequest) {
         `, [email])
     
         const deleteUser = await pool.query(`
-            DELETE FROM scheduler_users
+            UPDATE scheduler_users
+            SET 
+                name = '[deleted user]',
+                username = CONCAT('deleted_', id), -- Keeps it unique
+                email = CONCAT(id, '@deleted.com'), -- Keeps it unique
+                birthday = NULL,
+                password = NULL,
+                user_password_key = CONCAT('deleted_', id), -- Keeps it unique
+                deleted_at = NOW(),
+                user_image = NULL
             WHERE email = $1;
         `, [email]);
-
         return NextResponse.redirect(new URL(`/${locale}/signup`, request.url));
-
     } catch (e) {
         return NextResponse.json({
             error: "Server failure"

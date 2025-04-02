@@ -32,7 +32,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             updated_at: data.updated_at,
         }, { status: 200 });
     } catch (error) {
-        console.error('[/api/table/[id]] Error:', error);
         return NextResponse.json({ error: "Unexpected error occurred. Try again" }, { status: 400 });
     }
 }

@@ -33,7 +33,6 @@ export default function TableButtonSave ({ lang }: {
         type="submit"
         formAction={ saveAction }
         loading={ savePending }
-        className="absolute top-[-8] right-8 sm:right-[5vw]"
         disabled={ savePending }
         endContent={<FloppyDisk width="16px" />}>
             { lang === "es" ? "Guardar" : "Save" }

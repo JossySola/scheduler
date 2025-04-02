@@ -46,6 +46,20 @@ export interface PostgreSQLResponse<T = any> {
     rows: T[];
     fields: FieldDef[];
 }
+export interface KMSDataKey {
+    "CiphertextBlob": string,
+    "KeyId": string,
+    "KeyMaterialId": string,
+    "KeyOrigin": "AWS_KMS",
+    "Plaintext": string
+}
+export interface KMSDecryptedKey {
+    "EncryptionAlgorithm": "SYMMETRIC_DEFAULT",
+    "KeyId": string,
+    "KeyMaterialId": string,
+    "KeyOrigin": "AWS_KMS",
+    "Plaintext": string
+}
 
 export type asyncActionStateResponse = [state: Awaited<{ message: string}>, dispatch: (payload: FormData) => void, isPending: boolean];
 
