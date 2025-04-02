@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { PlusCircle, Trash } from "geist-icons";
 import { TableSpecsContext, TableSpecsType } from "@/app/[lang]/table/context";
+import { motion } from "framer-motion";
 
 export default function XList({ name } : { 
         name: string,
@@ -60,7 +61,7 @@ export default function XList({ name } : {
             </div>
             {
                 values && values.map((item, index) => {
-                    return <li key={index}>
+                    return <motion.li key={index} initial={{ scale: 0.3 }} animate={{ scale: 1 }}>
                         <div className="w-full flex flex-row justify-center items-center gap-2 mb-3">
                             <Input 
                             name={`ValueOption${index}:`} 
@@ -83,7 +84,7 @@ export default function XList({ name } : {
                                 <Trash />
                             </Button>
                         </div>
-                    </li>
+                    </motion.li>
                 })
             }
         </ol>
