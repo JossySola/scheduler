@@ -43,7 +43,7 @@ export default function TableColumn ({ headerIndex, value }: {
             </div>
             {
                 headerIndex !== 0 && 
-                <NumberInput 
+                <NumberInput
                 aria-label="Number of rows to fill"
                 classNames={{
                     input: [
@@ -70,18 +70,13 @@ export default function TableColumn ({ headerIndex, value }: {
                 size="sm"
                 description={ lang === "es" ? "Número de filas a llenar en esta columna" : "Amount of rows to fill in this column" }
                 minValue={ 0 } 
-                maxValue={ rowHeaders && rowHeaders.length -1 }
-                value={ colSpecs && colSpecs[headerIndex] ? colSpecs[headerIndex] : rowHeaders && rowHeaders.length -1 }
-                onValueChange={ n => {
-                    if (setColSpecs) {
-                        setColSpecs(prev => {
-                            if (!prev) [ n ];
-                            let duplicate = [...prev];
-                            duplicate[headerIndex] = n;
-                            return duplicate;
-                        })
-                    }
-                }}/>
+                maxValue={ rowHeaders?.length ? rowHeaders.length - 1 : 0 }
+                value={ Number(colSpecs?.[headerIndex]) ?? ((rowHeaders && rowHeaders?.length - 1) ?? 0) }
+                onValueChange={ n => setColSpecs && setColSpecs(prev => {
+                    let duplicate = prev ? [...prev] : [];
+                    duplicate[headerIndex] = n;
+                    return duplicate;
+                })}/>
             }
         </th>
     )
