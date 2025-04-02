@@ -9,7 +9,7 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
     const payload = await request.json();
     const user_id: string = payload.user_id;
     const table_id: string = payload.table_id;
-    const title: string = payload.table_title;
+    const title: string = payload.table_title ? payload.table_title : locale === "es" ? "Sin título" : "No title yet";
     const rows: string = JSON.stringify(payload.rows);
     const values: string = JSON.stringify(payload.values);
     const colSpecs: string = JSON.stringify(payload.colSpecs);
