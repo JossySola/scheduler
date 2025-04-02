@@ -4,26 +4,21 @@ import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { headers } from "next/headers";
 
-export async function LogInAction (prevState: { message: string }, formData: FormData) {
+export async function LogInAction (prevState: { message: string, nextAttempt: number | null }, formData: FormData) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
-    console.log("[LogInAction] Starting...")
-    console.log("[LogInAction] formData:", formData)
 
     const username = formData.get("username");
     const password = formData.get("password");
 
     if (!formData || !username || !password) {
-        console.log("[LogInAction] There is data missing...")
         return {
-            message: locale === "es" ? "Por favor, llena todos los campos/" : "Please, fill out both fields/"
+            message: locale === "es" ? "Por favor, llena todos los campos" : "Please, fill out both fields",
+            nextAttempt: null
         }
     }
     
     try {
-        console.log("[LogInAction] Entering try block...")
-        console.log("[LogInAction] Logging in...")
-        console.log("[LogInAction] Exiting...")
         await signIn("credentials", {
             username,
             password,
@@ -31,23 +26,47 @@ export async function LogInAction (prevState: { message: string }, formData: For
             redirectTo: `/${locale}/dashboard`
         })
         return {
-            message: "Logged in"
+            message: "Logged in",
+            nextAttempt: null
         }
     } catch (error) {
-        console.log("[LogInAction] Entering catch block...")
-        console.log("[LogInAction] Error", error)
-
-        let errorMessage = locale === "es" ? "Error interno/" : "Unknown error/";
         if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
             if (error instanceof AuthError) {
-                errorMessage = `${error.message}/`;
                 if (error.cause?.next_attempt) {
-                    errorMessage += `/${error.cause.next_attempt}`;
+                    return {
+                        message: locale === "es" ? "Información inválida" : "Invalid credentials",
+                        nextAttempt: error.cause.next_attempt
+                    };
+                }
+                if (typeof error.cause === "number") {
+                    if (error.cause === 404) {
+                        return {
+                            message: locale === "es" ? "Usuario no existe" : "User not found",
+                            nextAttempt: null
+                        }
+                    } else if (error.cause === 409) {
+                        return {
+                            message: locale === "es" ? "Registro incorrecto. Favor de reportar error" : "Bad registry. Please report this specific issue",
+                            nextAttempt: null
+                        }
+                    } else if (error.cause === 500) {
+                        return {
+                            message: locale === "es" ? "Error interno" : "Internal Error",
+                            nextAttempt: null
+                        }
+                    }
+
+                }
+                return {
+                    message: locale === "es" ? "Este correo electrónico está registrado con un proveedor externo, usa ese método para iniciar sesión." : "This e-mail is registered with an external provider, use that instead.",
+                    nextAttempt: null
                 }
             } else if (error instanceof Error) {
-                errorMessage = `${error.message}/`;
+                return {
+                    message: locale === "es" ? "Error inesperado. Inténtalo nuevamente" : "Something unexpected happened. Please try again later",
+                    nextAttempt: null
+                }
             }
-            return { message: `${errorMessage}/` };
         }
         throw error;
     }
