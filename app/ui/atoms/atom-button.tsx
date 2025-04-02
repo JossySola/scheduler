@@ -24,7 +24,7 @@ export function ActionButton ({ children, type = "button", color, loading = fals
             endContent={ endContent && endContent }
             formAction={ formAction }
             form={ form && form }
-            className={ !color ? `${className && className} dark:bg-white bg-black dark:text-black text-white p-5 w-fit text-md border-2 m-2` : "text-md m-2" }>
+            className={ !color ? `${className && className} dark:bg-white bg-black dark:text-black text-white p-5 text-md border-2 m-2` : "text-md m-2" }>
             { children }
             </Button>
         )
@@ -38,7 +38,7 @@ export function ActionButton ({ children, type = "button", color, loading = fals
             color={ color }
             endContent={ endContent && endContent }
             onPress={(e) => onPress(e)}
-            className={ !color ? `${className && className} dark:bg-white bg-black dark:text-black text-white p-5 w-fit text-md border-2 m-2` : "text-md m-2" }>
+            className={ !color ? `${className && className} dark:bg-white bg-black dark:text-black text-white p-5 text-md border-2 m-2` : "text-md m-2" }>
             { children }
             </Button>
         )
@@ -50,7 +50,7 @@ export function ActionButton ({ children, type = "button", color, loading = fals
         type={ type }
         color={ color }
         endContent={ endContent && endContent }
-        className={ !color ? `${className && className} dark:bg-white bg-black dark:text-black text-white p-5 w-fit text-md border-2 m-2` : "text-md m-2" }>
+        className={ !color ? `${className && className} dark:bg-white bg-black dark:text-black text-white p-5 text-md border-2 m-2` : "text-md m-2" }>
             { children }
         </Button>
     )
@@ -180,7 +180,7 @@ export function PrimaryButtonAsLink ({ children, startContent, endContent, link 
         endContent={ endContent && endContent }
         as={ Link }
         href={ link }
-        className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg text-[2rem] p-8">
+        className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg">
             { children }
         </Button>
     )
