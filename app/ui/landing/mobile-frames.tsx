@@ -30,10 +30,10 @@ export default function MobileFrames ({ lang }: {
     const opacityValues = useTransform(valuesProgress, [0, 0.5, 1], [0, 0.5, 1]);
     const opacitySpecs = useTransform(specsProgress, [0, 0.5, 1], [0, 0.5, 1]);
     return (
-        <section className="flex flex-col justify-center items-center sm:hidden">
+        <section className="w-full flex flex-col justify-center items-center sm:hidden">
             <motion.section  
             style={{ opacity: opacityTable }}
-            className="flex flex-col justify-center items-center mb-12">
+            className="w-full flex flex-col justify-center items-center mb-12">
                 <motion.h2 className="p-3 text-center text-[2rem]">
                     { lang === "es" ? "Llena los títulos de tus columnas y filas" : "Fill out your column and row headers" }
                 </motion.h2>
@@ -42,7 +42,7 @@ export default function MobileFrames ({ lang }: {
 
             <motion.section 
             style={{ opacity: opacityValues }}
-            className="flex flex-col justify-center items-center mb-12">
+            className="w-full flex flex-col justify-center items-center mb-12">
                 <motion.h2 className="p-3 text-center text-[2rem]" >
                     { lang === "es" ? "Ingresa los valores que usarás" : "Enter the values you'll use" }
                 </motion.h2>
@@ -53,7 +53,7 @@ export default function MobileFrames ({ lang }: {
 
             <motion.section  
             style={{ opacity: opacitySpecs }}
-            className="flex flex-col justify-center items-center">
+            className="w-full flex flex-col justify-center items-center">
                 <motion.h2 className="p-3 text-center text-[2rem]">
                     { lang === "es" ? "Y configura las especificaciones de cada fila" : "And set the criteria for each row" }
                 </motion.h2>

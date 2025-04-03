@@ -5,7 +5,7 @@ export default function SampleTable ({ lang }: {
     lang: "en" | "es"
 }) {
     return (
-        <div className="min-w-[375px] max-w-[516px] bg-white rounded-xl grid grid-cols-[150px_150px] sm:grid-cols-[150px_1fr] gap-2 sm:gap-4 p-4 sm:p-8 w-fit h-fit shadow-xl overflow-y-hidden">
+        <div className="min-w-[370px] max-w-[516px] bg-white rounded-xl grid grid-cols-[150px_150px] sm:grid-cols-[150px_1fr] gap-2 sm:gap-4 p-4 sm:p-8 w-fit h-fit shadow-xl overflow-hidden">
             <div aria-label="sample-column-buttons" className="col-start-1 flex flex-row gap-1 w-fit">
                 <div aria-label="sample-button" className="z-0 group relative inline-flex items-center justify-center box-border appearance-none select-none whitespace-nowrap font-normal subpixel-antialiased overflow-hidden tap-highlight-transparent data-[pressed=true]:scale-[0.97] outline-none data-[focus-visible=true]:z-10 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-focus data-[focus-visible=true]:outline-offset-2 border-medium px-4 min-w-20 h-10 text-small gap-2 rounded-medium [&>svg]:max-w-[theme(spacing.8)] transition-transform-colors-opacity motion-reduce:transition-none border-default bg-default-100 text-default-foreground data-[hover=true]:opacity-hover">
                     { lang === "es" ? "Eliminar Columna" : "Delete Column" }
