@@ -43,7 +43,7 @@ export default function MonitorFrames ({ lang }: {
     })
 
     const opacityTable = useTransform(tableProgress, [0, 0.2, 0.4, 0.8, 1], [0, 0.5, 1, 1, 0]);
-    const opacityValues = useTransform(valuesProgress, [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], [0, 0, 0, 0, 0, 0, 0.2, 1, 1, 1, 1]);
+    const opacityValues = useTransform(valuesProgress, [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], [0, 0, 0, 0, 0, 0, 0.2, 1, 1, 0, 0]);
     const opacitySpecs = useTransform(specsProgress, [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], [0, 0, 0, 0, 0, 0, 0.3, 1, 1, 1, 0]);
     const position = useTransform(sectionProgress, [0, 1], ["sticky", "relative"]);
     
