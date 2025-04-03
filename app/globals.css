@@ -8,14 +8,14 @@
   --foreground: #2f2f2f;
 }
 
-/*
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #1A1A1A;
     --foreground: #fafafa;
   }
 }
-*/
+
 body {
   color: var(--foreground);
   background: var(--background);
