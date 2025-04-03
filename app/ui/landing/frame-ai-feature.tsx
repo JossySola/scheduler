@@ -25,7 +25,7 @@ export default function FrameAiFeature ({ lang }: {
             <br></br>
             {
                 lang === "es" ?
-                <motion.p className="text-[1.8rem]">Sin embargo, puedes usar la aplicación sin necesidad de utilizar la IA, por lo que podrás crear tus horarios, planes o tablas<a href="#legal-3"><sup className="text-[1rem]">3</sup></a> como desees y con la complejidad que requiras.</motion.p> :
+                <motion.p className="text-[1.8rem]">Sin embargo, puedes usar la aplicación sin necesidad de utilizar la IA, por lo que podrás crear tus horarios, planes o tablas<a href="#legal-3"><sup className="text-[1rem]">3</sup></a> como desees y con la complejidad que requieras.</motion.p> :
                 <motion.p className="text-[1.8rem]">However, you can use this web application without utilizing the AI, so you can create your schedules, plans or tables<a href="#legal-3"><sup className="text-[1rem]">3</sup></a> as you wish with any complexity you may need.</motion.p>
             }
         </>
