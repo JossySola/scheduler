@@ -1,13 +1,12 @@
 "use client"
-
 import { useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { motion } from "framer-motion";
 import FrameTable from "./frame-table";
 import FrameAiFeature from "./frame-ai-feature";
-import { PrimaryButtonAsLink } from "../atoms/atom-button";
 import SampleSpecs from "./sample-specs";
 import SampleValues from "./sample-values";
+import { Button, Link } from "@heroui/react";
 
 export default function MobileFrames ({ lang }: {
     lang: "en" | "es",
@@ -67,11 +66,11 @@ export default function MobileFrames ({ lang }: {
                 <FrameAiFeature lang={ lang } />
                 <div className="w-full flex flex-col justify-center items-center mt-[6rem] mb-[6rem]">
                     <h3 className="text-[1.5rem] text-center">
-                        { lang === "es" ? "¡Regístrate gratis!" : "Signup for free!" } <a href="#legal-4"><sup className="text-[1rem]">4</sup></a> 😊
+                        { lang === "es" ? "¡Regístrate gratis!" : "Sign up for free!" } <a href="#legal-4"><sup className="text-[1rem]">4</sup></a> 😊
                     </h3>
-                    <PrimaryButtonAsLink link={`${lang}/signup`}>
-                        { lang === "es" ? "Registrarse" : "Signup" }
-                    </PrimaryButtonAsLink>
+                    <Button as={ Link } href={`${lang}/signup`} className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg text-3xl p-8">
+                        { lang === "es" ? "Registrarse" : "Sign Up" }
+                    </Button>
                 </div>
             </div>
         </section>
