@@ -7,7 +7,7 @@ export default async function Page ({ params }: {
     const lang = (await params).lang;
 
     return (
-        <section className="flex flex-col justify-center items-center">
+        <section className="h-screen flex flex-col justify-start items-center">
             <h2>{ lang === "es" ? "Contactar" : "Contact" }</h2>
             <ContactForm lang={ lang } />
         </section>
