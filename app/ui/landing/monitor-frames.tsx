@@ -72,7 +72,7 @@ export default function MonitorFrames ({ lang }: {
                     style={{
                         opacity: valuesInView ? opacityValues : 0,
                     }}
-                    className="bg-[#ffffff] dark:bg-[#2f2f2f] text-[2.5rem] text-center m-5">
+                    className="dark:bg-[#1A1A1A] text-[2.5rem] text-center m-5">
                         { lang === "es" ? "...ingresa los valores que usarás" : "...enter the values you'll use" }
                     </motion.h2>
                     <FrameValues lang={ lang } ref={ refValues } />
@@ -83,7 +83,7 @@ export default function MonitorFrames ({ lang }: {
                     style={{
                         opacity: specsInView ? opacitySpecs : 0,
                     }}
-                    className="bg-[#ffffff] dark:bg-[#2f2f2f] text-[2.5rem] text-center m-5">
+                    className="dark:bg-[#1A1A1A] text-[2.5rem] text-center m-5">
                         { lang === "es" ? "...y configura las especificaciones de cada fila" : "...and set the criteria for each row" }
                     </motion.h2>
                     <FrameSpecs lang={ lang } ref={ refSpecs } />

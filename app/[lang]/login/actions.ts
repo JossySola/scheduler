@@ -57,6 +57,7 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
                     }
 
                 }
+                console.log(error.cause)
                 return {
                     message: locale === "es" ? "Este correo electrónico está registrado con un proveedor externo, usa ese método para iniciar sesión." : "This e-mail is registered with an external provider, use that instead.",
                     nextAttempt: null

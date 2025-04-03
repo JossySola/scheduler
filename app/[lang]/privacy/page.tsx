@@ -6,7 +6,7 @@ export default async function Page ({ params }: {
 }) {
     const lang = (await params).lang;
     return (
-        <section className="m-10 p-5 text-base/7">
+        <section className="pb-10 p-5 text-base/7">
             
             <h1>Privacy Policy</h1>
 
@@ -99,7 +99,7 @@ export default async function Page ({ params }: {
 
             <p>If you have any questions about this Privacy Policy, please contact us {<Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`}>here</Link>}.</p>
             <Divider className="my-4"/>
-            <footer className="text-tiny" id="footer">
+            <footer className="text-tiny dark:bg-[#1A1A1A]" id="footer">
                 <p><sup>1</sup> <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> is a service that provides a list of passwords previously exposed in data breaches. This is used to avoid the use of unsuitable passwords.</p>
                 <p><sup>2</sup> <Link href="https://en.wikipedia.org/wiki/Argon2">Argon2id</Link> is a hybrid version of <b>Argon2</b>, which is a key derivation function used to hash passwords.</p>
                 <p><sup>3</sup> <Link href="https://www.postgresql.org/docs/current/pgcrypto.html#PGCRYPTO-PGP-ENC-FUNCS-PGP-SYM-ENCRYPT">BYTEA encryption</Link> is the way we encrypt data before storing it into our database. The encryption and decryption of such data is done with a unique symmetric key/password.</p>
