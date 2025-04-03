@@ -27,7 +27,7 @@ export default function SampleSpecs ({ lang }: {
         return () => observer.disconnect();
     }, [])
     return (
-        <motion.div ref={ ref } className="bg-white rounded-xl shadow-xl w-fit sm:w-[500px] flex flex-col justify-center items-center gap-1 p-8">
+        <motion.div ref={ ref } className="m-3 bg-white rounded-xl shadow-xl w-fit sm:w-[500px] flex flex-col justify-center items-center gap-1 p-8">
             <motion.h3 className="text-black">{ lang === "es" ? "Configuración de Filas" : "Rows Settings" }</motion.h3>
 
             <motion.div aria-label="sample-tabs-row" className="inline-flex">
