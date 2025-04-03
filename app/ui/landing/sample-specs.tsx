@@ -1,12 +1,33 @@
 "use client"
 import { Checkbox, CheckboxGroup, NumberInput, Switch } from "@heroui/react";
 import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 export default function SampleSpecs ({ lang }: {
     lang: "en" | "es"
 }) {
+    const [ defaultCols, setDefaultCols ] = useState<Array<string>>([]);
+    const [ defaultVals, setDefaultVals ] = useState<Array<string>>([]);
+    const [ defaultSwitch, setDefaultSwitch ] = useState<boolean>(true);
+    const ref = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setDefaultCols(["Wednesday", "Thursday", "Friday"]);
+                    setDefaultVals(["12:00-21:00", "13:00-22:00"]);
+                    setDefaultSwitch(false);
+                    observer.disconnect();
+                }
+            }, { threshold: 1 }
+        );
+        if (ref.current) {
+            observer.observe(ref.current);
+        }
+        return () => observer.disconnect();
+    }, [])
     return (
-        <motion.div className="bg-white rounded-xl shadow-xl w-fit sm:w-[500px] flex flex-col justify-center items-center gap-1 p-8">
+        <motion.div ref={ ref } className="bg-white rounded-xl shadow-xl w-fit sm:w-[500px] flex flex-col justify-center items-center gap-1 p-8">
             <motion.h3>{ lang === "es" ? "Configuración de Filas" : "Rows Settings" }</motion.h3>
 
             <motion.div aria-label="sample-tabs-row" className="inline-flex">
@@ -37,6 +58,7 @@ export default function SampleSpecs ({ lang }: {
                         <Switch 
                         color="danger"
                         isReadOnly
+                        isSelected={ defaultSwitch }
                         className="m-4">
                             { lang === "es" ? "Deshabilitar en todas las columnas" : "Disable on all columns" }
                         </Switch>
@@ -44,7 +66,7 @@ export default function SampleSpecs ({ lang }: {
                         <CheckboxGroup
                         isReadOnly
                         className="m-4"
-                        defaultValue={["Wednesday", "Thursday", "Friday"]}
+                        value={ defaultCols }
                         label={ lang === "es" ? "Habilitar solo en ciertas columnas:" : "Enable/disable on certain columns:" }>
                             <Checkbox value="Monday">{ lang === "es" ? "Lunes" : "Monday" }</Checkbox>
                             <Checkbox value="Tuesday">{ lang === "es" ? "Martes" : "Tuesday" }</Checkbox>
@@ -63,7 +85,7 @@ export default function SampleSpecs ({ lang }: {
                         labelPlacement="outside-left"/>
 
                         <CheckboxGroup
-                        defaultValue={["12:00-21:00", "13:00-22:00"]}
+                        value={ defaultVals }
                         className="m-4"
                         label={ lang === "es" ? "Preferir usar estos valores en la fila:" : "Prefer the following values to use in this row:"}>
                             <Checkbox value="10:00-19:00">10:00-19:00</Checkbox>

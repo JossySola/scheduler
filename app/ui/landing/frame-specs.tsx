@@ -9,9 +9,9 @@ export default function FrameSpecs ({ lang, ref }: {
 }) {
     const { scrollYProgress } = useScroll({
         target: ref,
-        offset: ["start 30vh", "start 200px"]
+        offset: ["start 90vh", "start 10vh"]
     });
-    const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+    const opacity = useTransform(scrollYProgress, [0, 0.7], [0, 1]);
     const y = useTransform(scrollYProgress, [0, 1], [100, 280]);
     return (
         <motion.section className="w-full z-2">
