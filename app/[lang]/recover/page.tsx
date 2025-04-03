@@ -27,7 +27,7 @@ export default async function Page({ params, searchParams }: {
     }
 
     return (
-        <section className="w-full flex flex-col justify-center items-center p-5">
+        <section className="h-screen w-full flex flex-col justify-start items-center p-5">
             <h2>{ lang === "es" ? "Recuperación de contraseña" : "Password Recovery" }</h2>
             {
                 lang === "es" ? 
