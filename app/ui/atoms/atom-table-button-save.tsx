@@ -9,13 +9,13 @@ import { TableSpecsContext, TableSpecsType } from "@/app/[lang]/table/context";
 export default function TableButtonSave ({ lang }: {
     lang: "en" | "es",
 }) {
-    const { values, colSpecs, specs }: TableSpecsType = useContext(TableSpecsContext);
+    const { values, colSpecs, rowSpecs }: TableSpecsType = useContext(TableSpecsContext);
     const initialState = {
         message: "",
         ok: false,
     }
     const boundAction = (state: { message: string, ok: boolean }, formData: FormData) => {
-        return SaveTableAction(state, formData, { values, colSpecs, specs });
+        return SaveTableAction(state, formData, { values, colSpecs, rowSpecs });
     };
     const [ saveState, saveAction, savePending ] = useActionState(boundAction, initialState);
     
