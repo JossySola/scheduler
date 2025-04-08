@@ -1,4 +1,4 @@
-import { Specs } from "@/app/hooks/custom";
+import { ColSpecs, RowSpecs } from "@/app/hooks/custom";
 import React, { createContext, SetStateAction } from "react";
 
 export const TableSpecsContext = createContext({});
@@ -8,10 +8,10 @@ export const AnthropicGenerationContext = createContext({});
 export interface TableSpecsType {
     values?: Array<string>,
     setValues?: React.Dispatch<SetStateAction<Array<string>>>,
-    colSpecs?: Array<number>,
-    setColSpecs?: React.Dispatch<SetStateAction<Array<number>>>,
-    specs?: Array<Specs>,
-    setSpecs?: React.Dispatch<SetStateAction<Array<Specs>>>,
+    colSpecs?: Array<ColSpecs>,
+    setColSpecs?: React.Dispatch<SetStateAction<Array<ColSpecs>>>,
+    rowSpecs?: Array<RowSpecs>,
+    setRowSpecs?: React.Dispatch<SetStateAction<Array<RowSpecs>>>,
 }
 export interface TableHandlersType {
     setColumnHeaders?: React.Dispatch<SetStateAction<Array<string>>>,

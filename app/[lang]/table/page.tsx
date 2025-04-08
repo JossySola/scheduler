@@ -1,5 +1,5 @@
 export default function Page () {
     return (
-        <p></p>
+        <div className="w-full h-screen"></div>
     )
 }
