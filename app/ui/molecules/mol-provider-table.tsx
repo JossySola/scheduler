@@ -1,5 +1,5 @@
 "use client"
-import { Specs, useAnthropic, useTableHandlers, useTableSpecs } from "@/app/hooks/custom";
+import { ColSpecs, RowSpecs, useAnthropic, useTableHandlers, useTableSpecs } from "@/app/hooks/custom";
 import YTable from "./mol-YTable";
 import { TableSpecsContext, TableHandlersContext, AnthropicGenerationContext } from "@/app/[lang]/table/context";
 import { useEffect } from "react";
@@ -10,21 +10,21 @@ import { BackButton } from "../atoms/atom-button-back";
 import TableNameInput from "../atoms/atom-table-name-input";
 import TableButtonSave from "../atoms/atom-table-button-save";
 
-export default function TableWithProvider ({ storedTitle, storedRows, storedSpecs, storedValues, storedColSpecs, lang }: {
+export default function TableWithProvider ({ storedTitle, storedRows, storedRowSpecs, storedValues, storedColSpecs, lang }: {
     lang: "en" | "es",
     storedTitle?: string,
     storedRows?: Array<Array<string>>,
     storedValues?: Array<string>,
-    storedColSpecs?: Array<number>,
-    storedSpecs?: Specs[],
+    storedColSpecs?: ColSpecs[],
+    storedRowSpecs?: RowSpecs[],
 }) {
     const {
         values,
         setValues,
         colSpecs,
         setColSpecs,
-        specs,
-        setSpecs,
+        rowSpecs,
+        setRowSpecs,
     } = useTableSpecs();
     const {
         setColumnHeaders,
@@ -35,7 +35,7 @@ export default function TableWithProvider ({ storedTitle, storedRows, storedSpec
         handleAddRow,
         handleDeleteColumn,
         handleDeleteRow,
-    } = useTableHandlers(setSpecs);
+    } = useTableHandlers(setRowSpecs, setColSpecs);
     const {
         anthropicAction,
         anthropicState,
@@ -43,14 +43,14 @@ export default function TableWithProvider ({ storedTitle, storedRows, storedSpec
     } = useAnthropic();
     
     useEffect(() => {
-        if (storedSpecs) setSpecs(storedSpecs);
+        if (storedRowSpecs) setRowSpecs(storedRowSpecs);
         if (storedColSpecs) setColSpecs(storedColSpecs);
         if (storedValues) setValues(storedValues);
         if (storedRows) {
             setColumnHeaders(storedRows[0]);
             setRowHeaders(storedRows.map(row => row[0]));
         }
-    }, [storedSpecs, storedColSpecs, storedValues, storedRows]);
+    }, [storedRowSpecs, storedColSpecs, storedValues, storedRows]);
     return (
         <section>
             <TableSpecsContext.Provider value={{
@@ -58,8 +58,8 @@ export default function TableWithProvider ({ storedTitle, storedRows, storedSpec
             setValues,
             colSpecs,
             setColSpecs,
-            specs,
-            setSpecs,
+            rowSpecs,
+            setRowSpecs,
             }}>
                 <TableHandlersContext.Provider value={{
                     setColumnHeaders,
@@ -92,7 +92,7 @@ export default function TableWithProvider ({ storedTitle, storedRows, storedSpec
                                 <YTable 
                                 lang={ lang }
                                 storedRows={ storedRows } />
-                                <fieldset className="w-full flex flex-col justify-center items-center gap-10 sm:gap-0 sm:flex-row sm:items-start ">
+                                <fieldset className="w-full flex flex-col justify-center items-center sm:flex-row sm:items-start ">
                                     <XList name={ lang === "es" ? "Valores a usar" : "Values to use" } />
                                     <AISection />
                                 </fieldset>
