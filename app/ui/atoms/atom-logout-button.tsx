@@ -1,22 +1,8 @@
-"use client"
-import { signOut } from "next-auth/react"
-import { useParams } from "next/navigation"
-import { Logout } from "geist-icons";
-import { Button } from "@heroui/react";
+import { headers } from "next/headers";
+import SignOutButton from "./atom-logout-icon";
 
-export default function LogOutButton () {
-    const params = useParams();
-    const { lang } = params;
-
-    return (
-        <Button 
-        variant="ghost"
-        endContent={<Logout />} 
-        onPress={() => signOut({
-            redirect: true,
-            redirectTo: `/${lang}/login`
-        })}>
-            { lang === "es" ? "Cerrar sesión" : "Sign out"}
-        </Button>
-    )
+export default async function LogOutButton () {
+    const requestHeaders = headers();
+    const lang = (await requestHeaders).get("x-user-locale") || "en";
+    return <SignOutButton lang={ lang as "en" | "es" } />
 }
