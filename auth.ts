@@ -16,19 +16,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             async profile(profile) {
                 try {
                     const doesUserExist = await pool.query(`
-                      SELECT scheduler_users.id, scheduler_users_providers.provider
-                      FROM scheduler_users 
-                      LEFT JOIN scheduler_users_providers
-                      ON scheduler_users.email = scheduler_users_providers.email
-                      WHERE scheduler_users.email = $1
-                      AND (scheduler_users_providers.provider = $2 OR scheduler_users_providers.provider IS NULL);
+                    SELECT 
+                        scheduler_users.id as user_id, 
+                        scheduler_users_providers.provider
+                    FROM 
+                        (SELECT $1 AS email) AS input
+                    LEFT JOIN 
+                        scheduler_users ON input.email = scheduler_users.email
+                    LEFT JOIN
+                        scheduler_users_providers ON scheduler_users.email = scheduler_users_providers.email 
+                        AND scheduler_users_providers.provider = $2;
                     `, [profile.email, 'Google']);
-                    if (doesUserExist.rows.length > 0 && doesUserExist.rows[0].provider === 'Google') {
-                        profile.id = doesUserExist.rows[0].id;
+                    const data = doesUserExist.rows[0];
+                    // If the user exists AND it already has signed in with provider, return profile
+                    if (data.user_id && data.provider) {
+                        profile.id = data.user_id;
                         profile.image = profile.picture;
-                        return { ... profile };
+                        return { ...profile };
                     }
-                    if (doesUserExist.rows.length > 0 && doesUserExist.rows[0].provider !== 'Google') {
+                    // If the user exist BUT hasn't signed in with provider,
+                    // Add provider into table AND update the users' profile picture
+                    if (data.user_id && data.provider === null) {
                         const registerUserProvider = await pool.query(`
                             INSERT INTO scheduler_users_providers (email, provider)
                             VALUES (
@@ -41,13 +49,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             SET user_image = $1
                             WHERE email = $2 AND user_image IS NULL;
                         `, [profile.picture, profile.email]);
-                        if (registerUserProvider.rowCount !== 0) {
-                            profile.id = doesUserExist.rows[0].id;
-                            profile.image = profile.picture;
-                            return { ... profile };
-                        }
+                        profile.id = data.user_id;
+                        profile.image = profile.picture;
+                        return { ... profile };
                     }
-                    if(doesUserExist.rows.length === 0) {
+                    // If the user does not exist
+                    if (data.user_id === null && data.provider === null) {
                         const registerUser = await pool.query(`
                             INSERT INTO scheduler_users (name, username, email, user_image)
                             VALUES (
@@ -66,18 +73,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                                 $2
                             );
                         `, [profile.email, 'Google']);
-                        let userId =registerUser.rows[0]?.id;
-                        if (!userId) {
-                            const existingUser = await pool.query(`
-                               SELECT id FROM scheduler_users WHERE username = $1; 
-                            `, [profile.name]);
-                            userId = existingUser.rows[0]?.id;
-                        }
-                        if (registerUser.rowCount || registerUserProvider.rowCount) {
-                            profile.id = userId;
-                            profile.image = profile.picture;
-                            return { ...profile };
-                        }
+                        profile.id = data.user_id;
+                        profile.image = profile.picture;
                         return { ... profile };
                     }
                 } catch (error) {
@@ -89,41 +86,53 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         Facebook({
             clientId: process.env.AUTH_FACEBOOK_ID,
             clientSecret: process.env.AUTH_FACEBOOK_SECRET,
+            authorization: {
+                params: {
+                    response_type: "code",
+                },
+            },
             async profile(profile) {
                 try {
                     const doesUserExist = await pool.query(`
-                      SELECT scheduler_users.id, scheduler_users_providers.provider
-                      FROM scheduler_users 
-                      LEFT JOIN scheduler_users_providers
-                      ON scheduler_users.email = scheduler_users_providers.email
-                      WHERE scheduler_users.email = $1
-                      AND (scheduler_users_providers.provider = $2 OR scheduler_users_providers.provider IS NULL);
-                    `, [profile.email, 'Facebook']);
-                    if (doesUserExist.rows.length > 0 && doesUserExist.rows[0].provider === 'Facebook') {
-                        profile.id = doesUserExist.rows[0].id;
+                    SELECT 
+                        scheduler_users.id as user_id, 
+                        scheduler_users_providers.provider
+                    FROM 
+                        (SELECT $1 AS email) AS input
+                    LEFT JOIN 
+                        scheduler_users ON input.email = scheduler_users.email
+                    LEFT JOIN
+                        scheduler_users_providers ON scheduler_users.email = scheduler_users_providers.email 
+                        AND scheduler_users_providers.provider = $2;
+                    `, [profile.email, 'Google']);
+                    const data = doesUserExist.rows[0];
+                    // If the user exists AND it already has signed in with provider, return profile
+                    if (data.user_id && data.provider) {
+                        profile.id = data.user_id;
                         profile.image = profile.picture.data.url;
-                        return { ... profile };
+                        return { ...profile };
                     }
-                    if (doesUserExist.rows.length > 0 && doesUserExist.rows[0].provider !== 'Facebook') {
+                    // If the user exist BUT hasn't signed in with provider,
+                    // Add provider into table AND update the users' profile picture
+                    if (data.user_id && data.provider === null) {
                         const registerUserProvider = await pool.query(`
                             INSERT INTO scheduler_users_providers (email, provider)
                             VALUES (
                                 $1,
                                 $2
                             );
-                        `, [profile.email, 'Facebook']);
+                        `, [profile.email, 'Google']);
                         const insertProfilePicture = await pool.query(`
                             UPDATE scheduler_users
                             SET user_image = $1
                             WHERE email = $2 AND user_image IS NULL;
                         `, [profile.picture.data.url, profile.email]);
-                        if (registerUserProvider.rowCount !== 0) {
-                            profile.id = doesUserExist.rows[0].id;
-                            profile.image = profile.picture.data.url;
-                            return { ... profile };
-                        }
+                        profile.id = data.user_id;
+                        profile.image = profile.picture.data.url;
+                        return { ... profile };
                     }
-                    if(doesUserExist.rows.length === 0) {
+                    // If the user does not exist
+                    if (data.user_id === null && data.provider === null) {
                         const registerUser = await pool.query(`
                             INSERT INTO scheduler_users (name, username, email, user_image)
                             VALUES (
@@ -141,19 +150,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                                 $1,
                                 $2
                             );
-                        `, [profile.email, 'Facebook']);
-                        let userId =registerUser.rows[0]?.id;
-                        if (!userId) {
-                            const existingUser = await pool.query(`
-                               SELECT id FROM scheduler_users WHERE username = $1; 
-                            `, [profile.name]);
-                            userId = existingUser.rows[0]?.id;
-                        }
-                        if (registerUser.rowCount || registerUserProvider.rowCount) {
-                            profile.id = userId;
-                            profile.image = profile.picture.data.url;
-                            return { ...profile };
-                        }
+                        `, [profile.email, 'Google']);
+                        profile.id = data.user_id;
+                        profile.image = profile.picture.data.url;
                         return { ... profile };
                     }
                 } catch (error) {
@@ -174,21 +173,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 if (!username || !password || typeof username !== 'string' || typeof password !== 'string') {
                     throw new Error("Data missing");
                 }
-                const secret: string | undefined = process.env.NEXTAUTH_SECRET;
-                if (!secret) throw new Error("Data missing");
-                
                 // Gather data if user exists
                 const user = await pool.query(`
                     SELECT 
-                    id, 
-                    name, 
-                    username, 
-                    email, 
-                    password,
-                    user_image
+                        id, 
+                        name, 
+                        username, 
+                        email, 
+                        password,
+                        user_image
                     FROM scheduler_users
                     WHERE email = $1 OR username = $1;
-                `, [username, secret]);
+                `, [username]);
                 // User not found
                 if (!user.rowCount) throw new AuthError("User not found", {
                     cause: 404
@@ -231,7 +227,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     WHERE email = $1 OR username = $1;
                 `, [username, key])
                 if (decryptedPassword.rowCount === 0) throw new AuthError("Internal Error", { cause: 500 });
-                
                 const argon2id = new Argon2id();
                 const verification = await argon2id.verify(decryptedPassword.rows[0].decrypted_password.toString(), password);
 
@@ -286,7 +281,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     }
                 }
                 token.id = profile.id as string;
-
                 if (user) {
                     token.name = user.name;
                     token.username = user.username;
@@ -303,12 +297,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
         async session ({ session, token }) {
             session.user = session.user || {};
-
+            
             if (token.image) {
                 session.user.image = token.image;
-            }
-            if (token.id) {
-                session.user.id = token.id;
             }
             if (token.username) {
                 session.user.username = token.username;
@@ -316,12 +307,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (token.googleAccessToken && token.googleSub) {
                 session.googleAccessToken = token.googleAccessToken;
                 session.user.googleSub = token.googleSub;
+                session.user.id = token.googleSub;
             }
             if (token.facebookAccessToken && token.facebookSub) {
                 session.facebookAccessToken = token.facebookAccessToken;
                 session.user.facebookSub = token.facebookSub;
+                session.user.id = token.facebookSub;
             }
-
+            if (!token.googleSub && !token.facebookSub && token.sub) {
+                session.user.id = token.sub;
+            }
             return session;
         },
         async redirect({ url, baseUrl }) {
