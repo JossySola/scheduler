@@ -7,101 +7,58 @@ import FormInputUsername from "../atoms/atom-form-input-username";
 import FormInputBirthday from "../atoms/atom-form-input-birthday";
 import FormInputEmail from "../atoms/atom-form-input-email";
 import FormInputPassword from "../atoms/atom-form-input-password";
-import { ArrowCircleRight, CheckCircle } from "geist-icons";
-import { validateAction, verifyTokenAction } from "@/app/[lang]/signup/actions";
-import ExpiringTokenInput from "../atoms/atom-token-input";
+import { ArrowCircleRight, Envelope } from "geist-icons";
+import { validateAction } from "@/app/[lang]/signup/actions";
 import { ActionButton } from "../atoms/atom-button";
 
 export default function SignupForm ({ lang }: {
     lang: "en" | "es"
 }) {
     const [ validateState, validateForm, validatePending ] = useActionState(validateAction, { ok: false, message: "" });
-    const [ confirmState, confirmAction, confirmPending ] = useActionState(verifyTokenAction, { ok: false, message: "" });
-    const [ validated , setValidated ] = useState<boolean>(false);
     const [ name, setName ] = useState<string>("");
     const [ username, setUsername ] = useState<string>("");
     const [ birthday, setBirthday ] = useState<Date | null>(null);
     const [ email, setEmail ] = useState<string>("");
-    const [ password, setPassword ] = useState<string>('');
-    const [ confirmation, setConfirmation ] = useState<string>('');
-    
+    const [ password, setPassword ] = useState<string>("");
+    const [ confirmation, setConfirmation ] = useState<string>("");
+    const [ validated, setValidated ] = useState<boolean>(false);
+
     useEffect(() => {
-        if (validateState && validateState.ok) setValidated(true);
-    }, [validateState]);
+        if (validateState.ok) {
+            setValidated(true);
+        }
+    }, [validateState.ok])
 
     return (
-        <form id="register" className="w-full sm:w-[400px] p-3 flex flex-col items-center justify-center">
-            <fieldset style={{ display: validated ? "none" : "flexbox" }} className="w-full sm:w-[400px] p-3 flex flex-col items-center justify-center">
-                <FormInputName name={ name } setName={ setName } />
-                <FormInputUsername username={ username } setUsername={ setUsername } />
-                <FormInputBirthday birthday={ birthday } setBirthday={ setBirthday } />
-                <FormInputEmail email={ email } setEmail={ setEmail } />
-                <FormInputPassword password={ password } confirmation={ confirmation } setPassword={ setPassword } setConfirmation={ setConfirmation } />
-                <p aria-live="polite" className="text-danger text-center">{ validateState.message }</p>
-                {
-                    validateState.descriptive && validateState.descriptive.map((error, index) => {
-                        return <p aria-live="polite" className="text-danger text-center" key={index}>{ error.message }</p>
-                    })
-                }
-                <ActionButton 
-                className="bg-white text-black m-3" 
-                type="submit" 
-                disabled={ validatePending } 
-                loading={ validatePending } 
-                formAction={ validateForm }
-                endContent={<ArrowCircleRight />}>
-                    { lang === "es" ? "Siguiente" : "Next" }
-                </ActionButton>
-                <SignInProviders lang={ lang.toString() as "en" | "es" } />
-            </fieldset>
+        <section className="w-full sm:w-[400px] p-3 flex flex-col items-center justify-center">
             {
-                validated && <fieldset>
-                {
-                    lang === "es" ? 
-                    <>
-                    <h4 className="m-2">
-                        Hemos enviado a tu correo electrónico un código, por favor ingresalo aquí para verificar tu cuenta.
-                    </h4>
+                validated ? <section className="p-10 flex flex-col justify-start items-center">
+                    <h3 className="text-center">{ lang === "es" ? "Hemos enviado un enlace a tu correo electrónico." : "A confirmation link has been sent."}</h3>
+                    <p className="text-center">{ lang === "es" ? "Por favor sigue las instrucciones para completar el registro. Ya puedes cerrar esta ventana." : "Please check your email and follow the instructions. You may close this tab." }</p>
                     <br></br>
-                    <h4 className="m-2">
-                        Recuerda checar la carpeta de <b>Spam</b> si no ves el e-mail en tu <b>Bandeja de Entrada</b>.
-                    </h4>
-                    </>
-                    : 
-                    <>
-                    <h4 className="m-2">
-                        We've sent you an e-mail with a code, please type it here to verify your account.
-                    </h4>
-                    <br></br>
-                    <h4 className="m-2">
-                        Remember to check your <b>Junk</b> folder in case you don't see the confirmation e-mail in your <b>Inbox</b>.
-                    </h4>
-                    </>
-                }
-                <Input
-                minLength={6}
-                maxLength={6}
-                name="confirmation-token"
-                id="confirmation-token"
-                variant="flat"
-                radius="md"
-                size="lg"
-                isRequired
-                isClearable />
-                { validated && <ExpiringTokenInput lang={ lang as "es" | "en" } /> }
-
-                <p aria-live="polite" className="text-danger mt-5">{ confirmState.message }</p>
-                <Button
-                className="bg-white text-black mt-3"
-                type="submit"
-                isDisabled={ confirmPending }
-                isLoading={ confirmPending }
-                formAction={ confirmAction }
-                endContent={ <CheckCircle /> }>
-                    { lang === "es" ? "Confirmar" : "Confirm" }
-                </Button>
-                </fieldset>
+                    <p className="text-center text-[#F5A524]">{ lang === "es" ? "El enlace expirará en 1 minuto." : "The token will expire after 1 minute." }</p>
+                    <Envelope width="32px" height="32px" className="m-5"/>
+                </section> :
+                <form className="flex flex-col items-center">
+                    <FormInputName name={ name } setName={ setName } />
+                    <FormInputUsername username={ username } setUsername={ setUsername } />
+                    <FormInputBirthday birthday={ birthday } setBirthday={ setBirthday } />
+                    <FormInputEmail email={ email } setEmail={ setEmail } />
+                    <FormInputPassword password={ password } confirmation={ confirmation } setPassword={ setPassword } setConfirmation={ setConfirmation } />
+                    <p aria-live="polite" className="text-danger text-center">{ validateState.message }</p>
+                    <ActionButton 
+                    className="bg-white text-black m-3" 
+                    type="submit" 
+                    disabled={ validatePending } 
+                    loading={ validatePending } 
+                    formAction={ validateForm }
+                    endContent={<ArrowCircleRight />}>
+                        { lang === "es" ? "Siguiente" : "Next" }
+                    </ActionButton>
+                    <SignInProviders lang={ lang.toString() as "en" | "es" } />
+                </form>
             }
-        </form>
+        </section>
+        
     )
 }
