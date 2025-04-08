@@ -5,7 +5,6 @@ import pool from "@/app/lib/mocks/db";
 import { Argon2id } from "oslo/password";
 import { isPostgreSQLError } from "@/app/lib/definitions";
 import { generateKmsDataKey } from "@/app/lib/utils";
-import { encryptKMS } from "@/app/lib/utils-client";
 
 
 export async function POST ( request: NextRequest ) {
@@ -18,10 +17,7 @@ export async function POST ( request: NextRequest ) {
     const password: string = incoming.password.toString();
     const argon2id = new Argon2id();
     const hash = await argon2id.hash(password);
-    const encryptedPassword = await encryptKMS(hash);
-    console.log(encryptedPassword)
     const dataKey = await generateKmsDataKey();
-    console.log(dataKey)
 
     if (!dataKey || !dataKey.CiphertextBlob || !dataKey.Plaintext) return NextResponse.json({ statusText: "Internal Error" }, { status: 500 })
     
@@ -36,8 +32,7 @@ export async function POST ( request: NextRequest ) {
         const registerUser = await pool.query(`
             INSERT INTO scheduler_users (name, username, email, birthday, password, user_password_key)
             VALUES ($1, $2, $3, $4::DATE, pgp_sym_encrypt($5, $6), $7);
-        `, [name, username, email, birthday, encryptedPassword, dataKey.Plaintext, dataKey.CiphertextBlob]);
-        console.log(registerUser.rows)
+        `, [name, username, email, birthday, hash, dataKey.Plaintext, dataKey.CiphertextBlob]);
         if (registerUser.rowCount === 0) {
             return NextResponse.json({ statusText: "Internal Error" }, { status: 500 });
         }

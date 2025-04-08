@@ -9,6 +9,8 @@ export default async function Page ({ params }: {
     const lang = (await params).lang;
     const session = await auth();
 
+    if (!session?.user) redirect(`/${lang}/login`);
+
     if (session && session.user) {
         const numTables = await pool.query(`
             SELECT num_tables 
@@ -19,7 +21,7 @@ export default async function Page ({ params }: {
         if (numTables.rows && numTables.rows.length > 0) {
             if (numTables.rows[0].num_tables < 3) {
                 return (
-                    <main className="w-screen mt-10">
+                    <main className="h-full mt-10 pb-10">
                         <form className="flex flex-col justify-center items-center relative">
                             <TableWithProvider lang={ lang } />
                         </form>
@@ -28,6 +30,14 @@ export default async function Page ({ params }: {
             } else {
                 redirect(`/${lang}/dashboard`);
             }
+        } else {
+            return (
+                <main className="h-full mt-10 pb-10">
+                    <form className="flex flex-col justify-center items-center relative">
+                        <TableWithProvider lang={ lang } />
+                    </form>
+                </main>
+            )
         }
     }
 }

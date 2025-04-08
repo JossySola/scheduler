@@ -1,14 +1,15 @@
-"use client"
-import { useParams } from "next/navigation";
-import TableTabs from "./mol-YTable-tabs";
+import TableButtonAi from "../atoms/atom-table-button-ai";
+import ColumnSettings from "./mol-column-settings";
+import RowSettings from "./mol-row-settings";
 
 export default function AISection () {
-    const params = useParams();
-    const lang = params.lang;
     return (
-        <fieldset className="w-full magicBorder sm:w-fit">
-            <TableTabs 
-            name={ lang === "es" ? "Configuración de Filas" : "Rows Settings" } />
+        <fieldset className="w-fit flex flex-col justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-5">
+                <RowSettings />
+                <ColumnSettings />
+            </div>
+            <TableButtonAi />
         </fieldset>
     )
 }

@@ -236,3 +236,38 @@ export async function decryptKmsDataKey (CiphertextBlob: string) {
     throw err;
   }
 }
+export async function encrypt (data: string, key: string): Promise<string >{
+  const iv = crypto.randomBytes(16);
+  const keyBuffer = Buffer.from(key, 'base64'); 
+  const cipher = crypto.createCipheriv('aes-256-cbc', keyBuffer, iv);
+  let encrypted = cipher.update(data, 'utf-8', 'base64');
+  encrypted += cipher.final('base64');
+
+  const ivBase64url = toBase64Url(iv.toString('base64'));
+  const encryptedBase64url = toBase64Url(encrypted);
+
+  return `${ivBase64url}:${encryptedBase64url}`;
+}
+export async function decrypt (encrypted: string, key: string): Promise<string> {
+  const [ ivStr, encryptedData ] = encrypted.split(':');
+
+  const iv = Buffer.from(fromBase64Url(ivStr), 'base64');
+  const encryptedBase64 = fromBase64Url(encryptedData);
+
+  const keyBuffer = Buffer.from(key, 'base64');
+  const decipher = crypto.createDecipheriv('aes-256-cbc', keyBuffer, iv);
+
+  let decrypted = decipher.update(encryptedBase64, 'base64', 'utf-8');
+  decrypted += decipher.final('utf-8');
+  return decrypted;
+}
+function toBase64Url (str: string): string {
+  return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+function fromBase64Url (str: string): string {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4 !== 0) {
+    str += '=';
+  }
+  return str;
+}

@@ -1,7 +1,7 @@
 "use client"
 import { Input } from "@heroui/react";
 import { useParams } from "next/navigation";
-import { SetStateAction } from "react";
+import { SetStateAction, useState } from "react";
 
 export default function FormInputEmail ({ email, setEmail }: {
     email?: string,
@@ -9,7 +9,26 @@ export default function FormInputEmail ({ email, setEmail }: {
 }) {
     const params = useParams();
     const lang = params.lang;
+    const [ localEmail, setLocalEmail ] = useState<string>("");
     
+    if (email && setEmail) {
+        return (
+            <Input 
+            name="email"
+            type="email"
+            autoComplete="email"
+            className="sm:w-[400px] m-2"
+            isRequired
+            isClearable
+            radius="md"
+            variant="bordered"
+            label={ lang === "es" ? "Correo electrónico: " : "Email: " }
+            labelPlacement="outside"
+            size="lg"
+            value={ email }
+            onValueChange={ setEmail }/>
+        )
+    }
     return (
         <Input 
         name="email"
@@ -23,7 +42,7 @@ export default function FormInputEmail ({ email, setEmail }: {
         label={ lang === "es" ? "Correo electrónico: " : "Email: " }
         labelPlacement="outside"
         size="lg"
-        value={ email ?? "" }
-        onChange={e => setEmail && setEmail(e.target.value) }/>
+        value={ localEmail }
+        onValueChange={ setLocalEmail }/>
     )
 }

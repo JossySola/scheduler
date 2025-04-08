@@ -137,7 +137,7 @@ export function PrimaryButton ({ children, type = "button", loading = false, dis
             endContent={ endContent && endContent }
             formAction={ formData => formAction(formData) }
             form={ form && form }
-            className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg m-5`}>
+            className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg m-5 w-fit`}>
                 { children }
             </Button>
         )
@@ -151,7 +151,7 @@ export function PrimaryButton ({ children, type = "button", loading = false, dis
             startContent={ startContent && startContent }
             endContent={ endContent && endContent }
             onPress={ onPress }
-            className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg m-5`}>
+            className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg m-5 w-fit`}>
                 { children }
             </Button>
         )
@@ -163,7 +163,7 @@ export function PrimaryButton ({ children, type = "button", loading = false, dis
         type={ type }
         startContent={ startContent && startContent }
         endContent={ endContent && endContent }
-        className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg m-5`}>
+        className={`${className && className} bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg m-5 w-fit`}>
             { children }
         </Button>
     )

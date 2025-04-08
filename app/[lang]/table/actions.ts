@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { Specs } from "@/app/hooks/custom";
+import { RowSpecs, ColSpecs } from "@/app/hooks/custom";
 import { generateObject } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { StreamableValue } from 'ai/rsc';
@@ -13,25 +13,32 @@ import { z } from "zod";
 export async function SaveTableAction (
     previousState: { message: string, ok: boolean }, 
     formData: FormData, 
-    statesObject: { values: Array<string> | undefined, colSpecs: Array<number> | undefined, specs: Array<Specs> | undefined },
+    statesObject: { values: Array<string> | undefined, colSpecs: Array<ColSpecs> | undefined, rowSpecs: Array<RowSpecs> | undefined },
     ) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
     const session = await auth();
-
+    
     if (session && session.user) {
         const entries = [...formData.entries()];
         const tableEntries = entries
         .filter(([key]) => /^[A-Z][0-9]+$/.test(key)) // Filters out all input fields whose name are not <Letter><Number> format
         .map(([key, value]) => ({ key, value })); // Returns an Array of objects containing the key-value pairs]
+        console.log(statesObject)
         let payload = {
             "user_id": session.user.id,
             "table_id": formData.get("table_id")?.toString(),
             "table_title": formData.get("table_title")?.toString(),
             rows: [[]],
             values: statesObject && statesObject.values ? statesObject.values : [],
-            colSpecs: statesObject && statesObject.colSpecs ? statesObject.colSpecs : [],
-            specs: statesObject && statesObject.specs ? statesObject.specs.map(spec => {
+            colSpecs: statesObject && statesObject.colSpecs ? statesObject.colSpecs.map(spec => {
+                if (typeof spec === "object") {
+                    if (Object.hasOwn(spec, "numberOfRows") && Object.hasOwn(spec, "amountOfValues")) {
+                        return spec;
+                    }
+                }
+            }).filter(element => element !== undefined) : [],
+            rowSpecs: statesObject && statesObject.rowSpecs ? statesObject.rowSpecs.map(spec => {
                 if (typeof spec === "object") {
                     if (Object.hasOwn(spec, "disable") 
                         && Object.hasOwn(spec, "count") 
@@ -54,7 +61,6 @@ export async function SaveTableAction (
             },
             body: JSON.stringify(payload)
         })
-
         if (request.status === 200) {
             if (!request.url.includes("/api")) {
                 redirect(`${request.url}`);
@@ -94,7 +100,7 @@ export async function SaveTableAction (
     }
     return {
         ok: false,
-        message: locale === "es" ? "Vuelve a iniciar sesión" : "Signin again"
+        message: locale === "es" ? "Vuelve a iniciar sesión" : "Sign in again"
     }
     
 }
@@ -106,6 +112,9 @@ const recentAIOutputs: Array<{
 const MAX_HISTORY_SIZE = 5;
 export async function generateTableAction (previousState: { rows: Array<Array<string>>, conflicts: Array<string> },formData: FormData) {
     let historyText = "";
+    const requestHeaders = headers();
+    const locale = (await requestHeaders).get("x-user-locale") || "en";
+
     if (recentAIOutputs.length > 0) {
         historyText = "Previous outputs I've generated (DO NOT REPEAT THESE PATTERNS):\n";
         recentAIOutputs.forEach((item, index) => {
@@ -170,7 +179,7 @@ export async function generateTableAction (previousState: { rows: Array<Array<st
             3. Once all rows have been filled check for each column's specification: "Specification: Column <index> named <name>, must have this fixed amount of rows filled in:". If there are more values filled than the amount assigned, check each row's specification: "Specification: Row <index> named <name>, is meant to be used on this column:". If there is a row that don't have this specification, replace the value on the column with an empty string. If there is a row specification assigning the column to be filled with a value, leave the value and make an annotation about this conflict in an array called "conflicts".
             4. Fill unused columns with empty strings.
             5. After completing all the table, analyze the result and perform any improvement to better meet the criteria given. Remember that the specifications given is the most important to give a strategic result.
-            6. Finish the output as an Object, a property called "rows" for the table, and "conflicts" for any conflicts met that couldn't be handled (note that this is a generic example and should not influence the actual content of the current generated schedule):
+            6. Finish the output as an Object, a property called "rows" for the table, and "conflicts" for any conflicts met that couldn't be handled in this language: ${ locale } where 'en' is English and 'es' is Spanish (note that this is a generic example and should not influence the actual content of the current generated schedule):
             {
                 rows: [
                     ["Employees", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],

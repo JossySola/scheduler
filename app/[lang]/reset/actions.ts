@@ -1,6 +1,6 @@
 "use server"
 import "server-only";
-import { isPasswordPwned } from "@/app/lib/utils";
+import { decryptKmsDataKey, generateKmsDataKey, isPasswordPwned } from "@/app/lib/utils";
 import { auth, signOut } from "@/auth";
 import { Argon2id } from "oslo/password";
 import pool from "@/app/lib/mocks/db";
@@ -10,7 +10,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
     const password = formData.get("password")?.toString();
-    const confirmation = formData.get("confirm-password")?.toString();
+    const confirmation = formData.get("confirmpwd")?.toString();
     const token = formData.get("token")?.toString();
     const session = await auth();
     const email = session?.user?.email;
@@ -56,18 +56,75 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         }
     }
 
-
-    const argon = new Argon2id();
-    const oldPassword = await pool.query(`
-       SELECT password FROM scheduler_users
-       WHERE email = $1; 
+    const queryKey = await pool.query(`
+        SELECT user_password_key FROM scheduler_users 
+        WHERE email = $1;
     `, [email]);
+    if ( queryKey.rows[0].user_password_key === null || !queryKey.rows.length) {
+        // The user exists but has signed in with a provider, so there is no password set yet
+        const exposed = await isPasswordPwned(password);
+        if (typeof exposed === 'number' && exposed > 0) {
+            return {
+                message: "After a password checkup, it appears this password has been exposed in a data breach in the past. Please use a stronger password."
+            }
+        }
+        const argon = new Argon2id();
+        const hash: string = await argon.hash(password);
+        const key = await generateKmsDataKey();
+        if (!key?.CiphertextBlob) {
+            return {
+                message: "Invalid key"
+            }
+        }
+        const query = await pool.query(`
+        UPDATE scheduler_users
+        SET password = pgp_sym_encrypt_bytea($1, $2), 
+                user_password_key = $3
+        WHERE email = $4; 
+        `, [hash, key.Plaintext, key.CiphertextBlob, email]);
+        if (query.rowCount === 0) {
+            return {
+                message: "Password reset failed"
+            }
+        }
+
+        const invalidate = await pool.query(`
+            UPDATE scheduler_password_resets
+            SET used_at = NOW()
+            WHERE email = $1 AND token = $2
+            RETURNING used_at;
+        `, [email, token]);
+
+        if (invalidate.rowCount === 0) {
+            return {
+                message: "Failed to invalidate token"
+            }
+        }
+
+        await signOut({
+            redirect: true,
+            redirectTo: `/${locale}/login`
+        });
+
+        return {
+            message: "Reset successful"
+        }
+    }
+    // The user has used their own credentials
+    const decryptedKey = await decryptKmsDataKey(queryKey.rows[0].user_password_key);
+    const oldPassword = await pool.query(`
+       SELECT pgp_sym_decrypt_bytea(password, $1) AS decrypted_password
+       FROM scheduler_users
+       WHERE email = $2; 
+    `, [decryptedKey, email]);
     if (oldPassword.rowCount === 0) {
         return {
             message: "User not found"
         }
     }
-    const comparison = await argon.verify(oldPassword.rows[0].password, password);
+    const decryptedPassword = oldPassword.rows[0].decrypted_password;
+    const argon = new Argon2id();
+    const comparison = await argon.verify(decryptedPassword, password);
     if (comparison) {
         return {
             message: "New password cannot be the same as the old password"
@@ -82,12 +139,18 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     }
     
     const hash: string = await argon.hash(password);
-
+    const key = await generateKmsDataKey();
+    if (!key?.CiphertextBlob) {
+        return {
+            message: "Invalid key"
+        }
+    }
     const query = await pool.query(`
        UPDATE scheduler_users
-       SET password = $1
-       WHERE email = $2; 
-    `, [hash, email]);
+       SET password = pgp_sym_encrypt_bytea($1, $2), 
+            user_password_key = $3
+       WHERE email = $4; 
+    `, [hash, key.Plaintext, key.CiphertextBlob, email]);
     if (query.rowCount === 0) {
         return {
             message: "Password reset failed"

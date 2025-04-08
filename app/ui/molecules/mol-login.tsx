@@ -57,7 +57,7 @@ export default function LogIn ({ lang }: {
 
             <p className="text-sm text-[#a1a1aa] m-2">
                 { lang === "es" ? "Si aún no tienes cuenta, " : "If you don't have an account yet, " }
-                <Link href={`/${lang}/signup`}>{ lang === "es" ? "Regístrate" : "Signup" }</Link>
+                <Link href={`/${lang}/signup`}>{ lang === "es" ? "Regístrate" : "Sign up" }</Link>
             </p>
         </section>
     )
