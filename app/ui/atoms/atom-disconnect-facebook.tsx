@@ -15,7 +15,7 @@ export default function DisconnectFacebook () {
     return (
         <>
         {
-            !disconnected ? <Button className="bg-white border-1 border-black" endContent={<LogoFacebook color="#0866ff"/>} onPress={onOpen}>{ lang === "es" ? "Desconectar Facebook" : "Disconnect from Facebook"}</Button> : null
+            !disconnected ? <Button className="text-black bg-white border-1 border-black" endContent={<LogoFacebook color="#0866ff"/>} onPress={onOpen}>{ lang === "es" ? "Desconectar Facebook" : "Disconnect from Facebook"}</Button> : null
         }
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>

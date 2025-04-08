@@ -15,7 +15,7 @@ export default function DisconnectGoogle () {
     return (
         <>
         {
-            !disconnected ? <Button className="bg-white border-1 border-black" endContent={<LogoGoogle />} onPress={onOpen}>{ lang === "es" ? "Desconectar Google" : "Disconnect from Google" }</Button> : null
+            !disconnected ? <Button className="text-black bg-white border-1 border-black" endContent={<LogoGoogle />} onPress={onOpen}>{ lang === "es" ? "Desconectar Google" : "Disconnect from Google" }</Button> : null
         }
         
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
