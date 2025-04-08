@@ -30,33 +30,35 @@ export default function YTable ({ lang, storedRows }: {
             </fieldset>
 
             <table className="col-start-2 row-start-2 w-full overflow-x-scroll flex flex-col mb-6 pb-10 gap-2">
-                <thead className="flex flex-col gap-1">
-                    <tr className="flex flex-row gap-2">
-                    { 
-                        columnHeaders && columnHeaders.map((column: string, headerIndex: number) => {
-                            return <TableColumn headerIndex={ headerIndex } value={ column } key={ headerIndex } />
-                        })
-                    }
-                    </tr>
-                </thead>
-                <tbody className="flex flex-col gap-1">
                 {
                     rowHeaders && rowHeaders.map((row: string, rowIndex: number) => {
-                            return <tr className="flex flex-row gap-2" key={ rowIndex }>
-                                {
-                                    columnHeaders && columnHeaders.map((_: string, columnIndex: number) => {
-                                        return <TableRow 
-                                        rowIndex={ rowIndex } 
-                                        colIndex={ columnIndex } 
-                                        value={ storedRows && storedRows[rowIndex] ? storedRows[rowIndex][columnIndex] : 
-                                            columnIndex === 0 ? row : "" } 
-                                        key={ columnIndex } />
-                                    })
-                                }
+                        if (rowIndex === 0) {
+                            return <thead className="flex flex-col gap-1" key={ rowIndex }>
+                                <tr className="flex flex-row gap-2">
+                                    {
+                                        columnHeaders && columnHeaders.map((column: string, columnIndex: number) => {
+                                            return <TableColumn headerIndex={ columnIndex } value={ column } key={ columnIndex } />
+                                        })
+                                    }
+                                </tr>
+                            </thead>
+                        }
+                        return <tbody className="flex flex-col gap-1" key={ rowIndex }>
+                            <tr className="flex flex-row gap-2" key={ rowIndex }>
+                            {
+                                columnHeaders && columnHeaders.map((_: string, columnIndex: number) => {
+                                    return <TableRow 
+                                    rowIndex={ rowIndex } 
+                                    colIndex={ columnIndex } 
+                                    value={ storedRows && storedRows[rowIndex] ? storedRows[rowIndex][columnIndex] : 
+                                        columnIndex === 0 ? row : "" } 
+                                    key={ columnIndex } />
+                                })
+                            }
                             </tr>
+                        </tbody>
                     })
                 }
-                </tbody>
             </table>
         </fieldset>
     )
