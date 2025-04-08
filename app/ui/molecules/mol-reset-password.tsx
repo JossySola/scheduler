@@ -18,7 +18,7 @@ export default function ResetPassword({ token }: {
             <FormInputPassword />
             
             <p aria-live="polite" className="text-danger">{resetState.message}</p>
-            <ActionButton loading={pending} disabled={pending}>
+            <ActionButton type="submit" loading={pending} disabled={pending}>
                 { lang === "es" ? "Cambiar contraseña" : "Change password" }
             </ActionButton>
         </form>
