@@ -17,7 +17,7 @@ export default async function Page ({ params, searchParams }: {
 
     if (!email || !token) {
         return (
-            <section className="w-full flex flex-col items-center">
+            <section className="h-screen w-full flex flex-col items-center">
                 <h2>{ lang === "es" ? "Enlace inválido" : "Broken link" }</h2>
             </section>
         )
@@ -27,7 +27,7 @@ export default async function Page ({ params, searchParams }: {
 
     if (verification.rowCount === 0) {
         return (
-            <section className="w-full flex flex-col items-center">
+            <section className="h-screen w-full flex flex-col items-center">
                 <h2>{ lang === "es" ? "Token inválido o ya usado" : "Invalid or already used token."}</h2>
             </section>
         )
@@ -39,14 +39,14 @@ export default async function Page ({ params, searchParams }: {
 
     if (expires < now) {
         return (
-            <section className="w-full flex flex-col items-center">
+            <section className="h-screen w-full flex flex-col items-center">
                 <h2>{ lang === "es" ? "Token ha expirado" : "Token has expired."}</h2>
             </section>
         )
     }
 
     return (
-        <section className="w-full flex flex-col items-center">
+        <section className="h-screen w-full flex flex-col items-center">
             <h2>{ lang === "es" ? "Restaurar contraseña" : "Reset Password"}</h2>
             <ResetPassword token={token} />
         </section>
