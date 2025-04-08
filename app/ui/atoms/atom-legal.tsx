@@ -9,7 +9,7 @@ export default function FooterLegal () {
     return (
         <Dropdown placement="top" backdrop="blur">
             <DropdownTrigger>
-                <Button radius="full" className="bg-[#f0eee670] backdrop-blur-sm w-fit"><BookOpen /></Button>
+                <Button radius="full" className="bg-[#f0eee670] dark:bg-[#3F3F4670] backdrop-blur-sm w-fit"><BookOpen /></Button>
             </DropdownTrigger>
             <DropdownMenu>
                 <DropdownItem key="privacy" href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/privacy`}>{ lang === "es" ? "Privacidad" : "Privacy" }</DropdownItem>
