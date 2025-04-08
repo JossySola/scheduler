@@ -3,12 +3,15 @@ import "server-only"
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/mocks/db";
+import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 export async function GET (request: NextRequest) {
     const locale = request.headers.get("x-user-locale") || "en";
     const headersList = await headers();
     const user_email = headersList.get("user_email")?.toString();
     const table_id = headersList.get("table_id")?.toString();
+    const tag = request.nextUrl.searchParams.get('tag')
 
     if (!user_email || !table_id) {
         return NextResponse.json({
@@ -53,5 +56,7 @@ export async function GET (request: NextRequest) {
             error: "Failed to update count"
         }, { status: 500 });
     }
+    revalidateTag(tag ?? "table");
+    revalidatePath(`/${locale}/table/${table_id}`);
     return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
 }
