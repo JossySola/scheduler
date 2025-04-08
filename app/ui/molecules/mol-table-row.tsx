@@ -66,9 +66,9 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
         {
             // Row Header
             colIndex === 0 ? <th scope="row" className="flex flex-row items-center gap-2">
-                <span className="text-tiny">{ rowIndex + 1 }</span>
+                <span className="text-tiny w-[1rem]">{ rowIndex }</span>
                 <Input 
-                name={`${colLetters[colIndex]}${rowIndex +1}`}
+                name={`${colLetters[colIndex]}${rowIndex}`}
                 classNames={{
                     inputWrapper: [
                         "w-[200px]",
@@ -77,7 +77,6 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
                 }}
                 className="w-max"
                 variant="flat"
-                size="sm"
                 type="text"
                 value={ text || "" } 
                 autoComplete="off" 
@@ -97,7 +96,7 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
             // Select Input
             values && values.length ? <td>
                 <Select
-                name={`${colLetters[colIndex]}${rowIndex +1}`}
+                name={`${colLetters[colIndex]}${rowIndex}`}
                 className="max-w-xs"
                 classNames={{
                     innerWrapper: [
@@ -123,7 +122,7 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
             // Normal Input
             <td>
                 <Input 
-                name={`${colLetters[colIndex]}${rowIndex +1}`}
+                name={`${colLetters[colIndex]}${rowIndex}`}
                 classNames={{
                     inputWrapper: [
                         "w-[200px]",
@@ -139,7 +138,6 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
                     ]
                 }}
                 variant="bordered"
-                size="sm"
                 type="text"
                 value={ text ?? " " } 
                 color={ "default" }
