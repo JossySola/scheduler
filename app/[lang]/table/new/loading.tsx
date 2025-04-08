@@ -7,7 +7,7 @@ import max from "@/app/scheduler_table_max.json";
 
 export default function LottieLoader() {
     return (
-        <div className="flex flex-col justify-center items-center w-full h-screen relative top-[-64]">
+        <div className="flex flex-col justify-start items-center w-full h-screen relative top-[-64]">
             <div className="relative sm:hidden">
                 <Lottie animationData={ min } loop autoplay />
             </div>
