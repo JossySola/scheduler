@@ -6,6 +6,12 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { sql } from "@vercel/postgres";
 
+interface TableData {
+    table_id: string;
+    table_name: string;
+    updated_at: string;
+    created_at: string;
+}
 export default async function Page ({ params }: {
     params: Promise<{ lang: "en" | "es" }>,
 }) {
@@ -18,10 +24,10 @@ export default async function Page ({ params }: {
             FROM scheduler_users_tables
             WHERE user_id = ${session.user.id};
         `;
-
+        const rows = table_data.rows as TableData[];
         return (
             <Suspense fallback={ <DashboardSkeleton /> }>
-                <DashboardTable rows={ table_data.rows } lang={ lang } />
+                <DashboardTable rows={ rows } lang={ lang } />
             </Suspense>
         )
     }
