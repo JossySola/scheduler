@@ -73,3 +73,16 @@ export async function decryptKMS (data: Uint8Array) {
         return null;
     }
 }
+export function getDeviceInfo() {
+    if (typeof window === 'undefined') return null; // SSR guard
+  
+    return {
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      screenWidth: window.screen.width,
+      screenHeight: window.screen.height,
+      pixelDepth: window.screen.pixelDepth,
+      deviceMemory: (navigator as any).deviceMemory || 'Unknown',
+      hardwareConcurrency: navigator.hardwareConcurrency || 'Unknown',
+    };
+  }
