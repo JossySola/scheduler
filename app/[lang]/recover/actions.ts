@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 import sgMail from "@sendgrid/mail";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { sql } from "@vercel/postgres";
 
 export async function SendResetEmailAction (formData: FormData) {
     const email = formData.get("email")?.toString();
@@ -17,11 +18,11 @@ export async function SendResetEmailAction (formData: FormData) {
         redirect(responseUrl.toString());
     };
 
-    const query = await pool.query(`
+    const query = await sql`
        SELECT EXISTS (
-        SELECT 1 FROM scheduler_users WHERE email = $1
+        SELECT 1 FROM scheduler_users WHERE email = ${email}
        );
-    `, [email]);
+    `;
     const userExists = query.rows[0].exists;
 
     if (!userExists) {
@@ -554,11 +555,11 @@ export async function SendResetEmailAction (formData: FormData) {
 
     try {
         process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY); 
-        const query = await pool.query(`
+        const query = await sql`
            INSERT INTO scheduler_password_resets
            (email, token, expires_at) 
-           VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
-        `, [email, token]);
+           VALUES (${email}, ${token}, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
+        `;
         if (query.rowCount === 0) {
             throw new Error("Failed insertion");
         }

@@ -3,6 +3,7 @@ import { decrypt, decryptKmsDataKey, generateKmsDataKey } from "@/app/lib/utils"
 import { signIn } from "@/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { sql } from "@vercel/postgres";
 
 export default async function Page ({ params, searchParams }: {
     params: Promise<{ lang: "en" | "es" }>,
@@ -10,11 +11,11 @@ export default async function Page ({ params, searchParams }: {
 }) {
     const token = (await searchParams).token;
     const lang = (await params).lang;
-    const confirming = await pool.query(`
+    const confirming = await sql`
         SELECT token, key 
         FROM scheduler_email_confirmation_tokens
-        WHERE token = $1 AND expires_at > NOW() AND used_at IS NULL;
-    `, [token]);
+        WHERE token = ${token} AND expires_at > NOW() AND used_at IS NULL;
+    `;
     if (!confirming.rows.length || confirming.rowCount === 0) {
         return <section className="h-screen p-10">
             <h3 className="text-center">{ lang === "es" ? "Este enlace es inválido o ha expirado" : "This confirmation link is invalid or has expired." }</h3>
@@ -34,25 +35,25 @@ export default async function Page ({ params, searchParams }: {
 
     const secret = await generateKmsDataKey();
 
-    const insert = await pool.query(`
+    const insert = await sql`
         INSERT INTO scheduler_users (name, username, email, birthday, password, user_password_key)
         VALUES (
-            $1,
-            $2,
-            $3,
-            $4,
-            pgp_sym_encrypt_bytea($5, $6),
-            $7
+            ${name},
+            ${username},
+            ${email},
+            ${birthday},
+            pgp_sym_encrypt_bytea(${password}, ${secret?.Plaintext}),
+            ${secret?.CiphertextBlob}
         );
-    `, [name, username, email, birthday, password, secret?.Plaintext, secret?.CiphertextBlob]);
+    `;
     if (insert.rowCount === 0) {
         return <section className="h-screen p-10">
         <h3 className="text-center">{ lang === "es" ? "Hubo un problema con el registro, intenta registrarte nuevamente y reporta este problema." : "There has been a problem with the sign up process, please try again and report the error." }</h3>
     </section>
     }
-    await pool.query(`
-        DELETE FROM scheduler_email_confirmation_tokens WHERE token = $1;
-    `, [token]);
+    await sql`
+        DELETE FROM scheduler_email_confirmation_tokens WHERE token = ${token};
+    `;
 
     try {
         await signIn("credentials", {
@@ -62,7 +63,6 @@ export default async function Page ({ params, searchParams }: {
         });
         redirect(`/${lang}/dashboard`);
     } catch (err) {
-        console.error("❌ Auto login failed:", err);
         return (
             <section className="h-screen p-10 text-center">
                 <h3>{lang === "es" ? "Registro completado, pero hubo un problema iniciando sesión." : "Account created, but there was a problem logging you in."}</h3>

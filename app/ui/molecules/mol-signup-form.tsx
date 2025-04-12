@@ -1,7 +1,6 @@
 "use client"
 import { useActionState, useEffect, useState } from "react";
 import SignInProviders from "./mol-signin-providers";
-import { Button, Input } from "@heroui/react";
 import FormInputName from "../atoms/atom-form-input-name";
 import FormInputUsername from "../atoms/atom-form-input-username";
 import FormInputBirthday from "../atoms/atom-form-input-birthday";

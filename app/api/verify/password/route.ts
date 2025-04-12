@@ -3,6 +3,8 @@ import "server-only";
 import pool from "@/app/lib/mocks/db";
 import { NextRequest, NextResponse } from "next/server";
 import { Argon2id } from "oslo/password";
+import { decryptKmsDataKey } from "@/app/lib/utils";
+import { sql } from "@vercel/postgres";
 
 export async function POST (request: NextRequest): Promise<NextResponse> {
     const payload = await request.json();
@@ -13,21 +15,22 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
         return NextResponse.json({ error: 'Empty payload' }, { status: 400 });
     }
 
-    const queryKey = await pool.query(`
+    const queryKey = await sql`
         SELECT user_password_key FROM scheduler_users
-        WHERE email = $1 OR username = $1;
-    `, [username]);
+        WHERE email = ${username} OR username = ${username};
+    `;
 
     if (!queryKey.rows.length || queryKey.rowCount === 0) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
     const key = queryKey.rows[0].user_password_key;
+    const decryptedKey = await decryptKmsDataKey(key);
 
-    const queryUser = await pool.query(`
-        SELECT pgp_sym_decrypt_bytea(password, $2) AS decrypted_password
+    const queryUser = await sql`
+        SELECT pgp_sym_decrypt_bytea(password, ${decryptedKey}) AS decrypted_password
         FROM scheduler_users
-        WHERE email = $1 OR username = $1;
-    `, [username, key]);
+        WHERE email = ${username} OR username = ${username};
+    `;
     if (!queryUser.rows.length || queryUser.rowCount === 0) {
         return NextResponse.json({ error: "Invalid key" }, { status: 500 });
     }

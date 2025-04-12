@@ -3,6 +3,7 @@ import "server-only"
 import pool from "@/app/lib/mocks/db";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { sql } from "@vercel/postgres";
 
 export async function GET(request: NextRequest) {
     const locale = request.headers.get("x-user-locale") || "en";
@@ -14,10 +15,10 @@ export async function GET(request: NextRequest) {
     }, { status: 401 })
 
     try {
-        const requestId = await pool.query(`
+        const requestId = await sql`
             SELECT id FROM scheduler_users
-            WHERE email = $1;    
-        `, [email]);
+            WHERE email = ${email};    
+        `;
         if (!requestId || requestId.rowCount === 0) {
             return NextResponse.json({
                 error: "User not found"
@@ -25,27 +26,27 @@ export async function GET(request: NextRequest) {
         }
         const user_id = requestId.rows[0].id;
     
-        const deleteTables = await pool.query(`
+        const deleteTables = await sql`
             DELETE FROM scheduler_users_tables
-            WHERE user_id = $1;
-        `, [user_id])
+            WHERE user_id = ${user_id};
+        `;
     
-        const deleteProviders = await pool.query(`
+        const deleteProviders = await sql`
             DELETE FROM scheduler_users_providers
-            WHERE email = $1;
-        `, [email])
+            WHERE email = ${email};
+        `;
     
-        const deleteAttempts = await pool.query(`
+        const deleteAttempts = await sql`
             DELETE FROM scheduler_login_attempts
-            WHERE email = $1;
-        `, [email])
+            WHERE email = ${email};
+        `;
     
-        const deleteConfirmations = await pool.query(`
+        const deleteConfirmations = await sql`
             DELETE FROM scheduler_email_confirmation_tokens
-            WHERE email = $1;
-        `, [email])
+            WHERE email = ${email};
+        `;
     
-        const deleteUser = await pool.query(`
+        const deleteUser = await sql`
             UPDATE scheduler_users
             SET 
                 name = '[deleted user]',
@@ -56,8 +57,8 @@ export async function GET(request: NextRequest) {
                 user_password_key = CONCAT('deleted_', id), -- Keeps it unique
                 deleted_at = NOW(),
                 user_image = NULL
-            WHERE email = $1;
-        `, [email]);
+            WHERE email = ${email};
+        `;
         return NextResponse.redirect(new URL(`/${locale}/signup`, request.url));
     } catch (e) {
         return NextResponse.json({

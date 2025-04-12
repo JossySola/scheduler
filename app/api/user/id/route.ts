@@ -3,6 +3,7 @@ import "server-only"
 import pool from "@/app/lib/mocks/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { sql } from "@vercel/postgres";
 
 export async function GET() {
     const headersList = await headers();
@@ -14,11 +15,11 @@ export async function GET() {
         }, { status: 400 })
     }
 
-    const response = await pool.query(`
+    const response = await sql`
         SELECT id as user_id
         FROM scheduler_users
-        WHERE email = $1;
-    `, [email]);
+        WHERE email = ${email};
+    `;
 
     if (response.rowCount === 0) {
         return NextResponse.json({

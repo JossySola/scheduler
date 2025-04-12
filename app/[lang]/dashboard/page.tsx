@@ -5,6 +5,7 @@ import Settings from "@/app/ui/molecules/mol-settings";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { sql } from "@vercel/postgres";
 
 export default async function Page ({ params }: {
     params: Promise<{ lang: string }>
@@ -13,10 +14,10 @@ export default async function Page ({ params }: {
     const lang = (await params).lang;
     
     if (session?.user && session.user.email) {
-        const providers = await pool.query(`
+        const providers = await sql`
             SELECT provider FROM scheduler_users_providers
-            WHERE email = $1;
-        `, [session.user.email]);
+            WHERE email = ${session.user.email};
+        `;
         const providersResponse = providers.rows ?? [];
 
         return (

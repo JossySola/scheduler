@@ -5,6 +5,7 @@ import { auth, signOut } from "@/auth";
 import { Argon2id } from "oslo/password";
 import pool from "@/app/lib/mocks/db";
 import { headers } from "next/headers";
+import { sql } from "@vercel/postgres";
 
 export async function passwordResetAction(prevState: { message: string }, formData: FormData) {
     const requestHeaders = headers();
@@ -33,10 +34,10 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         }
     }
 
-    const isTokenExpired = await pool.query(`
+    const isTokenExpired = await sql`
        SELECT expires_at, used_at FROM scheduler_password_resets
-       WHERE email = $1 AND token = $2; 
-    `, [email, token]);
+       WHERE email = ${email} AND token = ${token}; 
+    `;
     if (isTokenExpired.rowCount === 0) {
         return {
             message: "Token not found"
@@ -56,10 +57,10 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         }
     }
 
-    const queryKey = await pool.query(`
+    const queryKey = await sql`
         SELECT user_password_key FROM scheduler_users 
-        WHERE email = $1;
-    `, [email]);
+        WHERE email = ${email};
+    `;
     if ( queryKey.rows[0].user_password_key === null || !queryKey.rows.length) {
         // The user exists but has signed in with a provider, so there is no password set yet
         const exposed = await isPasswordPwned(password);
@@ -76,24 +77,24 @@ export async function passwordResetAction(prevState: { message: string }, formDa
                 message: "Invalid key"
             }
         }
-        const query = await pool.query(`
+        const query = await sql`
         UPDATE scheduler_users
-        SET password = pgp_sym_encrypt_bytea($1, $2), 
-                user_password_key = $3
-        WHERE email = $4; 
-        `, [hash, key.Plaintext, key.CiphertextBlob, email]);
+        SET password = pgp_sym_encrypt_bytea(${hash}, ${key.Plaintext}), 
+                user_password_key = ${key.CiphertextBlob}
+        WHERE email = ${email}; 
+        `;
         if (query.rowCount === 0) {
             return {
                 message: "Password reset failed"
             }
         }
 
-        const invalidate = await pool.query(`
+        const invalidate = await sql`
             UPDATE scheduler_password_resets
             SET used_at = NOW()
-            WHERE email = $1 AND token = $2
+            WHERE email = ${email} AND token = ${token}
             RETURNING used_at;
-        `, [email, token]);
+        `;
 
         if (invalidate.rowCount === 0) {
             return {
@@ -112,11 +113,11 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     }
     // The user has used their own credentials
     const decryptedKey = await decryptKmsDataKey(queryKey.rows[0].user_password_key);
-    const oldPassword = await pool.query(`
-       SELECT pgp_sym_decrypt_bytea(password, $1) AS decrypted_password
+    const oldPassword = await sql`
+       SELECT pgp_sym_decrypt_bytea(password, ${decryptedKey}) AS decrypted_password
        FROM scheduler_users
-       WHERE email = $2; 
-    `, [decryptedKey, email]);
+       WHERE email = ${email}; 
+    `;
     if (oldPassword.rowCount === 0) {
         return {
             message: "User not found"
@@ -145,24 +146,24 @@ export async function passwordResetAction(prevState: { message: string }, formDa
             message: "Invalid key"
         }
     }
-    const query = await pool.query(`
+    const query = await sql`
        UPDATE scheduler_users
-       SET password = pgp_sym_encrypt_bytea($1, $2), 
-            user_password_key = $3
-       WHERE email = $4; 
-    `, [hash, key.Plaintext, key.CiphertextBlob, email]);
+       SET password = pgp_sym_encrypt_bytea(${hash}, ${key.Plaintext}), 
+            user_password_key = ${key.CiphertextBlob}
+       WHERE email = ${email}; 
+    `;
     if (query.rowCount === 0) {
         return {
             message: "Password reset failed"
         }
     }
 
-    const invalidate = await pool.query(`
+    const invalidate = await sql`
         UPDATE scheduler_password_resets
         SET used_at = NOW()
-        WHERE email = $1 AND token = $2
+        WHERE email = ${email} AND token = ${token}
         RETURNING used_at;
-    `, [email, token]);
+    `;
 
     if (invalidate.rowCount === 0) {
         return {

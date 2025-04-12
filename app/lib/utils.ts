@@ -9,6 +9,7 @@ import { KMSDataKey, UserResponse, UtilResponse } from "./definitions";
 import { SignatureV4 } from "@aws-sdk/signature-v4";
 import { Sha256 } from "@aws-crypto/sha256-js";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
+import { sql } from "@vercel/postgres";
 
 export async function getUserFromDb (username: string, password: string): Promise<UtilResponse & UserResponse> {
   if (!username || !password) {
@@ -20,10 +21,10 @@ export async function getUserFromDb (username: string, password: string): Promis
   }
   
   try {
-    const user = await pool.query(`
+    const user = await sql`
         SELECT * FROM scheduler_users 
-            WHERE username = $1 OR email = $1;
-    `, [username]);
+            WHERE username = ${username} OR email = ${username};
+    `;
     
     if (user.rowCount === 0) {
       return {
@@ -36,10 +37,10 @@ export async function getUserFromDb (username: string, password: string): Promis
     const userRecord = user.rows[0];
     
     if (userRecord.password === null) {
-      const provider = await pool.query(`
+      const provider = await sql`
         SELECT provider FROM scheduler_users_providers
-        WHERE email = $1;
-      `, [userRecord.email]);
+        WHERE email = ${userRecord.email};
+      `;
       const name = provider.rowCount === 2 ? `${provider.rows[0].provider} and ${provider.rows[1].provider}` : `${provider.rows[0]}`;
 
       return {
@@ -116,10 +117,10 @@ export async function sendResetPasswordConfirmation (email: string): Promise<Uti
       message: validated.error?.issues?.[0]?.message || "Unknown validation error"
     }
   }
-  const confirming = await pool.query(`
+  const confirming = await sql`
       SELECT email FROM scheduler_users
-      WHERE email = $1;
-  `, [email])
+      WHERE email = ${email};
+  `;
   
   if (confirming.rowCount === 0 || !confirming) {
     return {
@@ -136,10 +137,10 @@ export async function sendResetPasswordConfirmation (email: string): Promise<Uti
   }
   try {
     process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    const insertToken = await pool.query(`
+    const insertToken = await sql`
       INSERT INTO scheduler_email_confirmation_tokens (token, email, expires_at)
-      VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
-    `, [verification_code, email]);
+      VALUES (${verification_code}, ${email}, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
+    `;
     if (insertToken.rowCount === 0) {
       throw new Error('Server Error');
     }

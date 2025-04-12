@@ -35,7 +35,7 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
                 if (error.cause?.next_attempt) {
                     return {
                         message: locale === "es" ? "Información inválida" : "Invalid credentials",
-                        nextAttempt: error.cause.next_attempt
+                        nextAttempt: error.cause.next_attempt as number
                     };
                 }
                 if (typeof error.cause === "number") {

@@ -4,7 +4,7 @@ import pool from "@/app/lib/mocks/db";
 import { NextRequest, NextResponse } from "next/server";
 import { redirect } from "next/navigation";
 import { decryptKmsDataKey, generateKmsDataKey } from "@/app/lib/utils";
-import { revalidatePath } from "next/cache";
+import { sql } from "@vercel/postgres";
 
 export async function POST (request: NextRequest): Promise<NextResponse> {
     const locale = request.headers.get("x-user-locale") || "en";
@@ -17,6 +17,10 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
     const colSpecs: string = JSON.stringify(payload.colSpecs);
     const rowSpecs: string = JSON.stringify(payload.rowSpecs);
 
+    /*
+    if (!user_id.length || !table_id.length || !title.length || 
+    )
+    */
     if (!table_id) {
         if (!user_id) {
             return NextResponse.json({
@@ -24,10 +28,10 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
             }, { status: 401 });
         }
         const key = await generateKmsDataKey();
-        const getNumTables = await pool.query(`
+        const getNumTables = await sql`
             SELECT num_tables FROM scheduler_users
-            WHERE id = $1;
-        `, [user_id]);
+            WHERE id = ${user_id};
+        `;
         if (getNumTables.rowCount === 0) {
             return NextResponse.json({
                 error: "User not found"
@@ -38,30 +42,30 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
                 error: "Maximum num of tables reached"
             }, { status: 403 });
         }
-        const newTable = await pool.query(`
+        const newTable = await sql`
             INSERT INTO scheduler_users_tables (user_id, table_name, table_data, table_rowspecs, table_values, table_colspecs, table_data_key)
             VALUES (
-                $1,
-                $2,
-                pgp_sym_encrypt($3, $7),
-                pgp_sym_encrypt($4, $7),
-                pgp_sym_encrypt($5, $7),
-                pgp_sym_encrypt($6, $7),
-                $8
+                ${user_id},
+                ${title},
+                pgp_sym_encrypt(${rows}, ${key?.Plaintext}),
+                pgp_sym_encrypt(${rowSpecs}, ${key?.Plaintext}),
+                pgp_sym_encrypt(${values}, ${key?.Plaintext}),
+                pgp_sym_encrypt(${colSpecs}, ${key?.Plaintext}),
+                ${key?.CiphertextBlob}
             )
             RETURNING id;
-        `, [user_id, title, rows, rowSpecs, values, colSpecs, key?.Plaintext, key?.CiphertextBlob]);
+        `;
         
         if (newTable.rowCount === 0) {
             return NextResponse.json({
                 error: "Failed to insert"
             }, { status: 500 });
         }
-        const updateCount = await pool.query(`
+        const updateCount = await sql`
             UPDATE scheduler_users
             SET num_tables = COALESCE(num_tables, 0) + 1
-            WHERE id = $1;
-        `, [user_id]);
+            WHERE id = ${user_id};
+        `;
         return redirect(`/${locale}/table/${newTable.rows[0].id}`);
     }
 
@@ -70,30 +74,29 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
             error: "Unauthenticated or missing id"
         }, { status: 400 });
     }
-    const queryKey = await pool.query(`
+    const queryKey = await sql`
         SELECT table_data_key FROM scheduler_users_tables 
-        WHERE id = $1 AND user_id = $2;
-    `, [table_id, user_id]);
+        WHERE id = ${table_id} AND user_id = ${user_id};
+    `;
     if (queryKey.rowCount === 0) {
         return NextResponse.json("Invalid key", { status: 500 });
     }
     const key = queryKey.rows[0].table_data_key;
     const decryptedKey = await decryptKmsDataKey(key);
-    const update = await pool.query(`
+    const update = await sql`
         UPDATE scheduler_users_tables
-        SET table_name = $1,
-            table_data = pgp_sym_encrypt($2, $6),
-            table_rowSpecs = pgp_sym_encrypt($3, $6),
-            table_values = pgp_sym_encrypt($4, $6),
-            table_colSpecs = pgp_sym_encrypt($5, $6),
+        SET table_name = ${title},
+            table_data = pgp_sym_encrypt(${rows}, ${decryptedKey}),
+            table_rowspecs = pgp_sym_encrypt(${rowSpecs}, ${decryptedKey}),
+            table_values = pgp_sym_encrypt(${values}, ${decryptedKey}),
+            table_colspecs = pgp_sym_encrypt(${colSpecs}, ${decryptedKey}),
             updated_at = NOW()
-        WHERE id = $7 AND user_id = $8;
-    `, [title, rows, rowSpecs, values, colSpecs, decryptedKey, table_id, user_id]);
+        WHERE id = ${table_id} AND user_id = ${user_id};
+    `;
     if (update.rowCount === 0) {
         return NextResponse.json({
             error: "Failed to update"
         }, { status: 400 });
     }
-    revalidatePath(`/${locale}/table/${table_id}`);
     return NextResponse.json(" ", { status: 200 });
 }

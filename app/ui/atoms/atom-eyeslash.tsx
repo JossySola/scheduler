@@ -1,6 +1,6 @@
 import React from "react";
 
-export const EyeSlashFilledIcon = (props) => {
+export const EyeSlashFilledIcon = (props: { className: string }) => {
     return (
       <svg
         aria-hidden="true"
@@ -36,7 +36,7 @@ export const EyeSlashFilledIcon = (props) => {
     );
   };
   
-  export const EyeFilledIcon = (props) => {
+  export const EyeFilledIcon = (props: { className: string }) => {
     return (
       <svg
         aria-hidden="true"

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import pool from "@/app/lib/mocks/db";
 import { revalidatePath } from "next/cache";
+import { sql } from "@vercel/postgres";
 
 export async function DeleteTableAction (previousState: { message: string },formData: FormData) {
     const requestHeaders = headers();
@@ -23,19 +24,19 @@ export async function DeleteTableAction (previousState: { message: string },form
             message: locale === "es" ? "" : "",
         }
     }
-    const deletion = await pool.query(`
-        DELETE FROM scheduler_users_tables WHERE id = $1 AND user_id = $2;
-    `, [table_id, session.user.id]);
+    const deletion = await sql`
+        DELETE FROM scheduler_users_tables WHERE id = ${table_id} AND user_id = ${session.user.id};
+    `;
     if (deletion.rowCount === 0) {
         return {
             message: locale === "es" ? "Hubo un problema al tratar de eliminar la tabla, por favor inténtalo más tarde." : "We failed to delete your schedule, please try again later.",
         }
     }
-    const update = await pool.query(`
+    const update = await sql`
         UPDATE scheduler_users
         SET num_tables = GREATEST(num_tables - 1, 0)
-        WHERE id = $1;
-    `, [session.user.id]);
+        WHERE id = ${session.user.id};
+    `;
 
     revalidatePath(`/${locale}/dashboard`);
     revalidatePath(`/${locale}/table/${table_id}`);

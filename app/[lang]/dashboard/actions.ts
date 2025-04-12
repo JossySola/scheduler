@@ -2,8 +2,9 @@
 import "server-only"
 import { auth, signOut } from "@/auth";
 import pool from "@/app/lib/mocks/db";
+import { sql } from "@vercel/postgres";
 
-export async function DeleteAccountAction (state: { message: "" }, formData: FormData) {
+export async function DeleteAccountAction (state: { message: string }, formData: FormData) {
     const session = await auth();
     const password = formData.get("password")?.toString();
     const email = session?.user?.email;
@@ -54,6 +55,9 @@ export async function DeleteAccountAction (state: { message: "" }, formData: For
     if (request.ok) {
         return await signOut();
     }
+    return {
+        message: ""
+    }
 }
 
 export async function DisconnectGoogleAction () {
@@ -73,15 +77,15 @@ export async function DisconnectGoogleAction () {
     })
     
     if (request.status === 200) {
-        await pool.query(`
+        await sql`
             DELETE FROM scheduler_users_providers
-            WHERE email = $1 AND provider = 'Google';
-        `, [email]);
+            WHERE email = ${email} AND provider = 'Google';
+        `;
 
-        const providers = await pool.query(`
+        const providers = await sql`
            SELECT * FROM scheduler_users_providers
-           WHERE email = $1; 
-        `, [email]);
+           WHERE email = ${email}; 
+        `;
 
         if (providers.rowCount === 0) {
             return await signOut();
@@ -109,15 +113,15 @@ export async function DisconnectFacebookAction () {
     })
 
     if (request.status === 200) {
-        await pool.query(`
+        await sql`
             DELETE FROM scheduler_users_providers
-            WHERE email = $1 AND provider = 'Facebook';
-        `, [email]);
+            WHERE email = ${email} AND provider = 'Facebook';
+        `;
 
-        const providers = await pool.query(`
+        const providers = await sql`
             SELECT * FROM scheduler_users_providers
-            WHERE email = $1; 
-         `, [email]);
+            WHERE email = ${email}; 
+         `;
  
          if (providers.rowCount === 0) {
             return await signOut();

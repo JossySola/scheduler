@@ -8,26 +8,17 @@ export default function FormButtonValidation ({ text, setValidated, endContent }
     setValidated: React.Dispatch<SetStateAction<boolean>>, 
     endContent?: React.JSX.Element 
     }) {
-    const [ nextState, nextAction, pending ] = useActionState(validateAction, { message: '', passes: false, descriptive: []})
+    const [ nextState, nextAction, pending ] = useActionState(validateAction, { message: '', ok: false })
 
     useEffect(() => {
-        if (nextState.passes) {
+        if (nextState.ok) {
             setValidated(true);
         }
     }, [nextState]);
 
     return (
         <>
-            {
-                nextState.descriptive?.map((description, index) => {
-                    if (description) {
-                        if (description.error) {
-                            return <p key={index} className="text-danger">{description.error.issues[0].message}</p>
-                        }
-                    }
-                    return <p key={index} className="text-red-500">{nextState.message}</p>;
-                })
-            }
+            <p className="text-danger">{ nextState.message }</p>
             <ActionButton
             type="submit"
             form="register"
