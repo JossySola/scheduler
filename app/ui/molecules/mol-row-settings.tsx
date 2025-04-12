@@ -10,9 +10,14 @@ export default function RowSettings () {
     const params = useParams();
     const lang = params.lang;
     return (
-        <section className="w-full p-5 flex flex-col justify-start items-center magicBorder">
+        <section className="w-full text-center p-5 max-w-lg magicBorder">
             <h3>{ lang === "es" ? "Configuración de Filas" : "Rows Settings" }</h3>
-            <Tabs aria-label="row-settings">
+            <Tabs 
+            aria-label="row-settings" 
+            classNames={{
+                tabList: "overflow-x-scroll"
+            }}
+            fullWidth={ true }>
             {
                 rowHeaders && rowHeaders.map((header, rowIndex) => {
                     if (rowIndex !== 0) {
@@ -21,8 +26,8 @@ export default function RowSettings () {
                             key={ `tab-${rowIndex}` }
                             title={ header ? header : lang === "es" ? "Sin nombre" : "No name" }>
                                 <RowTabCard 
-                                key={ `card-${rowIndex}` }
-                                name={ header ? header : lang === "es" ? "Sin nombre" : "No name" }
+                                key={ `row-card-${rowIndex}` }
+                                name={ header }
                                 rowIndex={ rowIndex } />
                             </Tab>
                         )
