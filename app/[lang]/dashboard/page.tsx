@@ -1,8 +1,10 @@
 import pool from "@/app/lib/mocks/db";
 import UserProfile from "@/app/ui/atoms/atom-user-profile";
+import { UserSkeleton } from "@/app/ui/atoms/skeletons";
 import Settings from "@/app/ui/molecules/mol-settings";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function Page ({ params }: {
     params: Promise<{ lang: string }>
@@ -19,8 +21,10 @@ export default async function Page ({ params }: {
 
         return (
             <section className="w-full flex flex-row justify-center gap-6 p-5 sm:justify-start sm:p-10">
-                <UserProfile />
-                <Settings lang={lang} data={providersResponse}/>
+                <Suspense fallback={ <UserSkeleton /> }>
+                    <UserProfile />
+                    <Settings lang={lang} data={providersResponse}/>
+                </Suspense>
             </section>
         )
     }
