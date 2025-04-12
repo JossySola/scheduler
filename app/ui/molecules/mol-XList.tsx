@@ -3,13 +3,13 @@ import { useContext, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { PlusCircle, Trash } from "geist-icons";
-import { TableSpecsContext, TableSpecsType } from "@/app/[lang]/table/context";
+import { TableHandlersContext, TableHandlersType } from "@/app/[lang]/table/context";
 import { motion } from "framer-motion";
 
 export default function XList({ name } : { 
         name: string,
 }) {
-    const { values, setValues }: TableSpecsType = useContext(TableSpecsContext);
+    const { values, setValues }: TableHandlersType = useContext(TableHandlersContext);
     const [ input, setInput ] = useState<string>("");
     const params = useParams();
     const { lang } = params;
@@ -38,7 +38,7 @@ export default function XList({ name } : {
     }
 
     return (
-        <ol id={name} className="w-fit flex flex-col justify-center items-center mr-10 ml-10">
+        <ol id={name} className="w-xs max-w-lg flex flex-col justify-center items-center m-8">
             <h3>{name}</h3>
             <div className="w-full flex flex-row justify-center items-center gap-2 mb-3">
                 <Input 
