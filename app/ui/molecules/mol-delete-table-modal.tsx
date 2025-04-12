@@ -4,6 +4,7 @@ import { ActionButton, SecondaryButton } from "../atoms/atom-button"
 import { Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { Trash } from "geist-icons";
 import { DeleteTableAction } from "@/app/[lang]/dashboard/@list/actions";
+import { useActionState } from "react";
 
 export default function DeleteTableModal ({ table_id, table_name }: {
     table_id: string,
@@ -12,6 +13,7 @@ export default function DeleteTableModal ({ table_id, table_name }: {
     const params = useParams();
     const lang = params.lang;
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [ state, action, pending ] = useActionState(DeleteTableAction, { message: "" });
 
     return (
         <>
@@ -25,14 +27,15 @@ export default function DeleteTableModal ({ table_id, table_name }: {
                     </ModalHeader>
                     <ModalBody className="flex flex-col justify-center items-center">
                         <h3 className="m-0">{ table_name }</h3>
-                        <Form action={DeleteTableAction} className="m-5 flex flex-col items-center">
+                        <Form action={ action } className="m-5 flex flex-col items-center">
                             <p>{ lang === "es" ? "Confirma esta acción, ya que será irreversible" : "Confirm this action as this will be irreversible" }</p>
-                            <input value={table_id} name="item_id" readOnly hidden />
-                            <ActionButton type="submit" color="danger">{ lang === "es" ? "Eliminar" : "Delete" }</ActionButton>
+                            <input value={ table_id } name="item_id" readOnly hidden />
+                            <span className="text-danger">{ state.message }</span>
+                            <ActionButton type="submit" color="danger" loading={ pending } disabled={ pending }>{ lang === "es" ? "Eliminar" : "Delete" }</ActionButton>
                         </Form>
                     </ModalBody>
                     <ModalFooter>
-                        <SecondaryButton onPress={onClose}>{ lang === "es" ? "Cancelar" : "Cancel" }</SecondaryButton>
+                        <SecondaryButton onPress={ onClose }>{ lang === "es" ? "Cancelar" : "Cancel" }</SecondaryButton>
                     </ModalFooter>
                     </>
                 )}
