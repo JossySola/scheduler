@@ -1,7 +1,9 @@
 import pool from "@/app/lib/mocks/db";
+import { DashboardSkeleton } from "@/app/ui/atoms/skeletons";
 import DashboardTable from "@/app/ui/molecules/mol-dashboard-table";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function Page ({ params }: {
     params: Promise<{ lang: "en" | "es" }>,
@@ -16,7 +18,11 @@ export default async function Page ({ params }: {
             WHERE user_id = $1;
         `, [session.user.id]);
 
-        return <DashboardTable rows={ table_data.rows } lang={ lang } />
+        return (
+            <Suspense fallback={ <DashboardSkeleton /> }>
+                <DashboardTable rows={ table_data.rows } lang={ lang } />
+            </Suspense>
+        )
     }
     redirect(`/${lang}/login`);
 }
