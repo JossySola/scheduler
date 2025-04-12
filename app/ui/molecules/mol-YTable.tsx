@@ -6,9 +6,9 @@ import TableRow from "./mol-table-row";
 import { useContext } from "react";
 import { TableHandlersContext, TableHandlersType } from "@/app/[lang]/table/context";
 
-export default function YTable ({ lang, storedRows }: { 
+export default function YTable ({ lang, rows }: { 
     lang: "es" | "en",
-    storedRows?: Array<Array<string>>,
+    rows?: Array<Array<string>>,
 }) {
     const {
     columnHeaders, 
@@ -50,7 +50,7 @@ export default function YTable ({ lang, storedRows }: {
                                     return <TableRow 
                                     rowIndex={ rowIndex } 
                                     colIndex={ columnIndex } 
-                                    value={ storedRows && storedRows[rowIndex] ? storedRows[rowIndex][columnIndex] : 
+                                    value={ rows && rows[rowIndex] ? rows[rowIndex][columnIndex] : 
                                         columnIndex === 0 ? row : "" } 
                                     key={ columnIndex } />
                                 })
