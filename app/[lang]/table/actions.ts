@@ -18,13 +18,11 @@ export async function SaveTableAction (
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
     const session = await auth();
-    
     if (session && session.user) {
         const entries = [...formData.entries()];
         const tableEntries = entries
         .filter(([key]) => /^[A-Z][0-9]+$/.test(key)) // Filters out all input fields whose name are not <Letter><Number> format
         .map(([key, value]) => ({ key, value })); // Returns an Array of objects containing the key-value pairs]
-        console.log(statesObject)
         let payload = {
             "user_id": session.user.id,
             "table_id": formData.get("table_id")?.toString(),
@@ -110,18 +108,15 @@ const recentAIOutputs: Array<{
     output: StreamableValue<any, any>,
 }> = [];
 const MAX_HISTORY_SIZE = 5;
-export async function generateTableAction (previousState: { rows: Array<Array<string>>, conflicts: Array<string> },formData: FormData) {
+export async function generateTableAction (previousState: { rows: Array<Array<string>>, conflicts: Array<string>, lang: "en" | "es" }, formData: FormData) {
     let historyText = "";
-    const requestHeaders = headers();
-    const locale = (await requestHeaders).get("x-user-locale") || "en";
-
     if (recentAIOutputs.length > 0) {
         historyText = "Previous outputs I've generated (DO NOT REPEAT THESE PATTERNS):\n";
         recentAIOutputs.forEach((item, index) => {
           historyText += `Output ${index + 1}: ${JSON.stringify(item.output)}\n`;
         });
     }
-
+    
     const entries = [...formData.entries()];
     let payload = {
         rows: [[]],
@@ -145,7 +140,7 @@ export async function generateTableAction (previousState: { rows: Array<Array<st
         if (!payload.rows[rowIndex]) payload.rows[rowIndex] = [];
         payload.rows[rowIndex].push(value.toString() as never);
     })
-    const { object } = await generateObject({
+    let { object } = await generateObject({
         model: anthropic('claude-3-opus-20240229'),
         temperature: 1,
         output: 'object',
@@ -166,20 +161,39 @@ export async function generateTableAction (previousState: { rows: Array<Array<st
             **Values**: ${JSON.stringify(payload.values)}
             These are the specific requirements and constraints for the schedule. Each specification follows a format that you must interpret and apply correctly.
             **Specifications**: ${JSON.stringify(payload.specs)}
-            
+
+            Rules to follow:
+            1. **Randomness**
+                - Distribute the values randomly throughout the table ONLY IF it does not affect any row specification.
+            2. **Emptiness**
+                - Fill unused cells with an empty string after placing all required values.
+                - Do not fill rows that have a disabled specification. No need to add it as a conflict.
+            3.  **Output**
+                - Generate and return the output as a JavaScript Object. A property called "rows" is an Array of Arrays, and a second property called "conflicts" with all annotations of specifications that could not be met.
+                - The first array should contain the column headers.
+                - Each subsequent array represents a row.
+                - The first element of a row is the row header.
+                - The remaining elements of each row Array are the values for each column.
+                
             Now, let's create the schedule following these steps:
-            1. Initialize the schedule with the column headers.
-            2. Add row headers and follow these steps for each row:
+            1. Initialize the schedule with the column headers as the first array in a main array.
+            2. For each subsequent row add an array to the main array, add the row headers as the first element of each array and start filling them according to the specifications of each row:
                 a. If the header row does not have a name, fill all its columns with empty strings and move into the next row.
                 b. Check if the row has this specification: "Specification: Row <index> named <name>, disable on the entire table", if so fill all the columns with empty strings. Otherwise, go to the next step.
-                c. For the current row to work with, check if there are specifications for which columns to fill: "Specification: Row <index> named <name>, is meant to be used on this column:"
-                d. Check if there is a row specification: "Specification: Row <index> named <name>, should be used this fixed amount of times:", The specification means the row should appear no more than the specified amount, regardless of the column's specifications.
-                e. If there is a conflict between the specification: "Specification: Row <index> named <name>, is meant to be used on this column:" where N columns must be filled in the row, and the specification: "Specification: Row <index> named <name>, should be used this fixed amount of times:", prioritize this specification: "Specification: Row <index> named <name>, is meant to be used on this column:" and fill those columns
-                f. Check if there is a row specification: "Specification: Row <index> named <name>, has this value assigned:". If there are values meant to be used in this row, it's mandatory to use them all on the row in a random order. If there are more columns to fill than values to use, reuse them randomly. If there are no values assigned for this row, use values from the provided list randomly. If this specification has a conflict with: "Specification: Row <index> named <name>, should be used this fixed amount of times:", prioritize this last specification.
-            3. Once all rows have been filled check for each column's specification: "Specification: Column <index> named <name>, must have this fixed amount of rows filled in:". If there are more values filled than the amount assigned, check each row's specification: "Specification: Row <index> named <name>, is meant to be used on this column:". If there is a row that don't have this specification, replace the value on the column with an empty string. If there is a row specification assigning the column to be filled with a value, leave the value and make an annotation about this conflict in an array called "conflicts".
+                c. First check which values to use for this row under the "Specification: Row <index> named <name>, has this value assigned:" specification. Keep in mind there could be more than one value with this specification assigned to this row. It's mandatory to use all the specified values on the row in a random order. If there are more columns to fill than values to use, reuse them randomly. If there are no values assigned for this row, use values from the provided list randomly.
+                d. For the current row to work with, check if there are specifications for which columns to fill: "Specification: Row <index> named <name>, should be used on this column specifically:" and fill them with the previous assigned values' list. Keep in mind this specification may be repeated with other column names.
+                e. Look up for the specification: "Specification: Row <index> named <'name'>, this is in how many columns the row should be filled in:". If it exists, do the following:
+                    i. If the specification: "Specification: Row <index> named <name>, should be used on this column specifically:" exists as well, use this one instead and discard the other specification.
+                    ii. If the specification: "Specification: Row <index> named <name>, should be used on this column specifically:" does not exist, fill any N of columns with the previously assigned values in a random order. 
+                f. Repeat the previous steps for each row.
+            3. After having all the rows filled in following their specifications, now we will move into the Columns' specifications. Iterate through each column and follow these steps on each one:
+                a. Look up for the specification: "Specification: Column <letter> named <'name'>, must have this fixed amount of rows filled in:". If the column currently has more rows filled in than it should, remove ONLY the row's values that do not conflict with: "Specification: Row <index> named <name>, should be used on this column specifically:". Otherwise, leave them there and add this observation to an array named "conflicts". If the Column currently has less values than it is specified, fill in any values with the row's assigned values as long as it does not conflict with: "Specification: Row <index> named <'name'>, this is in how many columns the row should be filled in:". Otherwise, do not do annything and add this observation to the array named "conflicts".
+                b. Look up for the specification: "Specification: Column <letter> named <'name'>, use the value: "<value>" in this column this amount of times:". 
+                    i. If there are values missing: fill them into any rows that have these values assigned, then check the other columns that hold values of those rows and place the value that was held into any of their filled columns that may have this value duplicated. If the past value did not have a duplicate, place it in any other column that may expect this value to be used BUT if the row does not have assigned values specified, then drop this past value and move on. Annotate any conflict into the 'conflicts' array.
+                    ii. If there are values not expected in the column: Check each row specifications, if a row has: "Specification: Row <index> named <name>, should be used on this column specifically:", check their assigned values, if among the values there are values expected in the column, replace the past value with any of the expected values. If the past value has a duplicate drop it and move on. If it does not have a duplicate, place it in any column that expects this value and write the annotation into the 'conflicts' array. If the row does not have this specification: "Specification: Row <index> named <name>, should be used on this column specifically:", place the past value in any column that expects this value. 
             4. Fill unused columns with empty strings.
-            5. After completing all the table, analyze the result and perform any improvement to better meet the criteria given. Remember that the specifications given is the most important to give a strategic result.
-            6. Finish the output as an Object, a property called "rows" for the table, and "conflicts" for any conflicts met that couldn't be handled in this language: ${ locale } where 'en' is English and 'es' is Spanish (note that this is a generic example and should not influence the actual content of the current generated schedule):
+            5. After completing all the table, analyze the result and perform any improvement to better meet the criteria. Remember that the specifications given are the most important to be able to return a strategic result.
+            6. Finish the output as an Object, a property called "rows" for the table, and "conflicts" for any conflicts met that couldn't be handled. Write the conflict messages in this language: ${ previousState.lang } where 'en' is English and 'es' is Spanish. (note that the following is a generic example and should not influence the actual content of the current generated schedule):
             {
                 rows: [
                     ["Employees", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -189,21 +203,6 @@ export async function generateTableAction (previousState: { rows: Array<Array<st
                 ],
                 conflicts: ["The specification in column <name> could not be met because [...]", "The specification in row <name> could not be met because [...]"],
             }
-            Rules to follow:
-                1. **Randomness**
-                - Distribute the values randomly throughout the table ONLY IF it does not affect row any specification.
-                2. **Emptiness**
-                - Fill unused cells with an empty string after placing all required values.
-                3.  **Output**
-                - Generate and return the output as a JavaScript Object. A property called "rows" is an Array of Arrays, and a second property called "conflicts" with all annotations of specifications that could not be met.
-                - The first array should contain the column headers.
-                - Each subsequent array represents a row.
-                - The first element of a row is the row header.
-                - The remaining elements of each row Array are the values for each column.
-                4. **Prioritization**
-                - Prioritize the specification: "Specification: Row <index> named <name>, should be used this fixed amount of times:" over "Specification: Column <index> named <name>, must have this fixed amount of rows filled in:", regardless of the amount of rows.
-                - If there are any "Specification: Row <index> named <name>, has this value assigned:", ONLY use these specified values in the specified row. These values can be reused in the same row.
-            Make a second analysis to confirm that the rules are followed.
         `,
     })
     return object;
