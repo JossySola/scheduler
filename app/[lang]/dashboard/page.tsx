@@ -7,6 +7,9 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { sql } from "@vercel/postgres";
 
+interface ProviderData {
+    provider: string,
+}
 export default async function Page ({ params }: {
     params: Promise<{ lang: string }>
 }) {
@@ -18,7 +21,7 @@ export default async function Page ({ params }: {
             SELECT provider FROM scheduler_users_providers
             WHERE email = ${session.user.email};
         `;
-        const providersResponse = providers.rows ?? [];
+        const providersResponse = providers.rows as ProviderData[] ?? [];
 
         return (
             <section className="w-full flex flex-row justify-center gap-6 p-5 sm:justify-start sm:p-10">
