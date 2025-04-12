@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "vercel-build": "npm install --legacy-peer-deps && next build",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -37,7 +36,7 @@
     "geist-icons": "^1.2.3",
     "lottie-react": "^2.4.1",
     "motion": "^12.6.3",
-    "next": "^15.3.1-canary.6",
+    "next": "^15.3.0",
     "next-auth": "^5.0.0-beta.25",
     "oslo": "^1.2.1",
     "pg": "^8.14.1",

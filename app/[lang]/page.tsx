@@ -4,8 +4,6 @@ import Link from "next/link";
 import { AnthropicTiny, ClaudeTiny } from "../ui/atoms/atom-anthropic";
 import Frames from "../ui/landing/frames";
 
-export const experimental_ppr = true;
-
 export default async function App ({ params }: {
   params: Promise<{ lang: "en" | "es" }>,
 }) {
