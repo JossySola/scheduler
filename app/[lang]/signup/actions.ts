@@ -7,8 +7,9 @@ import { z } from "zod";
 import { headers } from "next/headers";
 import { UtilResponse } from "@/app/lib/definitions";
 import { Argon2id } from "oslo/password";
+import { sql } from "@vercel/postgres";
 
-export async function validateAction (state: { message: string }, formData: FormData) {
+export async function validateAction (state: { message: string, ok: boolean }, formData: FormData) {
   // Validates input
   // Checks password exposure
   // Sends confirmation email
@@ -29,10 +30,10 @@ export async function validateAction (state: { message: string }, formData: Form
     };
   }
   // Does the user already exists?
-  const user = await pool.query(`
+  const user = await sql`
     SELECT id FROM scheduler_users
-    WHERE email = $1 OR username = $2;
-  `, [email, username]);
+    WHERE email = ${email} OR username = ${username};
+  `;
   if (user.rowCount && user.rowCount > 0 || user.rows.length) {
     return {
       ok: false, 
@@ -40,10 +41,10 @@ export async function validateAction (state: { message: string }, formData: Form
     }
   }
   // The user does not exist but the email to use is in the block list?
-  const isBlocked = await pool.query(`
+  const isBlocked = await sql`
     SELECT email FROM scheduler_blocked_emails
-    WHERE email = $1;
-  `, [email]);
+    WHERE email = ${email};
+  `;
   if (isBlocked.rows.length) {
       return {
         ok: false,
@@ -100,10 +101,10 @@ export async function validateAction (state: { message: string }, formData: Form
   const argon = new Argon2id();
   const hashed = await argon.hash(password)
   const token = await encrypt(`${email}/\/${username}/\/${name}/\/${birthday}/\/${hashed}/\/${password}`, key?.Plaintext);
-  const registerToken = await pool.query(`
+  const registerToken = await sql`
     INSERT INTO scheduler_email_confirmation_tokens (token, key, expires_at)
-    VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '1 minute');
-  `, [token, key.CiphertextBlob]);
+    VALUES (${token}, ${key.CiphertextBlob}, CURRENT_TIMESTAMP + INTERVAL '1 minute');
+  `;
   
   if (registerToken.rowCount === 0) {
     return {

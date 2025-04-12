@@ -1,5 +1,6 @@
 "use server"
 import "server-only";
+import { sql } from "@vercel/postgres";
 import pool from "@/app/lib/mocks/db";
 import { signIn } from "@/auth";
 import { headers } from "next/headers";
@@ -78,13 +79,13 @@ async function handleEmailConfirmation (token: string, email: string) {
             "Data missing"
         }
     }
-    const confirming = await pool.query(`
+    const confirming = await sql`
         SELECT token 
         FROM scheduler_email_confirmation_tokens
-        WHERE email = $1 
-            AND token = $2 
+        WHERE email = ${email} 
+            AND token = ${token} 
             AND expires_at > NOW();
-    `, [email, token]);
+    `;
     if (!confirming || confirming.rowCount === 0) {
         return {
             ok: false,
@@ -93,10 +94,10 @@ async function handleEmailConfirmation (token: string, email: string) {
             "The code is incorrect or has expired"
         }
     }
-    const deleting = await pool.query(`
+    const deleting = await sql`
         DELETE FROM scheduler_email_confirmation_tokens
-        WHERE email = $1 AND token = $2;
-    `, [email, token]);
+        WHERE email = ${email} AND token = ${token};
+    `;
     if (deleting.rowCount === 0) {
         return {
             ok: false,

@@ -6,6 +6,7 @@ import Facebook from "next-auth/providers/facebook";
 import pool from "./app/lib/mocks/db";
 import { Argon2id } from "oslo/password";
 import { decryptKmsDataKey } from "./app/lib/utils";
+import { sql } from "@vercel/postgres";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     secret: process.env.NEXTAUTH_SECRET,
@@ -15,18 +16,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             clientSecret: process.env.AUTH_GOOGLE_SECRET,
             async profile(profile) {
                 try {
-                    const doesUserExist = await pool.query(`
+                    const doesUserExist = await sql`
                     SELECT 
                         scheduler_users.id as user_id, 
                         scheduler_users_providers.provider
                     FROM 
-                        (SELECT $1 AS email) AS input
+                        (SELECT ${profile.email} AS email) AS input
                     LEFT JOIN 
                         scheduler_users ON input.email = scheduler_users.email
                     LEFT JOIN
                         scheduler_users_providers ON scheduler_users.email = scheduler_users_providers.email 
-                        AND scheduler_users_providers.provider = $2;
-                    `, [profile.email, 'Google']);
+                        AND scheduler_users_providers.provider = 'Google';
+                    `;
                     const data = doesUserExist.rows[0];
                     // If the user exists AND it already has signed in with provider, return profile
                     if (data.user_id && data.provider) {
@@ -37,42 +38,42 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     // If the user exist BUT hasn't signed in with provider,
                     // Add provider into table AND update the users' profile picture
                     if (data.user_id && data.provider === null) {
-                        const registerUserProvider = await pool.query(`
+                        const registerUserProvider = await sql`
                             INSERT INTO scheduler_users_providers (email, provider)
                             VALUES (
-                                $1,
-                                $2
+                                ${profile.email},
+                                'Google'
                             );
-                        `, [profile.email, 'Google']);
-                        const insertProfilePicture = await pool.query(`
+                        `;
+                        const insertProfilePicture = await sql`
                             UPDATE scheduler_users
-                            SET user_image = $1
-                            WHERE email = $2 AND user_image IS NULL;
-                        `, [profile.picture, profile.email]);
+                            SET user_image = ${profile.picture}
+                            WHERE email = ${profile.email} AND user_image IS NULL;
+                        `;
                         profile.id = data.user_id;
                         profile.image = profile.picture;
                         return { ... profile };
                     }
                     // If the user does not exist
                     if (data.user_id === null && data.provider === null) {
-                        const registerUser = await pool.query(`
+                        const registerUser = await sql`
                             INSERT INTO scheduler_users (name, username, email, user_image)
                             VALUES (
-                                $1,
-                                $2,
-                                $3,
-                                $4
+                                ${profile.name},
+                                ${profile.name},
+                                ${profile.email},
+                                ${profile.picture}
                             )
                             ON CONFLICT (username) DO NOTHING
                             RETURNING id;
-                        `, [profile.name, profile.name, profile.email, profile.picture]);
-                        const registerUserProvider = await pool.query(`
+                        `;
+                        const registerUserProvider = await sql`
                             INSERT INTO scheduler_users_providers (email, provider)
                             VALUES (
-                                $1,
-                                $2
+                                ${profile.email},
+                                'Google'
                             );
-                        `, [profile.email, 'Google']);
+                        `;
                         profile.id = data.user_id;
                         profile.image = profile.picture;
                         return { ... profile };
@@ -93,18 +94,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
             async profile(profile) {
                 try {
-                    const doesUserExist = await pool.query(`
+                    const doesUserExist = await sql`
                     SELECT 
                         scheduler_users.id as user_id, 
                         scheduler_users_providers.provider
                     FROM 
-                        (SELECT $1 AS email) AS input
+                        (SELECT ${profile.email} AS email) AS input
                     LEFT JOIN 
                         scheduler_users ON input.email = scheduler_users.email
                     LEFT JOIN
                         scheduler_users_providers ON scheduler_users.email = scheduler_users_providers.email 
-                        AND scheduler_users_providers.provider = $2;
-                    `, [profile.email, 'Google']);
+                        AND scheduler_users_providers.provider = 'Facebook';
+                    `;
                     const data = doesUserExist.rows[0];
                     // If the user exists AND it already has signed in with provider, return profile
                     if (data.user_id && data.provider) {
@@ -115,42 +116,42 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     // If the user exist BUT hasn't signed in with provider,
                     // Add provider into table AND update the users' profile picture
                     if (data.user_id && data.provider === null) {
-                        const registerUserProvider = await pool.query(`
+                        const registerUserProvider = await sql`
                             INSERT INTO scheduler_users_providers (email, provider)
                             VALUES (
-                                $1,
-                                $2
+                                ${profile.email},
+                                'Facebook'
                             );
-                        `, [profile.email, 'Google']);
-                        const insertProfilePicture = await pool.query(`
+                        `;
+                        const insertProfilePicture = await sql`
                             UPDATE scheduler_users
-                            SET user_image = $1
-                            WHERE email = $2 AND user_image IS NULL;
-                        `, [profile.picture.data.url, profile.email]);
+                            SET user_image = ${profile.picture.data.url}
+                            WHERE email = ${profile.email} AND user_image IS NULL;
+                        `;
                         profile.id = data.user_id;
                         profile.image = profile.picture.data.url;
                         return { ... profile };
                     }
                     // If the user does not exist
                     if (data.user_id === null && data.provider === null) {
-                        const registerUser = await pool.query(`
+                        const registerUser = await sql`
                             INSERT INTO scheduler_users (name, username, email, user_image)
                             VALUES (
-                                $1,
-                                $2,
-                                $3,
-                                $4
+                                ${profile.name},
+                                ${profile.name},
+                                ${profile.email},
+                                ${profile.picture.data.url}
                             )
                             ON CONFLICT (username) DO NOTHING
                             RETURNING id;
-                        `, [profile.name, profile.name, profile.email, profile.picture.data.url]);
-                        const registerUserProvider = await pool.query(`
+                        `;
+                        const registerUserProvider = await sql`
                             INSERT INTO scheduler_users_providers (email, provider)
                             VALUES (
-                                $1,
-                                $2
+                                ${profile.email},
+                                'Facebook'
                             );
-                        `, [profile.email, 'Google']);
+                        `;
                         profile.id = data.user_id;
                         profile.image = profile.picture.data.url;
                         return { ... profile };
@@ -174,7 +175,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     throw new Error("Data missing");
                 }
                 // Gather data if user exists
-                const user = await pool.query(`
+                const user = await sql`
                     SELECT 
                         id, 
                         name, 
@@ -183,36 +184,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         password,
                         user_image
                     FROM scheduler_users
-                    WHERE email = $1 OR username = $1;
-                `, [username]);
+                    WHERE email = ${username} OR username = ${username};
+                `;
                 // User not found
                 if (!user.rowCount) throw new AuthError("User not found", {
                     cause: 404
                 });
                 // Check if user's account is locked
-                const isUserLocked = await pool.query(`
+                const isUserLocked = await sql`
                     SELECT next_attempt_allowed_at 
                     FROM scheduler_login_attempts
-                    WHERE email = $1
+                    WHERE email = ${user.rows[0].email}
                     AND next_attempt_allowed_at > NOW();
-                `, [user.rows[0].email]);
+                `;
                 // User's account is locked
                 if (isUserLocked.rowCount) throw new AuthError("Account currently locked", { cause: { next_attempt: isUserLocked.rows[0].next_attempt_allowed_at }});
                 if (user.rows[0].password === null) {
                     // If decrypted password is null check if user is registered with a provider
-                    const userProvider = await pool.query(`
+                    const userProvider = await sql`
                         SELECT provider FROM scheduler_users_providers
-                        WHERE email = $1;
-                    `, [user.rows[0].email]);
+                        WHERE email = ${user.rows[0].email};
+                    `;
                     if (!userProvider.rows.length) throw new AuthError("Bad registry", {
                         cause: 409
                     });
                 }
                 // If it is not null, verify the hashed decrypted password
-                const userKey = await pool.query(`
+                const userKey = await sql`
                     SELECT user_password_key FROM scheduler_users
-                    WHERE email = $1 OR username = $1;
-                `, [username]);
+                    WHERE email = ${username} OR username = ${username};
+                `;
                 if (userKey.rowCount === 0) {
                     throw new AuthError("Bad registry", {
                         cause: 409
@@ -221,36 +222,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const key = await decryptKmsDataKey(userKey.rows[0].user_password_key);
                 if (key === null) throw new AuthError("Internal Error", { cause: 500 });
 
-                const decryptedPassword = await pool.query(`
-                    SELECT pgp_sym_decrypt_bytea(password, $2) AS decrypted_password
+                const decryptedPassword = await sql`
+                    SELECT pgp_sym_decrypt_bytea(password, ${key}) AS decrypted_password
                     FROM scheduler_users
-                    WHERE email = $1 OR username = $1;
-                `, [username, key])
+                    WHERE email = ${username} OR username = ${username};
+                `;
                 if (decryptedPassword.rowCount === 0) throw new AuthError("Internal Error", { cause: 500 });
                 const argon2id = new Argon2id();
                 const verification = await argon2id.verify(decryptedPassword.rows[0].decrypted_password.toString(), password);
 
                 if (!verification) { 
                     // If verification fails, insert registry to login_attempts
-                    const attempt = await pool.query(`
+                    const attempt = await sql`
                         INSERT INTO scheduler_login_attempts (email, created_at, last_attempt_at, next_attempt_allowed_at, attempts)
-                        VALUES ($1, NOW(), NOW(), NOW() + INTERVAL '1 minute', 1)
+                        VALUES (${user.rows[0].email}, NOW(), NOW(), NOW() + INTERVAL '1 minute', 1)
                         ON CONFLICT (email) 
                         DO UPDATE SET 
                             last_attempt_at = NOW(),
                             next_attempt_allowed_at = NOW() + (scheduler_login_attempts.attempts * INTERVAL '1 minute'),
                             attempts = scheduler_login_attempts.attempts + 1
                         RETURNING next_attempt_allowed_at;
-                    `, [user.rows[0].email]);
+                    `;
                     throw new AuthError("Invalid credentials", {
                         cause: {
                             next_attempt: attempt.rows[0].next_attempt_allowed_at
                         }
                     })
                 }
-                await pool.query(`
-                    DELETE FROM scheduler_login_attempts WHERE email = $1;
-                `, [user.rows[0].email]);
+                await sql`
+                    DELETE FROM scheduler_login_attempts WHERE email = ${user.rows[0].email};
+                `;
                 return {
                     id: user.rows[0].id,
                     name: user.rows[0].name,

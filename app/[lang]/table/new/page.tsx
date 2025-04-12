@@ -1,6 +1,7 @@
 import pool from "@/app/lib/mocks/db";
 import TableWithProvider from "@/app/ui/molecules/mol-provider-table";
 import { auth } from "@/auth";
+import { sql } from "@vercel/postgres";
 import { redirect } from "next/navigation";
 
 export default async function Page ({ params }: {
@@ -12,11 +13,11 @@ export default async function Page ({ params }: {
     if (!session?.user) redirect(`/${lang}/login`);
 
     if (session && session.user) {
-        const numTables = await pool.query(`
+        const numTables = await sql`
             SELECT num_tables 
             FROM scheduler_users
-            WHERE id = $1;
-        `, [session.user.id]);
+            WHERE id = ${session.user.id};
+        `;
 
         if (numTables.rows && numTables.rows.length > 0) {
             if (numTables.rows[0].num_tables < 3) {

@@ -1,6 +1,5 @@
 import ContactForm from "@/app/ui/molecules/mol-contact-form";
 
-
 export default async function Page ({ params }: {
     params: Promise<{ lang: "en" | "es" }>
 }) {
