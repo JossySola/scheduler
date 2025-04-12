@@ -2,7 +2,8 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Input, Select, SelectItem } from "@heroui/react";
 import { useParams } from "next/navigation";
-import { AnthropicGenerationContext, AnthropicGenerationType, TableHandlersContext, TableHandlersType, TableSpecsContext, TableSpecsType } from "@/app/[lang]/table/context";
+import { useDebouncedCallback } from "use-debounce";
+import { AnthropicGenerationContext, AnthropicGenerationType, TableHandlersContext, TableHandlersType } from "@/app/[lang]/table/context";
 
 export default function TableRow ({ rowIndex, colIndex, value }: {
     rowIndex: number,
@@ -12,21 +13,16 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
     const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
     const params = useParams();
     const lang = params.lang;
-    const { setRowHeaders, rowHeaders }: TableHandlersType = useContext(TableHandlersContext);
+    const { setRowHeaders, rowHeaders, values }: TableHandlersType = useContext(TableHandlersContext);
     const { anthropicState }: AnthropicGenerationType = useContext(AnthropicGenerationContext);
-    const { values }: TableSpecsType = useContext(TableSpecsContext);
-    const [ text, setText ] = useState<string>(() => rowIndex !== 0 && value ? value : "");
+    const [ text, setText ] = useState<string>(value ?? "");
+    const [ header, setHeader ] = useState<string>((rowHeaders && rowHeaders[rowIndex]) ?? "");
     let error: string = "";
-    
-    // Combined effect to handle both initial and AI-updated values
-    
     useEffect(() => {
-        if (anthropicState && anthropicState.rows.length) {
+        if (anthropicState && anthropicState.rows.length && anthropicState.rows[rowIndex] && anthropicState.rows[rowIndex][colIndex]) {
             setText(anthropicState.rows[rowIndex][colIndex]);
         }
-    }, [value, rowIndex, colIndex, anthropicState]);
-
-    // Find closest match in values list if exact match doesn't exist
+    }, [anthropicState]);
     const findClosestValue = (input: string, options: string[]): string | null => {
         if (!input || !options || options.length === 0) return null;
         
@@ -46,13 +42,10 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
         
         return null;
     };
-
-    // Try to find a match in the values list
     const matchedValue = useMemo(() => {
         if (!values || !text || text.trim() === " ") return null;
         return findClosestValue(text, values);
     }, [text, values]);
-
     if (colIndex === 0) {
         rowHeaders?.forEach(((header, index) => {
             if (index !== rowIndex && header === text && text !== "") {
@@ -60,7 +53,17 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
             }
         }))
     }
-
+    const update = () => {
+        setRowHeaders && setRowHeaders(prev => {
+            let updated = [...prev];
+            updated[rowIndex] = header;
+            return updated;
+        })
+    }
+    const debouncedUpdate = useDebouncedCallback(update, 1000);
+    useEffect(() => {
+        debouncedUpdate();
+    }, [header]);
     return (
         <>
         {
@@ -78,16 +81,9 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
                 className="w-max"
                 variant="flat"
                 type="text"
-                value={ text || "" } 
+                value={ header } 
                 autoComplete="off" 
-                onChange={ e => {
-                    setText(e.target.value);
-                    setRowHeaders && setRowHeaders (prev => {
-                        let duplicate = [...prev];
-                        duplicate[rowIndex] = e.target.value;
-                        return [...duplicate];
-                    })
-                }}
+                onValueChange={ setHeader }
                 errorMessage={() => (
                     <span className="text-tiny">{ error }</span>
                 )} 
@@ -110,13 +106,17 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
                 color={ "default" }
                 variant="bordered"
                 onChange={ e => setText(e.target.value) }>
-                    {
-                        values.map((value) => (
-                            <SelectItem key={value}>
-                                {value}
-                            </SelectItem>
-                        ))
-                    }
+                    <>
+                        <SelectItem key=" ">
+                        </SelectItem>
+                        {
+                            values.map((value) => (
+                                <SelectItem key={value}>
+                                    {value}
+                                </SelectItem>
+                            ))
+                        }
+                    </>
                 </Select>
             </td> : 
             // Normal Input
@@ -139,7 +139,7 @@ export default function TableRow ({ rowIndex, colIndex, value }: {
                 }}
                 variant="bordered"
                 type="text"
-                value={ text ?? " " } 
+                value={ text } 
                 color={ "default" }
                 autoComplete="off" 
                 onValueChange={ setText } />

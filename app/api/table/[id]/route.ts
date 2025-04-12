@@ -29,8 +29,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         const request = await pool.query(`
             SELECT table_name,
                     pgp_sym_decrypt_bytea(table_data, $3) AS decrypted_table,
-                    pgp_sym_decrypt_bytea(table_rowspecs, $3) AS decrypted_rowSpecs,
-                    pgp_sym_decrypt_bytea(table_colspecs, $3) AS decrypted_colSpecs,
+                    pgp_sym_decrypt_bytea(table_rowspecs, $3) AS decrypted_rowspecs,
+                    pgp_sym_decrypt_bytea(table_colspecs, $3) AS decrypted_colspecs,
                     pgp_sym_decrypt_bytea(table_values, $3) AS decrypted_values,
                     created_at,
                     updated_at
@@ -41,9 +41,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         return NextResponse.json({ 
             title: data.table_name,
             rows: data.decrypted_table,
-            rowSpecs: data.decrypted_rowSpecs,
+            rowSpecs: data.decrypted_rowspecs,
             values: data.decrypted_values,
-            colSpecs: data.decrypted_colSpecs,
+            colSpecs: data.decrypted_colspecs,
             created_at: data.created_at,
             updated_at: data.updated_at,
         }, { status: 200 });

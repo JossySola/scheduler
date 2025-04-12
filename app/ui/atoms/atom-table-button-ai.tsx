@@ -5,9 +5,7 @@ import { useContext } from "react";
 import { AnthropicGenerationContext, AnthropicGenerationType } from "@/app/[lang]/table/context";
 import { PrimaryButton } from "./atom-button";
 
-export default function TableButtonAi ({ isDisabled }: {
-    isDisabled?: boolean 
-}) {
+export default function TableButtonAi () {
     const params = useParams();
     const lang = params.lang;
     const { anthropicAction, anthropicPending }: AnthropicGenerationType = useContext(AnthropicGenerationContext);
@@ -16,7 +14,7 @@ export default function TableButtonAi ({ isDisabled }: {
         <PrimaryButton
         type="submit"
         loading={ anthropicPending }
-        disabled={ isDisabled || anthropicPending }
+        disabled={ anthropicPending }
         formAction={ anthropicAction }
         endContent={ <Box /> }>
             { lang === "es" ? "Generar" : "Generate" }

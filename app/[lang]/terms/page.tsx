@@ -6,11 +6,11 @@ export default async function Page ({ params }: {
 }) {
     const lang = (await params).lang;
     return (
-        <section className="pb-10 p-5 text-base/7">
+        <section className="p-10 pb-[6rem] text-base/7 h-fit">
 
             <h1>Terms of Use</h1>
 
-            <i>Effective Date: February 19th, 2025.</i>
+            <i>Effective Date: April 8th, 2025.</i>
             <Divider className="my-4" />
             <h2>1. Acceptance of Terms</h2>
             
@@ -29,14 +29,14 @@ export default async function Page ({ params }: {
             <ul className="pl-8 list-disc">
                 <li>Your password must be at least 8 characters long.</li>
                 <li>It is highly recommended to use the Password Manager’s suggestion, as it is able to offer the strongest password suggestions.</li>
-                <li>All passwords are checked against <Code size="sm">Have I Been Pwned API <a href="#footer"><sup>1</sup></a></Code> for security, hashed using <Code size="sm">Argon2id <a href="#footer"><sup>2</sup></a></Code> and encrypted before storage.</li>
+                <li>All passwords are checked against a public <Code size="sm">database of exposed passwords <a href="#footer"><sup>1</sup></a></Code> for security, hashed using <Code size="sm">Argon2id <a href="#footer"><sup>2</sup></a></Code> and encrypted before storage.</li>
             </ul>
 
             <h2>4. User-Generated Content (Schedules & Tables)</h2>
             
             <ul className="pl-8 list-disc">
                 <li>You retain ownership of the schedules and tables you create.</li>
-                <li>All saved schedules are encrypted with <Code size="sm">BYTEA encryption <a href="#footer"><sup>3</sup></a></Code> to ensure confidentiality.</li>
+                <li>All schedules and tables are encrypted <a href="#footer"><sup>3</sup></a> using strong encryption algorithms before storage.</li>
                 <li>You may delete your schedules at any time.</li>
             </ul>
             
@@ -89,10 +89,10 @@ export default async function Page ({ params }: {
             <p>If you have any questions or concerns about these terms, please contact us {<Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`}>here</Link>}.</p>
             <Divider className="my-4"/>
             <footer className="text-tiny dark:bg-[#1A1A1A]" id="footer">
-                <p><sup>1</sup> <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> is a service that provides a list of passwords previously exposed in data breaches. This is used to avoid the use of unsuitable passwords.</p>
+                <p><sup>1</sup> <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> is a service that provides a list of passwords previously exposed in data breaches. This is used to avoid the use of unsuitable passwords. From our side, we check your password against a public database of exposed passwords (Have I Been Pwned) using a privacy-preserving method that ensures your password is never fully revealed.</p>
                 <p><sup>2</sup> <Link href="https://en.wikipedia.org/wiki/Argon2">Argon2id</Link> is a hybrid version of <b>Argon2</b>, which is a key derivation function used to hash passwords.</p>
-                <p><sup>3</sup> <Link href="https://www.postgresql.org/docs/current/pgcrypto.html#PGCRYPTO-PGP-ENC-FUNCS-PGP-SYM-ENCRYPT">BYTEA encryption</Link> is the way we encrypt data before storing it into our database. The encryption and decryption of such data is done with a unique symmetric key/password.</p>
-                <p><sup>4</sup> For the Artificial Intelligence Service, we use <Code className="text-tiny"><b>Anthropic: </b>claude-3-opus-20240229</Code></p>
+                <p><sup>3</sup> Sensitive data is encrypted before being stored in our database using a strong encryption algorithm and securely managed keys.</p>
+                <p><sup>4</sup> <Link href="https://www.anthropic.com/legal/privacy">Anthropic Privacy Policy.</Link> For AI-related features, we use a privacy-compliant language model provided by Anthropic.</p>
             </footer>
         </section>
     )

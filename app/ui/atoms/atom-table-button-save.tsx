@@ -4,12 +4,12 @@ import { useActionState, useContext, useEffect } from "react"
 import { ActionButton } from "./atom-button";
 import { FloppyDisk } from "geist-icons";
 import { addToast } from "@heroui/react";
-import { TableSpecsContext, TableSpecsType } from "@/app/[lang]/table/context";
+import { TableHandlersContext, TableHandlersType } from "@/app/[lang]/table/context";
 
 export default function TableButtonSave ({ lang }: {
     lang: "en" | "es",
 }) {
-    const { values, colSpecs, rowSpecs }: TableSpecsType = useContext(TableSpecsContext);
+    const { values, colSpecs, rowSpecs }: TableHandlersType = useContext(TableHandlersContext);
     const initialState = {
         message: "",
         ok: false,
@@ -18,7 +18,6 @@ export default function TableButtonSave ({ lang }: {
         return SaveTableAction(state, formData, { values, colSpecs, rowSpecs });
     };
     const [ saveState, saveAction, savePending ] = useActionState(boundAction, initialState);
-    
     useEffect(() => {
         if (saveState.message) {
             addToast({
@@ -27,7 +26,6 @@ export default function TableButtonSave ({ lang }: {
             })
         }
     }, [saveState]);
-
     return (
         <ActionButton 
         type="submit"

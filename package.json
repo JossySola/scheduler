@@ -21,6 +21,7 @@
     "@aws-sdk/signature-v4": "^3.370.0",
     "@aws-sdk/types": "^3.775.0",
     "@aws-sdk/util-base64": "^3.374.0",
+    "@emailjs/browser": "^4.4.1",
     "@heroui/react": "^2.7.6",
     "@heroui/theme": "^2.4.13",
     "@sendgrid/mail": "^8.1.5",
@@ -35,7 +36,7 @@
     "geist-icons": "^1.2.3",
     "lottie-react": "^2.4.1",
     "motion": "^12.6.3",
-    "next": "^15.3.0-canary.42",
+    "next": "^15.3.1-canary.6",
     "next-auth": "^5.0.0-beta.25",
     "oslo": "^1.2.1",
     "pg": "^8.14.1",
@@ -43,6 +44,7 @@
     "react-dom": "^19.1.0",
     "server-only": "^0.0.1",
     "ts-node": "^10.9.2",
+    "use-debounce": "^10.0.4",
     "zod": "^3.24.2"
   },
   "devDependencies": {

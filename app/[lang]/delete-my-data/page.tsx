@@ -5,7 +5,7 @@ export default async function Page ({ params }: {
 }) {
     const lang = (await params).lang;
     return (
-        <section className="h-screen p-5">
+        <section className="w-full h-auto p-10">
             <h1 className="mb-7">{ lang === "es" ? "¿Cómo elimino mis datos?" : "How do I delete my data?"}</h1>
             <DeleteDataList />
         </section>

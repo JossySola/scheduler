@@ -14,7 +14,7 @@ export default function DeleteDataList() {
             <ol className="list-decimal w-full ml-5">
                 <li>
                     <h3>{ lang === "es" ? "En tu panel, ve a 'Ajustes' haciendo click en el ícono de engrane que está a lado de tu nombre de usuario" : "On your dashboard, go to 'Settings' by clicking on the gear icon next to your username" }</h3>
-                    <Card className="w-fit bg-[#d4d4d8]">
+                    <Card className="w-fit bg-[#3f3f46]">
                         <CardBody>
                             <SettingsGearFill />
                         </CardBody>
@@ -46,7 +46,7 @@ export default function DeleteDataList() {
             <ol className="list-decimal w-full ml-5">
             <li>
                     <h3>{ lang === "es" ? "En tu panel, ve a 'Ajustes' haciendo click en el ícono de engrane que está a lado de tu nombre de usuario" : "On your dashboard, go to 'Settings' by clicking on the gear icon next to your username" }</h3>
-                    <Card className="w-fit bg-[#d4d4d8]">
+                    <Card className="w-fit bg-[#3f3f46]">
                         <CardBody>
                             <SettingsGearFill />
                         </CardBody>
@@ -81,7 +81,7 @@ export default function DeleteDataList() {
             <ol className="list-decimal w-full ml-5">
                 <li>
                     <h3>{ lang === "es" ? "En tu panel, ve a 'Ajustes' haciendo click en el ícono de engrane que está a lado de tu nombre de usuario" : "On your dashboard, go to 'Settings' by clicking on the gear icon next to your username" }</h3>
-                    <Card className="w-fit bg-[#d4d4d8]">
+                    <Card className="w-fit bg-[#3f3f46]">
                         <CardBody>
                             <SettingsGearFill />
                         </CardBody>

@@ -14,7 +14,6 @@ export default async function Page ({ params }: {
         const data = JSON.parse(string);
         return data;
     }
-    
     if (session?.user?.id) {
         const storedTable = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/table/${id}`, {
             method: 'GET',
@@ -40,8 +39,8 @@ export default async function Page ({ params }: {
                 <h2 className="text-center">{ lang === "es" ? "Ha ocurrido un error, inténtalo más tarde." : "An unexpected error has happened, please try again." }</h2>
             </section>
         }
-        
         const response = await storedTable.json();
+        const title = response.title;
         const rows = decryptToString(response.rows);
         const rowSpecs = decryptToString(response.rowSpecs);
         const values = decryptToString(response.values);
@@ -52,7 +51,7 @@ export default async function Page ({ params }: {
                     <input type="text" name="table_id" value={ id } readOnly hidden />
                     <TableWithProvider 
                     lang={ lang }
-                    storedTitle={ response.title }
+                    storedTitle={ title }
                     storedRows={ rows }
                     storedRowSpecs={ rowSpecs }
                     storedValues={ values }
