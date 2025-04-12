@@ -32,8 +32,8 @@ export default async function Page ({ params }: {
             }
         } else {
             return (
-                <main className="h-full mt-10 pb-10">
-                    <form className="flex flex-col justify-center items-center relative">
+                <main className="w-full h-full mt-10 pb-10">
+                    <form className="w-full flex flex-col justify-center items-center relative">
                         <TableWithProvider lang={ lang } />
                     </form>
                 </main>
