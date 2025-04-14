@@ -9,6 +9,61 @@ import { Argon2id } from "oslo/password";
 import { decryptKmsDataKey } from "./app/lib/utils";
 import { sql } from "@vercel/postgres";
 
+interface Account {
+    provider: string;
+    providerAccountId: string;
+    type: "";
+    access_token?: string;
+    authorization_details?: [];
+    expires_at?: number;
+    expires_in?: number;
+    id_token?: string;
+    refresh_token?: string;
+    scope?: string;
+    token_type?: Lowercase<string>;
+    userId?: string;
+}
+interface Token {
+    googleAccessToken?: string;
+    facebookAccessToken?: string;
+    googleSub?: string;
+    facebookSub?: string;
+    username?: string;
+    image?: string;
+    id?: string;
+    sub?: null | string;
+    name?: string;
+    email?: string;
+}
+interface User {
+    id?: string;
+    email?: string;
+    image?: null | string;
+    name?: string;
+    googleSub?: string;
+    facebookSub?: string;
+    username?: string;
+    role?: string;
+    
+}
+interface Profile {
+    email?: string;
+    email_verified?: null | boolean;
+    id?: null | string;
+    locale?: null | string;
+    name?: null | string;
+    picture?: any;
+    user_image?: string;
+    profile?: null | string;
+    sub?: null | string;
+}
+interface Session {
+    expires: string;
+    user?: User;
+    googleAccessToken?: string;
+    facebookAccessToken?: string;
+
+}
 export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
     secret: process.env.NEXTAUTH_SECRET,
     providers: [
@@ -79,9 +134,20 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         profile.image = profile.picture;
                         return { ... profile };
                     }
+                    return { 
+                        id: "",
+                        name: "",
+                        email: "",
+                        image: "",
+                    };
                 } catch (error) {
                     console.error("Error during signup API call:", error);
-                    return null;
+                    return { 
+                        id: "",
+                        name: "",
+                        email: "",
+                        image: "",
+                    };;
                 }
             }
         }),
@@ -157,9 +223,20 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         profile.image = profile.picture.data.url;
                         return { ... profile };
                     }
+                    return { 
+                        id: "",
+                        name: "",
+                        email: "",
+                        image: "",
+                    };
                 } catch (error) {
                     console.error("Error during signup API call:", error);
-                    return null;
+                    return { 
+                        id: "",
+                        name: "",
+                        email: "",
+                        image: "",
+                    };
                 }
             }
         }),
@@ -264,7 +341,12 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
         }),
     ],
     callbacks: {
-        async jwt ({ token, account, profile, user }) {
+        async jwt ({ token, account, profile, user }: {
+            token: Token
+            account: Account,
+            profile: Profile,
+            user: User,
+        }) {
             if (account && profile) {
                 const provider = account.provider;
                 const isGoogle = provider === 'google';
@@ -297,7 +379,10 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
             }
             return token;
         },
-        async session ({ session, token }) {
+        async session ({ session, token }: {
+            session: Session,
+            token: Token,
+        }) {
             session.user = session.user || {};
             
             if (token.image) {
@@ -321,7 +406,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
             }
             return session;
         },
-        async redirect({ url, baseUrl }) {
+        async redirect({ url, baseUrl }: { url: string, baseUrl: string }) {
             const defaultLocale = "en";
             const urlObject = new URL(url, baseUrl);
             const pathnameParts = urlObject.pathname.split("/");
