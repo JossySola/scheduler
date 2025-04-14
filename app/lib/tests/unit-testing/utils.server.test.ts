@@ -511,7 +511,7 @@ describe("<utils.ts>", () => {
         test("Returns Data Key", async () => {
             // Implementation
             const accessKeyId = process.env.VITE_KMS_KEY;
-            const secretAccessKey = process.env.VITE_KMS_SECRET;
+            const secretAccessKey = process.env.AWS_KMS_SECRET;
             const region = 'us-east-1';
             const service = 'kms';
             try {
@@ -575,7 +575,7 @@ describe("<utils.ts>", () => {
     describe.skip("decryptKmsDataKey", () => {
         test("Decrypts Data Key", async () => {
             const accessKeyId = process.env.VITE_KMS_KEY;
-            const secretAccessKey = process.env.VITE_KMS_SECRET;
+            const secretAccessKey = process.env.AWS_KMS_SECRET;
             const KeyId = process.env.VITE_KMS_ARN;
             const CiphertextBlob = "AQIDAHjI+EmDTWCmrJVuYc/6gcLE2ANzgDXBlU1vcqMnJqYhOAGDL+xvylB0UieO+ebbTVAhAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMEMn8asoOiipUbmPGAgEQgDuO9toq6qS4CVD9JKkuzNk9d9oL1fH7qWL/ssf7rnZlBzZ2wtsi9dN1dd7poGyM20rHxs8DInKoUJho7w=="
               

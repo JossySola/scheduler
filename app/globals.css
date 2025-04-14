@@ -1,7 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@import "tailwindcss";
 
 :root {
   --background: #ffffff;
@@ -54,7 +51,6 @@ a {
 }
 @layer components {
   .magicBorder {
-    border-color: none;
     border-image: linear-gradient(94deg, #0090F7, #BA62FC, #F2416B, #F55600);
     border-image-slice: 1;
     border-style: solid;

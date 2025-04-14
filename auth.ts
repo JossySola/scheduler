@@ -1,5 +1,6 @@
 import "server-only";
-import NextAuth, { AuthError } from "next-auth";
+import NextAuth from "next-auth";
+import { AuthError } from "@auth/core/errors";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
@@ -8,7 +9,7 @@ import { Argon2id } from "oslo/password";
 import { decryptKmsDataKey } from "./app/lib/utils";
 import { sql } from "@vercel/postgres";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
     secret: process.env.NEXTAUTH_SECRET,
     providers: [
         Google({
