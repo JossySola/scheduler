@@ -108,7 +108,7 @@ const recentAIOutputs: Array<{
     output: StreamableValue<any, any>,
 }> = [];
 const MAX_HISTORY_SIZE = 5;
-export async function generateTableAction (previousState: { rows: Array<Array<string>>, conflicts: Array<string>, lang: "en" | "es" }, formData: FormData) {
+export async function generateTableAction (previousState: { lang: string, rows: Array<Array<string>>, conflicts: Array<string> }, formData: FormData) {
     let historyText = "";
     if (recentAIOutputs.length > 0) {
         historyText = "Previous outputs I've generated (DO NOT REPEAT THESE PATTERNS):\n";
@@ -145,6 +145,7 @@ export async function generateTableAction (previousState: { rows: Array<Array<st
         temperature: 1,
         output: 'object',
         schema: z.object({
+            lang: z.string(),
             rows: z.array(z.array(z.string())),
             conflicts: z.array(z.string()),
         }),
@@ -193,7 +194,7 @@ export async function generateTableAction (previousState: { rows: Array<Array<st
                     ii. If there are values not expected in the column: Check each row specifications, if a row has: "Specification: Row <index> named <name>, should be used on this column specifically:", check their assigned values, if among the values there are values expected in the column, replace the past value with any of the expected values. If the past value has a duplicate drop it and move on. If it does not have a duplicate, place it in any column that expects this value and write the annotation into the 'conflicts' array. If the row does not have this specification: "Specification: Row <index> named <name>, should be used on this column specifically:", place the past value in any column that expects this value. 
             4. Fill unused columns with empty strings.
             5. After completing all the table, analyze the result and perform any improvement to better meet the criteria. Remember that the specifications given are the most important to be able to return a strategic result.
-            6. Finish the output as an Object, a property called "rows" for the table, and "conflicts" for any conflicts met that couldn't be handled. Write the conflict messages in this language: ${ previousState.lang } where 'en' is English and 'es' is Spanish. (note that the following is a generic example and should not influence the actual content of the current generated schedule):
+            6. Finish the output as an Object, a property called "rows" for the table, and "conflicts" for any conflicts met that couldn't be handled. Write the conflict messages in this language: ${ previousState.lang } where 'en' is English and 'es' is Spanish, return in the same object a property called 'lang' with the language used for the 'conflicts' annotation. (note that the following is a generic example and should not influence the actual content of the current generated schedule):
             {
                 rows: [
                     ["Employees", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -202,6 +203,7 @@ export async function generateTableAction (previousState: { rows: Array<Array<st
                     // ... more employees ...
                 ],
                 conflicts: ["The specification in column <name> could not be met because [...]", "The specification in row <name> could not be met because [...]"],
+                lang: 'en'
             }
         `,
     })

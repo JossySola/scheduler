@@ -1,7 +1,7 @@
 "use server"
 import "server-only";
 import { signIn } from "@/auth";
-import { AuthError } from "next-auth";
+import { AuthError } from "@auth/core/errors";
 import { headers } from "next/headers";
 
 export async function LogInAction (prevState: { message: string, nextAttempt: number | null }, formData: FormData) {

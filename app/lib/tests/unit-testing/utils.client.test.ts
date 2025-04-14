@@ -6,13 +6,13 @@ describe("utils-client", () => {
         test("Encrypts data", async () => {
             // Setup
             const input = "This is a test";
-            const generatorKeyId = process.env.VITE_KMS_GENERATOR_KEY;
-            const keyIds = [`${process.env.VITE_KMS_ARN}`];
-            const accessKeyId = process.env.VITE_KMS_KEY;
-            const secretAccessKey = process.env.VITE_KMS_SECRET;
+            const generatorKeyId = process.env.AWS_KMS_GENERATOR_KEY;
+            const keyIds = [`${process.env.AWS_KMS_ARN}`];
+            const accessKeyId = process.env.AWS_KMS_KEY;
+            const secretAccessKey = process.env.AWS_KMS_SECRET;
 
             try {
-                if (!generatorKeyId || process.env.VITE_KMS_ARN === undefined || !accessKeyId || !secretAccessKey) {
+                if (!generatorKeyId || process.env.AWS_KMS_ARN === undefined || !accessKeyId || !secretAccessKey) {
                     throw new Error("Missing key", { cause: 400 });
                 }
                 const { encrypt } = buildClient(CommitmentPolicy.REQUIRE_ENCRYPT_REQUIRE_DECRYPT);
@@ -44,13 +44,13 @@ describe("utils-client", () => {
     })
     describe.skip("decryptKMS", () => {
         test("Decrypts data", async () => {
-            const generatorKeyId = process.env.VITE_KMS_GENERATOR_KEY;
-            const keyIds = [`${process.env.VITE_KMS_ARN}`];
-            const accessKeyId = process.env.VITE_KMS_KEY;
-            const secretAccessKey = process.env.VITE_KMS_SECRET;
+            const generatorKeyId = process.env.AWS_KMS_GENERATOR_KEY;
+            const keyIds = [`${process.env.AWS_KMS_ARN}`];
+            const accessKeyId = process.env.AWS_KMS_KEY;
+            const secretAccessKey = process.env.AWS_KMS_SECRET;
             const data = ""
             try {
-                if (!generatorKeyId || process.env.VITE_KMS_ARN === undefined || !accessKeyId || !secretAccessKey) {
+                if (!generatorKeyId || process.env.AWS_KMS_ARN === undefined || !accessKeyId || !secretAccessKey) {
                     throw new Error("Missing key", { cause: 400 });
                 }
                 const { decrypt } = buildClient(CommitmentPolicy.REQUIRE_ENCRYPT_REQUIRE_DECRYPT);
