@@ -3,6 +3,21 @@ import "server-only";
 import { signIn } from "@/auth";
 import { headers } from "next/headers";
 
+type RouteError = {
+  type: 'CallbackRouteError';
+  kind: 'error';
+  cause: {
+    err: {
+      message: string;
+      cause: number;
+      name: string;
+      type: string;
+      kind: string;
+    };
+    provider: string;
+    next_attempt?: number;
+  };
+};
 export async function LogInAction (prevState: { message: string, nextAttempt: number | null }, formData: FormData) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
@@ -29,7 +44,7 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
             nextAttempt: null,
         }
     } catch (error) {
-        if (error.type && error.type === "CallbackRouteError") {
+        if (isRouteError(error)) {
             const cause = error.cause.err.cause;
             if (error.cause.next_attempt) {
                 return {
@@ -80,4 +95,12 @@ export async function FacebookSignInAction (prevState: { message: string }, form
     return {
         message: "Facebook signup"
     }
+}
+function isRouteError(error: unknown): error is RouteError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as RouteError).type === 'CallbackRouteError' &&
+    typeof (error as any).cause?.err?.cause === 'number'
+  );
 }
