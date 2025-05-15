@@ -19,7 +19,7 @@ export default function HourValue ({ value }: {
                 </motion.div>
             </motion.div>
             <motion.div aria-label="sample-button" className="z-0 group relative inline-flex items-center justify-center box-border appearance-none select-none whitespace-nowrap font-normal subpixel-antialiased overflow-hidden tap-highlight-transparent data-[pressed=true]:scale-[0.97] outline-none data-[focus-visible=true]:z-10 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-focus data-[focus-visible=true]:outline-offset-2 text-small gap-2 rounded-medium px-0 !gap-0 transition-transform-colors-opacity motion-reduce:transition-none bg-danger/20 text-danger-600 dark:text-danger-500 min-w-10 w-10 h-10 data-[hover=true]:opacity-hover">
-                <motion.span className="w-xs h-xs">
+                <motion.span className="w-xs h-xs flex flex-row justify-center items-center">
                     <Trash />
                 </motion.span>
             </motion.div>
