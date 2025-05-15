@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+I thought of this project after I realized the managers in my current job were struggling with schedule planification as we are more than 40 employees.
 
-## Getting Started
+The issue arises as each employee has unique requirements and needs. That is what each row and column specification is for.
 
-First, run the development server:
+This fullstack web application handles authentication, authorization, as well as fetching/inserting data from/to the database through API endpoints while also utilizing Server Actions for form submissions.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+It configures a `middleware` to manage requests to handle *internationalization*, and redirection if the user has a session active.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Furthermore, the application uses external APIs such as Sendgrid and Emailjs.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Stack
+### Programming Language
+- TypeScript
+### Framework
+- Next JS
+- Tailwind CSS
+- Vitest
+### Library
+- React
+- HeroUI
+- Framer Motion
+- Zod
+- Auth.js
+### SDK
+- Anthropic AI
+- AWS KMS
+### APIs
+- Email JS
+- SendGrid
+### Utility
+- Oslo
+- use-debounce
