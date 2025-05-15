@@ -1,4 +1,4 @@
-import {heroui} from '@heroui/theme';
+import { heroui } from '@heroui/theme';
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -7,7 +7,7 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
-    "./node_modules/@heroui/**/*.{js,ts,jsx,tsx}"
+    "./node_modules/@heroui/react/dist/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
     extend: {},
@@ -16,7 +16,7 @@ const config: Config = {
   plugins: [
     heroui({
       prefix: "heroui",
-      addCommonColors: false,
+      addCommonColors: true,
       defaultTheme: "light",
       defaultExtendTheme: "light",
       layout: {},
@@ -26,6 +26,14 @@ const config: Config = {
           colors: {
             background: "#ffffff",
             foreground: "#2f2f2f",
+            primary: {
+              DEFAULT: "#0090F7",
+              foreground: "#ffffff"
+            },
+            secondary: {
+              DEFAULT: "#BA62FC",
+              foreground: "#ffffff"
+            },
           },
         },
         dark: {
@@ -33,6 +41,14 @@ const config: Config = {
           colors: {
             background: "#1A1A1A",
             foreground: "#fafafa",
+            primary: {
+              DEFAULT: "#0090F7",
+              foreground: "#ffffff"
+            },
+            secondary: {
+              DEFAULT: "#BA62FC",
+              foreground: "#ffffff"
+            }
           },
         },
       },
