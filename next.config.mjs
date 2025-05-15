@@ -3,7 +3,7 @@ const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
-    transpilePackages: ["geist", "geist-icons"],
+    transpilePackages: ["geist"],
 };
 
 export default nextConfig;

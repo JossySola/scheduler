@@ -24,7 +24,13 @@ export default function ContactForm ({ lang }: {
         <Input isRequired isClearable size="lg" type="name" name="name" label={ lang === "es" ? "Nombre " : "Name " } />
         <Input isRequired isClearable size="lg" type="email" name="email" label={ lang === "es" ? "Correo electrónico " : "E-mail " } />
         <Textarea isRequired name="message" label={ lang === "es" ? "Mensaje " : "Message " }  placeholder={ lang === "es" ? "Por favor escribe un mensaje descriptivo sobre tu consulta." : "Provide a descriptive message about your inquiry." } />
-        <Button size="lg" type="submit" isLoading={ contactPending } isDisabled={ contactPending } className="bg-black text-white" formAction={ formAction }>
+        <Button 
+        size="lg" 
+        type="submit" 
+        isLoading={ contactPending } 
+        isDisabled={ contactPending } 
+        className="bg-black text-white dark:bg-white dark:text-black m-5" 
+        formAction={ formAction }>
             { lang === "es" ? "Enviar" : "Send" }
         </Button>
     </Form>

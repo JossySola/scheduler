@@ -14,7 +14,8 @@ export function UIProvider ({ children }: {
     const router = useRouter();
 
     return (
-        <HeroUIProvider navigate={router.push}>
+        <HeroUIProvider
+        navigate={router.push}>
             <ToastProvider placement='bottom-center' />
             { children }
         </HeroUIProvider>

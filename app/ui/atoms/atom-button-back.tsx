@@ -1,8 +1,8 @@
 "use client"
 
 import { Button } from "@heroui/react";
-import { ArrowCircleLeft } from "geist-icons";
 import { useRouter } from "next/navigation";
+import { ArrowCircleLeft } from "../icons";
 
 export function BackButton () {
     const router = useRouter();
@@ -12,7 +12,7 @@ export function BackButton () {
         isIconOnly
         variant="light"
         onPress={ () => router.back() }>
-            <ArrowCircleLeft width="32px" height="32px" />
+            <ArrowCircleLeft width={32} height={32} />
         </Button>
     )
 }

@@ -2,9 +2,9 @@
 import { useParams } from "next/navigation"
 import { ActionButton, SecondaryButton } from "../atoms/atom-button"
 import { Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
-import { Trash } from "geist-icons";
 import { DeleteTableAction } from "@/app/[lang]/dashboard/@list/actions";
 import { useActionState } from "react";
+import { Trash } from "../icons";
 
 export default function DeleteTableModal ({ table_id, table_name }: {
     table_id: string,
@@ -17,7 +17,7 @@ export default function DeleteTableModal ({ table_id, table_name }: {
 
     return (
         <>
-        <ActionButton onPress={onOpen} color="danger" endContent={<Trash width="16px" />}>{ lang === "es" ? "Borrar" : "Delete"}</ActionButton>
+        <ActionButton onPress={onOpen} color="danger" endContent={<Trash />}>{ lang === "es" ? "Borrar" : "Delete"}</ActionButton>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
                 {onClose => (

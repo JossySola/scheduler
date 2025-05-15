@@ -13,11 +13,6 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
-const solitreo = localFont({
-  src: "./fonts/Solitreo-Regular.ttf",
-  variable: "--font-solitreo",
-  weight: "100 900",
-});
 
 export const metadata: Metadata = {
   title: "Scheduler App",
@@ -41,6 +36,9 @@ export const metadata: Metadata = {
     title: "Scheduler",
     description: "Let the AI do the thinking to make strategic schedules!",
     images: ["https://opengraph.b-cdn.net/production/images/25f031f4-8b86-4763-acb6-14e5afdd57a2.png?token=gJDkX97UMNp3Xk5siysdNuubSuuKyLKZ_rYL8AYrmoc&height=630&width=1200&expires=33279455004"],
+  },
+  facebook: {
+    appId: "1278252816710964"
   },
 };
 // Meta Tags Generated via https://www.opengraph.xyz

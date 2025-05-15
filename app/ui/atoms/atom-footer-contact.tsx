@@ -1,7 +1,7 @@
 "use client"
 import { Button } from "@heroui/react"
-import { Envelope } from "geist-icons"
 import { redirect, useParams } from "next/navigation"
+import { Envelope } from "../icons";
 
 export default function FooterContact () {
     const params = useParams();

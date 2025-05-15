@@ -2,9 +2,9 @@
 import { SaveTableAction } from "@/app/[lang]/table/actions"
 import { useActionState, useContext, useEffect } from "react"
 import { ActionButton } from "./atom-button";
-import { FloppyDisk } from "geist-icons";
 import { addToast } from "@heroui/react";
 import { TableHandlersContext, TableHandlersType } from "@/app/[lang]/table/context";
+import { FloppyDisk } from "../icons";
 
 export default function TableButtonSave ({ lang }: {
     lang: "en" | "es",
@@ -32,7 +32,7 @@ export default function TableButtonSave ({ lang }: {
         formAction={ saveAction }
         loading={ savePending }
         disabled={ savePending }
-        endContent={<FloppyDisk width="16px" />}>
+        endContent={<FloppyDisk />}>
             { lang === "es" ? "Guardar" : "Save" }
         </ActionButton>
     )

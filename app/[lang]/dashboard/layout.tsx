@@ -6,9 +6,9 @@ export default function Layout ({
     list: React.ReactNode,
 }) {
     return (
-        <>
-        { children }
-        { list }
-        </>
+        <main>
+            { children }
+            { list }
+        </main>
     )
 }

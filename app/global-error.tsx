@@ -6,7 +6,7 @@ import { ActionButton } from "@/app/ui/atoms/atom-button";
 import { getDeviceInfo } from "@/app/lib/utils-client";
 import { z } from "zod";
 import emailjs from '@emailjs/browser';
-import { PaperAirplane, RefreshClockwise } from "../ui/icons";
+import { PaperAirplane, RefreshClockwise } from "./ui/icons";
 
 export default function Error({
     error,

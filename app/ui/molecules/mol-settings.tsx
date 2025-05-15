@@ -5,7 +5,7 @@ import DisconnectFacebook from "../atoms/atom-disconnect-facebook";
 import { ActionButton, SecondaryButton } from "../atoms/atom-button";
 import { redirect } from "next/navigation";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
-import { SettingsGearFill } from "geist-icons";
+import { SettingsGearFill } from "../icons";
 
 export default function Settings ({ lang, data }: {
     lang: string,

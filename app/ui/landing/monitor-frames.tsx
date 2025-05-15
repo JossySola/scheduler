@@ -96,7 +96,10 @@ export default function MonitorFrames ({ lang }: {
                     <h3 className="text-[1.5rem] text-center">
                         { lang === "es" ? "¡Regístrate gratis!" : "Sign up for free!" } <a href="#legal-4"><sup className="text-[1rem]">4</sup></a> 😊
                     </h3>
-                    <Button as={ Link } href={`${lang}/signup`} className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg text-3xl p-8">
+                    <Button as={ Link } href={`${lang}/signup`} className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg text-3xl p-8" 
+                    style={{
+                        textDecorationLine: "none"
+                    }}>
                         { lang === "es" ? "Registrarse" : "Sign Up" }
                     </Button>
                 </div>
