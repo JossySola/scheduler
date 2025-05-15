@@ -21,7 +21,7 @@ export default function LogIn ({ lang }: {
             setTimestamp(loginState.nextAttempt.toString());
         }
     }, [loginState.nextAttempt])
-    
+
     return (
         <section className="w-full p-3 sm:w-[400px] flex flex-col justify-center items-center pt-5">
             <h2 className="tracking-tight">{ lang === "es" ? "Iniciar sesión" : "Login" }</h2>
@@ -51,6 +51,9 @@ export default function LogIn ({ lang }: {
             <Button
             as={HeroLink}
             href={`/${lang}/recover`}
+            style={{
+                textDecoration: "none"
+            }}
             className="w-full m-1 bg-transparent border-2">
             { lang === "es" ? "Restaurar contraseña" : "Reset password" }
             </Button>
