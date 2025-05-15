@@ -16,6 +16,9 @@ export default function SignOutButton () {
         variant="ghost"
         isDisabled={ pending }
         isLoading={ pending }
+        style={{
+            textDecoration: "none"
+        }}
         endContent={ <Logout /> }>
             { lang === "es" ? "Cerrar sesión" : "Sign out"}
         </Button>
