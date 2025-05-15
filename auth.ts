@@ -283,9 +283,14 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         SELECT provider FROM scheduler_users_providers
                         WHERE email = ${user.rows[0].email};
                     `;
-                    if (!userProvider.rows.length) throw new AuthError("Bad registry", {
-                        cause: 409
-                    });
+                    if (!userProvider.rows.length) {
+                        // If the user's password is NULL and it hasn't signed in with a provider, then the registration is incorrect.
+                        throw new AuthError("Bad registry", {
+                            cause: 409
+                        });
+                    } else {
+                        throw new AuthError("User does not have credentials but have signed in with external provider", { cause: 400 });
+                    }
                 }
                 // If it is not null, verify the hashed decrypted password
                 const userKey = await sql`
