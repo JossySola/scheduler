@@ -1,6 +1,6 @@
 "use client"
 import { motion, useScroll, useTransform } from "framer-motion"
-import { ArrowCircleDown } from "geist-icons";
+import { ArrowCircleDown } from "../icons";
 
 export default function Hero ({ lang }: {
     lang: "es" | "en"
@@ -13,7 +13,9 @@ export default function Hero ({ lang }: {
             <motion.h1 className="text-center text-[8vw] sm:text-[3rem]">
                 { lang === "es" ? "Planeación estratégica" : "Strategic planning" }
             </motion.h1>
-            <ArrowCircleDown width="64px" height="64px" className="m-6" />
+            <div className="m-6">
+                <ArrowCircleDown width={64} height={64} />
+            </div>
         </motion.div>
     )
 }

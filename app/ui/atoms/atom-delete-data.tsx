@@ -1,7 +1,7 @@
 "use client"
 import { Accordion, AccordionItem, Card, CardBody } from "@heroui/react";
-import { LogoFacebook, LogoGoogle, SettingsGearFill } from "geist-icons";
 import { useParams } from "next/navigation"
+import { LogoFacebook, LogoGoogle, SettingsGearFill } from "../icons";
 
 export default function DeleteDataList() {
     const params = useParams();
@@ -92,7 +92,7 @@ export default function DeleteDataList() {
                     <Card className="w-fit bg-white text-black border-1 border-black">
                         <CardBody className="flex flex-row gap-3">
                             { lang === "es" ? "Desconectar Facebook" : "Disconnect from Facebook" }
-                            <LogoFacebook color="#0866ff"/>
+                            <LogoFacebook />
                         </CardBody>
                     </Card>
                 </li>

@@ -1,7 +1,7 @@
 "use client"
 import { Button, Link } from "@heroui/react"
-import { Home } from "geist-icons"
 import { useParams } from "next/navigation"
+import { Home } from "../icons";
 
 export default function HomeAtom() {
     const params = useParams();

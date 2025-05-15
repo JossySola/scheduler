@@ -1,5 +1,4 @@
-"use client"
-import { MinusSquareSmall, PlusSquareSmall } from "geist-icons";
+import { MinusSquareSmall, PlusSquareSmall } from "../icons"
 
 export default function SampleTable ({ lang }: {
     lang: "en" | "es"

@@ -1,7 +1,7 @@
 "use client"
 import { Button, Link } from "@heroui/react";
-import { useParams } from "next/navigation"
-import { SignIn } from "geist-icons";
+import { useParams } from "next/navigation";
+import { SignIn } from "../icons";
 
 export default function LogInButton () {
     const params = useParams();

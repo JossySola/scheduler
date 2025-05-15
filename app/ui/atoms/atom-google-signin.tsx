@@ -1,8 +1,8 @@
 "use client"
 import { Button } from "@heroui/react";
-import { LogoGoogle } from "geist-icons";
 import { useActionState } from "react";
 import { GoogleSignInAction } from "@/app/[lang]/login/actions";
+import { LogoGoogle } from "../icons";
 
 export default function GoogleSignIn ({ lang }: {
     lang: "en" | "es"

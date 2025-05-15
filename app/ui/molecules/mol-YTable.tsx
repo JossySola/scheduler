@@ -1,10 +1,10 @@
 "use client"
 import { Button } from "@heroui/react";
-import { MinusSquareSmall, PlusSquareSmall } from "geist-icons";
 import TableColumn from "./mol-table-columns";
 import TableRow from "./mol-table-row";
 import { useContext } from "react";
 import { TableHandlersContext, TableHandlersType } from "@/app/[lang]/table/context";
+import { MinusSquareSmall, PlusSquareSmall } from "../icons";
 
 export default function YTable ({ lang, rows }: { 
     lang: "es" | "en",
@@ -18,7 +18,7 @@ export default function YTable ({ lang, rows }: {
     handleDeleteColumn,
     handleDeleteRow }: TableHandlersType = useContext(TableHandlersContext);
     return (
-        <fieldset className="grid grid-cols-[150px_1fr] sm:grid-cols-[auto_1fr] grid-rows-[auto_1fr] w-full sm:w-[90vw] gap-4 overflow-x-auto w-[90vw] mt-5 sm:m-5 p-5 rounded-medium border-2 border-default border-small">
+        <fieldset className="grid grid-cols-[150px_1fr] sm:grid-cols-[auto_1fr] grid-rows-[auto_1fr] w-full sm:w-[90vw] gap-4 overflow-x-auto mt-5 sm:m-5 p-5 rounded-medium border-default border-small">
             <fieldset className="col-start-1 flex flex-row gap-1 h-fit sm:col-start-2">
                 <Button name="delete-column" id="delete-column" variant="faded" endContent={<MinusSquareSmall />} onPress={() => handleDeleteColumn && handleDeleteColumn()}>{lang === "es" ? "Eliminar Columna":"Delete Column" }</Button>
                 <Button name="add-column" id="add-column" variant="faded" isDisabled={ columnHeaders && columnHeaders[0] && columnHeaders[0].length === 26 ? true : false } endContent={<PlusSquareSmall color="#66aaf9" />} onPress={() => handleAddColumn && handleAddColumn()}>{lang === "es" ? "Añadir Columna":"Add Column" }</Button>

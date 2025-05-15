@@ -6,9 +6,9 @@ import FormInputUsername from "../atoms/atom-form-input-username";
 import FormInputBirthday from "../atoms/atom-form-input-birthday";
 import FormInputEmail from "../atoms/atom-form-input-email";
 import FormInputPassword from "../atoms/atom-form-input-password";
-import { ArrowCircleRight, Envelope } from "geist-icons";
 import { validateAction } from "@/app/[lang]/signup/actions";
 import { ActionButton } from "../atoms/atom-button";
+import { ArrowCircleRight, Envelope } from "../icons";
 
 export default function SignupForm ({ lang }: {
     lang: "en" | "es"
@@ -36,7 +36,9 @@ export default function SignupForm ({ lang }: {
                     <p className="text-center">{ lang === "es" ? "Por favor sigue las instrucciones para completar el registro. Ya puedes cerrar esta ventana." : "Please check your email and follow the instructions. You may close this tab." }</p>
                     <br></br>
                     <p className="text-center text-[#F5A524]">{ lang === "es" ? "El enlace expirará en 1 minuto." : "The token will expire after 1 minute." }</p>
-                    <Envelope width="32px" height="32px" className="m-5"/>
+                    <div className="m-5">
+                        <Envelope width={32} height={32} />
+                    </div>
                 </section> :
                 <form className="flex flex-col items-center">
                     <FormInputName name={ name } setName={ setName } />

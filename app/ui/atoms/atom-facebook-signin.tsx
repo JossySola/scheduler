@@ -1,8 +1,8 @@
 "use client"
 import { Button } from "@heroui/react";
-import { LogoFacebook } from "geist-icons";
 import { useActionState } from "react";
 import { FacebookSignInAction } from "@/app/[lang]/login/actions";
+import { LogoFacebook } from "../icons";
 
 export default function FacebookSignIn ({ lang }: {
     lang: "en" | "es"
@@ -15,7 +15,7 @@ export default function FacebookSignIn ({ lang }: {
             isLoading={ pending }
             isDisabled={ pending }
             className="bg-white border-1 border-black text-black shadow-md font-medium m-1 w-full text-md" 
-            endContent={<LogoFacebook color="#0866ff"/>}
+            endContent={<LogoFacebook />}
             >
                 { lang === "es" ? "Continúa con Facebook" : "Signin with Facebook" }
             </Button>

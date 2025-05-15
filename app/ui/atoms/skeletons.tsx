@@ -24,7 +24,7 @@ export function DashboardSkeleton () {
 
 export function TableSkeleton () {
     return (
-        <div className="flex flex-col justify-center items-center rounded-lg border-small border-2 border-default p-5">
+        <div className="flex flex-col justify-center items-center rounded-lg border-small border-default p-5">
             <div className="flex flex-row gap-2">
                 <Skeleton className="rounded-lg">
                     <div className="w-[200px] h-[40px]"></div>

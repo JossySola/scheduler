@@ -3,8 +3,8 @@ import { Button, Chip, Table, TableBody, TableCell, TableColumn, TableHeader, Ta
 import { Timestamp } from "../atoms/atom-timestamp";
 import Link from "next/link";
 import { Link as HeroLink } from "@heroui/react";
-import { PlusCircle } from "geist-icons";
 import DeleteTableModal from "./mol-delete-table-modal";
+import { PlusCircle } from "../icons";
 
 export default function DashboardTable ({ rows, lang }: {
     rows: Array<{ table_id: string, table_name: string, updated_at: string, created_at: string }>,

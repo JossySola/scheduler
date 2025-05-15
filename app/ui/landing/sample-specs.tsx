@@ -33,7 +33,7 @@ export default function SampleSpecs ({ lang }: {
             <motion.div aria-label="sample-tabs-row" className="inline-flex">
                 <motion.div aria-label="sample-tabList" className="flex p-1 h-fit gap-2 items-center flex-nowrap overflow-x-scroll scrollbar-hide bg-default-100 dark:bg-[#f4f4f5] rounded-medium">
                     <motion.div aria-label="sample-tab" className="z-0 w-full px-3 py-1 flex group relative justify-center items-center transition-opacity tap-highlight-transparent data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-30 data-[hover-unselected=true]:opacity-disabled outline-none data-[focus-visible=true]:z-10 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-focus data-[focus-visible=true]:outline-offset-2 h-8 text-small rounded-small">
-                        <motion.span className="absolute z-0 inset-0 rounded-small bg-background dark:bg-default dark:bg-[#f4f4f5] shadow-small"></motion.span>
+                        <motion.span className="absolute z-0 inset-0 rounded-small bg-background dark:bg-default shadow-small"></motion.span>
                         <motion.div className="relative z-10 whitespace-nowrap transition-colors text-default-500 group-data-[selected=true]:text-default-foreground">
                         José Solá
                         </motion.div>

@@ -2,9 +2,9 @@
 import { useContext, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
-import { PlusCircle, Trash } from "geist-icons";
 import { TableHandlersContext, TableHandlersType } from "@/app/[lang]/table/context";
 import { motion } from "framer-motion";
+import { PlusCircle, Trash } from "../icons";
 
 export default function XList({ name } : { 
         name: string,

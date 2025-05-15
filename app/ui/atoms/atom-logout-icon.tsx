@@ -1,9 +1,9 @@
 "use client"
 import { SignoutAction } from "@/app/[lang]/actions"
 import { Button } from "@heroui/react"
-import { Logout } from "geist-icons"
 import { useParams } from "next/navigation"
 import { useActionState } from "react"
+import { Logout } from "../icons"
 
 export default function SignOutButton () {
     const params = useParams();

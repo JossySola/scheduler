@@ -4,7 +4,7 @@ import { ActionButton, SecondaryButton } from "./atom-button";
 import { DisconnectGoogleAction } from "@/app/[lang]/dashboard/actions";
 import { useParams } from "next/navigation";
 import { BreadcrumbItem, Breadcrumbs, Button, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
-import { LogoGoogle } from "geist-icons";
+import { LogoGoogle } from "../icons";
 
 export default function DisconnectGoogle () {
     const [disconnected, setDisconnected] = useState<boolean>(false);

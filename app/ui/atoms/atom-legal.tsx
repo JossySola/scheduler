@@ -1,7 +1,7 @@
 "use client"
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/react"
-import { BookOpen } from "geist-icons"
 import { useParams } from "next/navigation"
+import { BookOpen } from "../icons";
 
 export default function FooterLegal () {
     const params = useParams();

@@ -1,12 +1,12 @@
 "use client"
 import { Button, Form, Input, Textarea } from "@heroui/react";
-import { PaperAirplane, RefreshClockwise } from "geist-icons";
 import { useParams } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { ActionButton } from "@/app/ui/atoms/atom-button";
 import { getDeviceInfo } from "@/app/lib/utils-client";
 import { z } from "zod";
 import emailjs from '@emailjs/browser';
+import { PaperAirplane, RefreshClockwise } from "./ui/icons";
 
 export default function Error({
     error,
