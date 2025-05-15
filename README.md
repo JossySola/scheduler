@@ -2,7 +2,7 @@ I thought of this project after I realized the managers in my current job (*reta
 
 The issue arises as each employee has unique requirements and needs. That is what each row and column specification is for.
 
-This fullstack web application handles `authentication`, `authorization`, as well as `fetching/inserting data` from/to the database through `API endpoints` while also utilizing `Server Actions` for form submissions.
+This fullstack web application handles `authentication`, `authorization`, as well as **fetching**, **inserting**, **modifying**, and **erasing data** from/to the database through `API endpoints` while also utilizing `Server Actions` for form submissions.
 
 It configures a `middleware` to manage requests to handle *internationalization*, and redirection if the user has a session active.
 
