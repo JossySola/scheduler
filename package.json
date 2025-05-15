@@ -3,7 +3,6 @@
   "version": "1.0.0-alpha.2",
   "private": true,
   "scripts": {
-    "vercel-build": "npm install next build",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",

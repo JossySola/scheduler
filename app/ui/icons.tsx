@@ -1,3 +1,4 @@
+"use client"
 export function PaperAirplane ({ width = 16, height = 16, color = "currentcolor" }) {
     return (
         <svg 
