@@ -180,6 +180,9 @@ export function PrimaryButtonAsLink ({ children, startContent, endContent, link 
         endContent={ endContent && endContent }
         as={ Link }
         href={ link }
+        style={{
+            textDecoration: "none"
+        }}
         className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg">
             { children }
         </Button>
