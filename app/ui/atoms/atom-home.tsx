@@ -8,7 +8,15 @@ export default function HomeAtom() {
     const lang = params.lang;
 
     return (
-        <Button isIconOnly aria-label="home" variant="light" as={Link} href={`/${lang}/dashboard`}>
+        <Button 
+        isIconOnly 
+        aria-label="home" 
+        variant="light" 
+        as={Link} 
+        style={{
+            textDecoration: "none"
+        }}
+        href={`/${lang}/dashboard`}>
             <Home />
         </Button>
     )
