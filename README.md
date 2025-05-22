@@ -11,22 +11,22 @@ Furthermore, the application uses external APIs such as `Sendgrid` and `Emailjs`
 ## Stack
 ### Programming Language
 - TypeScript
-### Framework
+### Frameworks
 - Next JS
 - Tailwind CSS
 - Vitest
-### Library
+### Libraries
 - React
 - HeroUI
 - Framer Motion
 - Zod
 - Auth.js
-### SDK
+### SDKs
 - Anthropic AI
 - AWS KMS
 ### APIs
 - Email JS
 - SendGrid
-### Utility
+### Utilities
 - Oslo
 - use-debounce
