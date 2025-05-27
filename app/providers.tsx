@@ -1,5 +1,6 @@
 "use client"
 import { HeroUIProvider, ToastProvider } from '@heroui/react';
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from 'next/navigation';
 
 declare module "@react-types/shared" {
@@ -14,10 +15,11 @@ export function UIProvider ({ children }: {
     const router = useRouter();
 
     return (
-        <HeroUIProvider
-        navigate={router.push}>
-            <ToastProvider placement='bottom-center' />
-            { children }
+        <HeroUIProvider navigate={router.push}>
+            <NextThemesProvider attribute='class' defaultTheme='system' enableSystem>
+                <ToastProvider placement='bottom-center' />
+                { children }
+            </NextThemesProvider>
         </HeroUIProvider>
     )
 }
