@@ -1,12 +1,19 @@
 "use client"
-import { Button } from "@heroui/react"
-import { redirect, useParams } from "next/navigation"
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/react"
+import { useParams } from "next/navigation"
 import { Envelope } from "../icons";
 
 export default function FooterContact () {
     const params = useParams();
     const lang = params.lang ?? "en";
-    return <Button radius="full" className="bg-[#f0eee670] dark:bg-[#3F3F4670] backdrop-blur-sm" onPress={() => redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`)}>
-        <Envelope />
-    </Button>
+    return (
+        <Dropdown placement="top" backdrop="blur">
+            <DropdownTrigger>
+                <Button radius="full" className="bg-[#f0eee670] dark:bg-[#3F3F4670] backdrop-blur-sm w-fit"><Envelope /></Button>
+            </DropdownTrigger>
+            <DropdownMenu>
+                <DropdownItem key="contact" href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`}>{ lang === "es" ? "Contacto" : "Contact" }</DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
+    )
 }

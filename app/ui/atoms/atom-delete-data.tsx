@@ -29,7 +29,7 @@ export default function DeleteDataList() {
                     </Card>
                 </li>
                 <li>
-                    <h3>{ lang === "es" ? "Confirma esta acción escribiendo tu contraseña y haciendo click en el botón 'Confirmar'" : "Confirm this action by writing your password and clicking 'Confirm'" }</h3>
+                    <h3>{ lang === "es" ? "Confirma esta acción escribiendo tu contraseña y haciendo click en el botón 'Confirmar'" : "Confirm this action by typing your password in and clicking 'Confirm'" }</h3>
                     <Card className="w-[100px] bg-black dark:bg-white text-white dark:text-black">
                         <CardBody className="flex flex-row items-center justify-center">
                             { lang === "es" ? "Confirmar" : "Confirm" }
@@ -40,7 +40,7 @@ export default function DeleteDataList() {
         </AccordionItem>
         <AccordionItem title={ lang === "es" ? "Desconectar de Google" : "Disconnect from Google" } className="p-3">
             <p>{ lang === "es" ? "Puedes conectar y desconectar tu cuenta de Google en cualquier momento. Sin embargo, si ésta es tu única forma de iniciar sesión, esta acción podría impedirte acceder a tu cuenta una vez realizada." : 
-            "You can connect and disconnect your account from Google at any time. However, if you signin through Google but do not have another method for signing in, disconnecting from Google may prevent you from accessing your account."}</p>
+            "You can connect and disconnect your account from Google at any time. However, if you signin through Google but do not have another method to sign in, disconnecting from Google may prevent you from accessing your account."}</p>
             <br></br>
             <b className="text-[#f31260]">{lang === "es" ? "Esta acción no elimina tus datos ni tu cuenta." : "This action does not delete your data or your account." }</b>
             <ol className="list-decimal w-full ml-5">
@@ -55,7 +55,7 @@ export default function DeleteDataList() {
                 <li>
                     <h3>{ lang === "es" ? "Haz click en 'Desconectar Google'" : "Click on 'Disconnect from Google'" }</h3>
                     <Card className="w-fit bg-white text-black border-1 border-black">
-                        <CardBody className="flex flex-row gap-3">
+                        <CardBody className="flex flex-row justify-center items-center gap-3">
                             { lang === "es" ? "Desconectar Google" : "Disconnect from Google" }
                             <LogoGoogle />
                         </CardBody>
@@ -75,7 +75,7 @@ export default function DeleteDataList() {
         </AccordionItem>
         <AccordionItem title={ lang === "es" ? "Desconectar de Facebook" : "Disconnect from Facebook" } className="p-3">
         <p>{ lang === "es" ? "Puedes conectar y desconectar tu cuenta de Facebook en cualquier momento. Sin embargo, si ésta es tu única forma de iniciar sesión, esta acción podría impedirte acceder a tu cuenta una vez realizada." : 
-            "You can connect and disconnect your account from Facebook at any time. However, if you signin through Facebook but do not have another method for signing in, disconnecting from Facebook may prevent you from accessing your account."}</p>
+            "You can connect and disconnect your account from Facebook at any time. However, if you signin through Facebook but do not have another method to sign in, disconnecting from Facebook may prevent you from accessing your account."}</p>
             <br></br>
             <b className="text-[#f31260]">{lang === "es" ? "Esta acción no elimina tus datos ni tu cuenta." : "This action does not delete your data or your account." }</b>
             <ol className="list-decimal w-full ml-5">
@@ -90,7 +90,7 @@ export default function DeleteDataList() {
                 <li>
                     <h3>{ lang === "es" ? "Haz click en 'Desconectar Facebook'" : "Click on 'Disconnect from Facebook'" }</h3>
                     <Card className="w-fit bg-white text-black border-1 border-black">
-                        <CardBody className="flex flex-row gap-3">
+                        <CardBody className="flex flex-row gap-3 justify-center items-center">
                             { lang === "es" ? "Desconectar Facebook" : "Disconnect from Facebook" }
                             <LogoFacebook />
                         </CardBody>

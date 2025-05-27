@@ -5,7 +5,7 @@ export default async function Page ({ params }: {
 }) {
     const lang = (await params).lang;
 
-    return <main className="h-screen flex flex-col justify-start items-center pt-5 pb-10">
+    return <main className="h-screen flex flex-col justify-start items-center pt-5 pb-10 mb-10">
         <h2 className="tracking-tight">{ lang === "es" ? "Regístrate" : "Create an account" }</h2>
         {
             <SignupForm lang={ lang as "en" | "es" } />

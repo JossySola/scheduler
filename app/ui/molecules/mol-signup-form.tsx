@@ -56,9 +56,10 @@ export default function SignupForm ({ lang }: {
                     endContent={<ArrowCircleRight />}>
                         { lang === "es" ? "Siguiente" : "Next" }
                     </ActionButton>
-                    <SignInProviders lang={ lang.toString() as "en" | "es" } />
+                    
                 </form>
             }
+            <SignInProviders lang={ lang.toString() as "en" | "es" } />
         </section>
         
     )

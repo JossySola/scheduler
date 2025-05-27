@@ -2,9 +2,9 @@
 import { useParams } from "next/navigation"
 import { ActionButton, SecondaryButton } from "../atoms/atom-button"
 import { Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
-import { DeleteTableAction } from "@/app/[lang]/dashboard/@list/actions";
 import { useActionState } from "react";
 import { Trash } from "../icons";
+import { DeleteTableAction } from "@/app/[lang]/dashboard/actions";
 
 export default function DeleteTableModal ({ table_id, table_name }: {
     table_id: string,

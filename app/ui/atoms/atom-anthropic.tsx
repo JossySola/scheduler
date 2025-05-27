@@ -76,7 +76,7 @@ export const Claude = () => {
 export const ClaudeTiny = () => {
     return (
         <span 
-        className="inline-block align-middle" 
+        className="relative align-middle" 
         style={{
             paddingTop: "0.2rem",
             transform: "none",
@@ -84,7 +84,7 @@ export const ClaudeTiny = () => {
             width: 16,
         }}>
             <span 
-            className="w-8 text-accent-brand inline-block select-none" 
+            className="w-[16px] text-accent-brand inline-block select-none" 
             data-state="closed">
                 <svg 
                 xmlns="http://www.w3.org/2000/svg" 
