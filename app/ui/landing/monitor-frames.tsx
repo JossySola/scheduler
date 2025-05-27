@@ -16,37 +16,16 @@ export default function MonitorFrames ({ lang }: {
     const refEnd = useRef(null);
     const refContainer = useRef(null);
     const refSection = useRef(null);
-
-    const tableInView = useInView(refTable);
     const valuesInView = useInView(refValues);
     const specsInView = useInView(refSpecs);
 
-    const { scrollYProgress: tableProgress } = useScroll({
-        target: refTable,
-        offset: ["start 30vh", "start 70vh"],
-    });
-    const { scrollYProgress: valuesProgress } = useScroll({
-        target: refValues,
-        offset: ["start 50vh", "start 13vh"],
-    });
-    const { scrollYProgress: specsProgress } = useScroll({
-        target: refSpecs,
-        offset: ["start 40vh", "start 13vh"],
-    });
-    const { scrollYProgress: endProgress } = useScroll({
-        target: refEnd,
-        offset: ["start 13vh", "start 90vh"],
-    })
     const { scrollYProgress: sectionProgress } = useScroll({
         target: refSection,
-        offset: ["start 0vh", "end 50vh"],
+        offset: ["start 0vh"],
     })
 
-    const opacityTable = useTransform(tableProgress, [0, 0.2, 0.4, 0.8, 1], [0, 0.5, 1, 1, 0]);
-    const opacityValues = useTransform(valuesProgress, [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], [0, 0, 0, 0, 0, 0, 0.2, 1, 1, 0, 0]);
-    const opacitySpecs = useTransform(specsProgress, [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], [0, 0, 0, 0, 0, 0, 0.3, 1, 1, 1, 0]);
     const position = useTransform(sectionProgress, [0, 1], ["sticky", "relative"]);
-    
+
     return (
         <motion.section className="hidden sm:flex flex-col justify-center items-center p-5 sm:p-10 sm:gap-10">
             <motion.div
@@ -54,38 +33,39 @@ export default function MonitorFrames ({ lang }: {
             style={{
                 position
             }}
-            className="w-full flex flex-col items-center mb-[10rem] top-[13vh]">
+            className="w-full flex flex-col items-center top-[13vh]">
                 {/* SECTION 1 */}
                 <motion.section className="w-full sticky top-[13vh] min-h-screen">
-                    <motion.h2
-                    style={{
-                        opacity: tableInView ? opacityTable : 0,
-                    }}
-                    className="text-[2.5rem] text-center m-5">
-                        { lang === "es" ? "Llena los títulos de tus columnas y filas..." : "Fill out your column and row headers..." }
-                    </motion.h2>
+                    <div className="static my-15">
+                        <motion.h2 className="text-[2.5rem] w-full">
+                            <motion.p
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: valuesInView ? 0 : 1 }}
+                            className="absolute top-0 w-full text-center"
+                            transition={{ delay: 0.3 }}>{ lang === "es" ? "Llena los títulos de tus columnas y filas..." : "Fill out your column and row headers..." }</motion.p>
+                            <motion.p
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: specsInView ? 0 : valuesInView ? 1 : 0 }}
+                            className="absolute top-0 w-full text-center"
+                            transition={{ delay: 0.3 }}>{ lang === "es" ? "...ingresa los valores que usarás" : "...enter the values you'll use" }</motion.p>
+                            <motion.p
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: specsInView ? 1 : 0 }}
+                            className="absolute top-0 w-full text-center"
+                            transition={{ delay: 0.3 }}>{ lang === "es" ? "...y configura las especificaciones de cada fila" : "...and set the criteria for each row" }</motion.p>
+                        </motion.h2>
+                    </div>
+                    
                     <FrameTable lang={ lang } ref={ refTable } />
                 </motion.section>
                 {/* SECTION 2 */}
-                <motion.section className="w-full sticky top-[13vh] min-h-screen">
-                    <motion.h2
-                    style={{
-                        opacity: valuesInView ? opacityValues : 0,
-                    }}
-                    className="dark:bg-[#1A1A1A] text-[2.5rem] text-center m-5">
-                        { lang === "es" ? "...ingresa los valores que usarás" : "...enter the values you'll use" }
-                    </motion.h2>
+                <motion.section 
+                className="w-full sticky top-[13vh] min-h-screen">
                     <FrameValues lang={ lang } ref={ refValues } />
                 </motion.section>
                 {/* SECTION 3 */}
-                <motion.section className="w-full sticky top-[13vh] min-h-screen">
-                    <motion.h2
-                    style={{
-                        opacity: specsInView ? opacitySpecs : 0,
-                    }}
-                    className="dark:bg-[#1A1A1A] text-[2.5rem] text-center m-5">
-                        { lang === "es" ? "...y configura las especificaciones de cada fila" : "...and set the criteria for each row" }
-                    </motion.h2>
+                <motion.section 
+                className="w-full sticky top-[13vh] min-h-screen">
                     <FrameSpecs lang={ lang } ref={ refSpecs } />
                 </motion.section>
             </motion.div>
