@@ -10,49 +10,16 @@ const config: Config = {
     "./node_modules/@heroui/react/dist/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+      },
+    },
   },
   darkMode: "class",
   plugins: [
-    heroui({
-      prefix: "heroui",
-      addCommonColors: true,
-      defaultTheme: "light",
-      defaultExtendTheme: "light",
-      layout: {},
-      themes: {
-        light: {
-          layout: {},
-          colors: {
-            background: "#ffffff",
-            foreground: "#2f2f2f",
-            primary: {
-              DEFAULT: "#0090F7",
-              foreground: "#ffffff"
-            },
-            secondary: {
-              DEFAULT: "#BA62FC",
-              foreground: "#ffffff"
-            },
-          },
-        },
-        dark: {
-          layout: {},
-          colors: {
-            background: "#1A1A1A",
-            foreground: "#fafafa",
-            primary: {
-              DEFAULT: "#0090F7",
-              foreground: "#ffffff"
-            },
-            secondary: {
-              DEFAULT: "#BA62FC",
-              foreground: "#ffffff"
-            }
-          },
-        },
-      },
-    })
+    heroui()
   ],
 };
 export default config;
