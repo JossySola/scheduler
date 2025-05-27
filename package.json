@@ -27,6 +27,7 @@
     "@tailwindcss/postcss": "^4.1.7",
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
+    "@vercel/analytics": "^1.5.0",
     "@vercel/postgres": "^0.10.0",
     "ai": "^4.3.16",
     "dotenv": "^16.5.0",
