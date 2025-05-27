@@ -1,16 +1,14 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
+
 :root {
-  --background: #ffffff;
-  --foreground: #2f2f2f;
+  --background: #fafafa;
+  --foreground: #1A1A1A;
 }
 
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1A1A1A;
-    --foreground: #fafafa;
-  }
+.dark {
+  --background: #1A1A1A;
+  --foreground: #fafafa;
 }
 
 html, body {
@@ -20,8 +18,6 @@ html, body {
   color: var(--foreground);
 }
 body {
-  color: var(--foreground);
-  background: var(--background);
   font-family: var(--font-geist-sans), sans-serif;
 }
 h1 {
