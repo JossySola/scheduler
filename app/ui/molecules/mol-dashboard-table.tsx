@@ -15,7 +15,7 @@ export default function DashboardTable ({ rows, lang }: {
     return (
         <section className="h-screen w-full p-5 pt-0 sm:p-10 sm:pt-0">
             <section className="flex items-center justify-center flex-row sm:justify-start">
-                <Button as={HeroLink} href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/new`} color="success" className="text-white mt-3 mb-3" endContent={<PlusCircle />} disabled={ rows && rows.length === 3 }>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
+                <Button as={HeroLink} href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/new`} color="success" style={{ textDecoration: "none" }} className="text-white text-md mt-3 mb-3" endContent={<PlusCircle />} disabled={ rows && rows.length === 3 }>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
                 {
                     rows && rows.length === 0 || rows.length === 1 && <Chip className="m-3" variant="dot" color="success">{ lang === "es" ? `Tabla ${rows.length} de 3` : `Schedule ${rows.length} out of 3` }</Chip>
                 }
