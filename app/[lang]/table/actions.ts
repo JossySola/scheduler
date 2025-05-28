@@ -141,7 +141,7 @@ export async function generateTableAction (previousState: { lang: string, rows: 
         payload.rows[rowIndex].push(value.toString() as never);
     })
     let { object } = await generateObject({
-        model: anthropic('claude-3-opus-20240229'),
+        model: anthropic('claude-opus-4-20250514'),
         temperature: 1,
         output: 'object',
         schema: z.object({
