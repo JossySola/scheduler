@@ -62,7 +62,7 @@ export default function MobileFrames ({ lang }: {
                 </motion.div>
             </motion.section>
 
-            <div className="w-full p-6 mt-[10rem] mb-6">
+            <div className="w-full p-6">
                 <FrameAiFeature lang={ lang } />
                 <div className="w-full flex flex-col justify-center items-center mt-[6rem] mb-[6rem]">
                     <h3 className="text-[1.5rem] text-center">

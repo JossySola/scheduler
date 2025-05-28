@@ -27,13 +27,13 @@ export default function MonitorFrames ({ lang }: {
     const position = useTransform(sectionProgress, [0, 1], ["sticky", "relative"]);
 
     return (
-        <motion.section className="hidden sm:flex flex-col justify-center items-center p-5 sm:p-10 sm:gap-10">
+        <motion.section className="hidden sm:flex flex-col justify-center items-center p-5 sm:p-10 gap-20">
             <motion.div
             ref={ refContainer }
             style={{
                 position
             }}
-            className="w-full flex flex-col items-center top-[13vh]">
+            className="w-full flex flex-col items-center top-[13vh] h-fit mb-[10rem]">
                 {/* SECTION 1 */}
                 <motion.section className="w-full sticky top-[13vh] min-h-screen">
                     <div className="static my-15">
@@ -70,9 +70,9 @@ export default function MonitorFrames ({ lang }: {
                 </motion.section>
             </motion.div>
 
-            <div ref={ refEnd } className="w-full p-6 mt-[10rem] mb-2">
+            <div ref={ refEnd } className="w-full p-6 mt-5 mb-2 bg-background z-10">
                 <FrameAiFeature lang={ lang } />
-                <div className="w-full flex flex-col justify-center items-center mt-[6rem] mb-[2rem]">
+                <div className="w-full flex flex-col justify-center items-center my-10">
                     <h3 className="text-[1.5rem] text-center">
                         { lang === "es" ? "¡Regístrate gratis!" : "Sign up for free!" } <a href="#legal-4"><sup className="text-[1rem]">4</sup></a> 😊
                     </h3>
