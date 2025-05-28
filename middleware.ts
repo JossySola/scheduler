@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
     const locale = locales.includes(pathnameLocale) ? pathnameLocale : "en";
     console.log("🌍 Locale:", locale);
     if (locale === "es" || locale === "en") {
-        const secret = process.env.AUTH_SECRET;
+        const secret = process.env.NEXTAUTH_SECRET;
         console.log("🔑 Secret:", secret ? `✅ ${secret}` : "❌ Missing");
         console.log("🌐 Request:", request ? `✅ ${request}` : "❌ Missing");
         const token = await getToken({ req: request, secret });
