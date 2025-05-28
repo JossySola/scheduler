@@ -51,10 +51,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <UIProvider>
-          {children}
-          <Analytics />
-        </UIProvider>
+        <main>
+          <UIProvider>
+            {children}
+            <Analytics />
+          </UIProvider>
+        </main>
       </body>
     </html>
   );
