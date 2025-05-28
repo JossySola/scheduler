@@ -1,18 +1,15 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getToken } from "next-auth/jwt";
-import { auth } from './auth';
 
 const locales = ['es', 'en'];
 const defaultLocale = "en";
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
-    const session = await auth();
     console.log("🌐 Path:", pathname);
     if (pathname.startsWith("/api")) {
         return NextResponse.next();
     }
-    console.log("💻 Session:", session ? `✅ ${session}` : "❌ Missing");
     const pathnameParts = pathname.split("/");
     const pathnameLocale = pathnameParts[1]; // First part after "/"
     const locale = locales.includes(pathnameLocale) ? pathnameLocale : "en";
