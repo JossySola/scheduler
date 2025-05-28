@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
     const pathnameLocale = pathnameParts[1]; // First part after "/"
     const locale = locales.includes(pathnameLocale) ? pathnameLocale : "en";
     if (locale === "es" || locale === "en") {
-        const secret = process.env.NEXTAUTH_SECRET;
+        const secret = process.env.AUTH_SECRET;
         const token = await getToken({ req: request, secret });
         if ([`/${locale}/login`, `/${locale}/signup`].includes(pathname) && token) {
             return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
