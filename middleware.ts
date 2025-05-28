@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
         console.log("🔑 Secret:", secret ? `✅ ${secret}` : "❌ Missing");
         console.log("🌐 Request:", request ? `✅ ${request}` : "❌ Missing");
         const token = await getToken({ req: request, secret });
-        console.log("🔐 Token:", token ? "✅ Present" : "❌ Missing");
+        console.log("🔐 Token:", token ? "✅ Present" : `❌ Missing ${token}`);
         if ([`/${locale}/login`, `/${locale}/signup`].includes(pathname) && token) {
             return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
         }
