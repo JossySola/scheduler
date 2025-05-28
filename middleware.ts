@@ -6,15 +6,18 @@ const defaultLocale = "en";
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
+    console.log("🌐 Path:", pathname);
     if (pathname.startsWith("/api")) {
         return NextResponse.next();
     }
     const pathnameParts = pathname.split("/");
     const pathnameLocale = pathnameParts[1]; // First part after "/"
     const locale = locales.includes(pathnameLocale) ? pathnameLocale : "en";
+    console.log("🌍 Locale:", locale);
     if (locale === "es" || locale === "en") {
         const secret = process.env.AUTH_SECRET;
         const token = await getToken({ req: request, secret });
+        console.log("🔐 Token:", token ? "✅ Present" : "❌ Missing");
         if ([`/${locale}/login`, `/${locale}/signup`].includes(pathname) && token) {
             return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
         }
@@ -22,7 +25,8 @@ export async function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
         }
     }
-    NextResponse.next().headers.set("x-user-locale", locale);
+    const response = NextResponse.next();
+    response.headers.set("x-user-locale", locale);
     // If no locale is in the URL, detect the user's locale and redirect
     if (!pathnameLocale) {
         // Detect the user's preferred language (from accept-language header)
@@ -39,7 +43,7 @@ export async function middleware(request: NextRequest) {
         const redirectUrl = new URL(`/${defaultLocale}${pathname.substring(pathnameLocale.length + 1)}`, request.url);
         return NextResponse.redirect(redirectUrl);
     }
-    return NextResponse.next();
+    return response;
 }
 
 export const config = {
