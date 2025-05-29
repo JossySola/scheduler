@@ -1,14 +1,18 @@
 "use server"
 import "server-only";
 import pool from "@/app/lib/mocks/db";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { redirect } from "next/navigation";
 import { decryptKmsDataKey, generateKmsDataKey } from "@/app/lib/utils";
 import { sql } from "@vercel/postgres";
+import { AuthenticatedRequest } from "@/middleware";
+import { auth } from "@/auth";
 
-export async function POST (request: NextRequest): Promise<NextResponse> {
-    const locale = request.headers.get("x-user-locale") || "en";
-    const payload = await request.json();
+export const GET = auth(async function POST(req: AuthenticatedRequest): Promise<NextResponse> {
+    if (!req.auth) return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    
+    const locale = req.headers.get("x-user-locale") || "en";
+    const payload = await req.json();
     const user_id: string = payload.user_id;
     const table_id: string = payload.table_id;
     const title: string = payload.table_title ? payload.table_title : locale === "es" ? "Sin título" : "No title yet";
@@ -16,11 +20,7 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
     const values: string = JSON.stringify(payload.values);
     const colSpecs: string = JSON.stringify(payload.colSpecs);
     const rowSpecs: string = JSON.stringify(payload.rowSpecs);
-
-    /*
-    if (!user_id.length || !table_id.length || !title.length || 
-    )
-    */
+    
     if (!table_id) {
         if (!user_id) {
             return NextResponse.json({
@@ -99,4 +99,4 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
         }, { status: 400 });
     }
     return NextResponse.json(" ", { status: 200 });
-}
+})

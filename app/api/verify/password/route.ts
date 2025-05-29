@@ -1,13 +1,15 @@
 "use server"
 import "server-only";
 import pool from "@/app/lib/mocks/db";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { Argon2id } from "oslo/password";
 import { decryptKmsDataKey } from "@/app/lib/utils";
 import { sql } from "@vercel/postgres";
+import { auth } from "@/auth";
+import { AuthenticatedRequest } from "@/middleware";
 
-export async function POST (request: NextRequest): Promise<NextResponse> {
-    const payload = await request.json();
+export const POST = auth(async function POST (req: AuthenticatedRequest): Promise<NextResponse> {
+    const payload = await req.json();
     const password: string = payload.password;
     const username: string = payload.username;
 
@@ -44,4 +46,4 @@ export async function POST (request: NextRequest): Promise<NextResponse> {
     }
 
     return NextResponse.json({ statusText: 'Granted' }, { status: 200 });
-}
+})

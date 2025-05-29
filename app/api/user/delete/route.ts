@@ -2,11 +2,15 @@
 import "server-only"
 import pool from "@/app/lib/mocks/db";
 import { headers } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
+import { auth } from "@/auth";
+import { AuthenticatedRequest } from "@/middleware";
 
-export async function GET(request: NextRequest) {
-    const locale = request.headers.get("x-user-locale") || "en";
+export const GET = auth(async function GET(req: AuthenticatedRequest) {
+    if (!req.auth) return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+
+    const locale = req.headers.get("x-user-locale") || "en";
     const headersList = await headers();
     const email = headersList.get("user_email");
 
@@ -59,10 +63,10 @@ export async function GET(request: NextRequest) {
                 user_image = NULL
             WHERE email = ${email};
         `;
-        return NextResponse.redirect(new URL(`/${locale}/signup`, request.url));
+        return NextResponse.redirect(new URL(`/${locale}/signup`, req.url));
     } catch (e) {
         return NextResponse.json({
             error: "Server failure"
         }, { status: 500 })
     }
-}
+})
