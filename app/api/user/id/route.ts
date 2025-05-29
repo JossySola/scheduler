@@ -7,7 +7,7 @@ import { sql } from "@vercel/postgres";
 import { auth } from "@/auth";
 import { AuthenticatedRequest } from "@/middleware";
 
-export const GET = auth(async function GET(req: AuthenticatedRequest) {
+export const GET = auth(async function GET(req: AuthenticatedRequest): Promise<NextResponse> {
     if (!req.auth) return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
     
     const headersList = await headers();
