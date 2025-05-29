@@ -1,18 +1,13 @@
 import "server-only";
 import NextAuth from "next-auth";
 import { AuthError } from "@auth/core/errors";
-import Credentials, { CredentialInput } from "next-auth/providers/credentials";
+import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 import pool from "./app/lib/mocks/db";
 import { sql } from "@vercel/postgres";
-import { NextRequest, NextResponse } from "next/server";
-import { AppRouteHandlerFn } from "next/dist/server/route-modules/app-route/module";
-import { JWTOptions } from "next-auth/jwt";
-import type { Provider } from "next-auth/providers";
 import type {
   Account,
-  DefaultSession,
   Profile,
   Session,
   User,
@@ -30,141 +25,6 @@ interface Token {
     name?: string;
     email?: string;
 }
-/*
-interface NextAuthResult {
-    auth: ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => AppRouteHandlerFn);
-    handlers: {
-        GET: (req: Request) => Promise<Response>,
-        POST: (req: Request) => Promise<Response>,
-    };
-    signIn: <P, R>(provider?: P, options?: FormData | { redirect: R; redirectTo: string; } & Record<string, any>, authorizationParams?: string | Record<string, string> | URLSearchParams | string[][]) => Promise<R extends false ? any : never>;
-    signOut: <R>(options?: { redirect: R; redirectTo: string; }) => Promise<R extends false ? any : never>;
-}
-*/
-interface JWT extends Record<string, unknown> {
-    [key: string]: unknown;
-    email?: undefined | string;
-    exp?: number;
-    iat?: number;
-    jti?: string;
-    name?: undefined | string;
-    picture?: undefined | string;
-    sub?: string;
-}
-interface AdapterUser extends User {
-    email: string;
-    emailVerified: 
-    | null
-    | Date;
-    id: string;
-    image?: null | string;
-    name?: undefined | string;
-}
-interface AdapterSession {
-    expires: string;
-    sessionToken: string;
-    userId: string;
-}
-type Awaitable<T> = T | PromiseLike<T>;
-type NextAuthConfig = (config: {
-  adapter?: string;
-  basePath?: string;
-  callbacks?: {
-    jwt?: (params: {
-      account: Account;
-      isNewUser: boolean;
-      profile: Profile;
-      session: any;
-      token: JWT;
-      trigger: "signIn" | "update" | "signUp";
-      user: AdapterUser | User;
-    }) => Awaitable<JWT | null | Token>;
-
-    redirect?: (params: {
-      baseUrl: string;
-      url: string;
-    }) => Awaitable<string>;
-
-    session?: (params: {
-      session: { user: AdapterUser } & AdapterSession;
-      user: AdapterUser;
-      token: JWT;
-      newSession: any;
-      trigger: "update";
-    }) => Awaitable<Session | DefaultSession>;
-
-    signIn?: (params: {
-      account?: Account | null;
-      credentials?: Record<string, CredentialInput>;
-      email?: { verificationRequest: boolean };
-      profile?: Profile;
-      user: AdapterUser | User;
-    }) => Awaitable<string | boolean>;
-
-    authorized?: (params: {
-      auth: Session | null;
-      request: NextRequest;
-    }) => any;
-  };
-
-  cookies?: Partial<{}>;
-  debug?: boolean;
-
-  events?: {
-    createUser?: (message: { user: User }) => Awaitable<void>;
-    linkAccount?: (message: {
-      account: Account;
-      profile: AdapterUser | User;
-      user: AdapterUser | User;
-    }) => Awaitable<void>;
-    session?: (message: {
-      session: Session;
-      token: JWT;
-    }) => Awaitable<void>;
-    signIn?: (message: {
-      account?: Account | null;
-      isNewUser?: boolean;
-      profile?: Profile;
-      user: User;
-    }) => Awaitable<void>;
-    signOut?: (message:
-      | { session: AdapterSession | null | undefined | void }
-      | { token: JWT | null }
-    ) => Awaitable<void>;
-    updateUser?: (message: { user: User }) => Awaitable<void>;
-  };
-
-  experimental?: {
-    enableWebAuthn: boolean;
-  };
-  enableWebAuthn?: boolean;
-  jwt?: Partial<JWTOptions>;
-  logger?: Partial<unknown>;
-  pages?: Partial<{}>;
-  providers: Provider[];
-  redirectProxyUrl?: string;
-  secret?: string | string[];
-  session?: {
-    generateSessionToken?: () => string;
-    maxAge?: number;
-    strategy?: "jwt" | "database";
-    updateAge?: number;
-  };
-  generateSessionToken?: () => string;
-  maxAge?: number;
-  strategy?: "jwt" | "database";
-  updateAge?: number;
-  skipCSRFCheck?: unknown;
-  theme?: string;
-  trustHost?: boolean;
-  useSecureCookies?: boolean;
-}) => {
-    auth: ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => AppRouteHandlerFn);
-    signIn: <P, R>(provider?: P, options?: FormData | { redirect: R; redirectTo: string; } & Record<string, any>, authorizationParams?: string | Record<string, string> | URLSearchParams | string[][]) => Promise<R extends false ? any : never>;
-    signOut: <R>(options?: { redirect: R; redirectTo: string; }) => Promise<R extends false ? any : never>;
-
-};
-
 export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
     providers: [
         Google({
