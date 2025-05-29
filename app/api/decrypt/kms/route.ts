@@ -1,11 +1,9 @@
 "use server"
-import { decryptKmsDataKey } from "@/app/lib/utils";
-import { auth } from "@/auth";
-import { AuthenticatedRequest } from "@/middleware";
-import { NextResponse } from "next/server";
 import "server-only";
+import { decryptKmsDataKey } from "@/app/lib/utils";
+import { NextRequest, NextResponse } from "next/server";
 
-export const GET = auth(async function GET (req: AuthenticatedRequest): Promise<Response> {
+export default async function GET (req: NextRequest): Promise<Response> {
     const payload = await req.json();
     const key: string = payload.key;
 
@@ -14,4 +12,4 @@ export const GET = auth(async function GET (req: AuthenticatedRequest): Promise<
         return NextResponse.json({ decryption }, { status: 200 });
     }
     return NextResponse.json({ error: "Missing key" }, { status: 400 })
-})
+}
