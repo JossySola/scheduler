@@ -5,7 +5,7 @@ import { AuthenticatedRequest } from "@/middleware";
 import { NextResponse } from "next/server";
 import "server-only";
 
-export const GET = auth(async function GET (req: AuthenticatedRequest): Promise<NextResponse> {
+export const GET = auth(async function GET (req: AuthenticatedRequest): Promise<Response> {
     const payload = await req.json();
     const key: string = payload.key;
 
