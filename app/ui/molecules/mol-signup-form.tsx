@@ -61,6 +61,5 @@ export default function SignupForm ({ lang }: {
             }
             <SignInProviders lang={ lang.toString() as "en" | "es" } />
         </section>
-        
     )
 }
