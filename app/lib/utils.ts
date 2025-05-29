@@ -11,6 +11,11 @@ import { Sha256 } from "@aws-crypto/sha256-js";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
 import { sql } from "@vercel/postgres";
 
+export async function verifyPassword (decrypted: string, input: string): Promise<boolean> {
+  const argon2id = new Argon2id();
+  const verification = await argon2id.verify(decrypted, input);
+  return verification;
+}
 export async function getUserFromDb (username: string, password: string): Promise<UtilResponse & UserResponse> {
   if (!username || !password) {
     return {
