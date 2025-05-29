@@ -1,28 +1,24 @@
 import "server-only";
 import NextAuth from "next-auth";
 import { AuthError } from "@auth/core/errors";
-import Credentials from "next-auth/providers/credentials";
+import Credentials, { CredentialInput } from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 import pool from "./app/lib/mocks/db";
-import { Argon2id } from "oslo/password";
-import { decryptKmsDataKey } from "./app/lib/utils";
+import { decryptKmsDataKey, verifyPassword } from "./app/lib/utils";
 import { sql } from "@vercel/postgres";
+import { NextRequest } from "next/server";
+import { AppRouteHandlerFn, AppRouteHandlers } from "next/dist/server/route-modules/app-route/module";
+import { JWTOptions } from "next-auth/jwt";
+import type { Provider } from "next-auth/providers";
+import type {
+  Account,
+  DefaultSession,
+  Profile,
+  Session,
+  User,
+} from "@auth/core/types";
 
-interface Account {
-    provider: string;
-    providerAccountId: string;
-    type: "";
-    access_token?: string;
-    authorization_details?: [];
-    expires_at?: number;
-    expires_in?: number;
-    id_token?: string;
-    refresh_token?: string;
-    scope?: string;
-    token_type?: Lowercase<string>;
-    userId?: string;
-}
 interface Token {
     googleAccessToken?: string;
     facebookAccessToken?: string;
@@ -35,41 +31,134 @@ interface Token {
     name?: string;
     email?: string;
 }
-interface User {
-    id?: string;
-    email?: string;
+interface NextAuthResult {
+    auth: ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => AppRouteHandlerFn);
+    handlers: AppRouteHandlers;
+    signIn: <P, R>(provider?: P, options?: FormData | { redirect: R; redirectTo: string; } & Record<string, any>, authorizationParams?: string | Record<string, string> | URLSearchParams | string[][]) => Promise<R extends false ? any : never>;
+    signOut: <R>(options?: { redirect: R; redirectTo: string; }) => Promise<R extends false ? any : never>;
+}
+interface JWT extends Record<string, unknown> {
+    [key: string]: unknown;
+    email?: undefined | string;
+    exp?: number;
+    iat?: number;
+    jti?: string;
+    name?: undefined | string;
+    picture?: undefined | string;
+    sub?: string;
+}
+interface AdapterUser extends User {
+    email: string;
+    emailVerified: 
+    | null
+    | Date;
+    id: string;
     image?: null | string;
-    name?: string;
-    googleSub?: string;
-    facebookSub?: string;
-    username?: string;
-    role?: string;
-    
+    name?: undefined | string;
 }
-interface Profile {
-    email?: string;
-    email_verified?: null | boolean;
-    id?: null | string;
-    locale?: null | string;
-    name?: null | string;
-    picture?: any;
-    user_image?: string;
-    profile?: null | string;
-    sub?: null | string;
-}
-interface Session {
+interface AdapterSession {
     expires: string;
-    user?: User;
-    googleAccessToken?: string;
-    facebookAccessToken?: string;
-
+    sessionToken: string;
+    userId: string;
 }
-export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
-    secret: process.env.AUTH_SECRET,
+type Awaitable<T> = T | PromiseLike<T>;
+type NextAuthConfig = (config: {
+  adapter?: string;
+  basePath?: string;
+  callbacks?: {
+    jwt?: (params: {
+      account: Account;
+      isNewUser: boolean;
+      profile: Profile;
+      session: any;
+      token: JWT;
+      trigger: "signIn" | "update" | "signUp";
+      user: AdapterUser | User;
+    }) => Awaitable<JWT | null | Token>;
+
+    redirect?: (params: {
+      baseUrl: string;
+      url: string;
+    }) => Awaitable<string>;
+
+    session?: (params: {
+      session: { user: AdapterUser } & AdapterSession;
+      user: AdapterUser;
+      token: JWT;
+      newSession: any;
+      trigger: "update";
+    }) => Awaitable<Session | DefaultSession>;
+
+    signIn?: (params: {
+      account?: Account | null;
+      credentials?: Record<string, CredentialInput>;
+      email?: { verificationRequest: boolean };
+      profile?: Profile;
+      user: AdapterUser | User;
+    }) => Awaitable<string | boolean>;
+
+    authorized?: (params: {
+      auth: Session | null;
+      request: NextRequest;
+    }) => any;
+  };
+
+  cookies?: Partial<{}>;
+  debug?: boolean;
+
+  events?: {
+    createUser?: (message: { user: User }) => Awaitable<void>;
+    linkAccount?: (message: {
+      account: Account;
+      profile: AdapterUser | User;
+      user: AdapterUser | User;
+    }) => Awaitable<void>;
+    session?: (message: {
+      session: Session;
+      token: JWT;
+    }) => Awaitable<void>;
+    signIn?: (message: {
+      account?: Account | null;
+      isNewUser?: boolean;
+      profile?: Profile;
+      user: User;
+    }) => Awaitable<void>;
+    signOut?: (message:
+      | { session: AdapterSession | null | undefined | void }
+      | { token: JWT | null }
+    ) => Awaitable<void>;
+    updateUser?: (message: { user: User }) => Awaitable<void>;
+  };
+
+  experimental?: {
+    enableWebAuthn: boolean;
+  };
+  enableWebAuthn?: boolean;
+  jwt?: Partial<JWTOptions>;
+  logger?: Partial<unknown>;
+  pages?: Partial<{}>;
+  providers: Provider[];
+  redirectProxyUrl?: string;
+  secret?: string | string[];
+  session?: {
+    generateSessionToken?: () => string;
+    maxAge?: number;
+    strategy?: "jwt" | "database";
+    updateAge?: number;
+  };
+  generateSessionToken?: () => string;
+  maxAge?: number;
+  strategy?: "jwt" | "database";
+  updateAge?: number;
+  skipCSRFCheck?: unknown;
+  theme?: string;
+  trustHost?: boolean;
+  useSecureCookies?: boolean;
+}) => NextAuthResult;
+
+export const { handlers, signIn, signOut, auth }: NextAuthResult = (NextAuth as NextAuthConfig)({
     providers: [
         Google({
-            clientId: process.env.AUTH_GOOGLE_ID,
-            clientSecret: process.env.AUTH_GOOGLE_SECRET,
             async profile(profile) {
                 try {
                     const doesUserExist = await sql`
@@ -152,8 +241,6 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
             }
         }),
         Facebook({
-            clientId: process.env.AUTH_FACEBOOK_ID,
-            clientSecret: process.env.AUTH_FACEBOOK_SECRET,
             authorization: {
                 params: {
                     response_type: "code",
@@ -311,9 +398,8 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     WHERE email = ${username} OR username = ${username};
                 `;
                 if (decryptedPassword.rowCount === 0) throw new AuthError("Internal Error", { cause: 500 });
-                const argon2id = new Argon2id();
-                const verification = await argon2id.verify(decryptedPassword.rows[0].decrypted_password.toString(), password);
-
+                
+                const verification = await verifyPassword(decryptedPassword.rows[0].decrypted_password.toString(), password);
                 if (!verification) { 
                     // If verification fails, insert registry to login_attempts
                     const attempt = await sql`
@@ -346,6 +432,9 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
         }),
     ],
     callbacks: {
+        async authorized ({ auth }: { auth: null | Session }) {
+            return !!auth;
+        },
         async jwt ({ token, account, profile, user }: {
             token: Token
             account: Account,
