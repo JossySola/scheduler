@@ -7,7 +7,7 @@ import Facebook from "next-auth/providers/facebook";
 import pool from "./app/lib/mocks/db";
 import { sql } from "@vercel/postgres";
 import { NextRequest } from "next/server";
-import { AppRouteHandlerFn, AppRouteHandlers } from "next/dist/server/route-modules/app-route/module";
+import { AppRouteHandlerFn } from "next/dist/server/route-modules/app-route/module";
 import { JWTOptions } from "next-auth/jwt";
 import type { Provider } from "next-auth/providers";
 import type {
@@ -32,7 +32,10 @@ interface Token {
 }
 interface NextAuthResult {
     auth: ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => AppRouteHandlerFn);
-    handlers: AppRouteHandlers;
+    handlers: {
+        GET?: (req: Request) => Promise<Response>,
+        POST?: (req: Request) => Promise<Response>,
+    };
     signIn: <P, R>(provider?: P, options?: FormData | { redirect: R; redirectTo: string; } & Record<string, any>, authorizationParams?: string | Record<string, string> | URLSearchParams | string[][]) => Promise<R extends false ? any : never>;
     signOut: <R>(options?: { redirect: R; redirectTo: string; }) => Promise<R extends false ? any : never>;
 }
