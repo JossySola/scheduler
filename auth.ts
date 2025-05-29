@@ -33,8 +33,8 @@ interface Token {
 interface NextAuthResult {
     auth: ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => Promise<null | Session>) & ((...args: any[]) => AppRouteHandlerFn);
     handlers: {
-        GET?: (req: Request) => Promise<Response>,
-        POST?: (req: Request) => Promise<Response>,
+        GET: (req: Request) => Promise<Response>,
+        POST: (req: Request) => Promise<Response>,
     };
     signIn: <P, R>(provider?: P, options?: FormData | { redirect: R; redirectTo: string; } & Record<string, any>, authorizationParams?: string | Record<string, string> | URLSearchParams | string[][]) => Promise<R extends false ? any : never>;
     signOut: <R>(options?: { redirect: R; redirectTo: string; }) => Promise<R extends false ? any : never>;
