@@ -5,7 +5,7 @@ import Credentials, { CredentialInput } from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 import pool from "./app/lib/mocks/db";
-import { decryptKmsDataKey, verifyPassword } from "./app/lib/utils";
+import { decryptKmsDataKey } from "./app/lib/utils";
 import { sql } from "@vercel/postgres";
 import { NextRequest } from "next/server";
 import { AppRouteHandlerFn, AppRouteHandlers } from "next/dist/server/route-modules/app-route/module";
@@ -399,8 +399,15 @@ export const { handlers, signIn, signOut, auth }: NextAuthResult = (NextAuth as 
                 `;
                 if (decryptedPassword.rowCount === 0) throw new AuthError("Internal Error", { cause: 500 });
                 
-                const verification = await verifyPassword(decryptedPassword.rows[0].decrypted_password.toString(), password);
-                if (!verification) { 
+                const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
+                const requestVerification = await fetch(``, {
+                    method: 'GET',
+                    body: JSON.stringify({
+                        password,
+                        decrypted
+                    })
+                })
+                if (requestVerification.status === 403) { 
                     // If verification fails, insert registry to login_attempts
                     const attempt = await sql`
                         INSERT INTO scheduler_login_attempts (email, created_at, last_attempt_at, next_attempt_allowed_at, attempts)
