@@ -3,7 +3,7 @@ import "server-only";
 import { decryptKmsDataKey } from "@/app/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function GET (req: NextRequest): Promise<Response> {
+export async function GET (req: NextRequest): Promise<Response> {
     const payload = await req.json();
     const key: string = payload.key;
 
