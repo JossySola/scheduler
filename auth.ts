@@ -400,7 +400,7 @@ export const { handlers, signIn, signOut, auth }: NextAuthResult = (NextAuth as 
                 if (decryptedPassword.rowCount === 0) throw new AuthError("Internal Error", { cause: 500 });
                 
                 const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
-                const requestVerification = await fetch(``, {
+                const requestVerification = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/verify/password`, {
                     method: 'GET',
                     body: JSON.stringify({
                         password,
