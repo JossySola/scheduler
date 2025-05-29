@@ -5,7 +5,6 @@ import Credentials, { CredentialInput } from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 import pool from "./app/lib/mocks/db";
-import { decryptKmsDataKey } from "./app/lib/utils";
 import { sql } from "@vercel/postgres";
 import { NextRequest } from "next/server";
 import { AppRouteHandlerFn, AppRouteHandlers } from "next/dist/server/route-modules/app-route/module";
@@ -389,11 +388,21 @@ export const { handlers, signIn, signOut, auth }: NextAuthResult = (NextAuth as 
                         cause: 409
                     })
                 }
-                const key = await decryptKmsDataKey(userKey.rows[0].user_password_key);
-                if (key === null) throw new AuthError("Internal Error", { cause: 500 });
+                const passwordKey = userKey.rows[0].user_password_key;
+                const keyRequest = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/decrypt/kms`, {
+                    method: 'GET',
+                    body: JSON.stringify({
+                        key: passwordKey,
+                    })
+                })
+                if (keyRequest.status !== 200) {
+                    throw new AuthError("Error in KMS", { cause: 500 });
+                }
+                const key = await keyRequest.json();
+                if (!key.decrypted) throw new AuthError("Null KMS", { cause: 500 });
 
                 const decryptedPassword = await sql`
-                    SELECT pgp_sym_decrypt_bytea(password, ${key}) AS decrypted_password
+                    SELECT pgp_sym_decrypt_bytea(password, ${key.decrypted}) AS decrypted_password
                     FROM scheduler_users
                     WHERE email = ${username} OR username = ${username};
                 `;
