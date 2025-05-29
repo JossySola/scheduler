@@ -27,7 +27,7 @@ export default function SampleSpecs ({ lang }: {
         return () => observer.disconnect();
     }, [])
     return (
-        <motion.div ref={ ref } className="m-3 bg-white rounded-xl shadow-xl w-[90vw] sm:w-[500px] flex flex-col justify-center items-center gap-1 p-8">
+        <motion.div  className="m-3 bg-white rounded-xl shadow-xl w-[90vw] sm:w-[500px] flex flex-col justify-center items-center gap-1 p-8">
             <motion.h3 className="text-black">{ lang === "es" ? "Configuración de Filas" : "Rows Settings" }</motion.h3>
 
             <motion.div aria-label="sample-tabs-row" className="inline-flex">
@@ -51,7 +51,7 @@ export default function SampleSpecs ({ lang }: {
                 </motion.div>
             </motion.div>
 
-            <motion.div aria-label="sample-panel" className="py-3 px-1 data-[inert=true]:hidden outline-none data-[focus-visible=true]:z-10 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-focus data-[focus-visible=true]:outline-offset-2">
+            <motion.div  aria-label="sample-panel" className="py-3 px-1 data-[inert=true]:hidden outline-none data-[focus-visible=true]:z-10 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-focus data-[focus-visible=true]:outline-offset-2">
                 <motion.div className="flex flex-col relative overflow-hidden h-auto text-black box-border outline-none data-[focus-visible=true]:z-10 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-focus data-[focus-visible=true]:outline-offset-2 shadow-medium rounded-large transition-transform-background motion-reduce:transition-none p-3">
                     <motion.div className="relative flex w-full p-3 flex-auto flex-col place-content-inherit align-items-inherit h-auto break-words text-left overflow-y-auto subpixel-antialiased">
                         
@@ -70,6 +70,7 @@ export default function SampleSpecs ({ lang }: {
                         <CheckboxGroup
                         isReadOnly
                         className="m-4"
+                        ref={ ref }
                         value={ defaultCols }
                         label={ lang === "es" ? "Habilitar solo en ciertas columnas:" : "Enable/disable on certain columns:" }>
                             <Checkbox classNames={{ label: "text-black" }} value="Monday">{ lang === "es" ? "Lunes" : "Monday" }</Checkbox>

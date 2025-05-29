@@ -1,13 +1,17 @@
 "use server"
 import "server-only";
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import pool from '@/app/lib/mocks/db';
 import { decryptKmsDataKey } from "@/app/lib/utils";
 import { sql } from "@vercel/postgres";
+import { auth } from "@/auth";
+import { AuthenticatedRequest } from "@/middleware";
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
+export const GET =  auth(async function GET(req: AuthenticatedRequest, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
+    if (!req.auth) return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+
     const table_id: string = (await params).id;
-    const headersList: Headers = request.headers
+    const headersList: Headers = req.headers
     const user_id = headersList.get("user_id");
 
     try {
@@ -51,4 +55,4 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     } catch (error) {
         return NextResponse.json({ error: "Unexpected error occurred. Try again" }, { status: 500 });
     }
-}
+})

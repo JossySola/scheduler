@@ -4,8 +4,12 @@ import pool from "@/app/lib/mocks/db";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
+import { auth } from "@/auth";
+import { AuthenticatedRequest } from "@/middleware";
 
-export async function GET() {
+export const GET = auth(async function GET(req: AuthenticatedRequest): Promise<NextResponse> {
+    if (!req.auth) return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    
     const headersList = await headers();
     const email = headersList.get("user_email");
 
@@ -30,4 +34,4 @@ export async function GET() {
     return NextResponse.json({
         data: response.rows[0]
     }, { status: 200 })
-}
+})

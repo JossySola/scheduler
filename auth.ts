@@ -5,24 +5,14 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 import pool from "./app/lib/mocks/db";
-import { Argon2id } from "oslo/password";
-import { decryptKmsDataKey } from "./app/lib/utils";
 import { sql } from "@vercel/postgres";
+import type {
+  Account,
+  Profile,
+  Session,
+  User,
+} from "@auth/core/types";
 
-interface Account {
-    provider: string;
-    providerAccountId: string;
-    type: "";
-    access_token?: string;
-    authorization_details?: [];
-    expires_at?: number;
-    expires_in?: number;
-    id_token?: string;
-    refresh_token?: string;
-    scope?: string;
-    token_type?: Lowercase<string>;
-    userId?: string;
-}
 interface Token {
     googleAccessToken?: string;
     facebookAccessToken?: string;
@@ -35,41 +25,9 @@ interface Token {
     name?: string;
     email?: string;
 }
-interface User {
-    id?: string;
-    email?: string;
-    image?: null | string;
-    name?: string;
-    googleSub?: string;
-    facebookSub?: string;
-    username?: string;
-    role?: string;
-    
-}
-interface Profile {
-    email?: string;
-    email_verified?: null | boolean;
-    id?: null | string;
-    locale?: null | string;
-    name?: null | string;
-    picture?: any;
-    user_image?: string;
-    profile?: null | string;
-    sub?: null | string;
-}
-interface Session {
-    expires: string;
-    user?: User;
-    googleAccessToken?: string;
-    facebookAccessToken?: string;
-
-}
 export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
-    secret: process.env.AUTH_SECRET,
     providers: [
         Google({
-            clientId: process.env.AUTH_GOOGLE_ID,
-            clientSecret: process.env.AUTH_GOOGLE_SECRET,
             async profile(profile) {
                 try {
                     const doesUserExist = await sql`
@@ -152,8 +110,6 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
             }
         }),
         Facebook({
-            clientId: process.env.AUTH_FACEBOOK_ID,
-            clientSecret: process.env.AUTH_FACEBOOK_SECRET,
             authorization: {
                 params: {
                     response_type: "code",
@@ -302,19 +258,35 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         cause: 409
                     })
                 }
-                const key = await decryptKmsDataKey(userKey.rows[0].user_password_key);
-                if (key === null) throw new AuthError("Internal Error", { cause: 500 });
+                const passwordKey = userKey.rows[0].user_password_key;
+                const keyRequest = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/decrypt/kms`, {
+                    method: 'GET',
+                    body: JSON.stringify({
+                        key: passwordKey,
+                    })
+                })
+                if (keyRequest.status !== 200) {
+                    throw new AuthError("Error in KMS", { cause: 500 });
+                }
+                const key = await keyRequest.json();
+                if (!key.decrypted) throw new AuthError("Null KMS", { cause: 500 });
 
                 const decryptedPassword = await sql`
-                    SELECT pgp_sym_decrypt_bytea(password, ${key}) AS decrypted_password
+                    SELECT pgp_sym_decrypt_bytea(password, ${key.decrypted}) AS decrypted_password
                     FROM scheduler_users
                     WHERE email = ${username} OR username = ${username};
                 `;
                 if (decryptedPassword.rowCount === 0) throw new AuthError("Internal Error", { cause: 500 });
-                const argon2id = new Argon2id();
-                const verification = await argon2id.verify(decryptedPassword.rows[0].decrypted_password.toString(), password);
-
-                if (!verification) { 
+                
+                const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
+                const requestVerification = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/verify/password`, {
+                    method: 'GET',
+                    body: JSON.stringify({
+                        password,
+                        decrypted
+                    })
+                })
+                if (requestVerification.status === 403) { 
                     // If verification fails, insert registry to login_attempts
                     const attempt = await sql`
                         INSERT INTO scheduler_login_attempts (email, created_at, last_attempt_at, next_attempt_allowed_at, attempts)
@@ -346,6 +318,9 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
         }),
     ],
     callbacks: {
+        async authorized ({ auth }: { auth: null | Session }) {
+            return !!auth;
+        },
         async jwt ({ token, account, profile, user }: {
             token: Token
             account: Account,

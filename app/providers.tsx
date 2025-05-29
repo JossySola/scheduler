@@ -18,9 +18,7 @@ export function UIProvider ({ children }: {
         <HeroUIProvider navigate={router.push}>
             <NextThemesProvider attribute='class' defaultTheme='system' enableSystem>
                 <ToastProvider placement='bottom-center' />
-                    <main>
-                        { children }
-                    </main>
+                    { children }
             </NextThemesProvider>
         </HeroUIProvider>
     )

@@ -7,10 +7,9 @@ export default async function Page ({ params }: {
     const lang = (await params).lang;
 
     return (
-        <section className="w-full flex flex-col items-center h-screen">
+        <section className="w-full flex flex-col items-center h-screen p-5">
             <LogIn lang={lang} />
             <SignInProviders lang= {lang as "en" | "es" } />
         </section>
-        
     )
 }
