@@ -54,7 +54,7 @@ export default function LogIn ({ lang }: {
             style={{
                 textDecoration: "none"
             }}
-            className="w-full m-1 bg-transparent border-2">
+            className="w-full m-1 bg-transparent">
             { lang === "es" ? "Restaurar contraseña" : "Reset password" }
             </Button>
 
