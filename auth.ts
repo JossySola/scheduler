@@ -261,9 +261,9 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                 const passwordKey = userKey.rows[0].user_password_key;
                 const keyRequest = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/decrypt/kms`, {
                     method: 'GET',
-                    body: JSON.stringify({
+                    headers: {
                         key: passwordKey,
-                    })
+                    }
                 })
                 if (keyRequest.status !== 200) {
                     throw new AuthError("Error in KMS", { cause: 500 });
@@ -281,10 +281,10 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                 const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
                 const requestVerification = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/verify/password`, {
                     method: 'GET',
-                    body: JSON.stringify({
+                    headers: {
                         password,
                         decrypted
-                    })
+                    }
                 })
                 if (requestVerification.status === 403) { 
                     // If verification fails, insert registry to login_attempts
