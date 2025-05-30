@@ -17,7 +17,7 @@ export default function LogIn ({ lang }: {
     const [ timestamp, setTimestamp ] = useState<string>("");
 
     useEffect(() => {
-        if (loginState.nextAttempt !== null) {
+        if (loginState.nextAttempt) {
             setTimestamp(loginState.nextAttempt.toString());
         }
     }, [loginState.nextAttempt])
