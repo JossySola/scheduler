@@ -265,15 +265,15 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         key: passwordKey,
                     }
                 })
-                console.log("Key Request from auth: ", keyRequest)
+                
                 if (keyRequest.status !== 200) {
                     throw new AuthError("Error in KMS", { cause: 500 });
                 }
                 const key = await keyRequest.json();
-                if (!key.decrypted) throw new AuthError("Null KMS", { cause: 500 });
+                if (!key.decryption) throw new AuthError("Null KMS", { cause: 500 });
 
                 const decryptedPassword = await sql`
-                    SELECT pgp_sym_decrypt_bytea(password, ${key.decrypted}) AS decrypted_password
+                    SELECT pgp_sym_decrypt_bytea(password, ${key.decryption}) AS decrypted_password
                     FROM scheduler_users
                     WHERE email = ${username} OR username = ${username};
                 `;
