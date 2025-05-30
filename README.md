@@ -1,4 +1,6 @@
-## Background
+# Scheduler ![icon](https://github.com/user-attachments/assets/3e67832e-a757-44cc-a4a9-ded4055057c4) 
+## Description
+
 I thought of this project after I realized the managers at my current job (*retail store*) were struggling with schedule planification as we are more than 40 employees.
 
 The issue arises as each employee has unique requirements and needs. That is what each row and column specification is for.
