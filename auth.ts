@@ -287,6 +287,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         decrypted
                     }
                 })
+                console.log("Verification Request: ", requestVerification)
                 if (requestVerification.status === 403) { 
                     // If verification fails, insert registry to login_attempts
                     const attempt = await sql`
