@@ -14,7 +14,7 @@ export default async function Page ({ params, searchParams }: {
     const confirming = await sql`
         SELECT token, key 
         FROM scheduler_email_confirmation_tokens
-        WHERE token = ${token} AND expires_at > NOW() AND used_at IS NULL;
+        WHERE token = ${token} AND expires_at > NOW();
     `;
     if (!confirming.rows.length || confirming.rowCount === 0) {
         return <section className="h-screen p-10">
