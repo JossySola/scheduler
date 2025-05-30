@@ -265,7 +265,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         key: passwordKey,
                     }
                 })
-                
+                console.log("Key Request: ", keyRequest)
                 if (keyRequest.status !== 200) {
                     throw new AuthError("Error in KMS", { cause: 500 });
                 }
