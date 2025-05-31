@@ -215,6 +215,9 @@ export async function decryptKmsDataKey (CiphertextBlob: string) {
   const accessKeyId = process.env.AWS_KMS_KEY;
   const secretAccessKey = process.env.AWS_KMS_SECRET;
   const KeyId = process.env.AWS_KMS_ARN;
+  console.log("Access Key: ", accessKeyId)
+  console.log("Secret Access Key: ", secretAccessKey)
+  console.log("Key Id: ", KeyId)
   try {
     if (!accessKeyId || !secretAccessKey || !KeyId) throw new Error("Missing keys", { cause: 400 })
     const client = new KMSClient({
@@ -224,12 +227,14 @@ export async function decryptKmsDataKey (CiphertextBlob: string) {
           secretAccessKey,
       },
     });
-        
+    console.log("KMS Client: ", client)
     const command = new DecryptCommand({
       CiphertextBlob: Buffer.from(CiphertextBlob, "base64"), // Convert to Buffer
       KeyId,
     });
+    console.log("KMS Command: ", command)
     const result = await client.send(command);
+    console.log("KMS Command result: ", result)
     if (result.Plaintext) {
       return Buffer.from(result.Plaintext).toString("base64");
     }
