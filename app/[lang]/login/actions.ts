@@ -33,12 +33,13 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
     }
     
     try {
-        await signIn("credentials", {
+        const response = await signIn("credentials", {
             username,
             password,
             redirect: true,
             redirectTo: `/${locale}/dashboard`,
         })
+        console.log(response)
         return {
             message: "Logged in",
             nextAttempt: null,
