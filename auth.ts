@@ -265,6 +265,9 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         key: passwordKey,
                     }
                 })
+                console.log(process.env.AWS_KMS_KEY)
+                console.log(process.env.AWS_KMS_SECRET)
+                console.log(process.env.AWS_KMS_ARN)
                 if (keyRequest.status !== 200) {
                     throw new AuthError(keyRequest.statusText, { cause: 500 });
                 }
