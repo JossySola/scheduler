@@ -499,7 +499,7 @@ export async function sendEmailAction (name: string, email: string, token: strin
         </tr>
       </tbody></table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-mc-module-version="2019-10-22" data-muid="hMHE9bJVUTwMzeHTbzCDTa">
         <tbody><tr>
-          <td style="padding:18px 0px 18px 0px; line-height:30px; text-align:inherit;" height="100%" valign="top" bgcolor=""><div><h2 style="text-align: center">¡Bienvenido ${name}!</h2><div></div></div></td>
+          <td style="padding:18px 0px 18px 0px; line-height:30px; text-align:inherit;" height="100%" valign="top" bgcolor=""><div><h2 style="text-align: center">¡Bienvenidx ${name}!</h2><div></div></div></td>
         </tr>
       </tbody></table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-mc-module-version="2019-10-22" data-muid="kXZBA9yKCY1Ma7D4z9Bs9o">
         <tbody><tr>
