@@ -7,6 +7,7 @@ import { Link as HeroLink } from "@heroui/react";
 import { LogInAction } from "@/app/[lang]/login/actions";
 import CountdownTimer from "../atoms/atom-timer-attempt";
 import { Button, Form, Input } from "@heroui/react";
+import { redirect } from "next/navigation";
 
 export default function LogIn ({ lang }: {
     lang: string,
@@ -17,14 +18,17 @@ export default function LogIn ({ lang }: {
     const [ timestamp, setTimestamp ] = useState<string>("");
 
     useEffect(() => {
+        if (loginState.message.includes(process.env.NEXT_PUBLIC_ORIGIN)) {
+            redirect(`/${lang}/dashboard`);
+        }
         if (loginState.nextAttempt) {
             setTimestamp(loginState.nextAttempt.toString());
         }
-    }, [loginState.nextAttempt])
+    }, [loginState])
 
     return (
         <section className="w-full p-3 sm:w-[400px] flex flex-col justify-center items-center pt-5">
-            <h2 className="tracking-tight">{ lang === "es" ? "Iniciar sesión" : "Login" }</h2>
+            <h2 className="tracking-tight">{ lang === "es" ? "Iniciar sesión" : "Log in" }</h2>
             <Form action={loginAction} className="w-full flex-col items-center">
                 <Input
                 isRequired
@@ -44,17 +48,18 @@ export default function LogIn ({ lang }: {
 
                 <CountdownTimer nextAttempt={timestamp} />
                 <ActionButton disabled={pending} loading={pending} type="submit" className="w-full sm:w-full">
-                    { lang === "es" ? "Iniciar sesión" : "Login"}
+                    { lang === "es" ? "Iniciar sesión" : "Log in"}
                 </ActionButton>
             </Form>
             
             <Button
             as={HeroLink}
+            variant="bordered"
             href={`/${lang}/recover`}
             style={{
                 textDecoration: "none"
             }}
-            className="w-full m-1 bg-transparent">
+            className="w-full m-1">
             { lang === "es" ? "Restaurar contraseña" : "Reset password" }
             </Button>
 
