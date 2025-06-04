@@ -64,9 +64,9 @@ export default async function Page ({ params, searchParams }: {
         redirect(`/${lang}/dashboard`);
     } catch (err) {
         return (
-            <section className="h-screen p-10 text-center">
+            <section className="flex flex-col justify-center items-center h-screen p-10 text-center">
                 <h3>{lang === "es" ? "Registro completado, pero hubo un problema iniciando sesión." : "Account created, but there was a problem logging you in."}</h3>
-                <Link href={`/${lang}/login`} className="underline mt-4 inline-block">
+                <Link href={`/${lang}/login`} className="underline mt-4 inline-block text-center">
                     {lang === "es" ? "Iniciar sesión" : "Log in manually"}
                 </Link>
             </section>
