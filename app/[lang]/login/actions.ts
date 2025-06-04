@@ -2,6 +2,7 @@
 import "server-only";
 import { signIn } from "@/auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 type RouteError = {
   type: 'CallbackRouteError';
@@ -18,6 +19,7 @@ type RouteError = {
     next_attempt?: number;
   };
 };
+type AttemptObject = { next_attempt: number | null }
 export async function LogInAction (prevState: { message: string, nextAttempt: number | null }, formData: FormData) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
@@ -31,52 +33,75 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
             nextAttempt: null,
         }
     }
-    
     try {
         const response = await signIn("credentials", {
             username,
             password,
-            redirect: true,
-            redirectTo: `/${locale}/dashboard`,
+            redirect: false,
         })
-        console.log(response)
         return {
-            message: "Logged in",
+            message: response,
             nextAttempt: null,
         }
-    } catch (error) {
-        if (isRouteError(error)) {
-            const cause = error.cause.err.cause;
-            if (error.cause.next_attempt) {
-                return {
-                    message: locale === "es" ? "Información inválida" : "Invalid credentials",
-                    nextAttempt: error.cause.next_attempt as number,
+    } catch (err) {
+        if (err && typeof err === "object") {
+            if ((err as RouteError).type && (err as RouteError).type === "CallbackRouteError") {
+                const error = (err as RouteError).cause.err;
+                const cause = error.cause;
+                if (typeof cause === "number" && typeof (error as any).cause?.err?.cause === 'number') {
+                    switch (cause) {
+                        case 400: {
+                            return {
+                                message: locale === "es" ? "Por favor, llene todos los campos" : "Please fill out all the fields",
+                                nextAttempt: null,
+                            }
+                        }
+                        case 404: {
+                            return {
+                                message: locale === "es" ? "Información inválida 🤔" : "Invalid credentials 🤔",
+                                nextAttempt: null,
+                            }
+                        }
+                        case 402: {
+                            return {
+                                message: locale === "es" ? "Has iniciado sesión con un proveedor externo (Google o Facebook) anteriormente. Por favor, inicia sesión con ese proveedor" : "You have signed in with an external provider in the past (Google or Facebook), please use that method instead",
+                                nextAttempt: null,
+                            }
+                        }
+                        case 409: {
+                            return {
+                                message: locale === "es" ? "Hay un error en tu registro, por favor contáctanos" : "There is an error in your record, please contact us",
+                                nextAttempt: null,
+                            }
+                        }
+                        case 500: {
+                            return {
+                                message: locale === "es" ? "Error inesperado. Inténtalo nuevamente" : "Something unexpected happened. Please try again later",
+                                nextAttempt: null,
+                            }
+                        }
+                        default: {
+                            return {
+                                message: locale === "es" ? "Error inesperado. Inténtalo nuevamente" : "Something unexpected happened. Please try again later",
+                                nextAttempt: null,
+                            }
+                        }
+                    }
+                } else if (cause && typeof cause !== "number" && (cause as AttemptObject).next_attempt) {
+                    return {
+                        message: locale === "es" ? "Hay uno o más intentos de inicio de sesión fallidos, inténtalo nuevamente después del tiempo asignado" : "There are one or more sign in attempts, please try again after the assigned clock",
+                        nextAttempt: (cause as AttemptObject).next_attempt,
+                    }
                 }
             }
-            if (cause === 404) {
-                return {
-                    message: locale === "es" ? "Usuario no existe" : "User not found",
-                    nextAttempt: null,
-                }
-            } else if (cause === 409) {
-                return {
-                    message: locale === "es" ? "Registro incorrecto. Favor de reportar error" : "Bad registry. Please report this specific issue",
-                    nextAttempt: null,
-                }
-            } else if (cause === 500) {
-                return {
-                    message: locale === "es" ? "Error interno" : "Internal Error",
-                    nextAttempt: null,
-                }
-            } else if (cause == 400) {
-                return {
-                    message: locale === "es" ? "Has iniciado sesión con un proveedor externo (Google o Facebook) anteriormente. Por favor, inicia sesión con ese proveedor" : "You have signed in with an external provider in the past (Google or Facebook), please use that method instead",
-                    nextAttempt: null,
-                }
+        } else if (err instanceof Error) {
+            return {
+                message: locale === "es" ? "Error desconocido, inténtalo más tarde o contáctanos" : "Unknown error, please try again later or contact us",
+                nextAttempt: null,
             }
         }
         return {
-            message: locale === "es" ? "Error inesperado. Inténtalo nuevamente" : "Something unexpected happened. Please try again later",
+            message: locale === "es" ? "Error desconocido, inténtalo más tarde o contáctanos" : "Unknown error, please try again later or contact us",
             nextAttempt: null,
         }
     }
@@ -96,12 +121,4 @@ export async function FacebookSignInAction (prevState: { message: string }, form
     return {
         message: "Facebook signup"
     }
-}
-function isRouteError(error: unknown): error is RouteError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    (error as RouteError).type === 'CallbackRouteError' &&
-    typeof (error as any).cause?.err?.cause === 'number'
-  );
 }
