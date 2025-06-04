@@ -16,7 +16,7 @@ export default function GoogleSignIn ({ lang }: {
             isDisabled={ pending }
             className="border-1 border-black bg-white text-black shadow-md font-medium m-1 w-full text-md"
             endContent={<LogoGoogle />}>
-                { lang === "es" ? "Continúa con Google" : "Signin with Google" }
+                { lang === "es" ? "Continúa con Google" : "Continue with Google" }
             </Button>
         </form>
     )
