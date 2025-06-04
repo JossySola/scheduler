@@ -206,7 +206,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                 const password = credentials.password;
 
                 if (!username || !password || typeof username !== 'string' || typeof password !== 'string') {
-                    throw new Error("Data missing");
+                    throw new Error("Data missing", { cause: 400 });
                 }
                 // Gather data if user exists
                 const user = await sql`
@@ -221,9 +221,11 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     WHERE email = ${username} OR username = ${username};
                 `;
                 // User not found
-                if (!user.rowCount) throw new AuthError("User not found", {
-                    cause: 404
-                });
+                if (!user.rowCount) {
+                    throw new AuthError("User not found", {
+                        cause: 404
+                    });
+                }
                 // Check if user's account is locked
                 const isUserLocked = await sql`
                     SELECT next_attempt_allowed_at 
@@ -231,8 +233,12 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     WHERE email = ${user.rows[0].email}
                     AND next_attempt_allowed_at > NOW();
                 `;
+                
                 // User's account is locked
-                if (isUserLocked.rowCount) throw new AuthError("Account currently locked", { cause: { next_attempt: isUserLocked.rows[0].next_attempt_allowed_at }});
+                if (isUserLocked.rowCount) {
+                    const next_attempt = isUserLocked.rows[0].next_attempt_allowed_at;
+                    throw new AuthError("Account currently locked", { cause: { next_attempt } });
+                }
                 if (user.rows[0].password === null) {
                     // If decrypted password is null check if user is registered with a provider
                     const userProvider = await sql`
@@ -245,7 +251,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                             cause: 409
                         });
                     } else {
-                        throw new AuthError("User does not have credentials but have signed in with external provider", { cause: 400 });
+                        throw new AuthError("User does not have credentials but have signed in with external provider", { cause: 402 });
                     }
                 }
                 // If it is not null, verify the hashed decrypted password
@@ -265,22 +271,21 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         key: passwordKey,
                     }
                 })
-                console.log(process.env.AWS_KMS_KEY)
-                console.log(process.env.AWS_KMS_SECRET)
-                console.log(process.env.AWS_KMS_ARN)
+                const key = await keyRequest.json();
                 if (keyRequest.status !== 200) {
                     throw new AuthError(keyRequest.statusText, { cause: 500 });
                 }
-                const key = await keyRequest.json();
-                if (!key.decryption) throw new AuthError("Null KMS", { cause: 500 });
-
+                if (!key.decryption) {
+                    throw new AuthError("Null KMS", { cause: 500 })
+                }
                 const decryptedPassword = await sql`
                     SELECT pgp_sym_decrypt_bytea(password, ${key.decryption}) AS decrypted_password
                     FROM scheduler_users
                     WHERE email = ${username} OR username = ${username};
                 `;
-                if (decryptedPassword.rowCount === 0) throw new AuthError("Internal Error", { cause: 500 });
-                
+                if (decryptedPassword.rowCount === 0) {
+                    throw new AuthError("Internal Error", { cause: 500 });
+                }
                 const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
                 const requestVerification = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/verify/password`, {
                     method: 'GET',
@@ -289,7 +294,6 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         decrypted
                     }
                 })
-                console.log("Verification Request: ", requestVerification)
                 if (requestVerification.status === 403) { 
                     // If verification fails, insert registry to login_attempts
                     const attempt = await sql`
@@ -302,11 +306,8 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                             attempts = scheduler_login_attempts.attempts + 1
                         RETURNING next_attempt_allowed_at;
                     `;
-                    throw new AuthError("Invalid credentials", {
-                        cause: {
-                            next_attempt: attempt.rows[0].next_attempt_allowed_at
-                        }
-                    })
+                    const next_attempt = attempt.rows[0].next_attempt_allowed_at;
+                    throw new AuthError("Invalid credentials", { cause: { next_attempt } })
                 }
                 await sql`
                     DELETE FROM scheduler_login_attempts WHERE email = ${user.rows[0].email};
