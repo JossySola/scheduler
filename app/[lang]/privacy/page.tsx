@@ -81,6 +81,7 @@ export default async function Page ({ params }: {
                         <li>Erase all stored schedules and tables.</li>
                         <li>Disconnect any linked providers (Google and/or Facebook).</li>
                     </ul>
+                    <i>For more information, visit: <a href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/delete-my-data`} target="_blank">Delete My Data</a></i>
                 </li>
                 <li><b>Disconnecting Providers:</b> You can manually disconnect your account from Google or Facebook without deleting your account.</li>
                 <li><b>Password Change:</b> You can change your password at any time.</li>
