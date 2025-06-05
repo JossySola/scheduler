@@ -4,6 +4,7 @@ const nextConfig = {
         ignoreDuringBuilds: true,
     },
     transpilePackages: ["geist"],
+    runtime: 'nodejs'
 };
 
 export default nextConfig;
