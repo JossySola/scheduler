@@ -2,7 +2,6 @@
 import "server-only";
 import crypto, { randomBytes } from "crypto";
 import pool from "./mocks/db";
-import { Argon2id } from "oslo/password";
 import sgMail from "@sendgrid/mail";
 import { z } from "zod";
 import { KMSDataKey, UserResponse, UtilResponse } from "./definitions";
@@ -10,6 +9,7 @@ import { SignatureV4 } from "@aws-sdk/signature-v4";
 import { Sha256 } from "@aws-crypto/sha256-js";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
 import { sql } from "@vercel/postgres";
+import { verify } from "@node-rs/argon2";
 
 export async function getUserFromDb (username: string, password: string): Promise<UtilResponse & UserResponse> {
   if (!username || !password) {
@@ -50,8 +50,7 @@ export async function getUserFromDb (username: string, password: string): Promis
       }
     }
     
-    const argon2id = new Argon2id();
-    const hashVerified = await argon2id.verify(userRecord.password, password);
+    const hashVerified = await verify(userRecord.password, password);
 
     if (hashVerified) {
       return {
