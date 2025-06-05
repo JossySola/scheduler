@@ -10,7 +10,7 @@ export default async function Page ({ params }: {
     const lang = (await params).lang;
     const session = await auth();
 
-    if (!session?.user) redirect(`/${lang}/login`);
+    if (!session?.user) redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/login`);
 
     if (session && session.user) {
         const numTables = await sql`
@@ -29,7 +29,7 @@ export default async function Page ({ params }: {
                     </main>
                 )
             } else {
-                redirect(`/${lang}/dashboard`);
+                redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/dashboard`);
             }
         } else {
             return (
