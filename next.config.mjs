@@ -3,7 +3,10 @@ const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
-    transpilePackages: ["geist"]
+    webpack: (config) => {
+        config.resolve.alias['@node-rs/argon2/browser'] = false;
+        return config;
+    }
 };
 
 export default nextConfig;
