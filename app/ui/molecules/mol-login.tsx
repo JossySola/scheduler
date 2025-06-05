@@ -7,7 +7,6 @@ import { Link as HeroLink } from "@heroui/react";
 import { LogInAction } from "@/app/[lang]/login/actions";
 import CountdownTimer from "../atoms/atom-timer-attempt";
 import { Button, Form, Input } from "@heroui/react";
-import { redirect } from "next/navigation";
 
 export default function LogIn ({ lang }: {
     lang: string,
@@ -18,10 +17,7 @@ export default function LogIn ({ lang }: {
     const [ timestamp, setTimestamp ] = useState<string>("");
 
     useEffect(() => {
-        if (loginState.message.includes(process.env.NEXT_PUBLIC_ORIGIN)) {
-            redirect(`/${lang}/dashboard`);
-        }
-        if (loginState.nextAttempt) {
+        if (loginState && loginState.nextAttempt) {
             setTimestamp(loginState.nextAttempt.toString());
         }
     }, [loginState])
@@ -44,7 +40,7 @@ export default function LogIn ({ lang }: {
 
                 <Password />
 
-                <p aria-live="polite" className="text-danger">{loginState.message}</p>
+                <p aria-live="polite" className="text-danger">{loginState && loginState.message}</p>
 
                 <CountdownTimer nextAttempt={timestamp} />
                 <ActionButton disabled={pending} loading={pending} type="submit" className="w-full sm:w-full">

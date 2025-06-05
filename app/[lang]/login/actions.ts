@@ -3,6 +3,7 @@ import "server-only";
 import { signIn } from "@/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 type RouteError = {
   type: 'CallbackRouteError';
@@ -20,7 +21,7 @@ type RouteError = {
   };
 };
 type AttemptObject = { next_attempt: number | null }
-export async function LogInAction (prevState: { message: string, nextAttempt: number | null }, formData: FormData) {
+export async function LogInAction (prevState: { message: string, nextAttempt: number | null } | undefined, formData: FormData) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
 
@@ -34,16 +35,15 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
         }
     }
     try {
-        const response = await signIn("credentials", {
+        await signIn("credentials", {
             username,
             password,
-            redirect: false,
+            redirectTo: `/${locale}/dashboard`,
         })
-        return {
-            message: response,
-            nextAttempt: null,
-        }
     } catch (err) {
+        if (isRedirectError(err)) {
+            redirect(`/${locale}/dashboard`);
+        }
         if (err && typeof err === "object") {
             if ((err as RouteError).type && (err as RouteError).type === "CallbackRouteError") {
                 const error = (err as RouteError).cause.err;
@@ -101,7 +101,7 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
             }
         }
         return {
-            message: locale === "es" ? "Error desconocido, inténtalo más tarde o contáctanos" : "Unknown error, please try again later or contact us",
+            message: "",
             nextAttempt: null,
         }
     }
