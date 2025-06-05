@@ -260,6 +260,9 @@ export async function decrypt (encrypted: string, key: string): Promise<string> 
   decrypted += decipher.final('utf-8');
   return decrypted;
 }
+export async function verifyPassword (hashed: string, password: string) {
+  return await verify(hashed, password);
+}
 function toBase64Url (str: string): string {
   return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }

@@ -13,7 +13,7 @@ import type {
   User,
 } from "@auth/core/types";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
-import { verify } from "@node-rs/argon2";
+import { verifyPassword } from "./app/lib/utils";
 
 interface Token {
     googleAccessToken?: string;
@@ -298,7 +298,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     throw new AuthError("Internal Error", { cause: 500 });
                 }
                 const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
-                const isValid = await verify(decrypted, password);
+                const isValid = await verifyPassword(decrypted, password);
                 if (!isValid) { 
                     // If verification fails, insert registry to login_attempts
                     const attempt = await sql`
