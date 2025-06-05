@@ -5,7 +5,7 @@ import { auth, signOut } from "@/auth";
 import pool from "@/app/lib/mocks/db";
 import { headers } from "next/headers";
 import { sql } from "@vercel/postgres";
-import { Algorithm, hash, verify } from "@node-rs/argon2";
+import * as argon2 from "argon2";
 
 export async function passwordResetAction(prevState: { message: string }, formData: FormData) {
     const requestHeaders = headers();
@@ -69,9 +69,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
                 message: "After a password checkup, it appears this password has been exposed in a data breach in the past. Please use a stronger password."
             }
         }
-        const hashed = await hash(password, {
-            algorithm: Algorithm.Argon2id
-        });
+        const hashed = await argon2.hash(password);
         const key = await generateKmsDataKey();
         if (!key?.CiphertextBlob) {
             return {
@@ -126,7 +124,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     }
     const decryptedPassword = oldPassword.rows[0].decrypted_password;
     
-    const comparison = await verify(decryptedPassword, password);
+    const comparison = await argon2.verify(decryptedPassword, password);
     if (comparison) {
         return {
             message: "New password cannot be the same as the old password"
@@ -140,9 +138,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         }
     }
     
-    const hashed: string = await hash(password, {
-        algorithm: Algorithm.Argon2id
-    });
+    const hashed: string = await argon2.hash(password);
     const key = await generateKmsDataKey();
     if (!key?.CiphertextBlob) {
         return {

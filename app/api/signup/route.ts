@@ -2,7 +2,7 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/mocks/db";
-import { Algorithm, hash } from "@node-rs/argon2";
+import * as argon2 from "argon2";
 import { isPostgreSQLError } from "@/app/lib/definitions";
 import { generateKmsDataKey } from "@/app/lib/utils";
 import { sql } from "@vercel/postgres";
@@ -16,9 +16,7 @@ export async function POST ( request: NextRequest ) {
     const birthday: string = incoming.birthday.toString();
     const email: string = incoming.email.toString();
     const password: string = incoming.password.toString();
-    const hashed = await hash(password, {
-        algorithm: Algorithm.Argon2id
-    })
+    const hashed = await argon2.hash(password)
     const dataKey = await generateKmsDataKey();
 
     if (!dataKey || !dataKey.CiphertextBlob || !dataKey.Plaintext) return NextResponse.json({ statusText: "Internal Error" }, { status: 500 })

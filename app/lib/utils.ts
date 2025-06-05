@@ -9,7 +9,7 @@ import { SignatureV4 } from "@aws-sdk/signature-v4";
 import { Sha256 } from "@aws-crypto/sha256-js";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
 import { sql } from "@vercel/postgres";
-import { verify } from "@node-rs/argon2";
+import * as argon2 from "argon2";
 
 export async function getUserFromDb (username: string, password: string): Promise<UtilResponse & UserResponse> {
   if (!username || !password) {
@@ -50,7 +50,7 @@ export async function getUserFromDb (username: string, password: string): Promis
       }
     }
     
-    const hashVerified = await verify(userRecord.password, password);
+    const hashVerified = await argon2.verify(userRecord.password, password);
 
     if (hashVerified) {
       return {
@@ -259,9 +259,6 @@ export async function decrypt (encrypted: string, key: string): Promise<string> 
   let decrypted = decipher.update(encryptedBase64, 'base64', 'utf-8');
   decrypted += decipher.final('utf-8');
   return decrypted;
-}
-export async function verifyPassword (hashed: string, password: string) {
-  return await verify(hashed, password);
 }
 function toBase64Url (str: string): string {
   return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
