@@ -4,7 +4,6 @@ import { AuthError } from "@auth/core/errors";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
-import pool from "./app/lib/mocks/db";
 import { sql } from "@vercel/postgres";
 import type {
   Account,
@@ -14,6 +13,7 @@ import type {
 } from "@auth/core/types";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
 import * as argon2 from "argon2";
+import { verifyPassword } from "./app/lib/utils";
 
 interface Token {
     googleAccessToken?: string;
@@ -298,7 +298,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     throw new AuthError("Internal Error", { cause: 500 });
                 }
                 const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
-                const isValid = await argon2.verify(decrypted, password);
+                const isValid = await verifyPassword(decrypted, password);
                 if (!isValid) { 
                     // If verification fails, insert registry to login_attempts
                     const attempt = await sql`
