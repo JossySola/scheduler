@@ -7,7 +7,7 @@ import { z } from "zod";
 import { headers } from "next/headers";
 import { UtilResponse } from "@/app/lib/definitions";
 import { sql } from "@vercel/postgres";
-import { Algorithm, hash } from "@node-rs/argon2";
+import * as argon2 from "argon2";
 
 export async function validateAction (state: { message: string, ok: boolean }, formData: FormData) {
   // Validates input
@@ -99,9 +99,7 @@ export async function validateAction (state: { message: string, ok: boolean }, f
     }
   }
   
-  const hashed = await hash(password, {
-    algorithm: Algorithm.Argon2id
-  })
+  const hashed = await argon2.hash(password)
   const token = await encrypt(`${email}/\/${username}/\/${name}/\/${birthday}/\/${hashed}/\/${password}`, key?.Plaintext);
   const registerToken = await sql`
     INSERT INTO scheduler_email_confirmation_tokens (token, key, expires_at)
