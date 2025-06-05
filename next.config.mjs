@@ -2,12 +2,6 @@
 const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
-    },
-    webpack: (config) => {
-        config.externals.push({
-            'node:crypto': 'commonjs crypto',
-        })
-        return config;
     }
 };
 
