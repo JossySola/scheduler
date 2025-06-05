@@ -3,8 +3,7 @@ const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
-    transpilePackages: ["geist"],
-    runtime: 'nodejs'
+    transpilePackages: ["geist"]
 };
 
 export default nextConfig;
