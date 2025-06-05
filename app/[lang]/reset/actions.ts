@@ -2,10 +2,10 @@
 import "server-only";
 import { decryptKmsDataKey, generateKmsDataKey, isPasswordPwned } from "@/app/lib/utils";
 import { auth, signOut } from "@/auth";
-import { Argon2id } from "oslo/password";
 import pool from "@/app/lib/mocks/db";
 import { headers } from "next/headers";
 import { sql } from "@vercel/postgres";
+import { Algorithm, hash, verify } from "@node-rs/argon2";
 
 export async function passwordResetAction(prevState: { message: string }, formData: FormData) {
     const requestHeaders = headers();
@@ -69,8 +69,9 @@ export async function passwordResetAction(prevState: { message: string }, formDa
                 message: "After a password checkup, it appears this password has been exposed in a data breach in the past. Please use a stronger password."
             }
         }
-        const argon = new Argon2id();
-        const hash: string = await argon.hash(password);
+        const hashed = await hash(password, {
+            algorithm: Algorithm.Argon2id
+        });
         const key = await generateKmsDataKey();
         if (!key?.CiphertextBlob) {
             return {
@@ -79,7 +80,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         }
         const query = await sql`
         UPDATE scheduler_users
-        SET password = pgp_sym_encrypt_bytea(${hash}, ${key.Plaintext}), 
+        SET password = pgp_sym_encrypt_bytea(${hashed}, ${key.Plaintext}), 
                 user_password_key = ${key.CiphertextBlob}
         WHERE email = ${email}; 
         `;
@@ -124,8 +125,8 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         }
     }
     const decryptedPassword = oldPassword.rows[0].decrypted_password;
-    const argon = new Argon2id();
-    const comparison = await argon.verify(decryptedPassword, password);
+    
+    const comparison = await verify(decryptedPassword, password);
     if (comparison) {
         return {
             message: "New password cannot be the same as the old password"
@@ -139,7 +140,9 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         }
     }
     
-    const hash: string = await argon.hash(password);
+    const hashed: string = await hash(password, {
+        algorithm: Algorithm.Argon2id
+    });
     const key = await generateKmsDataKey();
     if (!key?.CiphertextBlob) {
         return {
@@ -148,7 +151,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     }
     const query = await sql`
        UPDATE scheduler_users
-       SET password = pgp_sym_encrypt_bytea(${hash}, ${key.Plaintext}), 
+       SET password = pgp_sym_encrypt_bytea(${hashed}, ${key.Plaintext}), 
             user_password_key = ${key.CiphertextBlob}
        WHERE email = ${email}; 
     `;

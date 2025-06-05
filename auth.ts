@@ -13,7 +13,6 @@ import type {
   User,
 } from "@auth/core/types";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
-import { verifyPassword } from "./app/lib/argon-server";
 import { verify } from "@node-rs/argon2";
 
 interface Token {

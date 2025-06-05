@@ -28,5 +28,5 @@ Furthermore, the application uses external APIs such as `Sendgrid` and `Emailjs`
 - Email JS
 - SendGrid
 ### Utilities
-- Oslo
+- Node-RS Argon
 - use-debounce

@@ -6,8 +6,8 @@ import sgMail from "@sendgrid/mail";
 import { z } from "zod";
 import { headers } from "next/headers";
 import { UtilResponse } from "@/app/lib/definitions";
-import { Argon2id } from "oslo/password";
 import { sql } from "@vercel/postgres";
+import { Algorithm, hash } from "@node-rs/argon2";
 
 export async function validateAction (state: { message: string, ok: boolean }, formData: FormData) {
   // Validates input
@@ -98,8 +98,10 @@ export async function validateAction (state: { message: string, ok: boolean }, f
       message: locale === "es" ? "Error al continuar con proceso de registro" : "Failed to continue with sign up process"
     }
   }
-  const argon = new Argon2id();
-  const hashed = await argon.hash(password)
+  
+  const hashed = await hash(password, {
+    algorithm: Algorithm.Argon2id
+  })
   const token = await encrypt(`${email}/\/${username}/\/${name}/\/${birthday}/\/${hashed}/\/${password}`, key?.Plaintext);
   const registerToken = await sql`
     INSERT INTO scheduler_email_confirmation_tokens (token, key, expires_at)
