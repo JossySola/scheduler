@@ -26,6 +26,7 @@ interface Token {
     email?: string;
 }
 export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
+    secret: process.env.AUTH_SECRET,
     providers: [
         Google({
             async profile(profile) {
