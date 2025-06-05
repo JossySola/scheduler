@@ -38,11 +38,11 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
         await signIn("credentials", {
             username,
             password,
-            redirectTo: `/${locale}/dashboard`,
+            redirectTo: `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`,
         })
     } catch (err) {
         if (isRedirectError(err)) {
-            redirect(`/${locale}/dashboard`);
+            redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`);
         }
         if (err && typeof err === "object") {
             if ((err as RouteError).type && (err as RouteError).type === "CallbackRouteError") {
