@@ -10,5 +10,5 @@ export async function GET (req: NextRequest): Promise<Response> {
         const decryption = await decryptKmsDataKey(key);
         return NextResponse.json({ decryption }, { status: 200 });
     }
-    return NextResponse.json({ statusText: (await decryptKmsDataKey(key ?? ""))?.toString() }, { status: 400 })
+    return NextResponse.json({ statusText: "Error at decryption" }, { status: 400 })
 }
