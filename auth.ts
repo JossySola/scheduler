@@ -205,7 +205,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
             async authorize(credentials) {
                 const username = credentials.username;
                 const password = credentials.password;
-
+                console.log(credentials)
                 if (!username || !password || typeof username !== 'string' || typeof password !== 'string') {
                     throw new Error("Data missing", { cause: 400 });
                 }
