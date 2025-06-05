@@ -109,7 +109,7 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
 export async function GoogleSignInAction (prevState: { message: string }, formData: FormData) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
-    await signIn("google", { redirect: true, redirectTo: `/${locale}/dashboard`});
+    await signIn("google", { redirect: true, redirectTo: `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`});
     return {
         message: "Google signup"
     }
@@ -117,7 +117,7 @@ export async function GoogleSignInAction (prevState: { message: string }, formDa
 export async function FacebookSignInAction (prevState: { message: string }, formData: FormData) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
-    await signIn("facebook", { redirect: true, redirectTo: `/${locale}/dashboard`});
+    await signIn("facebook", { redirect: true, redirectTo: `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`});
     return {
         message: "Facebook signup"
     }

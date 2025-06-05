@@ -401,7 +401,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
             const locale = isLocalePresent ? pathnameParts[1] : defaultLocale;
 
             if (url.startsWith("/login")) {
-                return `/${locale}/login`;
+                return `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/login`;
             }
             return url;
         },

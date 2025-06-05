@@ -63,8 +63,8 @@ export async function SaveTableAction (
             if (!request.url.includes("/api")) {
                 redirect(`${request.url}`);
             } else {
-                revalidatePath(`/${locale}/table/${payload.table_id}`);
-                revalidatePath(`/${locale}/dashboard`);
+                revalidatePath(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/table/${payload.table_id}`);
+                revalidatePath(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`);
                 return {
                     ok: true,
                     message: locale === "es" ? "¡Guardo exitosamente!" : "Saved successfuly!"
@@ -78,7 +78,7 @@ export async function SaveTableAction (
                 message: locale === "es" ? "Usuario no encontrado" : "User not found"
             }
         } else if (request.status === 401) {
-            return redirect(`/${locale}/login`);
+            return redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/login`);
         } else if (request.status === 403) {
             return {
                 ok: false,

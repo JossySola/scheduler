@@ -45,5 +45,5 @@ export default async function Page ({ params }: {
             </section>
         )
     }
-    redirect(`/${lang}/login`);
+    redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/login`);
 }
