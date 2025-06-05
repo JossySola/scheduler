@@ -12,6 +12,8 @@ import type {
   Session,
   User,
 } from "@auth/core/types";
+import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
+import { verifyPassword } from "./app/lib/argon-server";
 
 interface Token {
     googleAccessToken?: string;
@@ -266,21 +268,30 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     })
                 }
                 const passwordKey = userKey.rows[0].user_password_key;
-                const keyRequest = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/decrypt/kms`, {
-                    method: 'GET',
-                    headers: {
-                        key: passwordKey,
-                    }
-                })
-                const key = await keyRequest.json();
-                if (keyRequest.status !== 200) {
-                    throw new AuthError(keyRequest.statusText, { cause: 500 });
-                }
-                if (!key.decryption) {
+
+                const accessKeyId: string = process.env.AWS_KMS_KEY!;
+                const secretAccessKey: string = process.env.AWS_KMS_SECRET!;
+                const KeyId: string = process.env.AWS_KMS_ARN!;
+
+                const client = new KMSClient({
+                    region: "us-east-1",
+                    credentials: {
+                        accessKeyId,
+                        secretAccessKey,
+                    },
+                });
+                const command = new DecryptCommand({
+                    CiphertextBlob: Buffer.from(passwordKey, "base64"), // Convert to Buffer
+                    KeyId,
+                });
+                const result = await client.send(command);
+                const key = Buffer.from(result.Plaintext ?? "").toString("base64");
+                
+                if (!key) {
                     throw new AuthError("Null KMS", { cause: 500 })
                 }
                 const decryptedPassword = await sql`
-                    SELECT pgp_sym_decrypt_bytea(password, ${key.decryption}) AS decrypted_password
+                    SELECT pgp_sym_decrypt_bytea(password, ${key}) AS decrypted_password
                     FROM scheduler_users
                     WHERE email = ${username} OR username = ${username};
                 `;
@@ -288,14 +299,8 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     throw new AuthError("Internal Error", { cause: 500 });
                 }
                 const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
-                const requestVerification = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/verify/password`, {
-                    method: 'GET',
-                    headers: {
-                        password,
-                        decrypted
-                    }
-                })
-                if (requestVerification.status === 403) { 
+                const isValid = await verifyPassword(decrypted, password);
+                if (!isValid) { 
                     // If verification fails, insert registry to login_attempts
                     const attempt = await sql`
                         INSERT INTO scheduler_login_attempts (email, created_at, last_attempt_at, next_attempt_allowed_at, attempts)
