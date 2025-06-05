@@ -12,7 +12,6 @@ import type {
   User,
 } from "@auth/core/types";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
-import * as argon2 from "argon2";
 import { verifyPassword } from "./app/lib/utils";
 
 interface Token {
