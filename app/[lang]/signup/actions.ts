@@ -1,13 +1,12 @@
 'use server'
 import "server-only";
 import pool from "@/app/lib/mocks/db";
-import { encrypt, generateKmsDataKey, isPasswordPwned } from "@/app/lib/utils";
+import { encrypt, generateKmsDataKey, hashPasswordAction, isPasswordPwned } from "@/app/lib/utils";
 import sgMail from "@sendgrid/mail";
 import { z } from "zod";
 import { headers } from "next/headers";
 import { UtilResponse } from "@/app/lib/definitions";
 import { sql } from "@vercel/postgres";
-import * as argon2 from "argon2";
 
 export async function validateAction (state: { message: string, ok: boolean }, formData: FormData) {
   // Validates input
@@ -99,7 +98,7 @@ export async function validateAction (state: { message: string, ok: boolean }, f
     }
   }
   
-  const hashed = await argon2.hash(password)
+  const hashed = await hashPasswordAction(password);
   const token = await encrypt(`${email}/\/${username}/\/${name}/\/${birthday}/\/${hashed}/\/${password}`, key?.Plaintext);
   const registerToken = await sql`
     INSERT INTO scheduler_email_confirmation_tokens (token, key, expires_at)
