@@ -13,7 +13,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
     "plugins": [
@@ -34,8 +34,9 @@
     "types/**/*.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-, "app/lib/db.js"  ],
+    ".next/types/**/*.ts",
+    "app/lib/db.js"
+  ],
   "exclude": [
     "node_modules"
   ]
