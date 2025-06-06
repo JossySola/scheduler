@@ -260,10 +260,10 @@ export async function decrypt (encrypted: string, key: string): Promise<string> 
   decrypted += decipher.final('utf-8');
   return decrypted;
 }
-export async function verifyPassword (hashed: string, password: string): Promise<boolean> {
+export async function verifyPasswordAction (hashed: string, password: string): Promise<boolean> {
   return await argon2.verify(hashed, password);
 }
-export async function hashPassword (password: string): Promise<string> {
+export async function hashPasswordAction (password: string): Promise<string> {
   return await argon2.hash(password);
 }
 function toBase64Url (str: string): string {
