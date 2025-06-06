@@ -298,11 +298,14 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                 const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
                 console.log("auth.ts Decrypted: ", decrypted)
                 const verifyReq = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/argon2/verify`, {
-                    method: 'GET',
+                    method: 'POST',
                     headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
                         hashed: decrypted,
-                        password,
-                    }
+                        password
+                    })
                 });
                 console.log("auth.ts verifyReq: ", verifyReq)
                 console.log("auth.ts Ok: ", verifyReq.ok)
