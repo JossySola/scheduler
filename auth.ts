@@ -12,7 +12,6 @@ import type {
   User,
 } from "@auth/core/types";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
-import { verifyPasswordAction } from "./app/lib/utils";
 
 interface Token {
     googleAccessToken?: string;
@@ -297,7 +296,18 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     throw new AuthError("Internal Error", { cause: 500 });
                 }
                 const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
-                const isValid = await verifyPasswordAction(decrypted, password);
+                const verifyReq = await fetch(`${process.env.NEXTAUTH_URL}/api/argon2/verify`, {
+                    method: 'GET',
+                    headers: {
+                        hashed: decrypted,
+                        password,
+                    }
+                });
+                if (!verifyReq.ok || verifyReq.status !== 200) {
+                    throw new AuthError("Failed verification", { cause: 500 });
+                }
+                const res = await verifyReq.json();
+                const isValid: boolean = res.isValid;
                 if (!isValid) { 
                     // If verification fails, insert registry to login_attempts
                     const attempt = await sql`
