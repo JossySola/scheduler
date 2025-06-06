@@ -263,6 +263,9 @@ export async function decrypt (encrypted: string, key: string): Promise<string> 
 export async function verifyPassword (hashed: string, password: string): Promise<boolean> {
   return await argon2.verify(hashed, password);
 }
+export async function hashPassword (password: string): Promise<string> {
+  return await argon2.hash(password);
+}
 function toBase64Url (str: string): string {
   return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
