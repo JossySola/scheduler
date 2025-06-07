@@ -25,7 +25,7 @@ export default function Password () {
         label={ lang === "es" ? "Contraseña " : "Password " }
         labelPlacement="outside"
         value={ password }
-        onChange={ e => setPassword(e.target.value) }
+        onValueChange={ setPassword }
         endContent={
             <button aria-label="toggle password visibility" className="focus:outline-none" type="button" onClick={toggleVisibility}>
                 { isVisible ? (

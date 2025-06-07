@@ -164,9 +164,9 @@ export async function DeleteTableAction (previousState: { message: string },form
         WHERE id = ${session.user.id};
     `;
 
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/table/${table_id}`);
-    redirect(`/${locale}/dashboard`);
+    revalidatePath(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`);
+    revalidatePath(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/table/${table_id}`);
+    redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`);
     return {
         message: locale === "es" ? "" : "",
     }

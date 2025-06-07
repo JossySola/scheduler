@@ -1,12 +1,11 @@
 'use server'
 import "server-only";
 import pool from "@/app/lib/mocks/db";
-import { encrypt, generateKmsDataKey, isPasswordPwned } from "@/app/lib/utils";
+import { encrypt, generateKmsDataKey, hashPasswordAction, isPasswordPwned } from "@/app/lib/utils";
 import sgMail from "@sendgrid/mail";
 import { z } from "zod";
 import { headers } from "next/headers";
 import { UtilResponse } from "@/app/lib/definitions";
-import { Argon2id } from "oslo/password";
 import { sql } from "@vercel/postgres";
 
 export async function validateAction (state: { message: string, ok: boolean }, formData: FormData) {
@@ -98,8 +97,8 @@ export async function validateAction (state: { message: string, ok: boolean }, f
       message: locale === "es" ? "Error al continuar con proceso de registro" : "Failed to continue with sign up process"
     }
   }
-  const argon = new Argon2id();
-  const hashed = await argon.hash(password)
+  
+  const hashed = await hashPasswordAction(password);
   const token = await encrypt(`${email}/\/${username}/\/${name}/\/${birthday}/\/${hashed}/\/${password}`, key?.Plaintext);
   const registerToken = await sql`
     INSERT INTO scheduler_email_confirmation_tokens (token, key, expires_at)
@@ -499,7 +498,7 @@ export async function sendEmailAction (name: string, email: string, token: strin
         </tr>
       </tbody></table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-mc-module-version="2019-10-22" data-muid="hMHE9bJVUTwMzeHTbzCDTa">
         <tbody><tr>
-          <td style="padding:18px 0px 18px 0px; line-height:30px; text-align:inherit;" height="100%" valign="top" bgcolor=""><div><h2 style="text-align: center">¡Bienvenido ${name}!</h2><div></div></div></td>
+          <td style="padding:18px 0px 18px 0px; line-height:30px; text-align:inherit;" height="100%" valign="top" bgcolor=""><div><h2 style="text-align: center">¡Bienvenidx ${name}!</h2><div></div></div></td>
         </tr>
       </tbody></table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-mc-module-version="2019-10-22" data-muid="kXZBA9yKCY1Ma7D4z9Bs9o">
         <tbody><tr>

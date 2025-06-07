@@ -2,7 +2,6 @@
 import "server-only";
 import crypto, { randomBytes } from "crypto";
 import pool from "./mocks/db";
-import { Argon2id } from "oslo/password";
 import sgMail from "@sendgrid/mail";
 import { z } from "zod";
 import { KMSDataKey, UserResponse, UtilResponse } from "./definitions";
@@ -49,9 +48,8 @@ export async function getUserFromDb (username: string, password: string): Promis
         ok: false
       }
     }
-    
-    const argon2id = new Argon2id();
-    const hashVerified = await argon2id.verify(userRecord.password, password);
+    const { verify } = await import('argon2');
+    const hashVerified = await verify(userRecord.password, password);
 
     if (hashVerified) {
       return {
@@ -224,7 +222,6 @@ export async function decryptKmsDataKey (CiphertextBlob: string) {
           secretAccessKey,
       },
     });
-        
     const command = new DecryptCommand({
       CiphertextBlob: Buffer.from(CiphertextBlob, "base64"), // Convert to Buffer
       KeyId,
@@ -261,6 +258,14 @@ export async function decrypt (encrypted: string, key: string): Promise<string> 
   let decrypted = decipher.update(encryptedBase64, 'base64', 'utf-8');
   decrypted += decipher.final('utf-8');
   return decrypted;
+}
+export async function verifyPasswordAction (hashed: string, password: string): Promise<boolean> {
+  const { verify } = await import('argon2');
+  return await verify(hashed, password);
+}
+export async function hashPasswordAction (password: string): Promise<string> {
+  const { hash } = await import('argon2');
+  return await hash(password);
 }
 function toBase64Url (str: string): string {
   return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');

@@ -8,7 +8,7 @@ import { sql } from "@vercel/postgres";
 import { AuthenticatedRequest } from "@/middleware";
 import { auth } from "@/auth";
 
-export const GET = auth(async function POST(req: AuthenticatedRequest): Promise<NextResponse> {
+export const POST = auth(async function POST(req: AuthenticatedRequest): Promise<NextResponse> {
     if (!req.auth) return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
     
     const locale = req.headers.get("x-user-locale") || "en";
@@ -66,7 +66,7 @@ export const GET = auth(async function POST(req: AuthenticatedRequest): Promise<
             SET num_tables = COALESCE(num_tables, 0) + 1
             WHERE id = ${user_id};
         `;
-        return redirect(`/${locale}/table/${newTable.rows[0].id}`);
+        return redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/table/${newTable.rows[0].id}`);
     }
 
     if (!user_id) {

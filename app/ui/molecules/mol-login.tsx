@@ -17,14 +17,14 @@ export default function LogIn ({ lang }: {
     const [ timestamp, setTimestamp ] = useState<string>("");
 
     useEffect(() => {
-        if (loginState.nextAttempt !== null) {
+        if (loginState && loginState.nextAttempt) {
             setTimestamp(loginState.nextAttempt.toString());
         }
-    }, [loginState.nextAttempt])
+    }, [loginState])
 
     return (
         <section className="w-full p-3 sm:w-[400px] flex flex-col justify-center items-center pt-5">
-            <h2 className="tracking-tight">{ lang === "es" ? "Iniciar sesión" : "Login" }</h2>
+            <h2 className="tracking-tight">{ lang === "es" ? "Iniciar sesión" : "Log in" }</h2>
             <Form action={loginAction} className="w-full flex-col items-center">
                 <Input
                 isRequired
@@ -40,21 +40,22 @@ export default function LogIn ({ lang }: {
 
                 <Password />
 
-                <p aria-live="polite" className="text-danger">{loginState.message}</p>
+                <p aria-live="polite" className="text-danger">{loginState && loginState.message}</p>
 
                 <CountdownTimer nextAttempt={timestamp} />
                 <ActionButton disabled={pending} loading={pending} type="submit" className="w-full sm:w-full">
-                    { lang === "es" ? "Iniciar sesión" : "Login"}
+                    { lang === "es" ? "Iniciar sesión" : "Log in"}
                 </ActionButton>
             </Form>
             
             <Button
             as={HeroLink}
+            variant="bordered"
             href={`/${lang}/recover`}
             style={{
                 textDecoration: "none"
             }}
-            className="w-full m-1 bg-transparent border-2">
+            className="w-full m-1">
             { lang === "es" ? "Restaurar contraseña" : "Reset password" }
             </Button>
 

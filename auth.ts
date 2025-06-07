@@ -4,7 +4,6 @@ import { AuthError } from "@auth/core/errors";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
-import pool from "./app/lib/mocks/db";
 import { sql } from "@vercel/postgres";
 import type {
   Account,
@@ -12,6 +11,7 @@ import type {
   Session,
   User,
 } from "@auth/core/types";
+import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
 
 interface Token {
     googleAccessToken?: string;
@@ -26,6 +26,7 @@ interface Token {
     email?: string;
 }
 export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
+    secret: process.env.AUTH_SECRET,
     providers: [
         Google({
             async profile(profile) {
@@ -204,9 +205,8 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
             async authorize(credentials) {
                 const username = credentials.username;
                 const password = credentials.password;
-
                 if (!username || !password || typeof username !== 'string' || typeof password !== 'string') {
-                    throw new Error("Data missing");
+                    throw new Error("Data missing", { cause: 400 });
                 }
                 // Gather data if user exists
                 const user = await sql`
@@ -221,9 +221,11 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     WHERE email = ${username} OR username = ${username};
                 `;
                 // User not found
-                if (!user.rowCount) throw new AuthError("User not found", {
-                    cause: 404
-                });
+                if (!user.rowCount) {
+                    throw new AuthError("User not found", {
+                        cause: 404
+                    });
+                }
                 // Check if user's account is locked
                 const isUserLocked = await sql`
                     SELECT next_attempt_allowed_at 
@@ -231,8 +233,12 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     WHERE email = ${user.rows[0].email}
                     AND next_attempt_allowed_at > NOW();
                 `;
+                
                 // User's account is locked
-                if (isUserLocked.rowCount) throw new AuthError("Account currently locked", { cause: { next_attempt: isUserLocked.rows[0].next_attempt_allowed_at }});
+                if (isUserLocked.rowCount) {
+                    const next_attempt = isUserLocked.rows[0].next_attempt_allowed_at;
+                    throw new AuthError("Account currently locked", { cause: { next_attempt } });
+                }
                 if (user.rows[0].password === null) {
                     // If decrypted password is null check if user is registered with a provider
                     const userProvider = await sql`
@@ -245,7 +251,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                             cause: 409
                         });
                     } else {
-                        throw new AuthError("User does not have credentials but have signed in with external provider", { cause: 400 });
+                        throw new AuthError("User does not have credentials but have signed in with external provider", { cause: 402 });
                     }
                 }
                 // If it is not null, verify the hashed decrypted password
@@ -259,34 +265,53 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     })
                 }
                 const passwordKey = userKey.rows[0].user_password_key;
-                const keyRequest = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/decrypt/kms`, {
-                    method: 'GET',
-                    body: JSON.stringify({
-                        key: passwordKey,
-                    })
-                })
-                if (keyRequest.status !== 200) {
-                    throw new AuthError("Error in KMS", { cause: 500 });
-                }
-                const key = await keyRequest.json();
-                if (!key.decrypted) throw new AuthError("Null KMS", { cause: 500 });
 
+                const accessKeyId: string = process.env.AWS_KMS_KEY!;
+                const secretAccessKey: string = process.env.AWS_KMS_SECRET!;
+                const KeyId: string = process.env.AWS_KMS_ARN!;
+
+                const client = new KMSClient({
+                    region: "us-east-1",
+                    credentials: {
+                        accessKeyId,
+                        secretAccessKey,
+                    },
+                });
+                const command = new DecryptCommand({
+                    CiphertextBlob: Buffer.from(passwordKey, "base64"), // Convert to Buffer
+                    KeyId,
+                });
+                const result = await client.send(command);
+                const key = Buffer.from(result.Plaintext ?? "").toString("base64");
+                
+                if (!key) {
+                    throw new AuthError("Null KMS", { cause: 500 })
+                }
                 const decryptedPassword = await sql`
-                    SELECT pgp_sym_decrypt_bytea(password, ${key.decrypted}) AS decrypted_password
+                    SELECT pgp_sym_decrypt_bytea(password, ${key}) AS decrypted_password
                     FROM scheduler_users
                     WHERE email = ${username} OR username = ${username};
                 `;
-                if (decryptedPassword.rowCount === 0) throw new AuthError("Internal Error", { cause: 500 });
-                
+                if (decryptedPassword.rowCount === 0) {
+                    throw new AuthError("Internal Error", { cause: 500 });
+                }
                 const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
-                const requestVerification = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/verify/password`, {
-                    method: 'GET',
+                const verifyReq = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/argon2/verify`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     body: JSON.stringify({
-                        password,
-                        decrypted
+                        hashed: decrypted,
+                        password
                     })
-                })
-                if (requestVerification.status === 403) { 
+                });
+                if (!verifyReq.ok || verifyReq.status !== 200) {
+                    throw new AuthError("Failed verification", { cause: 500 });
+                }
+                const res = await verifyReq.json();
+                const isValid: boolean = res.isValid;
+                if (!isValid) { 
                     // If verification fails, insert registry to login_attempts
                     const attempt = await sql`
                         INSERT INTO scheduler_login_attempts (email, created_at, last_attempt_at, next_attempt_allowed_at, attempts)
@@ -298,11 +323,8 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                             attempts = scheduler_login_attempts.attempts + 1
                         RETURNING next_attempt_allowed_at;
                     `;
-                    throw new AuthError("Invalid credentials", {
-                        cause: {
-                            next_attempt: attempt.rows[0].next_attempt_allowed_at
-                        }
-                    })
+                    const next_attempt = attempt.rows[0].next_attempt_allowed_at;
+                    throw new AuthError("Invalid credentials", { cause: { next_attempt } })
                 }
                 await sql`
                     DELETE FROM scheduler_login_attempts WHERE email = ${user.rows[0].email};
@@ -383,6 +405,8 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
             }
             if (!token.googleSub && !token.facebookSub && token.sub) {
                 session.user.id = token.sub;
+            } else if (token.id) {
+                session.user.id = token.id;
             }
             return session;
         },
@@ -395,7 +419,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
             const locale = isLocalePresent ? pathnameParts[1] : defaultLocale;
 
             if (url.startsWith("/login")) {
-                return `/${locale}/login`;
+                return `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/login`;
             }
             return url;
         },

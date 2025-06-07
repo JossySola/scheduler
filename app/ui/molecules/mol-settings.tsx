@@ -36,7 +36,7 @@ export default function Settings ({ lang, data }: {
                                     }
                                 })
                             }
-                            <ActionButton onPress={() => redirect(`/${lang}/recover`)}>{ lang === "es" ? "Restaurar contraseña" : "Reset password" }</ActionButton>
+                            <ActionButton onPress={() => redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/recover`)}>{ lang === "es" ? "Restaurar contraseña" : "Reset password" }</ActionButton>
                             <DangerButton />
                         </ModalBody>
                         <ModalFooter>

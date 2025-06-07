@@ -33,5 +33,5 @@ I'm eager to say that I plan to keep adding new features as I have some in mind 
 - Email JS
 - SendGrid
 ### Utilities
-- Oslo
+- Node-RS Argon
 - use-debounce

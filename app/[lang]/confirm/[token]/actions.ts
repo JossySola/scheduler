@@ -126,7 +126,7 @@ async function handleLogin (username: string, password: string, locale: string) 
     }
     const signing = await signIn('credentials', {
         redirect: true,
-        redirectTo: `/${locale}/dashboard`,
+        redirectTo: `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`,
         username,
         password,
     })

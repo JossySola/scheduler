@@ -17,7 +17,7 @@ export default function FacebookSignIn ({ lang }: {
             className="bg-white border-1 border-black text-black shadow-md font-medium m-1 w-full text-md" 
             endContent={<LogoFacebook />}
             >
-                { lang === "es" ? "Continúa con Facebook" : "Signin with Facebook" }
+                { lang === "es" ? "Continúa con Facebook" : "Continue with Facebook" }
             </Button>
         </form>
     )

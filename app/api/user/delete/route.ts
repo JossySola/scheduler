@@ -63,7 +63,7 @@ export const GET = auth(async function GET(req: AuthenticatedRequest): Promise<N
                 user_image = NULL
             WHERE email = ${email};
         `;
-        return NextResponse.redirect(new URL(`/${locale}/signup`, req.url));
+        return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/signup`, req.url));
     } catch (e) {
         return NextResponse.json({
             error: "Server failure"

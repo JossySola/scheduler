@@ -14,7 +14,7 @@ export default async function Page ({ params, searchParams }: {
     const confirming = await sql`
         SELECT token, key 
         FROM scheduler_email_confirmation_tokens
-        WHERE token = ${token} AND expires_at > NOW() AND used_at IS NULL;
+        WHERE token = ${token} AND expires_at > NOW();
     `;
     if (!confirming.rows.length || confirming.rowCount === 0) {
         return <section className="h-screen p-10">
@@ -61,12 +61,12 @@ export default async function Page ({ params, searchParams }: {
           password: raw,
           redirect: false
         });
-        redirect(`/${lang}/dashboard`);
+        redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/dashboard`);
     } catch (err) {
         return (
-            <section className="h-screen p-10 text-center">
+            <section className="flex flex-col justify-center items-center h-screen p-10 text-center">
                 <h3>{lang === "es" ? "Registro completado, pero hubo un problema iniciando sesión." : "Account created, but there was a problem logging you in."}</h3>
-                <Link href={`/${lang}/login`} className="underline mt-4 inline-block">
+                <Link href={`/${lang}/login`} className="underline mt-4 inline-block text-center">
                     {lang === "es" ? "Iniciar sesión" : "Log in manually"}
                 </Link>
             </section>

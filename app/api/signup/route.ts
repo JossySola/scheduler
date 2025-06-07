@@ -2,9 +2,8 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/app/lib/mocks/db";
-import { Argon2id } from "oslo/password";
 import { isPostgreSQLError } from "@/app/lib/definitions";
-import { generateKmsDataKey } from "@/app/lib/utils";
+import { generateKmsDataKey, hashPasswordAction } from "@/app/lib/utils";
 import { sql } from "@vercel/postgres";
 
 
@@ -16,8 +15,7 @@ export async function POST ( request: NextRequest ) {
     const birthday: string = incoming.birthday.toString();
     const email: string = incoming.email.toString();
     const password: string = incoming.password.toString();
-    const argon2id = new Argon2id();
-    const hash = await argon2id.hash(password);
+    const hashed = await hashPasswordAction(password);
     const dataKey = await generateKmsDataKey();
 
     if (!dataKey || !dataKey.CiphertextBlob || !dataKey.Plaintext) return NextResponse.json({ statusText: "Internal Error" }, { status: 500 })
@@ -32,7 +30,7 @@ export async function POST ( request: NextRequest ) {
         }
         const registerUser = await sql`
             INSERT INTO scheduler_users (name, username, email, birthday, password, user_password_key)
-            VALUES (${name}, ${username}, ${email}, ${birthday}::DATE, pgp_sym_encrypt(${hash}, ${dataKey.Plaintext}), ${dataKey.CiphertextBlob});
+            VALUES (${name}, ${username}, ${email}, ${birthday}::DATE, pgp_sym_encrypt(${hashed}, ${dataKey.Plaintext}), ${dataKey.CiphertextBlob});
         `;
         if (registerUser.rowCount === 0) {
             return NextResponse.json({ statusText: "Internal Error" }, { status: 500 });
