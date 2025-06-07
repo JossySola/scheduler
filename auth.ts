@@ -405,6 +405,8 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
             }
             if (!token.googleSub && !token.facebookSub && token.sub) {
                 session.user.id = token.sub;
+            } else if (token.id) {
+                session.user.id = token.id;
             }
             return session;
         },
