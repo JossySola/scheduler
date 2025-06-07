@@ -78,7 +78,7 @@ export async function SaveTableAction (
                 message: locale === "es" ? "Usuario no encontrado" : "User not found"
             }
         } else if (request.status === 401) {
-            return redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/login`);
+            redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/login`);
         } else if (request.status === 403) {
             return {
                 ok: false,
