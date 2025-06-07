@@ -89,7 +89,7 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
                     }
                 } else if (cause && typeof cause !== "number" && (cause as AttemptObject).next_attempt) {
                     return {
-                        message: locale === "es" ? "Hay uno o más intentos de inicio de sesión fallidos, inténtalo nuevamente después del tiempo asignado" : "There are one or more sign in attempts, please try again after the assigned clock",
+                        message: locale === "es" ? "Hay uno o más intentos de inicio de sesión fallidos, inténtalo nuevamente después del tiempo asignado" : "There is one or more sign in attempts, please try again after the assigned clock",
                         nextAttempt: (cause as AttemptObject).next_attempt,
                     }
                 }
