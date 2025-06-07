@@ -296,7 +296,6 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                     throw new AuthError("Internal Error", { cause: 500 });
                 }
                 const decrypted = decryptedPassword.rows[0].decrypted_password.toString();
-                console.log("auth.ts Decrypted: ", decrypted)
                 const verifyReq = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/argon2/verify`, {
                     method: 'POST',
                     headers: {
@@ -307,9 +306,6 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         password
                     })
                 });
-                console.log("auth.ts verifyReq: ", verifyReq)
-                console.log("auth.ts Ok: ", verifyReq.ok)
-                console.log("auth.ts Status: ", verifyReq.status)
                 if (!verifyReq.ok || verifyReq.status !== 200) {
                     throw new AuthError("Failed verification", { cause: 500 });
                 }
