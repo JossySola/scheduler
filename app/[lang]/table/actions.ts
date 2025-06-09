@@ -9,6 +9,8 @@ import { generateObject } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { StreamableValue } from 'ai/rsc';
 import { z } from "zod";
+import { decryptKmsDataKey, generateKmsDataKey } from "@/app/lib/utils";
+import { sql } from "@vercel/postgres";
 
 export async function SaveTableAction (
     previousState: { message: string, ok: boolean }, 
@@ -18,6 +20,7 @@ export async function SaveTableAction (
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
     const session = await auth();
+
     if (session && session.user) {
         const entries = [...formData.entries()];
         const tableEntries = entries
@@ -27,7 +30,7 @@ export async function SaveTableAction (
             "user_id": session.user.id,
             "table_id": formData.get("table_id")?.toString(),
             "table_title": formData.get("table_title")?.toString(),
-            rows: [[]],
+            rows: [[]] as string[][],
             values: statesObject && statesObject.values ? statesObject.values : [],
             colSpecs: statesObject && statesObject.colSpecs ? statesObject.colSpecs.map(spec => {
                 if (typeof spec === "object") {
@@ -52,57 +55,88 @@ export async function SaveTableAction (
             if (!payload.rows[rowIndex]) payload.rows[rowIndex] = [];
             payload.rows[rowIndex].push(value.toString() as never);
         })
-        const request = await fetch(`${process.env.NEXT_PUBLIC_ORIGIN}/api/table/save`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        })
-        if (request.status === 200) {
-            if (!request.url.includes("/api")) {
-                redirect(`${request.url}`);
-            } else {
-                revalidatePath(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/table/${payload.table_id}`);
-                revalidatePath(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`);
+
+        // Replacement of API endpoint with direct logic
+        if (!payload.table_id) {
+            const key = await generateKmsDataKey();
+            const getNumTables = await sql`
+                SELECT num_tables FROM scheduler_users
+                WHERE id = ${payload.user_id};
+            `;
+            if (getNumTables.rowCount === 0) {
                 return {
-                    ok: true,
-                    message: locale === "es" ? "¡Guardo exitosamente!" : "Saved successfuly!"
+                    message: locale === "es" ? "Usuario no encontrado" : "User not found",
+                    ok: false,
                 }
             }
+            if (getNumTables.rows[0].num_tables === 3) {
+                return {
+                    message: locale === "es" ? "Haz alcanzado el límite de tablas" : "You've reached the table's limit",
+                    ok: false,
+                }
+            }
+            const newTable = await sql`
+            INSERT INTO scheduler_users_tables (user_id, table_name, table_data, table_rowspecs, table_values, table_colspecs, table_data_key)
+            VALUES (
+                ${payload.user_id},
+                ${payload.table_title},
+                pgp_sym_encrypt(${JSON.stringify(payload.rows)}, ${key?.Plaintext}),
+                pgp_sym_encrypt(${JSON.stringify(payload.rowSpecs)}, ${key?.Plaintext}),
+                pgp_sym_encrypt(${JSON.stringify(payload.values)}, ${key?.Plaintext}),
+                pgp_sym_encrypt(${JSON.stringify(payload.colSpecs)}, ${key?.Plaintext}),
+                ${key?.CiphertextBlob}
+            )
+            RETURNING id;
+            `;
+            if (newTable.rowCount === 0) {
+                return {
+                    message: locale === "es" ? "Error interno, inténtalo más tarde" : "Internal error, try again later",
+                    ok: false,
+                }
+            }
+            await sql`
+            UPDATE scheduler_users
+            SET num_tables = COALESCE(num_tables, 0) + 1
+            WHERE id = ${payload.user_id};
+            `;
+            redirect(`/${locale}/table/${newTable.rows[0].id}`);
         }
-
-        if (request.status === 404) {
+        const tableKey = await sql`
+        SELECT table_data_key FROM scheduler_users_tables 
+        WHERE id = ${payload.table_id} AND user_id = ${payload.user_id};
+        `;
+        if (tableKey.rowCount === 0) {
             return {
+                message: locale === "es" ? "Error interno, inténtalo más tarde" : "Internal error, try again later",
                 ok: false,
-                message: locale === "es" ? "Usuario no encontrado" : "User not found"
             }
-        } else if (request.status === 401) {
-            redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/login`);
-        } else if (request.status === 403) {
-            return {
-                ok: false,
-                message: locale === "es" ? "Haz alcanzado el límite de tablas" : "You've reached the table's limit"
-            }
-        } else if (request.status === 400) {
+        }
+        const key = tableKey.rows[0].table_data_key;
+        const decryptedKey = await decryptKmsDataKey(key);
+        const update = await sql`
+        UPDATE scheduler_users_tables
+        SET table_name = ${payload.table_title},
+            table_data = pgp_sym_encrypt(${JSON.stringify(payload.rows)}, ${decryptedKey}),
+            table_rowspecs = pgp_sym_encrypt(${JSON.stringify(payload.rowSpecs)}, ${decryptedKey}),
+            table_values = pgp_sym_encrypt(${JSON.stringify(payload.values)}, ${decryptedKey}),
+            table_colspecs = pgp_sym_encrypt(${JSON.stringify(payload.colSpecs)}, ${decryptedKey}),
+            updated_at = NOW()
+        WHERE id = ${payload.table_id} AND user_id = ${payload.user_id};
+        `;
+        if (update.rowCount === 0) {
             return {
                 ok: false,
                 message: locale === "es" ? "Ha ocurrido un error, inténtalo más tarde" : "An error has occured, try again later"
             }
-        } else {
-            return {
-                ok: false,
-                message: locale === "es" ? "Error interno, inténtalo más tarde" : "Internal error, try again later"
-            }
+        }
+        revalidatePath(`/${locale}/table/${payload.table_id}`);
+        revalidatePath(`/${locale}/dashboard`)
+        return {
+            message: locale === "es" ? "¡Guardo exitosamente!" : "Saved successfuly!",
+            ok: true,
         }
     }
-    return {
-        ok: false,
-        message: locale === "es" ? "Vuelve a iniciar sesión" : "Sign in again"
-    }
-    
 }
-
 const recentAIOutputs: Array<{
     timestamp: Date,
     output: StreamableValue<any, any>,
