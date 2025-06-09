@@ -101,8 +101,8 @@ export async function validateAction (state: { message: string, ok: boolean }, f
   const hashed = await hashPasswordAction(password);
   const token = await encrypt(`${email}/\/${username}/\/${name}/\/${birthday}/\/${hashed}/\/${password}`, key?.Plaintext);
   const registerToken = await sql`
-    INSERT INTO scheduler_email_confirmation_tokens (token, key, expires_at)
-    VALUES (${token}, ${key.CiphertextBlob}, CURRENT_TIMESTAMP + INTERVAL '1 minute');
+    INSERT INTO scheduler_email_confirmation_tokens (token, key, expires_at, email)
+    VALUES (${token}, ${key.CiphertextBlob}, CURRENT_TIMESTAMP + INTERVAL '1 minute', ${email});
   `;
   
   if (registerToken.rowCount === 0) {
@@ -122,6 +122,7 @@ export async function sendEmailAction (name: string, email: string, token: strin
   }
   const confirmURL = new URL(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/confirm/v`);
   confirmURL.searchParams.set('token', token);
+  confirmURL.searchParams.set('email', email);
   const msgEN = {
     to: `${email}`,
     from: 'no-reply@jossysola.com',
