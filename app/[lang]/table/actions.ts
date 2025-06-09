@@ -100,6 +100,10 @@ export async function SaveTableAction (
             WHERE id = ${payload.user_id};
             `;
             redirect(`/${locale}/table/${newTable.rows[0].id}`);
+            return {
+                message: "",
+                ok: true
+            }
         }
         const tableKey = await sql`
         SELECT table_data_key FROM scheduler_users_tables 
@@ -135,6 +139,10 @@ export async function SaveTableAction (
             message: locale === "es" ? "¡Guardo exitosamente!" : "Saved successfuly!",
             ok: true,
         }
+    }
+    return {
+        message: "",
+        ok: false,
     }
 }
 const recentAIOutputs: Array<{
