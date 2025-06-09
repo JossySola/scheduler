@@ -38,6 +38,7 @@ export default function DangerButton () {
                                 <Form action={deleteAction} className="m-5 flex flex-col items-center">
                                     <Input 
                                     isRequired
+                                    name="password"
                                     size="lg"
                                     type={isVisible ? "text" : "password"}
                                     autoComplete="current-password"
@@ -45,11 +46,6 @@ export default function DangerButton () {
                                     label={ lang === "es" ? "Confirma esta acción ya que ésta será permanente e irreversible:" : "Confirm this action as this will be irreversible:" }
                                     labelPlacement="outside" 
                                     placeholder={ lang === "es" ? "Ingresa tu contraseña" : "Enter your password" }
-                                    validate={() => {
-                                        if (deleteState && deleteState.message) {
-                                            return deleteState.message;
-                                        }
-                                    }} 
                                     endContent={
                                      <button 
                                         aria-label="toggle password visibility"
@@ -64,6 +60,7 @@ export default function DangerButton () {
                                         )}
                                      </button>   
                                     }/>
+                                    <p className="text-danger">{ deleteState && deleteState.message }</p>
                                     <ActionButton loading={pending} disabled={pending} type="submit">{ lang === "es" ? "Confirmar" : "Confirm"}</ActionButton>
                                     
                                 </Form>
