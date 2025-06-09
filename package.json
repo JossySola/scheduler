@@ -16,7 +16,7 @@
     "@auth/pg-adapter": "^1.9.1",
     "@aws-crypto/client-browser": "^4.2.1",
     "@aws-crypto/sha256-js": "^5.2.0",
-    "@aws-sdk/client-kms": "^3.823.0",
+    "@aws-sdk/client-kms": "^3.826.0",
     "@aws-sdk/hash-node": "^3.370.0",
     "@aws-sdk/signature-v4": "^3.370.0",
     "@aws-sdk/types": "^3.821.0",
@@ -26,7 +26,7 @@
     "@sendgrid/mail": "^8.1.5",
     "@tailwindcss/postcss": "^4.1.8",
     "@types/react": "^19.1.6",
-    "@types/react-dom": "^19.1.5",
+    "@types/react-dom": "^19.1.6",
     "@vercel/analytics": "^1.5.0",
     "@vercel/postgres": "^0.10.0",
     "@vercel/speed-insights": "^1.2.0",
@@ -47,15 +47,15 @@
     "server-only": "^0.0.1",
     "tailwindcss": "^4.1.8",
     "ts-node": "^10.9.2",
-    "use-debounce": "^10.0.4",
-    "zod": "^3.25.50"
+    "use-debounce": "^10.0.5",
+    "zod": "^3.25.56"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^20.17.57",
-    "@vitest/coverage-v8": "^3.2.1",
-    "@vitest/ui": "^3.2.1",
+    "@types/node": "^20.19.0",
+    "@vitest/coverage-v8": "^3.2.2",
+    "@vitest/ui": "^3.2.2",
     "eslint": "^9.28.0",
     "eslint-config-next": "^15.3.3",
     "eslint-plugin-react": "^7.37.5",
@@ -64,6 +64,6 @@
     "node-fetch": "^3.3.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.1",
-    "vitest": "^3.2.1"
+    "vitest": "^3.2.2"
   }
 }
