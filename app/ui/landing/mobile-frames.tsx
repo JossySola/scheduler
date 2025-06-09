@@ -30,7 +30,7 @@ export default function MobileFrames ({ lang }: {
     const opacityValues = useTransform(valuesProgress, [0, 0.5, 1], [0, 0.5, 1]);
     const opacitySpecs = useTransform(specsProgress, [0, 0.5, 1], [0, 0.5, 1]);
     return (
-        <section className="w-full flex flex-col justify-center items-center sm:hidden">
+        <section className="w-full overflow-x-hidden flex flex-col justify-center items-center sm:hidden">
             <motion.section  
             style={{ opacity: opacityTable }}
             className="w-full flex flex-col justify-center items-center mb-12">
