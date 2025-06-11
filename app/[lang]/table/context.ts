@@ -1,6 +1,15 @@
 import { ColSpecs, RowSpecs } from "@/app/hooks/custom";
+import { Table } from "@/app/lib/utils-client";
 import React, { createContext, SetStateAction } from "react";
 
+interface TableContextType {
+    table: Table;
+    setVersion: React.Dispatch<SetStateAction<number>> | null;
+}
+export const TableContext = createContext<TableContextType>({
+    table: new Table(),
+    setVersion: null,
+});
 export const TableDatabaseContext = createContext({});
 export const TableHandlersContext = createContext({});
 export const AnthropicGenerationContext = createContext({});
