@@ -11,15 +11,14 @@ export default function Table () {
     const { table } = useContext(TableContext);
 
     return (
-        <section>
-            <h1>Table</h1>
-            <table>
+        <section className="col-start-2 row-start-2">
+            <table className="flex flex-col gap-2 overflow-x-scroll w-[75vw] pt-5 pb-5">
                 {
                     table && table.rows.map((row: Map<any, any>, rowIndex: number) => {
                         if (rowIndex === 0) {
                             return (
                                 <thead key={`row${rowIndex}`}>
-                                    <tr>
+                                    <tr className="flex flex-row gap-2">
                                         {
                                             <ColHeaders row={row} rowIndex={rowIndex} size={table.size} />
                                         }
@@ -29,7 +28,7 @@ export default function Table () {
                         }
                         return (
                             <tbody key={`row${rowIndex}`}>
-                                <tr>
+                                <tr className="flex flex-row gap-2">
                                 {
                                     <RowHeaders row={row} rowIndex={rowIndex} size={table.size}/>
                                 }
