@@ -24,7 +24,7 @@ export function ActionButton ({ children, type = "button", color, loading = fals
             endContent={ endContent && endContent }
             formAction={ formAction }
             form={ form && form }
-            className={ !color ? `${className && className} dark:bg-white bg-black dark:text-black text-white p-5 text-md border-2 m-2` : "text-md m-2" }>
+            className={ !color ? `${className && className} dark:bg-white bg-black dark:text-black text-white p-5 text-md border-2` : "text-md" }>
             { children }
             </Button>
         )
