@@ -87,8 +87,13 @@ export function getDeviceInfo() {
     };
 }
 export class Table {
-    #rows: Array<Map<any, any>> = [];
-    #title: string = "";
+    #rows: Array<Map<any, any>>;
+    #title: string;
+    #monthsES: Array<string> = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    #monthsEN: Array<string> = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    #daysES: Array<string> = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    #daysEN: Array<string> = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
     constructor(title?: string, stored_rows?: Array<Map<any, any>>) {
         if (stored_rows && stored_rows.length > 0) {
             const keys = Array.from(stored_rows[0].keys());
@@ -97,8 +102,12 @@ export class Table {
             );
             if (!allMatch) throw new Error("Inconsistent column labels.");
         }
-        this.#rows = stored_rows ?? this.#rows;
-        this.#title = title ?? this.#title;
+        this.#rows = stored_rows ?? [];
+        this.#title = title ?? "";
+        this.#monthsES = this.#monthsES;
+        this.#monthsEN = this.#monthsEN;
+        this.#daysES = this.#daysES;
+        this.#daysEN = this.#daysEN;
     }
     // Statics
     static indexToLabel (index: number): string {
@@ -113,8 +122,8 @@ export class Table {
     get rows (): Array<Map<any, any>> {
         return this.#rows;
     }
-    set reset (rows: Array<Map<any, any>>) {
-        this.#rows = rows;
+    set rows (newRows: Array<Map<any, any>>) {
+        this.#rows = newRows;
     }
     get title (): string {
         return this.#title;
@@ -124,6 +133,18 @@ export class Table {
     }
     get size (): number {
         return this.#rows.length > 0 ? this.#rows[0].size : 0;
+    }
+    get months_en (): Array<string> {
+        return this.#monthsEN;
+    }
+    get months_es (): Array<string> {
+        return this.#monthsES;
+    }
+    get days_en (): Array<string> {
+        return this.#daysEN;
+    }
+    get days_es (): Array<string> {
+        return this.#daysES;
     }
     // Methods
     addColumn (): void {
@@ -180,5 +201,85 @@ export class Table {
         }
         this.#rows[rowIndex].set(label, value);
         return true;
+    }
+}
+type RowTabType = {
+    "name": string,
+    "disabled": boolean,
+    "disableCols": Array<string>,
+    "rowTimes": number,
+    "preferValues": Array<string>,
+}
+type ColTabType = {
+    "name": string,
+    "colTimes": number,
+    "valueTimes": Array<number>,
+}
+export class DynamicTable extends Table {
+    #values: Array<string>;
+    #row_specs: Array<Map<any, any>>;
+    #col_specs: Array<Map<any, any>>;
+
+    constructor(title?: string, stored_rows?: Array<Map<any, any>>, stored_values?: Array<string>, stored_row_specs?: Array<Map<any, any>>, stored_col_specs?: Array<Map<any, any>>) {
+        super(title, stored_rows);
+        this.#values = stored_values ?? [];
+        this.#row_specs = stored_row_specs ?? [];
+        this.#col_specs = stored_col_specs ?? [];
+    }
+    // Setters & Getters
+    set values (newValues: Array<string>) {
+        if (Array.isArray(newValues)) {
+            this.#values = newValues;
+        }
+    }
+    get values (): Array<string> {
+        return this.#values;
+    }
+    get row_specs (): Array<Map<any, any>> {
+        return this.#row_specs;
+    }
+    get col_specs (): Array<Map<any, any>> {
+        return this.#col_specs;
+    }
+    // Methods
+    createRowTab (name: string): void {
+        const newRowTab = new Map();
+        newRowTab.set("name", name);
+        newRowTab.set("disabled", false);
+        newRowTab.set("disableCols", []);
+        newRowTab.set("rowTimes", this.rows.length > 0 ? this.rows[0].size : 0);
+        newRowTab.set("preferValues", []);
+        this.#row_specs.push(newRowTab);
+    }
+    updateRowTab ( 
+        index: number,
+        key: "name" | "disabled" | "disableCols" | "rowTimes" | "preferedValues", 
+        value: string | boolean | Array<string> | number,
+    ): void {
+        if (this.#row_specs && this.#row_specs[index]) {
+            this.#row_specs[index].set(key, value);
+        }
+    }
+    createColTab (name: string): void {
+        const newColTab = new Map();
+        newColTab.set("name", name);
+        newColTab.set("colTimes", this.rows.length ?? 0);
+        newColTab.set("valueTimes", []);
+        this.#col_specs.push(newColTab);
+    }
+    updateColTab (
+        index: number,
+        key: "name" | "colTimes" | "valueTimes",
+        value: string | number | Array<number>,
+    ): void {
+        if (this.#col_specs && this.#col_specs[index]) {
+            this.#col_specs[index].set(key, value);
+        }
+    }
+    deleteRowTab (): void {
+        this.#row_specs.pop();
+    }
+    deleteColTab (): void {
+        this.#col_specs.pop();
     }
 }
