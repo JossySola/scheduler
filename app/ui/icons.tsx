@@ -1,4 +1,90 @@
 "use client"
+
+export function ChevronCircleUpDown ({ width = 16, height = 16, color = "currentcolor"}) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }}
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M12.8536 8.7071C13.2441 8.31657 13.2441 7.68341 12.8536 7.29288L9.03034 3.46966L8.50001 2.93933L7.43935 3.99999L7.96968 4.53032L11.4393 7.99999L7.96968 11.4697L7.43935 12L8.50001 13.0607L9.03034 12.5303L12.8536 8.7071ZM7.85356 8.7071C8.24408 8.31657 8.24408 7.68341 7.85356 7.29288L4.03034 3.46966L3.50001 2.93933L2.43935 3.99999L2.96968 4.53032L6.43935 7.99999L2.96968 11.4697L2.43935 12L3.50001 13.0607L4.03034 12.5303L7.85356 8.7071Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
+export function ChevronDoubleDown ({ width = 16, height = 16, color = "currentcolor"}) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }}
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M4.53032 2.96966L3.99999 2.43933L2.93933 3.49999L3.46966 4.03032L7.29289 7.85355C7.68341 8.24407 8.31658 8.24407 8.7071 7.85354L12.5303 4.03032L13.0607 3.49999L12 2.43933L11.4697 2.96966L7.99999 6.43933L4.53032 2.96966ZM4.53032 7.96966L3.99999 7.43933L2.93933 8.49999L3.46966 9.03032L7.29289 12.8535C7.68341 13.2441 8.31658 13.2441 8.7071 12.8535L12.5303 9.03032L13.0607 8.49999L12 7.43933L11.4697 7.96966L7.99999 11.4393L4.53032 7.96966Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
+export function ChevronDoubleLeft ({ width = 16, height = 16, color = "currentcolor"}) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }} 
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M3.14647 7.2929C2.75595 7.68343 2.75595 8.31659 3.14647 8.70712L6.96969 12.5303L7.50002 13.0607L8.56068 12L8.03035 11.4697L4.56068 8.00001L8.03035 4.53034L8.56068 4.00001L7.50002 2.93935L6.96969 3.46968L3.14647 7.2929ZM8.14647 7.2929C7.75595 7.68343 7.75595 8.31659 8.14647 8.70712L11.9697 12.5303L12.5 13.0607L13.5607 12L13.0304 11.4697L9.56068 8.00001L13.0304 4.53034L13.5607 4.00001L12.5 2.93935L11.9697 3.46968L8.14647 7.2929Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
+export function ChevronDoubleRight ({ width = 16, height = 16, color = "currentcolor" }) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }}
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M12.8536 8.7071C13.2441 8.31657 13.2441 7.68341 12.8536 7.29288L9.03034 3.46966L8.50001 2.93933L7.43935 3.99999L7.96968 4.53032L11.4393 7.99999L7.96968 11.4697L7.43935 12L8.50001 13.0607L9.03034 12.5303L12.8536 8.7071ZM7.85356 8.7071C8.24408 8.31657 8.24408 7.68341 7.85356 7.29288L4.03034 3.46966L3.50001 2.93933L2.43935 3.99999L2.96968 4.53032L6.43935 7.99999L2.96968 11.4697L2.43935 12L3.50001 13.0607L4.03034 12.5303L7.85356 8.7071Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
+export function ChevronDoubleUp ({ width = 16, height = 16, color = "currentcolor" }) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }}
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M8.7071 3.14644C8.31657 2.75591 7.68341 2.75592 7.29288 3.14644L3.46966 6.96966L2.93933 7.49999L3.99999 8.56065L4.53032 8.03032L7.99999 4.56065L11.4697 8.03032L12 8.56065L13.0607 7.49999L12.5303 6.96966L8.7071 3.14644ZM8.7071 8.14644C8.31657 7.75592 7.68341 7.75592 7.29288 8.14644L3.46966 11.9697L2.93933 12.5L3.99999 13.5607L4.53032 13.0303L7.99999 9.56065L11.4697 13.0303L12 13.5607L13.0607 12.5L12.5303 11.9697L8.7071 8.14644Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
 export function PaperAirplane ({ width = 16, height = 16, color = "currentcolor" }) {
     return (
         <svg 
