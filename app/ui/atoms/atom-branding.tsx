@@ -1,3 +1,4 @@
+"use client"
 import { MotionValue } from "motion/react";
 
 export const SchedulerIcon = () => {
