@@ -1,13 +1,13 @@
 import { ColSpecs, RowSpecs } from "@/app/hooks/custom";
-import { Table } from "@/app/lib/utils-client";
+import { DynamicTable } from "@/app/lib/utils-client";
 import React, { createContext, SetStateAction } from "react";
 
 interface TableContextType {
-    table: Table;
+    table: DynamicTable;
     setVersion: React.Dispatch<SetStateAction<number>> | null;
 }
 export const TableContext = createContext<TableContextType>({
-    table: new Table(),
+    table: new DynamicTable(),
     setVersion: null,
 });
 export const TableDatabaseContext = createContext({});
