@@ -17,7 +17,7 @@ export default function HomeAtom() {
             textDecoration: "none"
         }}
         href={`/${lang}/dashboard`}>
-            <Home />
+            <Home width={25} height={25}/>
         </Button>
     )
 }
