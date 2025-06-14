@@ -1,5 +1,6 @@
 import pool from "@/app/lib/mocks/db";
 import TableWithProvider from "@/app/ui/molecules/mol-provider-table";
+import Panel from "@/app/ui/refactor/panel";
 import { auth } from "@/auth";
 import { sql } from "@vercel/postgres";
 import { redirect } from "next/navigation";
@@ -10,7 +11,17 @@ export default async function Page ({ params }: {
     const lang = (await params).lang;
     const session = await auth();
 
-    if (!session?.user) redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/login`);
+    if (session && session.user) {
+        return (
+            <section className="w-full h-fit mt-15 mb-20">
+                <Panel />
+            </section>
+        )
+    }
+}
+
+/*
+if (!session?.user) redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/login`);
 
     if (session && session.user) {
         const numTables = await sql`
@@ -41,4 +52,4 @@ export default async function Page ({ params }: {
             )
         }
     }
-}
+*/
