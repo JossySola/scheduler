@@ -1,7 +1,7 @@
 "use client"
-import { useScroll, useTransform } from "framer-motion";
+import { useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import FrameTable from "./frame-table";
 import FrameAiFeature from "./frame-ai-feature";
 import SampleSpecs from "./sample-specs";

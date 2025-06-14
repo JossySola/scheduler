@@ -1,6 +1,6 @@
 "use client"
 import { Claude } from "../atoms/atom-anthropic"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { Box } from "../icons"
 
 export default function FrameAiFeature ({ lang }: {

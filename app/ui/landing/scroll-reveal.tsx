@@ -1,5 +1,5 @@
 "use client"
-import { useInView, motion } from "framer-motion";
+import { motion, useInView, Variants } from "motion/react"
 import React, { useRef } from "react";
 
 interface ScrollRevealProps {
@@ -65,7 +65,7 @@ export default function ScrollReveal ({
         className="w-full">
             {
                 React.Children.map(children, (child, index) => (
-                    <motion.div key={ index } variants={ itemVariants }>
+                    <motion.div key={ index } variants={ itemVariants as Variants }>
                         { child }
                     </motion.div>
                 ))

@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { TableHandlersContext, TableHandlersType } from "@/app/[lang]/table/context";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { PlusCircle, Trash } from "../icons";
 
 export default function XList({ name } : { 

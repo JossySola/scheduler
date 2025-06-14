@@ -1,6 +1,6 @@
 "use client"
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform } from "motion/react"
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { SchedulerBlack, SchedulerWhite } from "./atom-branding";
