@@ -1,17 +1,18 @@
 "use client"
+import { TableContext } from "@/app/[lang]/table/context";
 import { Card, CardBody, Checkbox, CheckboxGroup, NumberInput, Switch } from "@heroui/react";
 import { useParams } from "next/navigation"
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 export default function RowSpecs ({ tab }: {
     tab: Map<any, any>, 
 }) {
     const { lang } = useParams<{ lang: "en" | "es" }>();
+    const { table } = useContext(TableContext);
     const [toggle, setToggle] = useState<boolean>(tab.get("disabled"));
     const [disableCols, setDisableCols] = useState<Array<string>>(tab.get("disableCols"));
     const [number, setNumber] = useState<number>(tab.get("rowTimes"));
     const [preferValues, setPreferValues] = useState<Array<string>>(tab.get("preferValues"));
-    console.log(tab.get('disableCols'))
     return (
         <Card>
             <CardBody className="flex flex-col gap-5 p-5">
@@ -34,10 +35,12 @@ export default function RowSpecs ({ tab }: {
                 }}
                 label={ lang === "es" ? "Habilitar solo en ciertas columnas:" : "Enable/disable on certain columns:" }>
                     {
-                        tab.get("disableCols") && tab.get("disableCols").map((col: string, colIndex: number) => {
-                            return <Checkbox key={colIndex} value={col} onValueChange={value => tab.set("disableCols", value)}>
-                                { col ? col : lang === "es" ? <i>Sin nombre</i> : <i>No name yet</i> }
-                            </Checkbox>
+                        table.rows[0] && Array.from(table.rows[0].values()).map((col: string, colIndex: number) => {
+                            if (colIndex !== 0) {
+                                return <Checkbox key={colIndex} value={col}>
+                                    { col ? col : lang === "es" ? <i>Sin nombre</i> : <i>No name yet</i> }
+                                </Checkbox>
+                            }
                         })
                     }
                 </CheckboxGroup>
@@ -62,7 +65,7 @@ export default function RowSpecs ({ tab }: {
                 }}
                 label={ lang === "es" ? "Preferir usar estos valores en la fila:" : "Prefer the following values to use in this row:"}>
                     {
-                        tab.get("preferValues") && tab.get("preferValues").map((val: string, valIndex: number) => {
+                        table.values && table.values.map((val: string, valIndex: number) => {
                             return <Checkbox key={valIndex} value={val} onValueChange={value => tab.set("preferValues", value)}>
                                 { val ? val : lang === "es" ? <i>Sin nombre</i> : <i>No name yet</i> }
                             </Checkbox>
