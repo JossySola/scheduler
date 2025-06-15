@@ -1,11 +1,12 @@
 "use client"
-import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Tab, Tabs, useDisclosure } from "@heroui/react";
+import { Button, Card, CardBody, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Tab, Tabs, useDisclosure } from "@heroui/react";
 import { useParams } from "next/navigation";
 import { Box, SettingsGearFill } from "../icons";
 import RowSpecs from "./row-specs";
 import ColSpecs from "./col-specs";
 import { useContext } from "react";
 import { TableContext } from "@/app/[lang]/table/context";
+import ValuesList from "./list";
 
 export default function TableSettings () {
     const { lang } = useParams<{ lang: "en" | "es" }>();
@@ -47,7 +48,7 @@ export default function TableSettings () {
                                                 </Tab> 
                                             )
                                         }
-                                    }) : <p>{ lang === "es" ? "No hay filas aún" : "No rows yet" }</p>
+                                    }) : null
                                 }
                             </Tabs>
                             <h3>{ lang === "es" ? "Ajustes de columna" : "Columns' Specifications" }</h3>
@@ -64,9 +65,11 @@ export default function TableSettings () {
                                                 </Tab>
                                             )
                                         }
-                                    }) : <p>{ lang === "es" ? "No hay columnas aún" : "No columns yet" }</p>
+                                    }) : null
                                 }
                             </Tabs>
+                            <h3>{ lang === "es" ? "Valores" : "Values" }</h3>
+                            <ValuesList />
                         </DrawerBody>
                         <DrawerFooter>
                             <Button size="lg" color="default" variant="flat" onPress={onClose}>
