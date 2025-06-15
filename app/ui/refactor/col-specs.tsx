@@ -27,6 +27,7 @@ export default function ColSpecs ({ tab }: {
                     table.values && table.values.map((value: string, index: number) => {
                         return (
                             <Slider
+                            key={index}
                             color="foreground"
                             minValue={0}
                             maxValue={table.values.length}
