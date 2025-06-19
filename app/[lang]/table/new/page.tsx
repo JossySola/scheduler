@@ -1,5 +1,4 @@
 import pool from "@/app/lib/mocks/db";
-import TableWithProvider from "@/app/ui/molecules/mol-provider-table";
 import Panel from "@/app/ui/refactor/panel";
 import { auth } from "@/auth";
 import { sql } from "@vercel/postgres";
