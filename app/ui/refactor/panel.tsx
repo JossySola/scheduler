@@ -10,7 +10,7 @@ import { RowType, TableExtended } from "@/app/lib/utils-client";
 export default function Panel ({ 
     stored_rows, stored_values }: {
         stored_rows?: Array<Map<string, RowType>>,
-        stored_values?: Array<string>,
+        stored_values?: Set<string>,
     }) {
     const [_p, setPanelRender] = useState<number>(0);
     const [tableInstance, _t] = useState<TableExtended>(new TableExtended(
