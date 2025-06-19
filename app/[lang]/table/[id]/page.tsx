@@ -1,6 +1,5 @@
 import { decryptKmsDataKey } from "@/app/lib/utils";
 import { BackButton } from "@/app/ui/atoms/atom-button-back";
-import TableWithProvider from "@/app/ui/molecules/mol-provider-table";
 import { auth } from "@/auth";
 import { sql } from "@vercel/postgres";
 
@@ -71,13 +70,6 @@ export default async function Page ({ params }: {
             <main className="h-full mt-10 pb-10">
                 <form className="flex flex-col justify-center items-center relative">
                     <input type="text" name="table_id" value={ id } readOnly hidden />
-                    <TableWithProvider 
-                    lang={ lang }
-                    storedTitle={ title }
-                    storedRows={ rows }
-                    storedRowSpecs={ rowSpecs }
-                    storedValues={ values }
-                    storedColSpecs={ colSpecs } />
                 </form>
             </main>
         )
