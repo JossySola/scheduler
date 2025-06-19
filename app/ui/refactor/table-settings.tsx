@@ -1,5 +1,5 @@
 "use client"
-import { Button, Card, CardBody, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Tab, Tabs, useDisclosure } from "@heroui/react";
+import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Tab, Tabs, useDisclosure } from "@heroui/react";
 import { useParams } from "next/navigation";
 import { Box, SettingsGearFill } from "../icons";
 import RowSpecs from "./row-specs";
@@ -7,11 +7,14 @@ import ColSpecs from "./col-specs";
 import { useContext } from "react";
 import { TableContext } from "@/app/[lang]/table/context";
 import ValuesList from "./list";
+import { RowType } from "@/app/lib/utils-client";
 
 export default function TableSettings () {
     const { lang } = useParams<{ lang: "en" | "es" }>();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const { table } = useContext(TableContext);
+
+
     return (
         <>
             <div className="col-start-1 row-start-1 w-full flex flex-row justify-end items-center pr-5">
@@ -39,16 +42,19 @@ export default function TableSettings () {
                             fullWidth={ true }
                             aria-label={ lang === "es" ? "Ajuste de filas" : "Rows' Specifications" }>
                                 {
-                                    table.row_specs.length ? table.row_specs.map((tab: Map<any, any>, tabIndex: number) => {
-                                        const title = tab.get("name");
-                                        if (tabIndex !== 0) {
-                                            return ( 
-                                                <Tab key={tabIndex} title={title && typeof title === 'string' ? title : lang === "es" ? "Sin nombre" : "No name"}>
-                                                    <RowSpecs tab={tab} />
-                                                </Tab> 
+                                    table.size > 0 ? table.rows.map((map: Map<string, RowType>, rowIndex: number) => {
+                                        const rawTitle = map.get(`A${rowIndex}`)?.value;
+                                        const title = rawTitle && rawTitle.trim() !== "" 
+                                            ? rawTitle 
+                                            : lang === "es" ? "Sin nombre" : "No name";
+                                        if (rowIndex !== 0) {
+                                            return (
+                                                <Tab key={rowIndex} title={title}>
+                                                    <RowSpecs rowIndex={rowIndex} />
+                                                </Tab>
                                             )
                                         }
-                                    }) : null
+                                    }) : null 
                                 }
                             </Tabs>
                             <h3>{ lang === "es" ? "Ajustes de columna" : "Columns' Specifications" }</h3>
@@ -56,12 +62,11 @@ export default function TableSettings () {
                             fullWidth={ true }
                             aria-label={ lang === "es" ? "Ajustes de columna" : "Columns' Specifications" }>
                                 {
-                                    table.col_specs.length ? table.col_specs.map((tab: Map<any, any>, tabIndex: number) => {
-                                        const title = tab.get("name");
-                                        if (tabIndex !== 0) {
+                                    table.size > 0 ? Array.from(table.rows[0].values()).map((col: RowType, colIndex: number) => {
+                                        if (colIndex !== 0) {
                                             return (
-                                                <Tab key={tabIndex} title={title && typeof title === 'string' ? title : lang === "es" ? "Sin nombre" : "No name"}>
-                                                    <ColSpecs tab={tab} />
+                                                <Tab key={colIndex} title={col.value && typeof col.value === 'string' ? col.value : lang === "es" ? "Sin nombre" : "No name"}>
+                                                    <ColSpecs colIndex={colIndex} />
                                                 </Tab>
                                             )
                                         }

@@ -1,28 +1,22 @@
 "use client"
 import { TableContext } from "@/app/[lang]/table/context";
-import { DynamicTable } from "@/app/lib/utils-client";
+import { RowType, TableExtended } from "@/app/lib/utils-client";
 import { Input } from "@heroui/react";
 import { memo, useContext } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-const Cell = memo(function ({ value, rowIndex, colIndex }: { 
-    value: string,
+const Cell = memo(function ({ element, rowIndex, colIndex }: { 
+    element: RowType,
     rowIndex: number,
     colIndex: number,
 }) {
     const { table } = useContext(TableContext);
     const debouncedModification = useDebouncedCallback((value: string) => {
-        table.modifyCell(colIndex, rowIndex, value);
-        if (colIndex === 0) {
-            table.updateRowTab(rowIndex, "name", value);
-        }
-        if (rowIndex === 0) {
-            table.updateColTab(colIndex, "name", value);
-        }
+        table.edit(colIndex, rowIndex, value);
     }, 1000);
     return <Input 
-        defaultValue={ value }
-        name={`${DynamicTable.indexToLabel(colIndex)}${rowIndex}`}
+        defaultValue={ element.value }
+        name={`${TableExtended.indexToLabel(colIndex)}${rowIndex}`}
         type="text"
         size="lg"
         autoComplete="off"

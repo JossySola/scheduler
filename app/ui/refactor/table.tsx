@@ -1,26 +1,24 @@
 "use client"
 import { TableContext } from "@/app/[lang]/table/context";
-import { useParams } from "next/navigation"
 import { useContext } from "react";
-import Cell from "./cell";
 import RowHeaders from "./row-headers";
 import ColHeaders from "./col-headers";
+import { RowType } from "@/app/lib/utils-client";
 
 export default function Table () {
-    const params = useParams<{ lang: "en" | "es" }>();
     const { table } = useContext(TableContext);
 
     return (
         <section className="col-start-2 row-start-2">
             <table className="flex flex-col gap-2 overflow-x-scroll w-[75vw] pt-5 pb-5">
                 {
-                    table && table.rows.map((row: Map<any, any>, rowIndex: number) => {
+                    table && table.rows.map((row: Map<string, RowType>, rowIndex: number) => {
                         if (rowIndex === 0) {
                             return (
                                 <thead key={`row${rowIndex}`}>
                                     <tr className="flex flex-row gap-2">
                                         {
-                                            <ColHeaders row={row} rowIndex={rowIndex} size={table.size} />
+                                            <ColHeaders row={row} rowIndex={rowIndex} />
                                         }
                                     </tr>
                                 </thead>
@@ -30,12 +28,11 @@ export default function Table () {
                             <tbody key={`row${rowIndex}`}>
                                 <tr className="flex flex-row gap-2">
                                 {
-                                    <RowHeaders row={row} rowIndex={rowIndex} size={table.size}/>
+                                    <RowHeaders row={row} rowIndex={rowIndex} />
                                 }
                                 </tr>
                             </tbody>
                         )
-                        
                     })
                 }
             </table>

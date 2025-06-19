@@ -7,29 +7,33 @@ import { motion } from "motion/react";
 import { PlusCircle, Trash } from "../icons";
 
 export default function ValuesList() {
-    const { table, setVersion } = useContext(TableContext);
-    const [ values, setValues ] = useState<Array<string>>(table.values ?? []);
+    const { table, setPanelRender } = useContext(TableContext);
+    const [ values, setValues ] = useState<Set<string>>(table.values ?? new Set());
     const [input, setInput] = useState<string>("");
     const { lang } = useParams<{ lang: "es" | "en" }>();
     
     const handleAddItem = (value: string) => {
-        setValues(prev => values.length ? [...prev, value] : [value]);
-        table.values = [...values, value];
-        setVersion && setVersion(v => v + 1);
+        setValues(prev => values.size > 0 ? prev.add(value) : new Set(value));
+        if (table.values.has(value)) {
+            return;
+        }
+        table.values.add(value);
+        setPanelRender && setPanelRender(v => v++);
     }
     const handleRemoveItem = (value: string) => {
         setValues(prev => {
-            if (prev.length > 0) {
-                return prev.filter((v: string) => value !== v);
+            if (values.size > 0) {
+                prev.delete(value);
+                return prev;
             }
-            return [];
+            return prev;
         });
-        table.values = values.length ? values.filter((v: string) => value !== v) : [];
-        setVersion && setVersion(v => v + 1);
+        table.values.delete(value);
+        setPanelRender && setPanelRender(v => v++);
     }
 
     return (
-        <ol className="w-xs max-w-lg flex flex-col justify-center items-center m-8">
+        <ol className="w-full flex flex-col justify-center items-center p-8">
             <div className="w-full flex flex-row justify-center items-center gap-2 mb-3">
                 <Input 
                 type="text"
@@ -50,20 +54,13 @@ export default function ValuesList() {
                 </Button>
             </div>
             {
-                table.values && table.values.map((item, index) => {
+                table.values && Array.from(table.values.values()).map((item, index) => {
                     return <motion.li className="w-full" key={index} initial={{ scale: 0.3 }} animate={{ scale: 1 }}>
                         <div className="w-full flex flex-row justify-center items-center gap-2 mb-3">
                             <Input 
-                            name={`ValueOption${index}:`} 
-                            value={ item } 
-                            onChange={ e => {
-                                setValues && setValues(prev => {
-                                    if (!prev) [e.target.value];
-                                    let duplicate = [...prev];
-                                    duplicate[index] = e.target.value;
-                                    return duplicate;
-                                })
-                            } }/>
+                            isReadOnly
+                            name={"list-value"} 
+                            value={ item } />
                             <Button 
                             isIconOnly 
                             variant="flat"
