@@ -16,6 +16,7 @@ const Cell = memo(function ({ element, rowIndex, colIndex }: {
     }, 1000);
     return <Input 
         defaultValue={ element.value }
+        id={`${TableExtended.indexToLabel(colIndex)}${rowIndex}`}
         name={`${TableExtended.indexToLabel(colIndex)}${rowIndex}`}
         type="text"
         size="lg"
