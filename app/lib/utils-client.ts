@@ -88,16 +88,14 @@ export function getDeviceInfo() {
 }
 
 export type RowType = {
-    colIndex: number,
-    rowIndex: number,
     value: string,
     specs?: {
-        disabled?: boolean,
-        disabledCols?: Array<string>,
-        rowTimes?: number,
-        preferValues?: Array<string>,
-        colTimes?: number,
-        valueTimes?: Array<number>,
+        disabled: boolean,
+        disabledCols: Array<string>,
+        rowTimes: number,
+        preferValues: Array<string>,
+        colTimes: number,
+        valueTimes: Map<string, number>,
     },
 };
 export class Table {
@@ -129,8 +127,6 @@ export class Table {
         if (this.size === 0) {
             const newMap = new Map();
             newMap.set(`A0`, {
-                colIndex: 0,
-                rowIndex: 0,
                 value: "",
                 specs: {
                     disabled: false,
@@ -138,7 +134,7 @@ export class Table {
                     rowTimes: 0,
                     preferValues: [],
                     colTimes: 0,
-                    valueTimes: [],
+                    valueTimes: new Map(),
                 },
             })
             this.#rows.push(newMap);
@@ -146,18 +142,22 @@ export class Table {
         }
         this.#rows.forEach((row: Map<string, RowType>, rowIndex: number) => {
             const label = `${Table.indexToLabel(row.size)}${rowIndex}`;
+            if (rowIndex === 0) {
+                row.set(label, {
+                    value: "",
+                    specs: {
+                        disabled: false,
+                        disabledCols: [],
+                        rowTimes: 0,
+                        preferValues: [],
+                        colTimes: 0,
+                        valueTimes: new Map(),
+                    },
+                })
+                return;
+            }
             row.set(label, {
-                colIndex: row.size,
-                rowIndex,
                 value: "",
-                specs: {
-                    disabled: false,
-                    disabledCols: [],
-                    rowTimes: 0,
-                    preferValues: [],
-                    colTimes: 0,
-                    valueTimes: [],
-                },
             })
         })
     }
@@ -165,8 +165,6 @@ export class Table {
         if (this.size === 0) {
             const newMap = new Map();
             newMap.set("A0", {
-                colIndex: 0,
-                rowIndex: 0,
                 value: "",
                 specs: {
                     disabled: false,
@@ -174,7 +172,7 @@ export class Table {
                     rowTimes: 0,
                     preferValues: [],
                     colTimes: 0,
-                    valueTimes: [],
+                    valueTimes: new Map(),
                 },
             })
             this.#rows.push(newMap);
@@ -182,20 +180,25 @@ export class Table {
         }
         const newMap = new Map();
         const newRow = Array.from(this.size > 0 ? this.#rows[0].keys() : []);
-        newRow.forEach((_: string, index: number) => newMap.set(
+        newRow.forEach((_: string, index: number) => {
+            if (index === 0) {
+                newMap.set(
+                `${Table.indexToLabel(index)}${this.size}`, {
+                value: "",
+                specs: {
+                    disabled: false,
+                    disabledCols: [],
+                    rowTimes: 0,
+                    preferValues: [],
+                    colTimes: 0,
+                    valueTimes: new Map(),
+                }})
+                return;
+            }
+            newMap.set(
             `${Table.indexToLabel(index)}${this.size}`, {
-            colIndex: index,
-            rowIndex: this.size,
-            value: "",
-            specs: {
-                disabled: false,
-                disabledCols: [],
-                rowTimes: 0,
-                preferValues: [],
-                colTimes: 0,
-                valueTimes: [],
-            },
-        }))
+            value: ""})
+        })
         this.#rows.push(newMap);
     }
     deleteColumn () {
@@ -205,7 +208,9 @@ export class Table {
             return;
         };
         const label = Table.indexToLabel(this.#rows[0].size-1);
-        this.#rows.forEach(row => row.delete(`${label}${this.size-1}`));
+        this.#rows.forEach((row, rowIndex) => {
+            row.delete(`${label}${rowIndex}`);
+        });
     }
     deleteRow () {
         if (this.size === 0) return;
@@ -237,219 +242,27 @@ export class TableExtended extends Table {
         super(storedRows);
         this.#values = storedValues ?? new Set();
     }
-    set values(newValues: Set<string>) {
-        this.#values = newValues;
-    }
     get values() {
         return this.#values;
     }
-}
-
-/*
-export class Table {
-    #rows: Array<Map<any, any>>;
-    #title: string;
-    #monthsES: Array<string> = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    #monthsEN: Array<string> = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    #daysES: Array<string> = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-    #daysEN: Array<string> = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-    constructor(title?: string, stored_rows?: Array<Map<any, any>>) {
-        if (stored_rows && stored_rows.length > 0) {
-            const keys = Array.from(stored_rows[0].keys());
-            const allMatch = stored_rows.every(row =>
-                JSON.stringify(Array.from(row.keys())) === JSON.stringify(keys)
-            );
-            if (!allMatch) throw new Error("Inconsistent column labels.");
-        }
-        this.#rows = stored_rows ?? [];
-        this.#title = title ?? "";
-        this.#monthsES = this.#monthsES;
-        this.#monthsEN = this.#monthsEN;
-        this.#daysES = this.#daysES;
-        this.#daysEN = this.#daysEN;
-    }
-    // Statics
-    static indexToLabel (index: number): string {
-        let label = '';
-        while (index >= 0) {
-            label = String.fromCharCode((index % 26) + 65) + label;
-            index = Math.floor(index / 26) - 1;
-        }
-        return label;
-    }
-    // Setters & Getters
-    get rows (): Array<Map<any, any>> {
-        return this.#rows;
-    }
-    set rows (newRows: Array<Map<any, any>>) {
-        this.#rows = newRows;
-    }
-    get title (): string {
-        return this.#title;
-    }
-    set title (value: string) {
-        this.#title = value;
-    }
-    get size (): number {
-        return this.#rows.length > 0 ? this.#rows[0].size : 0;
-    }
-    get months_en (): Array<string> {
-        return this.#monthsEN;
-    }
-    get months_es (): Array<string> {
-        return this.#monthsES;
-    }
-    get days_en (): Array<string> {
-        return this.#daysEN;
-    }
-    get days_es (): Array<string> {
-        return this.#daysES;
-    }
-    // Methods
-    addColumn (): void {
-        const label = Table.indexToLabel(
-            this.#rows.length > 0 ? this.#rows[0].size : 0
-        );
-        if (this.#rows.length === 0) {
-            const map = new Map();
-            map.set(label, "");
-            this.#rows.push(map);
-            return;
-        }
-        this.#rows.forEach(row => row.set(label, ""));
-    }
-    addRow (): void {
-        const newRow = new Map();
-        if (this.#rows.length === 0) {
-            newRow.set("A", "");
-            this.#rows.push(newRow);
-            return;
-        }
-        const columnLabels = Array.from(this.#rows.length > 0 ? this.#rows[0].keys() : []);
-        columnLabels.forEach(label => newRow.set(label, ""));
-        this.#rows.push(newRow);
-    }
-    removeColumn (index: number): void {
-        if (this.#rows.length === 0) return;
-        if (this.#rows.length > 0 && this.#rows[0].size === 1) {
-            this.#rows = [];
-            return;
-        }
-        const label = Table.indexToLabel(index);
-        this.#rows.length && this.#rows.forEach(row => row.delete(label));
-    }
-    removeRow (): void {
-        this.#rows.pop();
-    }
-    modifyCell (columnIndex: number, rowIndex: number, value: string): boolean {
-        const label = Table.indexToLabel(columnIndex);
-        if (!this.#rows[rowIndex]) return false;
-        const cellExists: string | undefined = this.#rows[rowIndex].get(label);
-        if (cellExists === undefined) return false;
-        if (rowIndex === 0) {
-            const columnIsDuplicate = Array.from(this.#rows[0].values()).some(v => String(v).toLowerCase() === String(value).toLowerCase());
-            if (columnIsDuplicate === true) return false;
-        } else if (columnIndex === 0) {
-            const rowIsDuplicate = this.#rows.filter(rowMap => {
-                const header = rowMap.get("A").toLowerCase();
-                if (header === value.toLowerCase()) {
-                    return rowMap;
+    addValue(value:string) {
+        this.#values.add(value);
+        if (this.rows.length) {
+            this.rows[0].forEach(col => {
+                if (col.specs) {
+                    col.specs.valueTimes.set(value, this.size);
                 }
             })
-            if (rowIsDuplicate.length > 0) return false;
         }
-        this.#rows[rowIndex].set(label, value);
-        return true;
+    }
+    deleteValue(value:string) {
+        this.#values.delete(value);
+        if (this.rows.length) {
+            this.rows[0].forEach(col => {
+                if (col.specs) {
+                    col.specs.valueTimes.delete(value);
+                }
+            })
+        }
     }
 }
-type RowTabType = {
-    "name": string,
-    "disabled": boolean,
-    "disabledCols": Array<string>,
-    "rowTimes": number,
-    "preferValues": Array<string>,
-}
-type ColTabType = {
-    "name": string,
-    "colTimes": number,
-    "valueTimes": Array<number>,
-}
-export class DynamicTable extends Table {
-    #values: Array<string>;
-    #row_specs: Array<Map<any, any>>;
-    #col_specs: Array<Map<any, any>>;
-
-    constructor(title?: string, stored_rows?: Array<Map<any, any>>, stored_values?: Array<string>, stored_row_specs?: Array<Map<any, any>>, stored_col_specs?: Array<Map<any, any>>) {
-        super(title, stored_rows);
-        this.#values = stored_values ?? [];
-        this.#row_specs = stored_row_specs ?? [];
-        this.#col_specs = stored_col_specs ?? [];
-    }
-    // Setters & Getters
-    set values (newValues: Array<string>) {
-        if (Array.isArray(newValues)) {
-            this.#values = newValues;
-        }
-    }
-    get values (): Array<string> {
-        return this.#values;
-    }
-    get row_specs (): Array<Map<any, any>> {
-        return this.#row_specs;
-    }
-    get col_specs (): Array<Map<any, any>> {
-        return this.#col_specs;
-    }
-    // Methods
-    createRowTab (name: string): void {
-        const newRowTab = new Map();
-        newRowTab.set("name", name);
-        newRowTab.set("disabled", false);
-        newRowTab.set("disabledCols", []);
-        newRowTab.set("rowTimes", this.rows.length > 0 ? this.rows[0].size : 0);
-        newRowTab.set("preferValues", []);
-        this.#row_specs.push(newRowTab);
-    }
-    updateRowTab ( 
-        index: number,
-        key: "name" | "disabled" | "disableCols" | "rowTimes" | "preferedValues", 
-        value: string | boolean | Array<string> | number,
-    ): void {
-        if (this.#row_specs && this.#row_specs[index]) {
-            this.#row_specs[index].set(key, value);
-        }
-    }
-    createColTab (name: string): void {
-        const newColTab = new Map();
-        newColTab.set("name", name);
-        newColTab.set("colTimes", this.rows.length ?? 0);
-        newColTab.set("valueTimes", []);
-        this.#col_specs.push(newColTab);
-    }
-    updateColTab (
-        index: number,
-        key: "name" | "colTimes" | "valueTimes",
-        value: string | number | Array<number>,
-    ): void {
-        if (this.#col_specs && this.#col_specs[index]) {
-            this.#col_specs[index].set(key, value);
-        }
-    }
-    deleteRowTab (): void {
-        if (this.#row_specs.length === 1) {
-            this.#row_specs = [];
-            this.#col_specs = [];
-            return;
-        }
-        this.#row_specs.pop();
-    }
-    deleteColTab (): void {
-        if (this.#col_specs.length === 0) {
-            this.#row_specs = [];
-            return;
-        }
-        this.#col_specs.pop();
-    }
-}
-*/
