@@ -1,12 +1,14 @@
 "use client"
-import { useContext, useState } from "react";
+import { SetStateAction, useContext, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { TableContext } from "@/app/[lang]/table/context";
 import { motion } from "motion/react";
 import { PlusCircle, Trash } from "../icons";
 
-export default function ValuesList() {
+export default function ValuesList({ setSettingsVersion }: {
+    setSettingsVersion: React.Dispatch<SetStateAction<number>>,
+}) {
     const { table, setPanelRender } = useContext(TableContext);
     const [ values, setValues ] = useState<Set<string>>(table.values ?? new Set());
     const [input, setInput] = useState<string>("");
@@ -17,8 +19,9 @@ export default function ValuesList() {
         if (table.values.has(value)) {
             return;
         }
-        table.values.add(value);
+        table.addValue(value);
         setPanelRender && setPanelRender(v => v++);
+        setSettingsVersion(v => v + 1);
     }
     const handleRemoveItem = (value: string) => {
         setValues(prev => {
@@ -28,12 +31,13 @@ export default function ValuesList() {
             }
             return prev;
         });
-        table.values.delete(value);
+        table.deleteValue(value);
         setPanelRender && setPanelRender(v => v++);
+        setSettingsVersion(v => v + 1);
     }
 
     return (
-        <ol className="w-full flex flex-col justify-center items-center p-8">
+        <ol className="w-full flex flex-col justify-center items-center">
             <div className="w-full flex flex-row justify-center items-center gap-2 mb-3">
                 <Input 
                 type="text"
