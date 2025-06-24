@@ -5,6 +5,9 @@ import { ChevronDoubleLeft, ChevronDoubleRight } from "../icons";
 import { useParams } from "next/navigation";
 import SaveButton from "./save-button";
 import { TableContext } from "@/app/[lang]/table/context";
+import { Table } from "@/app/lib/utils-client";
+import { CalendarDate, parseDate, parseTime, Time } from "@internationalized/date";
+import * as zod from "zod/v4";
 
 export default function ColumnsActions () {
     const params = useParams<{ lang: "en" | "es" }>();
@@ -33,6 +36,30 @@ export default function ColumnsActions () {
                 size="lg"
                 aria-label={params.lang === "es" ? "Añadir columna" : "Add column"} 
                 onPress={() => updateTable(() => {
+                    if (table.columnType === "date" && table.rows.length > 0) {
+                        const lastCol = table.rows[0].get(`${Table.indexToLabel(table.rows[0].size - 1)}0`);
+                        if (lastCol) {
+                            const verification = zod.iso.date().safeParse(lastCol.value);
+                            if (verification.success) {
+                                const date = parseDate(lastCol.value);
+                                const newDate = new CalendarDate(date.year, date.month, date.day);
+                                if (newDate) table.insertColumn(newDate.add({days: table.interval}).toString());
+                                return;
+                            }
+                        }
+                    }
+                    if (table.columnType === "time" && table.rows.length > 0) {
+                        const lastCol = table.rows[0].get(`${Table.indexToLabel(table.rows[0].size - 1)}0`);
+                        if (lastCol) {
+                            const verification = zod.iso.time().safeParse(lastCol.value);
+                            if (verification.success) {
+                                const time = parseTime(lastCol.value);
+                                const newTime = new Time(time.hour, time.minute, time.second, time.millisecond);
+                                if (newTime) table.insertColumn(newTime.add({minutes: table.interval}).toString());
+                                return;
+                            }
+                        }
+                    }
                     table.insertColumn();
                 })}>
                     <ChevronDoubleRight width={32} height={32}/>
