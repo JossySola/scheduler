@@ -26,7 +26,7 @@ export default function ValueSlider ({ value, colIndex }: {
         <Slider
         color="primary"
         minValue={ 0 }
-        maxValue={ table.rows[0].size ?? 1 }
+        maxValue={ table.rows[0].size - 1 }
         label={ lang === "es" ? `Usar el valor "${value}" esta cantidad de veces: `: `Use the value "${value}" this amount of times:` }
         showSteps={ true }
         size="md"
