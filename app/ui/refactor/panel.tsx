@@ -25,7 +25,6 @@ export default function Panel ({
                 <ColumnsActions />
                 <RowsActions />
                 <Table />
-                
             </section>
             <section className="flex flex-col">
                 <section className="m-5">
