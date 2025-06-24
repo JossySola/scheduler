@@ -9,6 +9,8 @@ import { TableContext } from "@/app/[lang]/table/context";
 import ValuesList from "./list";
 import { RowType } from "@/app/lib/utils-client";
 import HeaderSpecs from "./header-specs";
+import * as zod from "zod/v4";
+import { DateFormatter, getLocalTimeZone, parseDate, parseTime } from "@internationalized/date";
 
 export default function TableSettings () {
     const { lang } = useParams<{ lang: "en" | "es" }>();
@@ -65,9 +67,29 @@ export default function TableSettings () {
                             aria-label={ lang === "es" ? "Ajustes de columna" : "Columns' Specifications" }>
                                 {
                                     table.size > 0 ? Array.from(table.rows[0].values()).map((col: RowType, colIndex: number) => {
+                                        const isDate = zod.iso.date().safeParse(col.value).success;
+                                        const isTime = zod.iso.time().safeParse(col.value).success;
+                                        const title = () => {
+                                            if (isDate) {
+                                                const dateFormat = new DateFormatter(lang, {
+                                                    weekday: "long",
+                                                    day: "numeric",
+                                                    month: "short"
+                                                }).format(parseDate(col.value).toDate(getLocalTimeZone()));
+                                                return dateFormat;
+                                            }
+                                            if (isTime) {
+                                                const time = parseTime(col.value);
+                                                return `${time.hour}:${time.minute} hrs`;
+                                            }
+                                            if (col.value.length > 0) {
+                                                return col.value;
+                                            }
+                                            return lang === "es" ? "Sin nombre" : "No name";
+                                        }
                                         if (colIndex !== 0) {
                                             return (
-                                                <Tab key={colIndex} title={col.value && typeof col.value === 'string' ? col.value : lang === "es" ? "Sin nombre" : "No name"}>
+                                                <Tab key={colIndex} title={title()}>
                                                     <ColSpecs colIndex={colIndex} />
                                                 </Tab>
                                             )
