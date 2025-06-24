@@ -8,12 +8,13 @@ import { useContext, useState } from "react";
 import { TableContext } from "@/app/[lang]/table/context";
 import ValuesList from "./list";
 import { RowType } from "@/app/lib/utils-client";
+import HeaderSpecs from "./header-specs";
 
 export default function TableSettings () {
     const { lang } = useParams<{ lang: "en" | "es" }>();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const { table } = useContext(TableContext);
-    const [settingsVersion, setSettingsVersion] = useState<number>(0);
+    const [_, setSettingsVersion] = useState<number>(0);
 
     return (
         <>
@@ -37,6 +38,7 @@ export default function TableSettings () {
                             <h2>{ lang === "es" ? "Ajustes de tabla" : "Table settings" }</h2>
                         </DrawerHeader>
                         <DrawerBody>
+                            <HeaderSpecs />
                             <h3>{ lang === "es" ? "Ajuste de filas" : "Rows' Specifications" }</h3>
                             <Tabs 
                             fullWidth={ true }
