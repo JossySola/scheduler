@@ -13,7 +13,7 @@ export default function Cell ({ element, rowIndex, colIndex }: {
     rowIndex: number,
     colIndex: number,
 }) {
-    const { table, setPanelRender } = useContext(TableContext);
+    const { table } = useContext(TableContext);
     const label = `${TableExtended.indexToLabel(colIndex)}${rowIndex}`;
     const debouncedModification = useDebouncedCallback((value: string) => {
         table.edit(colIndex, rowIndex, value);
@@ -47,7 +47,6 @@ export default function Cell ({ element, rowIndex, colIndex }: {
                         })
                     }
                 }
-                setPanelRender && setPanelRender(v => v + 1);
             }} />
         }
         if (table.columnType === "time") {
@@ -77,7 +76,6 @@ export default function Cell ({ element, rowIndex, colIndex }: {
                             }
                         })
                     }
-                    setPanelRender && setPanelRender(v => v + 1);
                 }
             }} />
         }
