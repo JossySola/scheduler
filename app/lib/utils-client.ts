@@ -104,11 +104,11 @@ export class Table {
         this.#rows = storedRows ?? [];
     }
     // Statics
-    static indexToLabel (index: number): string {
+    static indexToLabel (colIndex: number): string {
         let label = '';
-        while (index >= 0) {
-            label = String.fromCharCode((index % 26) + 65) + label;
-            index = Math.floor(index / 26) - 1;
+        while (colIndex >= 0) {
+            label = String.fromCharCode((colIndex % 26) + 65) + label;
+            colIndex = Math.floor(colIndex / 26) - 1;
         }
         return label;
     }
@@ -123,11 +123,11 @@ export class Table {
         this.#rows = newRows;
     }
     // Methods
-    insertColumn (): void {
+    insertColumn (headerValue?: string): void {
         if (this.size === 0) {
             const newMap = new Map();
             newMap.set(`A0`, {
-                value: "",
+                value: headerValue ?? "",
                 specs: {
                     disabled: false,
                     disabledCols: [],
@@ -144,7 +144,7 @@ export class Table {
             const label = `${Table.indexToLabel(row.size)}${rowIndex}`;
             if (rowIndex === 0) {
                 row.set(label, {
-                    value: "",
+                    value: headerValue ?? "",
                     specs: {
                         disabled: false,
                         disabledCols: [],
@@ -234,16 +234,40 @@ export class Table {
         }
         return true;
     }
+    fetch(colIndex: number, rowIndex: number): string | undefined {
+        const label = Table.indexToLabel(colIndex);
+        return this.#rows[rowIndex].get(label)?.value;
+    }
 }
 export class TableExtended extends Table {
     #values: Set<string> = new Set();
+    #columnType: "text" | "date" | "time" = "text";
+    #interval: number = 1;
 
-    constructor(storedRows?: Array<Map<string, RowType>>, storedValues?: Set<string>) {
+    constructor(
+        storedRows?: Array<Map<string, RowType>>, 
+        storedValues?: Set<string>,
+        storedColumnType?: "text" | "date" | "time",
+        storedInterval?: number) {
         super(storedRows);
         this.#values = storedValues ?? new Set();
+        this.#columnType = storedColumnType ?? "text";
+        this.#interval = storedInterval ?? 1;
     }
     get values() {
         return this.#values;
+    }
+    get columnType() {
+        return this.#columnType;
+    }
+    set columnType(type: "text" | "date" | "time") {
+        this.#columnType = type;
+    }
+    get interval() {
+        return this.#interval;
+    }
+    set interval(num: number) {
+        this.#interval = num;
     }
     addValue(value:string) {
         this.#values.add(value);
