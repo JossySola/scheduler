@@ -1,5 +1,5 @@
 "use client"
-import { useActionState } from "react";
+import { useActionState, useCallback, useState } from "react";
 import { generateTableAction } from "../[lang]/table/actions";
 import { useParams } from "next/navigation";
 
@@ -23,4 +23,18 @@ export function useAnthropic () {
         anthropicPending,
         anthropicState,
     }
+}
+export function useForcePanelUpdate () {
+    const [, setState] = useState(true);
+    const panelUpdate = useCallback(() => {
+        setState(x => !x);
+    }, []);
+    return panelUpdate;
+}
+export function useSettingsUpdate () {
+    const [, setState] = useState(true);
+    const settingsUpdate = useCallback(() => {
+        setState(x => !x);
+    }, []);
+    return settingsUpdate;
 }
