@@ -1,13 +1,13 @@
 import { TableExtended } from "@/app/lib/utils-client";
-import React, { createContext, SetStateAction } from "react";
+import { createContext } from "react";
 
 interface TableContextType {
     table: TableExtended;
-    setPanelRender: React.Dispatch<SetStateAction<number>> | null;
+    panelUpdate: () => void;
 }
 export const TableContext = createContext<TableContextType>({
     table: new TableExtended(),
-    setPanelRender: null,
+    panelUpdate: () => {},
 });
 export const AnthropicGenerationContext = createContext({});
 export interface AnthropicGenerationType {
