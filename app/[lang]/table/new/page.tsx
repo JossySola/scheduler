@@ -1,5 +1,5 @@
 import pool from "@/app/lib/mocks/db";
-import Panel from "@/app/ui/refactor/panel";
+import Panel from "@/app/ui/v3/panel";
 import { auth } from "@/auth";
 import { sql } from "@vercel/postgres";
 import { redirect } from "next/navigation";
