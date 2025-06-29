@@ -18,7 +18,7 @@ export default function ColHeaders({ row, rowIndex }: {
                     const date = A1 as CalendarDate;
                     let nextDate = new CalendarDate(date.year, date.month, date.day);
                     table.rows[0].forEach((column, key) => {
-                        if (key !== "A0" && key !== "A1") {
+                        if (key !== "A0") {
                             column.value = nextDate.toString();
                             nextDate = nextDate.add({ days: table.interval });
                             return;
@@ -31,9 +31,9 @@ export default function ColHeaders({ row, rowIndex }: {
             case "time": {
                 if (table.size > 0 && A1) {
                     const time = A1 as Time;
-                    let nextTime = new Time(time.hour, time.minute, time.second, time.millisecond).add({ minutes: table.interval });
+                    let nextTime = new Time(time.hour, time.minute, time.second, time.millisecond);
                     table.rows[0].forEach((column, key) => {
-                        if (key !== "A0" && key !== "A1") {
+                        if (key !== "A0") {
                             column.value = nextTime.toString();
                             nextTime = nextTime.add({ minutes: table.interval });
                             return;
@@ -51,9 +51,7 @@ export default function ColHeaders({ row, rowIndex }: {
             <span className="text-tiny">{TableExtended.indexToLabel(colIndex)}</span>
             <div className="flex flex-row items-center gap-3">
                 { colIndex === 0 && <span className="text-tiny w-[1rem]">{String(rowIndex)}</span> }
-                { rowIndex === 0 && colIndex === 1 
-                ? <Cell rowIndex={ rowIndex } colIndex={ colIndex } setA1={ setA1 } /> 
-                : <Cell rowIndex={rowIndex} colIndex={colIndex} /> }
+                { <Cell rowIndex={ rowIndex } colIndex={ colIndex } setA1={ setA1 } A1={ A1 } /> }
             </div>
         </th>
     })
