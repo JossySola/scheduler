@@ -2,15 +2,17 @@
 import { TableContext } from "@/app/[lang]/table/context";
 import { TableExtended } from "@/app/lib/utils-client";
 import { TimeInput } from "@heroui/react";
-import { SetStateAction, useContext, useState } from "react";
+import { SetStateAction, useContext, useEffect, useState } from "react";
 import { ClockDashed } from "../../icons";
 import { CalendarDate, parseTime, Time } from "@internationalized/date";
+import { useDebouncedCallback } from "use-debounce";
 import * as zod from "zod/v4";
 
-export default function InputTime ({ rowIndex, colIndex, setA1 }: {
+export default function InputTime ({ rowIndex, colIndex, setA1, A1 }: {
     rowIndex: number,
     colIndex: number,
     setA1?: React.Dispatch<SetStateAction<CalendarDate | Time | string | null>>,
+    A1?: CalendarDate | Time | string | null,
 }) {
     const label = `${TableExtended.indexToLabel(colIndex)}${rowIndex}`;
     const { table } = useContext(TableContext);
@@ -23,6 +25,18 @@ export default function InputTime ({ rowIndex, colIndex, setA1 }: {
             return null;
         }
     });
+    const debounced = useDebouncedCallback(() => {
+        setValue(() => {
+            const storedValue = table.rows[rowIndex].get(label)?.value;
+            const verification = zod.iso.time().safeParse(storedValue);
+            if (storedValue && verification.success) {
+                return parseTime(storedValue);
+            } else {
+                return null;
+            }
+        })
+    }, 500);
+    useEffect(() => debounced(), [A1]);
     const handleTimeChange = (time: Time | null) => {
         if (time) {
             table.edit(colIndex, rowIndex, time.toString());

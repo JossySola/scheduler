@@ -3,13 +3,15 @@ import { TableContext } from "@/app/[lang]/table/context";
 import { TableExtended } from "@/app/lib/utils-client";
 import { DatePicker } from "@heroui/react";
 import { CalendarDate, parseDate, Time } from "@internationalized/date";
-import { SetStateAction, useContext, useState } from "react";
+import { SetStateAction, useContext, useEffect, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import * as zod from "zod/v4";
 
-export default function InputDate ({ rowIndex, colIndex, setA1 }: {
+export default function InputDate ({ rowIndex, colIndex, setA1, A1 }: {
     rowIndex: number,
     colIndex: number,
     setA1?: React.Dispatch<SetStateAction<CalendarDate | Time | string | null>>,
+    A1?: CalendarDate | Time | string | null,
 }) {
     const label = `${TableExtended.indexToLabel(colIndex)}${rowIndex}`;
     const { table } = useContext(TableContext);
@@ -22,6 +24,18 @@ export default function InputDate ({ rowIndex, colIndex, setA1 }: {
             return null;
         }
     });
+    const debounced = useDebouncedCallback(() => {
+        setDate(() => {
+            const storedValue = table.rows[rowIndex].get(label)?.value;
+            const verification = zod.iso.date().safeParse(storedValue);
+            if (storedValue && verification.success) {
+                return parseDate(storedValue);
+            } else {
+                return null;
+            }
+        });
+    }, 500);
+    useEffect(() => debounced(), [A1]);
     const handleDateChange = (date: CalendarDate | null) => {
         if (date) {
             table.edit(colIndex, rowIndex, date.toString());
