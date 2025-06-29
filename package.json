@@ -27,6 +27,7 @@
     "@internationalized/date": "^3.8.2",
     "@sendgrid/mail": "^8.1.5",
     "@tailwindcss/postcss": "^4.1.10",
+    "@tanstack/react-virtual": "^3.13.12",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vercel/analytics": "^1.5.0",
