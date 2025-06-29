@@ -42,26 +42,6 @@ export default function TableSettings () {
                         </DrawerHeader>
                         <DrawerBody>
                             <HeaderSpecs />
-                            <h3>{ lang === "es" ? "Ajuste de filas" : "Rows' Specifications" }</h3>
-                            <Tabs 
-                            fullWidth={ true }
-                            aria-label={ lang === "es" ? "Ajuste de filas" : "Rows' Specifications" }>
-                                {
-                                    table.size > 0 ? table.rows.map((map: Map<string, RowType>, rowIndex: number) => {
-                                        const rawTitle = map.get(`A${rowIndex}`)?.value;
-                                        const title = rawTitle && rawTitle.trim() !== "" 
-                                            ? rawTitle 
-                                            : lang === "es" ? "Sin nombre" : "No name";
-                                        if (rowIndex !== 0) {
-                                            return (
-                                                <Tab key={rowIndex} title={title}>
-                                                    <RowSpecs rowIndex={rowIndex} />
-                                                </Tab>
-                                            )
-                                        }
-                                    }) : null 
-                                }
-                            </Tabs>
                             <h3>{ lang === "es" ? "Ajustes de columna" : "Columns' Specifications" }</h3>
                             <Tabs
                             fullWidth={ true }
@@ -96,6 +76,30 @@ export default function TableSettings () {
                                             )
                                         }
                                     }) : null
+                                }
+                            </Tabs>
+                            <h3>{ lang === "es" ? "Ajuste de filas" : "Rows' Specifications" }</h3>
+                            <Tabs isVertical
+                            fullWidth={ true }
+                            classNames={{
+                                panel: "flex flex-col gap-10 w-xl",
+                                tabWrapper: "",
+                            }}
+                            aria-label={ lang === "es" ? "Ajuste de filas" : "Rows' Specifications" }>
+                                {
+                                    table.size > 0 ? table.rows.map((map: Map<string, RowType>, rowIndex: number) => {
+                                        const rawTitle = map.get(`A${rowIndex}`)?.value;
+                                        const title = rawTitle && rawTitle.trim() !== "" 
+                                            ? rawTitle 
+                                            : lang === "es" ? "Sin nombre" : "No name";
+                                        if (rowIndex !== 0) {
+                                            return (
+                                                <Tab key={rowIndex} title={title}>
+                                                    <RowSpecs rowIndex={rowIndex} />
+                                                </Tab>
+                                            )
+                                        }
+                                    }) : null 
                                 }
                             </Tabs>
                             <h3>{ lang === "es" ? "Valores" : "Values" }</h3>
