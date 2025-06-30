@@ -45,6 +45,10 @@ export default function TableSettings () {
                             <h3>{ lang === "es" ? "Ajustes de columna" : "Columns' Specifications" }</h3>
                             <Tabs
                             fullWidth={ true }
+                            classNames={{
+                                tab: "overflow-hidden",
+                                tabContent: "w-full truncate",
+                            }}
                             aria-label={ lang === "es" ? "Ajustes de columna" : "Columns' Specifications" }>
                                 {
                                     table.size > 0 ? Array.from(table.rows[0].values()).map((col: RowType, colIndex: number) => {
@@ -82,8 +86,12 @@ export default function TableSettings () {
                             <Tabs isVertical
                             fullWidth={ true }
                             classNames={{
-                                panel: "flex flex-col gap-10 w-xl",
+                                panel: "w-1/2",
                                 tabWrapper: "",
+                                base: "w-1/2",
+                                tabList: "w-full",
+                                tab: "overflow-hidden",
+                                tabContent: "w-full truncate",
                             }}
                             aria-label={ lang === "es" ? "Ajuste de filas" : "Rows' Specifications" }>
                                 {
