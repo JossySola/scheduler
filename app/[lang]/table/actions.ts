@@ -1,148 +1,84 @@
 "use server"
 import "server-only";
-import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { headers } from "next/headers";
-import { revalidatePath } from "next/cache";
-import { RowSpecs, ColSpecs } from "@/app/hooks/custom";
 import { generateObject } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { StreamableValue } from 'ai/rsc';
 import { z } from "zod";
-import { decryptKmsDataKey, generateKmsDataKey } from "@/app/lib/utils";
+import { generateKmsDataKey } from "@/app/lib/utils";
 import { sql } from "@vercel/postgres";
+import { RowType } from "@/app/lib/utils-client";
 
-export async function SaveTableAction (
-    previousState: { message: string, ok: boolean }, 
-    formData: FormData, 
-    statesObject: { values: Array<string> | undefined, colSpecs: Array<ColSpecs> | undefined, rowSpecs: Array<RowSpecs> | undefined },
-    ) {
+export async function SaveNewTableAction (name: string, rows: Array<Map<string, RowType>>, values: Set<string>, type: string, interval: number) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
     const session = await auth();
-
-    if (session && session.user) {
-        const entries = [...formData.entries()];
-        const tableEntries = entries
-        .filter(([key]) => /^[A-Z][0-9]+$/.test(key)) // Filters out all input fields whose name are not <Letter><Number> format
-        .map(([key, value]) => ({ key, value })); // Returns an Array of objects containing the key-value pairs]
-        let payload = {
-            "user_id": session.user.id,
-            "table_id": formData.get("table_id")?.toString(),
-            "table_title": formData.get("table_title")?.toString(),
-            rows: [[]] as string[][],
-            values: statesObject && statesObject.values ? statesObject.values : [],
-            colSpecs: statesObject && statesObject.colSpecs ? statesObject.colSpecs.map(spec => {
-                if (typeof spec === "object") {
-                    if (Object.hasOwn(spec, "numberOfRows") && Object.hasOwn(spec, "amountOfValues")) {
-                        return spec;
+    
+    const objectify = rows.map(col => {
+        return Array.from(col).map(([key, value], index) => {
+            if (value.specs) {
+                return [key, {
+                    ...value,
+                    specs: {
+                        ...value.specs,
+                        valueTimes: Array.from(value.specs.valueTimes)
                     }
-                }
-            }).filter(element => element !== undefined) : [],
-            rowSpecs: statesObject && statesObject.rowSpecs ? statesObject.rowSpecs.map(spec => {
-                if (typeof spec === "object") {
-                    if (Object.hasOwn(spec, "disable") 
-                        && Object.hasOwn(spec, "count") 
-                        && Object.hasOwn(spec, "enabledColumns") 
-                        && Object.hasOwn(spec, "enabledValues")) {
-                        return spec;
-                    }
-                }
-            }).filter(element => element !== undefined) : [],
-        };
-        tableEntries.forEach(({ key, value }) => {
-            const rowIndex = Number(key.slice(1));
-            if (!payload.rows[rowIndex]) payload.rows[rowIndex] = [];
-            payload.rows[rowIndex].push(value.toString() as never);
+                }];
+            }
+            return [key, value];
         })
+    })
+    
+    if (session && session.user) {
+        const num_tables: number | null = await sql`SELECT num_tables FROM scheduler_users WHERE id = ${session.user.id}`.then(result => result.rows[0].num_tables ?? null).catch(reason => console.error(reason));
+        if (num_tables === 3 || num_tables === null) {
+            return {
+                ok: false,
+                message: locale === "es" ? "Alcanzaste el límite de tres tablas 😔" : "You've reached the three schedules limit 😔",
+            }
+        }
+        const name_key = await generateKmsDataKey();
+        const rows_key = await generateKmsDataKey();
+        const values_key = await generateKmsDataKey();
 
-        // Replacement of API endpoint with direct logic
-        if (!payload.table_id) {
-            const key = await generateKmsDataKey();
-            const getNumTables = await sql`
-                SELECT num_tables FROM scheduler_users
-                WHERE id = ${payload.user_id};
-            `;
-            if (getNumTables.rowCount === 0) {
-                return {
-                    message: locale === "es" ? "Usuario no encontrado" : "User not found",
-                    ok: false,
-                }
-            }
-            if (getNumTables.rows[0].num_tables === 3) {
-                return {
-                    message: locale === "es" ? "Haz alcanzado el límite de tablas" : "You've reached the table's limit",
-                    ok: false,
-                }
-            }
-            const newTable = await sql`
-            INSERT INTO scheduler_users_tables (user_id, table_name, table_data, table_rowspecs, table_values, table_colspecs, table_data_key)
-            VALUES (
-                ${payload.user_id},
-                ${payload.table_title},
-                pgp_sym_encrypt(${JSON.stringify(payload.rows)}, ${key?.Plaintext}),
-                pgp_sym_encrypt(${JSON.stringify(payload.rowSpecs)}, ${key?.Plaintext}),
-                pgp_sym_encrypt(${JSON.stringify(payload.values)}, ${key?.Plaintext}),
-                pgp_sym_encrypt(${JSON.stringify(payload.colSpecs)}, ${key?.Plaintext}),
-                ${key?.CiphertextBlob}
+        if (name_key && rows_key && values_key) {
+            const insert = await sql`
+            INSERT INTO scheduler_users_tables (
+                user_id, 
+                table_name, 
+                table_name_key, 
+                table_rows, 
+                table_rows_key, 
+                table_values, 
+                table_values_key, 
+                table_type, 
+                table_interval
             )
-            RETURNING id;
-            `;
-            if (newTable.rowCount === 0) {
-                return {
-                    message: locale === "es" ? "Error interno, inténtalo más tarde" : "Internal error, try again later",
-                    ok: false,
-                }
-            }
-            await sql`
-            UPDATE scheduler_users
-            SET num_tables = COALESCE(num_tables, 0) + 1
-            WHERE id = ${payload.user_id};
-            `;
-            redirect(`/${locale}/table/${newTable.rows[0].id}`);
-            return {
-                message: "",
-                ok: true
-            }
+            VALUES (
+                ${session.user.id},
+                pgp_sym_encrypt(${name}, ${name_key.Plaintext}),
+                ${name_key.CiphertextBlob},
+                pgp_sym_encrypt(${JSON.stringify(objectify)}, ${rows_key.Plaintext}),
+                ${rows_key.CiphertextBlob},
+                pgp_sym_encrypt(${JSON.stringify(Array.from(values))}, ${values_key.Plaintext}),
+                ${values_key.CiphertextBlob},
+                ${type},
+                ${interval}
+            );
+            `
+            .then(() => ({ ok: true, message: locale === "es" ? "¡Horario guardado!" : "Schedule saved!" }))
+            .catch(()=> ({ ok: false, message: locale === "es" ? "Ha ocurrido un error 😔" : "An error has occurred 😔" }));
+            return insert;
         }
-        const tableKey = await sql`
-        SELECT table_data_key FROM scheduler_users_tables 
-        WHERE id = ${payload.table_id} AND user_id = ${payload.user_id};
-        `;
-        if (tableKey.rowCount === 0) {
-            return {
-                message: locale === "es" ? "Error interno, inténtalo más tarde" : "Internal error, try again later",
-                ok: false,
-            }
-        }
-        const key = tableKey.rows[0].table_data_key;
-        const decryptedKey = await decryptKmsDataKey(key);
-        const update = await sql`
-        UPDATE scheduler_users_tables
-        SET table_name = ${payload.table_title},
-            table_data = pgp_sym_encrypt(${JSON.stringify(payload.rows)}, ${decryptedKey}),
-            table_rowspecs = pgp_sym_encrypt(${JSON.stringify(payload.rowSpecs)}, ${decryptedKey}),
-            table_values = pgp_sym_encrypt(${JSON.stringify(payload.values)}, ${decryptedKey}),
-            table_colspecs = pgp_sym_encrypt(${JSON.stringify(payload.colSpecs)}, ${decryptedKey}),
-            updated_at = NOW()
-        WHERE id = ${payload.table_id} AND user_id = ${payload.user_id};
-        `;
-        if (update.rowCount === 0) {
-            return {
-                ok: false,
-                message: locale === "es" ? "Ha ocurrido un error, inténtalo más tarde" : "An error has occured, try again later"
-            }
-        }
-        revalidatePath(`/${locale}/table/${payload.table_id}`);
-        revalidatePath(`/${locale}/dashboard`)
         return {
-            message: locale === "es" ? "¡Guardo exitosamente!" : "Saved successfuly!",
-            ok: true,
+            ok: false,
+            message: locale === "es" ? "Se ha producido un error antes de procesar la información" : "There is an error prior to information processing",
         }
     }
     return {
-        message: "",
         ok: false,
+        message: locale === "es" ? "Parece que se ha desconectado tu sesión" : "It looks like you've lost the session"
     }
 }
 const recentAIOutputs: Array<{
