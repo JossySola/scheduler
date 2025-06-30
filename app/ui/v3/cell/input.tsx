@@ -15,15 +15,16 @@ export default function InputValue ({ rowIndex, colIndex }: {
         table.edit(colIndex, rowIndex, value);
         setValue(value);
     };
-    return <Input isClearable
+    return <Input
     id={ label }
     name={ label }
     type="text"
     size="lg"
     autoComplete="off"
-    variant={ colIndex === 0 ? "flat" : "bordered" }
+    variant={ rowIndex === 0 || colIndex === 0 ? "flat" : "bordered" }
     classNames={{
-        input: "w-[60vw] text-base sm:w-[204px]",
+        input: rowIndex === 0 || colIndex === 0 ? "w-[60vw] text-base sm:w-[204px] h-[24px] border-medium border-transparent" : "w-[60vw] text-base sm:w-[204px]",
+        inputWrapper: rowIndex === 0 || colIndex === 0 ? "w-[232px]" : ""
     }}
     value={ value }
     onValueChange={ handleInputChange } />
