@@ -100,8 +100,10 @@ export type RowType = {
 };
 export class Table {
     #rows: Array<Map<string, RowType>> = [];
-    constructor(storedRows?: Array<Map<string, RowType>>) {
+    #name: string;
+    constructor(name: string, storedRows?: Array<Map<string, RowType>>) {
         this.#rows = storedRows ?? [];
+        this.#name = name;
     }
     // Statics
     static indexToLabel (colIndex: number): string {
@@ -121,6 +123,12 @@ export class Table {
     }
     set rows (newRows: Array<Map<string, RowType>>) {
         this.#rows = newRows;
+    }
+    get name (): string {
+        return this.#name;
+    }
+    set name (newName: string) {
+        this.#name = newName;
     }
     // Methods
     insertColumn (headerValue?: string): void {
@@ -245,11 +253,12 @@ export class TableExtended extends Table {
     #interval: number = 1;
 
     constructor(
+        name: string,
         storedRows?: Array<Map<string, RowType>>, 
         storedValues?: Set<string>,
         storedColumnType?: "text" | "date" | "time",
         storedInterval?: number) {
-        super(storedRows);
+        super(name, storedRows);
         this.#values = storedValues ?? new Set();
         this.#columnType = storedColumnType ?? "text";
         this.#interval = storedInterval ?? 1;
