@@ -27,6 +27,7 @@ export default function Cell ({ rowIndex, colIndex, setA1, A1 }: {
             // If it is any other header
             return <InputTime rowIndex={ rowIndex } colIndex={ colIndex } A1={ A1 } />;
         }
+        return <InputValue rowIndex={ rowIndex } colIndex={ colIndex } />;
     }
     if (table.values.size > 0 && rowIndex !== 0 && colIndex !== 0) {
         // If the cell is not either a row or column header AND there are values set
