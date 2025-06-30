@@ -23,8 +23,8 @@ export default function InputValue ({ rowIndex, colIndex }: {
     autoComplete="off"
     variant={ rowIndex === 0 || colIndex === 0 ? "flat" : "bordered" }
     classNames={{
-        input: rowIndex === 0 || colIndex === 0 ? "w-[60vw] text-base sm:w-[204px] h-[24px] border-medium border-transparent" : "w-[60vw] text-base sm:w-[204px]",
-        inputWrapper: rowIndex === 0 || colIndex === 0 ? "w-[232px]" : ""
+        input: rowIndex === 0 || colIndex === 0 ? "w-[60vw] text-base sm:w-[204px] h-[24px] " : "w-[60vw] text-base sm:w-[204px]",
+        inputWrapper: rowIndex === 0 || colIndex === 0 ? "border-medium border-transparent" : ""
     }}
     value={ value }
     onValueChange={ handleInputChange } />
