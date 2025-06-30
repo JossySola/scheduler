@@ -44,7 +44,7 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
                     </Button>
                     
                     <Input isClearable
-                    className="w-1/2" 
+                    className="w-full sm:w-1/2" 
                     variant="underlined" 
                     size="lg" 
                     label={ lang === "es" ? "Título" : "Title" }
