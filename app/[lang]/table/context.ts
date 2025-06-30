@@ -6,7 +6,7 @@ interface TableContextType {
     panelUpdate: () => void;
 }
 export const TableContext = createContext<TableContextType>({
-    table: new TableExtended(),
+    table: new TableExtended(""),
     panelUpdate: () => {},
 });
 export const AnthropicGenerationContext = createContext({});
