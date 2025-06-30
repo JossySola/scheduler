@@ -25,7 +25,7 @@ export default function RowSpecs ({ rowIndex }: {
     }, [toggle, disabledCols, number, preferValues]);
     return (
         <Card>
-            <CardBody className="flex flex-col gap-5 p-5">
+            <CardBody className="flex flex-col gap-10">
                 <Switch 
                 color="danger" 
                 isSelected={toggle}
@@ -52,7 +52,10 @@ export default function RowSpecs ({ rowIndex }: {
                 <NumberInput 
                 label={ lang === "es" ? "¿En cuántas columnas debería de aparecer?" : "In how many columns should it appear?" }
                 aria-label={ lang === "es" ? "Cantidad de columnas" : "Columns' amount" }
-                labelPlacement="inside"
+                labelPlacement="outside"
+                classNames={{
+                    inputWrapper: "mt-10",
+                }}
                 isDisabled={toggle}
                 value={number}
                 minValue={0}
