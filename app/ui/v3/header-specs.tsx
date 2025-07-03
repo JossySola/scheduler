@@ -42,7 +42,7 @@ export default function HeaderSpecs() {
             // Trigger a re-render
             panelUpdate();
         }}>
-            <SelectItem key="text">{ lang === "es" ? "Text" : "Text" }</SelectItem>
+            <SelectItem key="text">{ lang === "es" ? "Texto" : "Text" }</SelectItem>
             <SelectItem key="date">{ lang === "es" ? "Fecha" : "Date" }</SelectItem>
             <SelectItem key="time">{ lang === "es" ? "Tiempo" : "Time" }</SelectItem>
         </Select>
