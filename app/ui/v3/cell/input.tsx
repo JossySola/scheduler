@@ -10,7 +10,7 @@ export default function InputValue ({ rowIndex, colIndex }: {
 }) {
     const label = `${TableExtended.indexToLabel(colIndex)}${rowIndex}`;
     const { table } = useContext(TableContext);
-    const [ value, setValue ] = useState<string>(table.fetch(colIndex, rowIndex) ?? "");
+    const [ value, setValue ] = useState<string>(table.rows[rowIndex].get(label)?.value ?? "");
     const handleInputChange = (value: string) => {
         table.edit(colIndex, rowIndex, value);
         setValue(value);

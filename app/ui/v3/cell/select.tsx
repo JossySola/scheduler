@@ -10,14 +10,15 @@ export default function InputSelect ({ rowIndex, colIndex }: {
 }) {
     const label = `${TableExtended.indexToLabel(colIndex)}${rowIndex}`;
     const { table } = useContext(TableContext);
-    const [ selection, setSelection ] = useState<SharedSelection>(new Set([table.fetch(colIndex, rowIndex) ?? ""]));
+    const [ selection, setSelection ] = useState<SharedSelection>(new Set([table.rows[rowIndex].get(label)?.value ?? ""]));
     const handleSelectionChange = (keys: SharedSelection) => {
         const selectedValue = Array.from(keys)[0] ?? ""
         table.edit(colIndex, rowIndex, selectedValue.toString());
         setSelection(keys);
     }
     return (
-        <Select isVirtualized 
+        <Select isVirtualized={table.values.size > 10}
+        maxListboxHeight={10}
         id={ label }
         name={ label }
         variant="bordered"

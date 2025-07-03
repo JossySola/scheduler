@@ -17,7 +17,7 @@ export default function InputTime ({ rowIndex, colIndex, setA1, A1 }: {
     const label = `${TableExtended.indexToLabel(colIndex)}${rowIndex}`;
     const { table } = useContext(TableContext);
     const [ value, setValue ] = useState<Time | null>(() => {
-        const storedValue = table.fetch(colIndex, rowIndex);
+        const storedValue = table.rows[rowIndex].get(label)?.value;
         const verification = zod.iso.time().safeParse(storedValue);
         if (storedValue && verification.success) {
             return parseTime(storedValue);
