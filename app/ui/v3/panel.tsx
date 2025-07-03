@@ -14,20 +14,20 @@ import { ArrowCircleLeft } from "../icons";
 export default function Panel ({ name, stored_rows, stored_values, stored_type, stored_interval }: {
         name? : string,
         stored_rows?: Array<Map<string, RowType>>,
-        stored_values?: Set<string>,
+        stored_values?: Array<string>,
         stored_type?: "text" | "date" | "time",
         stored_interval?: number,
 }) {
-    const panelUpdate = useForcePanelUpdate();
     const router = useRouter();
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const table = useRef<TableExtended>(new TableExtended(
         name ? name : lang === "es" ? "Sin título" : "No title",
         stored_rows && stored_rows,
-        stored_values && stored_values,
+        stored_values && new Set(stored_values),
         stored_type && stored_type,
         stored_interval && stored_interval,
     ));
+    const panelUpdate = useForcePanelUpdate();
     const handleNameChange = (name: string) => {
         table.current.name = name;
     }
