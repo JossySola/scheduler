@@ -48,6 +48,7 @@ export default function SaveButton () {
             className="dark:bg-white bg-black dark:text-black text-white text-lg"
             endContent={<FloppyDisk />}
             isLoading={ save.isPending }
+            isDisabled={ save.isPending }
             onPress={ save.run }>
                 { lang === "es" ? "Guardar" : "Save" }
             </Button>
@@ -60,6 +61,7 @@ export default function SaveButton () {
         className="dark:bg-white bg-black dark:text-black text-white text-lg"
         endContent={<FloppyDisk />}
         isLoading={ newSave.isPending }
+        isDisabled={ newSave.isPending }
         onPress={ newSave.run }>
             { lang === "es" ? "Guardar" : "Save" }
         </Button>
