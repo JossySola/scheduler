@@ -16,9 +16,32 @@ export default function InputSelect ({ rowIndex, colIndex }: {
         table.edit(colIndex, rowIndex, selectedValue.toString());
         setSelection(keys);
     }
+    if (table.values.size > 10) {
+        return (
+            <Select isVirtualized={table.values.size > 10}
+            maxListboxHeight={10}
+            id={ label }
+            name={ label }
+            variant="bordered"
+            size="lg"
+            classNames={{
+                innerWrapper: "w-[60vw] text-base sm:w-[204px]",
+                trigger: "h-[48px]"
+            }}
+            selectedKeys={ selection }
+            onSelectionChange={ handleSelectionChange }>
+                {
+                Array.from(table.values).map((value, index) => (
+                    <SelectItem key={index} textValue={value}>
+                        { value }
+                    </SelectItem>
+                ))
+                }
+            </Select>
+        )
+    }
     return (
-        <Select isVirtualized={table.values.size > 10}
-        maxListboxHeight={10}
+        <Select
         id={ label }
         name={ label }
         variant="bordered"
