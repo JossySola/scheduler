@@ -37,9 +37,16 @@ export default async function Page ({ params }: {
             .catch(() => null);
             
             if (serialized_table) {
-                const rows: Array<Map<string, RowType>> = JSON.parse(serialized_table.decrypted_rows).map((row: Array<[string, RowType]>) => {
-                    return new Map(row);
-                })
+                const rows: Array<Map<string, RowType>> = JSON.parse(serialized_table.decrypted_rows).map(
+                    (row: Array<[string, RowType]>) => {
+                        for (const [, cell] of row) {
+                            if (cell.specs?.valueTimes) {
+                                cell.specs.valueTimes = new Map(cell.specs.valueTimes);
+                            }
+                        }
+                        return new Map(row);
+                    }
+                )
                 // Remember to deserialize this object if you pass any property as prop to a component
                 const table = {
                     user_id: serialized_table.user_id,
