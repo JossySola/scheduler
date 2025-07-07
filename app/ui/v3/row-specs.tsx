@@ -5,8 +5,9 @@ import { Card, CardBody, Checkbox, CheckboxGroup, NumberInput, Switch } from "@h
 import { useParams } from "next/navigation"
 import { useContext, useEffect, useState } from "react";
 
-export default function RowSpecs ({ rowIndex }: {
+export default function RowSpecs ({ rowIndex, title }: {
     rowIndex: number,
+    title: string,
 }) {
     const { lang } = useParams<{ lang: "en" | "es" }>();
     const { table } = useContext(TableContext);
@@ -26,6 +27,7 @@ export default function RowSpecs ({ rowIndex }: {
     return (
         <Card>
             <CardBody className="flex flex-col gap-10">
+                <h3 className="text-center">{title}</h3>
                 <Switch 
                 color="danger" 
                 isSelected={toggle}

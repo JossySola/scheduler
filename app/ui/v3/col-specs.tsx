@@ -6,8 +6,9 @@ import { useParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import ValueSlider from "./value-slider";
 
-export default function ColSpecs ({ colIndex }: {
+export default function ColSpecs ({ colIndex, title }: {
     colIndex: number,
+    title: string,
 }) {
     const { lang } = useParams<{ lang: "en" | "es" }>();
     const { table } = useContext(TableContext);
@@ -19,6 +20,7 @@ export default function ColSpecs ({ colIndex }: {
     return (
         <Card>
             <CardBody className="flex flex-col gap-5 p-5">
+                <h3>{title}</h3>
                 <NumberInput
                 value={number}
                 minValue={0}
