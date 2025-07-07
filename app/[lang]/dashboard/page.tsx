@@ -9,6 +9,7 @@ import { decryptKmsDataKey } from "@/app/lib/utils";
 interface ProviderData {
     provider: string,
 }
+export const dynamic = 'force-dynamic';
 export default async function Page ({ params }: {
     params: Promise<{ lang: "en" | "es" }>
 }) {
