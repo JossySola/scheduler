@@ -89,6 +89,7 @@ export function getDeviceInfo() {
 
 export type RowType = {
     value: string,
+    conflict?: boolean,
     specs?: {
         disabled: boolean,
         disabledCols: Array<string>,
@@ -166,6 +167,7 @@ export class Table {
             }
             row.set(label, {
                 value: "",
+                conflict: false,
             })
         })
     }
@@ -205,7 +207,7 @@ export class Table {
             }
             newMap.set(
             `${Table.indexToLabel(index)}${this.size}`, {
-            value: ""})
+            value: "", conflict: false })
         })
         this.#rows.push(newMap);
     }
@@ -242,6 +244,7 @@ export class Table {
         }
         return true;
     }
+    // This method is currently returning undefined
     fetch(colIndex: number, rowIndex: number): string | undefined {
         const label = Table.indexToLabel(colIndex);
         return this.#rows[rowIndex].get(label)?.value;
