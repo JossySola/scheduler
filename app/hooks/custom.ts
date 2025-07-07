@@ -1,7 +1,5 @@
 "use client"
-import { useActionState, useCallback, useEffect, useRef, useState } from "react";
-import { generateTableAction } from "../[lang]/table/actions";
-import { useParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type RowSpecs = {
     disable:boolean,
@@ -12,17 +10,6 @@ export type RowSpecs = {
 export type ColSpecs = {
     numberOfRows: number,
     amountOfValues: Array<number>,
-}
-
-export function useAnthropic () {
-    const params = useParams()
-    const lang = Array.isArray(params.lang) ? params.lang[0] : params.lang ?? "en";;
-    const [ anthropicState, anthropicAction, anthropicPending ] = useActionState(generateTableAction, { lang, rows: [], conflicts: [] });
-    return {
-        anthropicAction,
-        anthropicPending,
-        anthropicState,
-    }
 }
 export function useForcePanelUpdate () {
     const [, setState] = useState(true);
