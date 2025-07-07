@@ -1,5 +1,5 @@
 "use client"
-import { SetStateAction, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { TableContext } from "@/app/[lang]/table/context";
@@ -12,11 +12,13 @@ export default function ValuesList({ settingsUpdate }: {
     const { table, panelUpdate } = useContext(TableContext);
     const [ values, setValues ] = useState<Set<string>>(table.values ?? new Set());
     const [input, setInput] = useState<string>("");
+    const [isDuplicate, setIsDuplicate] = useState<boolean>(false);
     const { lang } = useParams<{ lang: "es" | "en" }>();
     
     const handleAddItem = (value: string) => {
         setValues(prev => values.size > 0 ? prev.add(value) : new Set(value));
         if (table.values.has(value)) {
+            setIsDuplicate(true);
             return;
         }
         table.addValue(value);
@@ -35,7 +37,10 @@ export default function ValuesList({ settingsUpdate }: {
         panelUpdate();
         settingsUpdate();
     }
-
+    const handleValueChange = (value: string) => {
+        setInput(value);
+        setIsDuplicate(false);
+    }
     return (
         <ol className="w-full flex flex-col justify-center items-center">
             <div className="w-full flex flex-row justify-center items-center gap-2 mb-3">
@@ -44,7 +49,7 @@ export default function ValuesList({ settingsUpdate }: {
                 autoComplete="off" 
                 placeholder={ lang === "es" ? "Ingresa un valor" : "Enter a value" }
                 value={ input }
-                onValueChange={ setInput } />
+                onValueChange={ handleValueChange } />
                 <Button 
                 isIconOnly 
                 variant="flat"
@@ -53,10 +58,14 @@ export default function ValuesList({ settingsUpdate }: {
                 onPress={() => {
                     handleAddItem(input);
                     setInput("");
+                    panelUpdate();
                 }}>
                     <PlusCircle />
                 </Button>
             </div>
+            {
+                isDuplicate && <p className="text-danger text-tiny text-left w-full mb-5">{ lang === "es" ? "Este valor ya existe" : "This value already exists" }</p>
+            }
             {
                 table.values && Array.from(table.values.values()).map((item, index) => {
                     return <motion.li className="w-full" key={index} initial={{ scale: 0.3 }} animate={{ scale: 1 }}>
