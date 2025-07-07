@@ -1,7 +1,7 @@
 "use client"
 import Table from "./table";
 import { TableContext } from "@/app/[lang]/table/context";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import ColumnsActions from "./col-actions";
 import RowsActions from "./rows-actions";
 import TableSettings from "./table-settings";
@@ -10,6 +10,7 @@ import { useForcePanelUpdate } from "@/app/hooks/custom";
 import { useParams, useRouter } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { ArrowCircleLeft } from "../icons";
+import Conflicts from "./conflicts";
 
 export default function Panel ({ name, stored_rows, stored_values, stored_type, stored_interval }: {
         name? : string,
@@ -20,6 +21,8 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
 }) {
     const router = useRouter();
     const { lang } = useParams<{ lang: "es" | "en" }>();
+    const [ conflicts, setConflicts ] = useState<Array<string>>([]);
+    const [ isGenerating, setIsGenerating ] = useState<boolean>(false);
     const table = useRef<TableExtended>(new TableExtended(
         name ? name : lang === "es" ? "Sin título" : "No title",
         stored_rows && stored_rows,
@@ -32,7 +35,7 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
         table.current.name = name;
     }
     return (
-        <TableContext.Provider value={{ table: table.current, panelUpdate }}>
+        <TableContext.Provider value={{ table: table.current, panelUpdate, setConflicts, isGenerating, setIsGenerating }}>
             <div className="grid grid-cols-[1fr_85vw_1fr] mb-10">
                 <header className="col-start-2 col-end-2 flex flex-row justify-start items-center gap-5">
                     <Button isIconOnly 
@@ -54,6 +57,7 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
                         input: "text-2xl",
                         clearButton: "p-0 top-[65%]"
                     }} />
+                    { conflicts.length > 0 && <Conflicts conflicts={ conflicts }/> }
                 </header>
             </div>
             
