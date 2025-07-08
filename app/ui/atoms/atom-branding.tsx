@@ -49,7 +49,7 @@ export const SchedulerIcon = () => {
                 style={{
                     fontWeight: 500,
                     fontSize: "8.46603px",
-                    fontFamily: "Geist, Geist Medium",
+                    fontFamily: "var(--font-geist-sans)",
                     textAlign: "center",
                     textAnchor: "middle",
                     display: "inline",
@@ -73,7 +73,7 @@ export const SchedulerIcon = () => {
                         fontWeight: 500,
                         fontStretch: "normal",
                         fontSize: "8.46603px",
-                        fontFamily: "Geist, Geist Medium",
+                        fontFamily: "var(--font-geist-sans)",
                         fill: "#ffffff",
                         fillOpacity: 1,
                         strokeWidth: 0.0249981
