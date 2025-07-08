@@ -23,12 +23,11 @@ export default function DeleteTableModal ({ table_id, table_name }: {
                 {onClose => (
                     <>
                     <ModalHeader className="flex flex-col gap-1 text-center">
-                        <h3>{ lang === "es" ? "Eliminar tabla" : "Delete schedule" }</h3>
+                        <h3>{ lang === "es" ? `Eliminar tabla "${table_name}"?` : `Delete schedule "${table_name}"?` }</h3>
                     </ModalHeader>
                     <ModalBody className="flex flex-col justify-center items-center">
-                        <h3 className="m-0">{ table_name }</h3>
                         <Form action={ action } className="m-5 flex flex-col items-center">
-                            <p>{ lang === "es" ? "Confirma esta acción, ya que será irreversible" : "Confirm this action as this will be irreversible" }</p>
+                            <p>{ lang === "es" ? "El horario se eliminará permanentemente." : "The schedule will be deleted permanently." }</p>
                             <input value={ table_id } name="item_id" readOnly hidden />
                             <span className="text-danger">{ state.message }</span>
                             <ActionButton type="submit" color="danger" loading={ pending } disabled={ pending }>{ lang === "es" ? "Eliminar" : "Delete" }</ActionButton>
