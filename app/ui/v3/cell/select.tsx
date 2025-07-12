@@ -2,7 +2,7 @@
 import { TableContext } from "@/app/[lang]/table/context";
 import { TableExtended } from "@/app/lib/utils-client";
 import { Select, SelectItem, SharedSelection } from "@heroui/react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export default function InputSelect ({ rowIndex, colIndex }: {
     rowIndex: number,
@@ -10,14 +10,19 @@ export default function InputSelect ({ rowIndex, colIndex }: {
 }) {
     const label = `${TableExtended.indexToLabel(colIndex)}${rowIndex}`;
     const { table } = useContext(TableContext);
-    const [ selection, setSelection ] = useState<SharedSelection>(new Set([table.rows[rowIndex].get(label)?.value ?? ""]));
-    const [ conflict, setConflict ] = useState<boolean>(table.rows[rowIndex].get(label)?.conflict ?? false);
+    const [ selection, setSelection ] = useState<SharedSelection>(() => {
+        const value = table.rows[rowIndex].get(label)?.value ?? "";
+        return new Set([value]);
+    });
+    const [ conflict, setConflict ] = useState<boolean>(table.rows[rowIndex].get(label)?.hasConflict ?? false);
+    
     const handleSelectionChange = (keys: SharedSelection) => {
-        const selectedValue = Array.from(keys)[0] ?? ""
+        const selectedValue = Array.from(keys)[0] ?? "";
         table.edit(colIndex, rowIndex, selectedValue.toString());
         setSelection(keys);
         if (conflict) setConflict(false);
     }
+    
     if (table.values.size > 10) {
         return (
             <Select isVirtualized={table.values.size > 10}
@@ -34,11 +39,11 @@ export default function InputSelect ({ rowIndex, colIndex }: {
             selectedKeys={ selection }
             onSelectionChange={ handleSelectionChange }>
                 {
-                Array.from(table.values).map((value, index) => (
-                    <SelectItem key={index} textValue={value}>
-                        { value }
-                    </SelectItem>
-                ))
+                    Array.from(table.values).map((value, index) => (
+                        <SelectItem key={index} textValue={value}>
+                            { value }
+                        </SelectItem>
+                    ))
                 }
             </Select>
         )
@@ -57,11 +62,11 @@ export default function InputSelect ({ rowIndex, colIndex }: {
         selectedKeys={ selection }
         onSelectionChange={ handleSelectionChange }>
             {
-            Array.from(table.values).map((value, index) => (
-                <SelectItem key={index} textValue={value}>
-                    { value }
-                </SelectItem>
-            ))
+                Array.from(table.values).map((value, index) => (
+                    <SelectItem key={index} textValue={value}>
+                        { value }
+                    </SelectItem>
+                ))
             }
         </Select>
     )
