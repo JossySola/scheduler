@@ -1,16 +1,18 @@
 "use client"
 import Table from "./table";
 import { TableContext } from "@/app/[lang]/table/context";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ColumnsActions from "./col-actions";
 import RowsActions from "./rows-actions";
 import TableSettings from "./table-settings";
 import { RowType, TableExtended } from "@/app/lib/utils-client";
 import { useForcePanelUpdate } from "@/app/hooks/custom";
 import { useParams, useRouter } from "next/navigation";
-import { Button, Input } from "@heroui/react";
+import { addToast, Button, Input } from "@heroui/react";
 import { ArrowCircleLeft } from "../icons";
 import Conflicts from "./conflicts";
+import { experimental_useObject } from "@ai-sdk/react";
+import { tableGenerationSchema } from "@/app/api/generate/schema";
 
 export default function Panel ({ name, stored_rows, stored_values, stored_type, stored_interval }: {
         name? : string,
@@ -19,10 +21,15 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
         stored_type?: "text" | "date" | "time",
         stored_interval?: number,
 }) {
+    // STATES
+    const [ conflicts, setConflicts ] = useState<Array<string | undefined> | undefined>([]);
+    const [ generatedRows, setGeneratedRows ] = useState<Array<{ 
+        colIndex: number, rowIndex: number, name: string, value: string, hasConflict: boolean 
+    }>>([]);
+
+    // HOOKS
     const router = useRouter();
     const { lang } = useParams<{ lang: "es" | "en" }>();
-    const [ conflicts, setConflicts ] = useState<Array<string>>([]);
-    const [ isGenerating, setIsGenerating ] = useState<boolean>(false);
     const table = useRef<TableExtended>(new TableExtended(
         name ? name : lang === "es" ? "Sin título" : "No title",
         stored_rows && stored_rows,
@@ -31,11 +38,72 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
         stored_interval && stored_interval,
     ));
     const panelUpdate = useForcePanelUpdate();
+    const { isLoading, object, submit } = experimental_useObject({
+        api: '/api/generate',
+        schema: tableGenerationSchema,
+        onFinish: ({ object }) => {
+            if (object !== null && object !== undefined) {
+                setConflicts(object.conflicts);
+                setGeneratedRows(object.rows);
+            }
+        },
+        onError: () => addToast({
+            title: lang === "es" ? "Generación con IA" : "AI Schedule Generation",
+            description: lang === "es" ? "Hubo un error al generar el horario con IA. Inténtalo nuevamente y/o reporta este problema." : "An error has occurred while generating the schedule. Please try again and/or report the issue.",
+            color: "danger",
+        })
+    });
+
+    // WORKER
+    const genWorker = window.Worker ? new Worker(new URL("../../lib/generation-worker.ts", import.meta.url)) : null;
+    
+    // EFFECTS
+    useEffect(() => {
+        if (object !== null && object !== undefined) {
+            setConflicts(object.conflicts);
+            if (object.rows !== undefined) {
+                const streamedRows = object.rows;
+                streamedRows.forEach(row => {
+                    if (row !== undefined && row.rowIndex && row.colIndex && row.name) {
+                        const cell = table.current.rows[row.rowIndex].get(row.name);
+                        if (cell) {
+                            cell.value = row.value ?? "";
+                            cell.hasConflict = row.hasConflict ?? false;
+                        }
+                    }
+                    return;
+                })
+            }
+        }
+    }, [object]);
+    useEffect(() => {
+        () => genWorker?.terminate();
+    }, [])
+
+    // HANDLERS
+    const handleGeneration = () => {
+        if (!genWorker || !table.current) return;
+        
+        const serializableRows = table.current.rows.map(map => Array.from(map.entries()));
+        
+        genWorker.postMessage(serializableRows);
+
+        genWorker.onmessage = (e) => {
+            const rows = e.data;
+            const values = Array.from(table.current.values);
+            submit({
+                rows,
+                values,
+                lang,
+            });
+        }
+    }
     const handleNameChange = (name: string) => {
         table.current.name = name;
     }
+
     return (
-        <TableContext.Provider value={{ table: table.current, panelUpdate, setConflicts, isGenerating, setIsGenerating }}>
+        <TableContext.Provider value={{ table: table.current, panelUpdate, setConflicts }}>
             <div className="grid grid-cols-[1fr_85vw_1fr] mb-10">
                 <header className="col-start-2 col-end-2 flex flex-row justify-start items-center gap-5">
                     <Button isIconOnly 
@@ -57,12 +125,12 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
                         input: "text-2xl",
                         clearButton: "p-0 top-[65%]"
                     }} />
-                    { conflicts.length > 0 && <Conflicts conflicts={ conflicts }/> }
+                    { conflicts && conflicts.length > 0 && <Conflicts conflicts={ conflicts }/> }
                 </header>
             </div>
             
             <section className="grid grid-rows-[auto_auto] grid-cols-[auto_auto]">
-                <TableSettings />
+                <TableSettings handleGeneration={ handleGeneration } />
                 <ColumnsActions />
                 <RowsActions />
                 <Table />
