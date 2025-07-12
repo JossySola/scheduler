@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { Box, SettingsGearFill } from "../icons";
 import RowSpecs from "./row-specs";
 import ColSpecs from "./col-specs";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { TableContext } from "@/app/[lang]/table/context";
 import ValuesList from "./list";
 import { RowType } from "@/app/lib/utils-client";
@@ -12,86 +12,15 @@ import HeaderSpecs from "./header-specs";
 import * as zod from "zod/v4";
 import { DateFormatter, getLocalTimeZone, parseDate, parseTime } from "@internationalized/date";
 import { useSettingsUpdate } from "@/app/hooks/custom";
-import { experimental_useObject as useObject } from '@ai-sdk/react';
-import { tableGenerationSchema } from "@/app/api/generate/schema";
 
-type ObjectType = {
-    value: string,
-    conflict?: boolean,
-    specs?: {
-        disabled: boolean,
-        disabledCols: Array<string>,
-        rowTimes: number,
-        preferValues: Array<string>,
-        colTimes: number,
-        valueTimes: Array<[string, number]>,
-    },
-};
-export default function TableSettings () {
+export default function TableSettings ({ handleGeneration }: {
+    handleGeneration: () => void,
+}) {
     const { lang } = useParams<{ lang: "en" | "es" }>();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const { table, setConflicts, setIsGenerating } = useContext(TableContext);
+    const { table } = useContext(TableContext);
     const settingsUpdate = useSettingsUpdate();
-    const { object, submit, isLoading } = useObject({
-        api: '/api/generate',
-        schema: tableGenerationSchema,
-    });
-    const handleGeneration = () => {
-        const rows = table.rows.map(col => {
-            return Array.from(col.entries()).map(([key, value]): [string, ObjectType] => {
-                if (value.specs) {
-                    return [
-                        key,
-                        {
-                            ...value,
-                            specs: {
-                                ...value.specs,
-                                valueTimes: Array.from(value.specs.valueTimes),
-                            }
-                        }
-                    ];
-                }
-                return [key, value as ObjectType];
-            })
-        })
-        const values = Array.from(table.values);
-        submit({
-            rows,
-            values,
-            lang,
-        });
-    }
-    useEffect(() => {
-        console.log(object)
-        if (object && object.conflicts && setConflicts) setConflicts(object.conflicts as string[]);
-        if (object && object.rows !== undefined) {
-            const cells = object.rows;
-            if (cells.length > 0) {
-                cells.forEach(cell => {
-                    if (cell !== undefined) {
-                        if (cell[0] && cell[1] && cell[2]) {
-                            if (cell[0] !== undefined && cell[1] !== undefined && cell[2] !== undefined) {
-                                const label = cell[0];
-                                const value = cell[1];
-                                const conflict = cell[2];
-                                table.rows.forEach(row => {
-                                    const cellExists = row.has(label);
-                                    if (cellExists) {
-                                        const previousData = row.get(label);
-                                        row.set(label, {
-                                            value,
-                                            conflict,
-                                            ...previousData
-                                        })
-                                    }
-                                })
-                            }
-                        }
-                    }
-                })
-            }
-        }
-    }, [object])
+    
     return (
         <>
             <div className="col-start-1 row-start-1 w-full flex flex-row justify-end items-center pr-5">
@@ -194,11 +123,12 @@ export default function TableSettings () {
                                 }
                             </Button>
                             <Button 
-                            size="lg" 
-                            isDisabled={ isLoading }
-                            isLoading={ isLoading }
+                            size="lg"
                             className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg" 
-                            onPress={ handleGeneration } 
+                            onPress={ () => {
+                                handleGeneration();
+                                onClose();
+                            } } 
                             endContent={<Box />}>
                                 {
                                     lang === "es" ? "Generar" : "Generate"
