@@ -103,7 +103,7 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
     }
 
     return (
-        <TableContext.Provider value={{ table: table.current, panelUpdate, setConflicts }}>
+        <TableContext.Provider value={{ table: table.current, panelUpdate, setConflicts, generatedRows }}>
             <div className="grid grid-cols-[1fr_85vw_1fr] mb-10">
                 <header className="col-start-2 col-end-2 flex flex-row justify-start items-center gap-5">
                     <Button isIconOnly 
