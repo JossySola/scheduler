@@ -11,8 +11,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^1.2.12",
-    "@ai-sdk/react": "^1.2.12",
+    "@ai-sdk/anthropic": "^2.0.0-beta.5",
+    "@ai-sdk/react": "^2.0.0-beta.15",
     "@auth/core": "^0.38.0",
     "@auth/pg-adapter": "^1.10.0",
     "@aws-crypto/client-browser": "^4.2.1",
@@ -33,7 +33,7 @@
     "@vercel/analytics": "^1.5.0",
     "@vercel/postgres": "^0.10.0",
     "@vercel/speed-insights": "^1.2.0",
-    "ai": "^4.3.16",
+    "ai": "^5.0.0-beta.15",
     "argon2": "^0.43.0",
     "dotenv": "^16.6.1",
     "geist": "^1.4.2",
