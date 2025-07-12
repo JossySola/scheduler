@@ -89,7 +89,7 @@ export function getDeviceInfo() {
 
 export type RowType = {
     value: string,
-    conflict?: boolean,
+    hasConflict?: boolean,
     specs?: {
         disabled: boolean,
         disabledCols: Array<string>,
@@ -167,7 +167,7 @@ export class Table {
             }
             row.set(label, {
                 value: "",
-                conflict: false,
+                hasConflict: false,
             })
         })
     }
@@ -207,7 +207,7 @@ export class Table {
             }
             newMap.set(
             `${Table.indexToLabel(index)}${this.size}`, {
-            value: "", conflict: false })
+            value: "", hasConflict: false })
         })
         this.#rows.push(newMap);
     }
