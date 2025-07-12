@@ -2,6 +2,7 @@
 import { TableContext } from "@/app/[lang]/table/context";
 import { RowType } from "@/app/lib/utils-client";
 import { Card, CardBody, Checkbox, CheckboxGroup, NumberInput, Switch } from "@heroui/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useParams } from "next/navigation"
 import { useContext, useEffect, useState } from "react";
 
@@ -71,9 +72,18 @@ export default function RowSpecs ({ rowIndex, title }: {
                 label={ lang === "es" ? "Preferir usar estos valores en la fila:" : "Prefer the following values to use in this row:"}>
                     {
                         table.values && Array.from(table.values.values()).map((val: string, valIndex: number) => {
-                            return <Checkbox key={valIndex} value={val}>
-                                { val ? val : lang === "es" ? <i>Sin nombre</i> : <i>No name yet</i> }
-                            </Checkbox>
+                            return (
+                                <AnimatePresence key={valIndex}>
+                                    <motion.div
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0 }}>
+                                        <Checkbox value={val}>
+                                            { val ? val : lang === "es" ? <i>Sin nombre</i> : <i>No name yet</i> }
+                                        </Checkbox>
+                                    </motion.div>
+                                </AnimatePresence>
+                            )
                         })
                     }
                 </CheckboxGroup>

@@ -4,6 +4,7 @@ import Cell from "./cell";
 import { RowType, TableExtended } from "@/app/lib/utils-client";
 import { TableContext } from "@/app/[lang]/table/context";
 import { CalendarDate, Time } from "@internationalized/date";
+import { AnimatePresence, motion } from "motion/react";
 
 export default function ColHeaders({ row, rowIndex }: {
     row: Map<string, RowType>,
@@ -49,10 +50,16 @@ export default function ColHeaders({ row, rowIndex }: {
     return Array.from(row.values()).map((_, colIndex: number) => {
         return <th scope="col" key={`col${colIndex}row${rowIndex}`} className="flex flex-col justify-center items-center gap-2" >
             <span className="text-tiny">{TableExtended.indexToLabel(colIndex)}</span>
-            <div className="flex flex-row items-center gap-3">
-                { colIndex === 0 && <span className="text-tiny w-[1rem]">{String(rowIndex)}</span> }
-                { <Cell rowIndex={ rowIndex } colIndex={ colIndex } setA1={ setA1 } A1={ A1 } /> }
-            </div>
+            <AnimatePresence>
+                <motion.div 
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                className="flex flex-row items-center gap-3">
+                    { colIndex === 0 && <span className="text-tiny w-[1rem]">{String(rowIndex)}</span> }
+                    { <Cell rowIndex={ rowIndex } colIndex={ colIndex } setA1={ setA1 } A1={ A1 } /> }
+                </motion.div>
+            </AnimatePresence>
         </th>
     })
 }
