@@ -1,7 +1,7 @@
 "use client"
 import Table from "./table";
 import { TableContext } from "@/app/[lang]/table/context";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ColumnsActions from "./col-actions";
 import RowsActions from "./rows-actions";
 import TableSettings from "./table-settings";
@@ -13,6 +13,7 @@ import { ArrowCircleLeft } from "../icons";
 import Conflicts from "./conflicts";
 import { experimental_useObject } from "@ai-sdk/react";
 import { tableGenerationSchema } from "@/app/api/generate/schema";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function Panel ({ name, stored_rows, stored_values, stored_type, stored_interval }: {
         name? : string,
@@ -38,6 +39,10 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
         stored_interval && stored_interval,
     ));
     const panelUpdate = useForcePanelUpdate();
+
+    const tableValues = useMemo(() => Array.from(table.current.values), [table.current.values.size]);
+    const currentRows = useMemo(() => table.current.rows.map(map => Array.from(map.entries())), [table.current.rows, table.current.size]);
+
     const { isLoading, object, submit } = experimental_useObject({
         api: '/api/generate',
         schema: tableGenerationSchema,
@@ -63,7 +68,7 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
             setConflicts(object.conflicts);
             if (object.rows !== undefined) {
                 const streamedRows = object.rows;
-                streamedRows.forEach(row => {
+                streamedRows?.forEach(row => {
                     if (row !== undefined && row.rowIndex && row.colIndex && row.name) {
                         const cell = table.current.rows[row.rowIndex].get(row.name);
                         if (cell) {
@@ -72,45 +77,52 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
                         }
                     }
                     return;
-                })
+                });
+                panelUpdate();
             }
         }
-    }, [object]);
+    }, [object, panelUpdate]);
+    
     useEffect(() => {
-        () => genWorker?.terminate();
-    }, [])
+        return () => genWorker?.terminate();
+    }, [genWorker]);
 
     // HANDLERS
     const handleGeneration = () => {
         if (!genWorker || !table.current) return;
         
-        const serializableRows = table.current.rows.map(map => Array.from(map.entries()));
+        const serializableRows = currentRows;
         
         genWorker.postMessage(serializableRows);
 
         genWorker.onmessage = (e) => {
             const rows = e.data;
-            const values = Array.from(table.current.values);
+            const values = tableValues;
             submit({
                 rows,
                 values,
                 lang,
             });
         }
-    }
-    const handleNameChange = (name: string) => {
+    };
+
+    const handleNameChange = useDebouncedCallback((name: string) => {
         table.current.name = name;
-    }
+    }, 1000);
+
+    const handleGoBack = useCallback(() => {
+        router.back();
+    }, [router]);
 
     return (
-        <TableContext.Provider value={{ table: table.current, panelUpdate, setConflicts, generatedRows }}>
+        <TableContext.Provider value={{ table: table.current, panelUpdate, setConflicts, generatedRows, isGenerating: isLoading }}>
             <div className="grid grid-cols-[1fr_85vw_1fr] mb-10">
                 <header className="col-start-2 col-end-2 flex flex-row justify-start items-center gap-5">
                     <Button isIconOnly 
                     size="lg"
                     aria-label="go back button" 
                     variant="light"
-                    onPress={() => router.back()}>
+                    onPress={ handleGoBack }>
                         <ArrowCircleLeft width={32} height={32} />
                     </Button>
                     
