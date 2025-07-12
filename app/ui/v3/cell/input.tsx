@@ -15,7 +15,7 @@ export default function InputValue ({ rowIndex, colIndex }: {
     const { table } = useContext(TableContext);
     const [ isDuplicate, setIsDuplicate ] = useState<boolean>(false);
     const [ value, setValue ] = useState<string>(table.rows[rowIndex].get(label)?.value ?? "");
-    const [ conflict, setConflict ] = useState<boolean>(table.rows[rowIndex].get(label)?.conflict ?? false);
+    const [ conflict, setConflict ] = useState<boolean>(table.rows[rowIndex].get(label)?.hasConflict ?? false);
     const handleInputChange = useDebouncedCallback((value: string) => {
         table.edit(colIndex, rowIndex, value);
     }, 1000);
