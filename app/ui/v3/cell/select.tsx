@@ -9,12 +9,25 @@ export default function InputSelect ({ rowIndex, colIndex }: {
     colIndex: number,
 }) {
     const label = `${TableExtended.indexToLabel(colIndex)}${rowIndex}`;
-    const { table } = useContext(TableContext);
-    const [ selection, setSelection ] = useState<SharedSelection>(() => {
+    const { table, generatedRows } = useContext(TableContext);
+
+    const getCurrentValue = () => {
         const value = table.rows[rowIndex].get(label)?.value ?? "";
         return new Set([value]);
-    });
-    const [ conflict, setConflict ] = useState<boolean>(table.rows[rowIndex].get(label)?.hasConflict ?? false);
+    }
+    const getCurrentConflict = () => {
+        return table.rows[rowIndex].get(label)?.hasConflict ?? false;
+    }
+
+    useEffect(() => {
+        const currentValue = table.rows[rowIndex].get(label)?.value ?? "";
+        const currentConflict = table.rows[rowIndex].get(label)?.hasConflict ?? false;
+        setSelection(new Set([currentValue]));
+        setConflict(currentConflict);
+    }, [generatedRows]);
+
+    const [ selection, setSelection ] = useState<SharedSelection>(getCurrentValue);
+    const [ conflict, setConflict ] = useState<boolean>(getCurrentConflict);
     
     const handleSelectionChange = (keys: SharedSelection) => {
         const selectedValue = Array.from(keys)[0] ?? "";
@@ -22,7 +35,7 @@ export default function InputSelect ({ rowIndex, colIndex }: {
         setSelection(keys);
         if (conflict) setConflict(false);
     }
-    
+
     if (table.values.size > 10) {
         return (
             <Select isVirtualized={table.values.size > 10}
