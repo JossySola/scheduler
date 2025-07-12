@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { WarningFill } from "../icons";
 
 export default function Conflicts ({ conflicts }: {
-    conflicts: Array<string>,
+    conflicts: Array<string | undefined>,
 }) {
     const { lang } = useParams<{ lang: "en" | "es" }>();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -24,7 +24,7 @@ export default function Conflicts ({ conflicts }: {
                             <i>{ lang === "es" ? "Recuerda que también puedes editar las celdas sin necesidad de Generar la tabla nuevamente" : "You can always edit the cells without generating the table again" }</i>
                             {
                                 conflicts 
-                                ? conflicts.map(conflict => <p>{ conflict }</p>)
+                                ? conflicts.map(conflict => conflict !== undefined ? <p>{ conflict }</p> : null)
                                 : <p className="text-danger">{ lang === "es" ? "No hay conflictos" : "No conflicts" }</p>
                             }
                         </ModalBody>
