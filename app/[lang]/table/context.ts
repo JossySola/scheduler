@@ -12,12 +12,14 @@ interface TableContextType {
         value: string, 
         hasConflict: boolean 
     }> | undefined;
+    isGenerating: boolean | undefined;
 }
 export const TableContext = createContext<TableContextType>({
     table: new TableExtended(""),
     panelUpdate: () => {},
     setConflicts: undefined,
     generatedRows: undefined,
+    isGenerating: undefined,
 });
 export const AnthropicGenerationContext = createContext({});
 export interface AnthropicGenerationType {
