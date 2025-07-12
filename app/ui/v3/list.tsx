@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { TableContext } from "@/app/[lang]/table/context";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { PlusCircle, Trash } from "../icons";
 
 export default function ValuesList({ settingsUpdate }: {
@@ -16,11 +16,11 @@ export default function ValuesList({ settingsUpdate }: {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     
     const handleAddItem = (value: string) => {
-        setValues(prev => values.size > 0 ? prev.add(value) : new Set(value));
         if (table.values.has(value)) {
             setIsDuplicate(true);
             return;
         }
+        setValues(prev => values.size > 0 ? prev.add(value) : new Set(value));
         table.addValue(value);
         panelUpdate();
         settingsUpdate();
@@ -68,23 +68,31 @@ export default function ValuesList({ settingsUpdate }: {
             }
             {
                 table.values && Array.from(table.values.values()).map((item, index) => {
-                    return <motion.li className="w-full" key={index} initial={{ scale: 0.3 }} animate={{ scale: 1 }}>
-                        <div className="w-full flex flex-row justify-center items-center gap-2 mb-3">
-                            <Input 
-                            isReadOnly
-                            name={"list-value"} 
-                            value={ item } />
-                            <Button 
-                            isIconOnly 
-                            variant="flat"
-                            color="danger"
-                            onPress={() => {
-                                handleRemoveItem(item);
-                            }}>
-                                <Trash />
-                            </Button>
-                        </div>
-                    </motion.li>
+                    return (
+                        <AnimatePresence key={index}>
+                            <motion.li 
+                            className="w-full"
+                            initial={{ scale: 0.3 }} 
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0 }}>
+                                <div className="w-full flex flex-row justify-center items-center gap-2 mb-3">
+                                    <Input 
+                                    isReadOnly
+                                    name={"list-value"} 
+                                    value={ item } />
+                                    <Button 
+                                    isIconOnly 
+                                    variant="flat"
+                                    color="danger"
+                                    onPress={() => {
+                                        handleRemoveItem(item);
+                                    }}>
+                                        <Trash />
+                                    </Button>
+                                </div>
+                            </motion.li>
+                        </AnimatePresence>
+                    )
                 })
             }
         </ol>
