@@ -57,7 +57,7 @@ export default function Table () {
 
 const LottieLoader = () => {
     return (
-        <div className="w-1/3">
+        <div className="w-1/6 h-full">
             <Lottie animationData={ animationData } loop autoplay />
         </div>
         
