@@ -33,7 +33,6 @@ export default function Error({
                 </Button>
             </div>
             <Form action={ action } className="w-full p-10 flex flex-col items-center justify-center">
-                <Input radius="sm" size="lg" name="email" label="Email" isClearable />
                 <Textarea 
                 name="description"
                 variant="flat"
