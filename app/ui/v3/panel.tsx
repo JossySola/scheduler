@@ -147,14 +147,6 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
                 <RowsActions />
                 <Table />
             </section>
-            <section className="flex flex-col">
-                <section className="m-5">
-                <h2>Rows</h2>
-                {
-                    table.current.rows && table.current.rows.map((map, index) => <p key={index}>{JSON.stringify(Object.fromEntries(map))}<br></br><br></br></p>)
-                }
-                </section>
-            </section>
         </TableContext.Provider>
     )
 }
