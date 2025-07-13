@@ -18,7 +18,7 @@ export default function TableSettings ({ handleGeneration }: {
 }) {
     const { lang } = useParams<{ lang: "en" | "es" }>();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const { table } = useContext(TableContext);
+    const { table, isGenerating } = useContext(TableContext);
     const settingsUpdate = useSettingsUpdate();
     
     return (
@@ -123,6 +123,8 @@ export default function TableSettings ({ handleGeneration }: {
                                 }
                             </Button>
                             <Button 
+                            isDisabled={ isGenerating ?? false }
+                            isLoading={ isGenerating ?? false }
                             size="lg"
                             className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg" 
                             onPress={ () => {
