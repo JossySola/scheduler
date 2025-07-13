@@ -149,6 +149,11 @@ export async function SaveNewTableAction (name: string, rows: Array<Map<string, 
             })
             .catch(()=> ({ ok: false, message: locale === "es" ? "Ha ocurrido un error 😔" : "An error has occurred 😔", id: null }));
             return insert;
+
+            await sql`
+            UPDATE scheduler_users
+            SET num_tables = num_tables + 1
+            WHERE id = ${session.user.id};`
         }
         return {
             ok: false,
