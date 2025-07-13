@@ -1,5 +1,5 @@
 "use client"
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
+import { Alert, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { useParams } from "next/navigation";
 import { WarningFill } from "../icons";
 
@@ -21,10 +21,10 @@ export default function Conflicts ({ conflicts }: {
                         <>
                         <ModalHeader>{ lang === "es" ? "Conflictos" : "Conflicts" }</ModalHeader>
                         <ModalBody className="flex flex-col gap-3">
-                            <i>{ lang === "es" ? "Recuerda que también puedes editar las celdas sin necesidad de Generar la tabla nuevamente" : "You can always edit the cells without generating the table again" }</i>
+                            <i className="text-md">{ lang === "es" ? "Recuerda que también puedes editar las celdas manualmente sin necesidad de Generar la tabla nuevamente" : "You can always edit the cells manually without generating the table again" }</i>
                             {
                                 conflicts 
-                                ? conflicts.map(conflict => conflict !== undefined ? <p>{ conflict }</p> : null)
+                                ? conflicts.map(conflict => conflict !== undefined ? <Alert className="text-lg" color="warning" description={ conflict } radius="full"/> : null)
                                 : <p className="text-danger">{ lang === "es" ? "No hay conflictos" : "No conflicts" }</p>
                             }
                         </ModalBody>
