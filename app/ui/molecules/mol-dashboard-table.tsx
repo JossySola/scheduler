@@ -42,7 +42,7 @@ export default function DashboardTable ({ metadata }: {
                         const createdDate = `${months[created.getMonth()]} ${created.getDate()}, ${created.getFullYear()}`
                         return (
                         <TableRow key={`${row.table_name}${index}`}>
-                            <TableCell><Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/${row.table_id}`}>{row.table_name}</Link></TableCell>
+                            <TableCell><Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/${row.table_id}`} className="text-lg font-semibold tracking-wide">{row.table_name}</Link></TableCell>
                             <TableCell>{createdDate}</TableCell>
                             <TableCell><Timestamp updated_at={row.updated_at}/></TableCell>
                             <TableCell>
