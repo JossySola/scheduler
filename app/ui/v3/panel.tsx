@@ -50,6 +50,15 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
             if (object !== null && object !== undefined) {
                 setConflicts(object.conflicts);
                 setGeneratedRows(object.rows);
+                const output_storage = sessionStorage.getItem("scheduler_output_storage");
+                const storedOutput = output_storage ? JSON.parse(output_storage) : [];
+                if (Array.isArray(storedOutput)) {
+                    if (storedOutput.length === 10) {
+                        storedOutput.shift();
+                    }
+                    storedOutput.push(object.rows);
+                    sessionStorage.setItem("scheduler_output_storage", JSON.stringify(storedOutput));
+                }
             }
         },
         onError: () => addToast({
@@ -102,6 +111,7 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
                 rows,
                 values,
                 lang,
+                previous: JSON.parse(sessionStorage.getItem("scheduler_output_storage") ?? "[]")
             });
         }
     };
