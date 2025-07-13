@@ -12,7 +12,7 @@ export default function FrameAiFeature ({ lang }: {
             className="text-[2rem] text-center">
                 { lang === "es" ? "Usa el botón:" : "Hit the button:" }
                 <motion.span className="z-0 group relative inline-flex items-center justify-center box-border appearance-none select-none whitespace-nowrap font-normal subpixel-antialiased overflow-hidden tap-highlight-transparent data-[pressed=true]:scale-[0.97] outline-none data-[focus-visible=true]:z-10 data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-focus data-[focus-visible=true]:outline-offset-2 px-4 min-w-20 h-10 text-xl gap-2 rounded-medium [&>svg]:max-w-[theme(spacing.8)] transition-transform-colors-opacity motion-reduce:transition-none bg-default data-[hover=true]:opacity-hover bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg m-5">
-                    { lang === "es" ? "Crear" : "Create" }
+                    { lang === "es" ? "Generar" : "Generate" }
                     <Box height={16} width={16} />
                 </motion.span>
             </motion.p>
