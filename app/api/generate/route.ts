@@ -19,7 +19,13 @@ export async function POST (request: NextRequest) {
     const payload = await request.json();
     const rows: Array<Array<ObjectType>> = payload.rows;
     const values: Array<string> = payload.values;
-    const previous: Array<Array<Array<ObjectType>>> | undefined = payload.previous;
+    const previous: Array<{ 
+        colIndex: number, 
+        rowIndex: number, 
+        name: string, 
+        value: string, 
+        hasConflict: boolean 
+    }> = payload.previous;
     const lang: string = payload.lang;
     const result = streamObject({
         model: anthropic('claude-opus-4-20250514'),
@@ -123,13 +129,12 @@ export async function POST (request: NextRequest) {
                 ],
                 conflicts: ["In the row 'Chema' it was expected to fill 5 columns but the table only has 2, resolve a contradicting specification under 'Row Specifications'.", ...],
             }
-
-            This is previous output: ${previous ? JSON.stringify(previous) : null}, do not repeat it/them. 
         `,
         prompt: `
         Generate a highly strategic schedule with the following data and criteria:
         **Rows**: ${JSON.stringify(rows)}
-        **Values**: ${JSON.stringify(values)}`,
+        **Values**: ${JSON.stringify(values)}
+        This is previous output: ${previous ? JSON.stringify(previous) : null}, do not repeat it/them.`,
     });
     return result.toTextStreamResponse();
 } 
