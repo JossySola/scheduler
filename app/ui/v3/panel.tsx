@@ -53,7 +53,7 @@ export default function Panel ({ name, stored_rows, stored_values, stored_type, 
                 const output_storage = sessionStorage.getItem("scheduler_output_storage");
                 const storedOutput = output_storage ? JSON.parse(output_storage) : [];
                 if (Array.isArray(storedOutput)) {
-                    if (storedOutput.length === 10) {
+                    if (storedOutput.length === 5) {
                         storedOutput.shift();
                     }
                     storedOutput.push(object.rows);
