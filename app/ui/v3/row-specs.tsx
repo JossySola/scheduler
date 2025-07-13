@@ -40,7 +40,7 @@ export default function RowSpecs ({ rowIndex, title }: {
                 isDisabled={toggle} 
                 value={disabledCols}
                 onValueChange={setDisabledCols}
-                label={ lang === "es" ? "Habilitar solo en ciertas columnas:" : "Enable/disable on certain columns:" }>
+                label={ lang === "es" ? "Deshabilitar estas columnas:" : "Disable these columns:" }>
                     {
                         table.rows[0] && Array.from(table.rows[0].values()).map((col: RowType, colIndex: number) => {
                             if (colIndex !== 0) {
