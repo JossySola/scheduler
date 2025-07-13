@@ -3,7 +3,7 @@ import FrameTable from "./frame-table";
 import FrameValues from "./frame-values";
 import FrameSpecs from "./frame-specs";
 import FrameAiFeature from "./frame-ai-feature";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
 import { Button, Link } from "@heroui/react";
 

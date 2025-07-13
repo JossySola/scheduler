@@ -7,14 +7,14 @@ import { sql } from "@vercel/postgres";
 
 export default async function Page ({ params, searchParams }: {
     params: Promise<{ lang: "en" | "es" }>,
-    searchParams: Promise<{ token: string }>,
+    searchParams: Promise<{ token: string, email: string }>,
 }) {
     const token = (await searchParams).token;
     const lang = (await params).lang;
     const confirming = await sql`
         SELECT token, key 
         FROM scheduler_email_confirmation_tokens
-        WHERE token = ${token} AND expires_at > NOW();
+        WHERE token = ${token} AND expires_at > NOW() AND email = ${(await searchParams).email};
     `;
     if (!confirming.rows.length || confirming.rowCount === 0) {
         return <section className="h-screen p-10">

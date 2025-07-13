@@ -1,4 +1,107 @@
 "use client"
+
+export function ClockDashed ({ width = 16, height = 16, color = "currentColor" }) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height }
+        strokeLinejoin="round" 
+        style={{ color }} 
+        viewBox="0 0 16 16"
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M5.35066 2.06247C5.96369 1.78847 6.62701 1.60666 7.32351 1.53473L7.16943 0.0426636C6.31208 0.1312 5.49436 0.355227 4.73858 0.693033L5.35066 2.06247ZM8.67651 1.53473C11.9481 1.87258 14.5 4.63876 14.5 8.00001C14.5 11.5899 11.5899 14.5 8.00001 14.5C4.63901 14.5 1.87298 11.9485 1.5348 8.67722L0.0427551 8.83147C0.459163 12.8594 3.86234 16 8.00001 16C12.4183 16 16 12.4183 16 8.00001C16 3.86204 12.8589 0.458666 8.83059 0.0426636L8.67651 1.53473ZM2.73972 4.18084C3.14144 3.62861 3.62803 3.14195 4.18021 2.74018L3.29768 1.52727C2.61875 2.02128 2.02064 2.61945 1.52671 3.29845L2.73972 4.18084ZM1.5348 7.32279C1.60678 6.62656 1.78856 5.96348 2.06247 5.35066L0.693033 4.73858C0.355343 5.4941 0.131354 6.31152 0.0427551 7.16854L1.5348 7.32279ZM8.75001 4.75V4H7.25001V4.75V7.875C7.25001 8.18976 7.3982 8.48615 7.65001 8.675L9.55001 10.1L10.15 10.55L11.05 9.35L10.45 8.9L8.75001 7.625V4.75Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
+export function ChevronCircleUpDown ({ width = 16, height = 16, color = "currentcolor"}) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }}
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M12.8536 8.7071C13.2441 8.31657 13.2441 7.68341 12.8536 7.29288L9.03034 3.46966L8.50001 2.93933L7.43935 3.99999L7.96968 4.53032L11.4393 7.99999L7.96968 11.4697L7.43935 12L8.50001 13.0607L9.03034 12.5303L12.8536 8.7071ZM7.85356 8.7071C8.24408 8.31657 8.24408 7.68341 7.85356 7.29288L4.03034 3.46966L3.50001 2.93933L2.43935 3.99999L2.96968 4.53032L6.43935 7.99999L2.96968 11.4697L2.43935 12L3.50001 13.0607L4.03034 12.5303L7.85356 8.7071Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
+export function ChevronDoubleDown ({ width = 16, height = 16, color = "currentcolor"}) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }}
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M4.53032 2.96966L3.99999 2.43933L2.93933 3.49999L3.46966 4.03032L7.29289 7.85355C7.68341 8.24407 8.31658 8.24407 8.7071 7.85354L12.5303 4.03032L13.0607 3.49999L12 2.43933L11.4697 2.96966L7.99999 6.43933L4.53032 2.96966ZM4.53032 7.96966L3.99999 7.43933L2.93933 8.49999L3.46966 9.03032L7.29289 12.8535C7.68341 13.2441 8.31658 13.2441 8.7071 12.8535L12.5303 9.03032L13.0607 8.49999L12 7.43933L11.4697 7.96966L7.99999 11.4393L4.53032 7.96966Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
+export function ChevronDoubleLeft ({ width = 16, height = 16, color = "currentcolor"}) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }} 
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M3.14647 7.2929C2.75595 7.68343 2.75595 8.31659 3.14647 8.70712L6.96969 12.5303L7.50002 13.0607L8.56068 12L8.03035 11.4697L4.56068 8.00001L8.03035 4.53034L8.56068 4.00001L7.50002 2.93935L6.96969 3.46968L3.14647 7.2929ZM8.14647 7.2929C7.75595 7.68343 7.75595 8.31659 8.14647 8.70712L11.9697 12.5303L12.5 13.0607L13.5607 12L13.0304 11.4697L9.56068 8.00001L13.0304 4.53034L13.5607 4.00001L12.5 2.93935L11.9697 3.46968L8.14647 7.2929Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
+export function ChevronDoubleRight ({ width = 16, height = 16, color = "currentcolor" }) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }}
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M12.8536 8.7071C13.2441 8.31657 13.2441 7.68341 12.8536 7.29288L9.03034 3.46966L8.50001 2.93933L7.43935 3.99999L7.96968 4.53032L11.4393 7.99999L7.96968 11.4697L7.43935 12L8.50001 13.0607L9.03034 12.5303L12.8536 8.7071ZM7.85356 8.7071C8.24408 8.31657 8.24408 7.68341 7.85356 7.29288L4.03034 3.46966L3.50001 2.93933L2.43935 3.99999L2.96968 4.53032L6.43935 7.99999L2.96968 11.4697L2.43935 12L3.50001 13.0607L4.03034 12.5303L7.85356 8.7071Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
+export function ChevronDoubleUp ({ width = 16, height = 16, color = "currentcolor" }) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }}
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M8.7071 3.14644C8.31657 2.75591 7.68341 2.75592 7.29288 3.14644L3.46966 6.96966L2.93933 7.49999L3.99999 8.56065L4.53032 8.03032L7.99999 4.56065L11.4697 8.03032L12 8.56065L13.0607 7.49999L12.5303 6.96966L8.7071 3.14644ZM8.7071 8.14644C8.31657 7.75592 7.68341 7.75592 7.29288 8.14644L3.46966 11.9697L2.93933 12.5L3.99999 13.5607L4.53032 13.0303L7.99999 9.56065L11.4697 13.0303L12 13.5607L13.0607 12.5L12.5303 11.9697L8.7071 8.14644Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
 export function PaperAirplane ({ width = 16, height = 16, color = "currentcolor" }) {
     return (
         <svg 
@@ -326,6 +429,23 @@ export function ArrowCircleRight ({ width = 16, height = 16, color = "currentcol
             clipRule="evenodd" 
             d="M5.25 7.25H4.5V8.75H5.25H9.43934L7.96967 10.2197L7.43934 10.75L8.5 11.8107L9.03033 11.2803L11.7803 8.53033C12.0732 8.23744 12.0732 7.76256 11.7803 7.46967L9.03033 4.71967L8.5 4.18934L7.43934 5.25L7.96967 5.78033L9.43934 7.25H5.25ZM8 14.5C4.41015 14.5 1.5 11.5899 1.5 8C1.5 4.41015 4.41015 1.5 8 1.5C11.5899 1.5 14.5 4.41015 14.5 8C14.5 11.5899 11.5899 14.5 8 14.5ZM0 8C0 12.4183 3.58172 16 8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8Z" 
             fill="currentColor"></path>
+        </svg>
+    )
+}
+export function WarningFill ({ width = 16, height = 16, color = "currentcolor"}) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        viewBox="0 0 16 16" 
+        width={ width } 
+        style={{ color }}>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M8.55846 0.5C9.13413 0.5 9.65902 0.829456 9.90929 1.34788L15.8073 13.5653C16.1279 14.2293 15.6441 15 14.9068 15H1.09316C0.355835 15 -0.127943 14.2293 0.192608 13.5653L6.09065 1.34787C6.34092 0.829454 6.86581 0.5 7.44148 0.5H8.55846ZM8.74997 4.75V5.5V8V8.75H7.24997V8V5.5V4.75H8.74997ZM7.99997 12C8.55226 12 8.99997 11.5523 8.99997 11C8.99997 10.4477 8.55226 10 7.99997 10C7.44769 10 6.99997 10.4477 6.99997 11C6.99997 11.5523 7.44769 12 7.99997 12Z" 
+            fill={ color }></path>
         </svg>
     )
 }

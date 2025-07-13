@@ -48,7 +48,7 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
             if ((err as RouteError).type && (err as RouteError).type === "CallbackRouteError") {
                 const error = (err as RouteError).cause.err;
                 const cause = error.cause;
-                if (typeof cause === "number" && typeof (error as any).cause?.err?.cause === 'number') {
+                if (typeof cause === "number") {
                     switch (cause) {
                         case 400: {
                             return {
@@ -87,6 +87,7 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
                             }
                         }
                     }
+                    
                 } else if (cause && typeof cause !== "number" && (cause as AttemptObject).next_attempt) {
                     return {
                         message: locale === "es" ? "Hay uno o más intentos de inicio de sesión fallidos, inténtalo nuevamente después del tiempo asignado" : "There is one or more sign in attempts, please try again after the assigned clock",

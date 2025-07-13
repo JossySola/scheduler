@@ -1,12 +1,12 @@
 "use client"
-import { Button, Form, Input, Textarea } from "@heroui/react";
-import { useParams } from "next/navigation";
+import { Button, Form, Textarea } from "@heroui/react";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { ActionButton } from "@/app/ui/atoms/atom-button";
 import { getDeviceInfo } from "@/app/lib/utils-client";
 import { z } from "zod";
 import emailjs from '@emailjs/browser';
-import { PaperAirplane, RefreshClockwise } from "./ui/icons";
+import { PaperAirplane, RefreshClockwise } from "@/app/ui/icons";
 
 export default function Error({
     error,
@@ -16,6 +16,8 @@ export default function Error({
     reset: () => void,
 }) {
     const params = useParams();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
     const lang = params.lang;
     const [ state, action, pending ] = useActionState(reportAction, { message: "", ok: false });
     useEffect(() => {
@@ -33,7 +35,6 @@ export default function Error({
                 </Button>
             </div>
             <Form action={ action } className="w-full p-10 flex flex-col items-center justify-center">
-                <Input radius="sm" size="lg" name="email" label="Email" isClearable />
                 <Textarea 
                 name="description"
                 variant="flat"
@@ -44,6 +45,16 @@ export default function Error({
                 maxRows={ 10 } 
                 isClearable />
                 
+                <input
+                readOnly
+                hidden
+                name="error-pathname"
+                defaultValue={ pathname.toString() } />
+                <input
+                readOnly
+                hidden
+                name="error-search-params"
+                defaultValue={ (JSON.stringify(searchParams.entries()) ?? "").toString() } />
                 <input
                 readOnly
                 hidden
@@ -79,18 +90,19 @@ export default function Error({
 }
 
 async function reportAction (previousState: { message: string, ok: boolean }, formData: FormData) {
-    
     const rawData = {
-        email: formData.get("email"),
         description: formData.get("description"),
+        error_pathname: formData.get("error-pathname"),
+        error_search_params: formData.get("error-search-params"),
         error_name: formData.get("error-name"),
         error_message: formData.get("error-message"),
         error_stack: formData.get("error-stack"),
         device_info: formData.get("device-info"),
     };
     const reportSchema = z.object({
-        email: z.string().nullable().optional(),
         description: z.string().nullable().optional(),
+        error_pathname: z.string(),
+        error_search_params: z.string(),
         error_name: z.string(),
         error_message: z.string(),
         error_stack: z.string().optional(),
@@ -110,7 +122,7 @@ async function reportAction (previousState: { message: string, ok: boolean }, fo
         emailjs.init({
             publicKey: "htLRA-_MePkeQ6YI8"
         })
-        const response = await emailjs.send(
+        await emailjs.send(
             "service_jhdciyb",
             "template_bo0x1qb",
             parseResult.data,

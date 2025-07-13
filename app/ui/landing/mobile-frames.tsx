@@ -1,7 +1,7 @@
 "use client"
-import { useScroll, useTransform } from "framer-motion";
+import { useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import FrameTable from "./frame-table";
 import FrameAiFeature from "./frame-ai-feature";
 import SampleSpecs from "./sample-specs";
@@ -30,7 +30,7 @@ export default function MobileFrames ({ lang }: {
     const opacityValues = useTransform(valuesProgress, [0, 0.5, 1], [0, 0.5, 1]);
     const opacitySpecs = useTransform(specsProgress, [0, 0.5, 1], [0, 0.5, 1]);
     return (
-        <section className="w-full flex flex-col justify-center items-center sm:hidden">
+        <section className="w-full overflow-x-hidden flex flex-col justify-center items-center sm:hidden">
             <motion.section  
             style={{ opacity: opacityTable }}
             className="w-full flex flex-col justify-center items-center mb-12">

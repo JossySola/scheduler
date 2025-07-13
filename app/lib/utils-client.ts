@@ -85,4 +85,220 @@ export function getDeviceInfo() {
       deviceMemory: (navigator as any).deviceMemory || 'Unknown',
       hardwareConcurrency: navigator.hardwareConcurrency || 'Unknown',
     };
-  }
+}
+
+export type RowType = {
+    value: string,
+    hasConflict?: boolean,
+    specs?: {
+        disabled: boolean,
+        disabledCols: Array<string>,
+        rowTimes: number,
+        preferValues: Array<string>,
+        colTimes: number,
+        valueTimes: Map<string, number>,
+    },
+};
+export class Table {
+    #rows: Array<Map<string, RowType>> = [];
+    #name: string;
+    constructor(name: string, storedRows?: Array<Map<string, RowType>>) {
+        this.#rows = storedRows ?? [];
+        this.#name = name;
+    }
+    // Statics
+    static indexToLabel (colIndex: number): string {
+        let label = '';
+        while (colIndex >= 0) {
+            label = String.fromCharCode((colIndex % 26) + 65) + label;
+            colIndex = Math.floor(colIndex / 26) - 1;
+        }
+        return label;
+    }
+    // Setters & Getters
+    get size (): number {
+        return this.#rows.length;
+    }
+    get rows (): Array<Map<string, RowType>> {
+        return this.#rows;
+    }
+    set rows (newRows: Array<Map<string, RowType>>) {
+        this.#rows = newRows;
+    }
+    get name (): string {
+        return this.#name;
+    }
+    set name (newName: string) {
+        this.#name = newName;
+    }
+    // Methods
+    insertColumn (headerValue?: string): void {
+        if (this.size === 0) {
+            const newMap = new Map();
+            newMap.set(`A0`, {
+                value: headerValue ?? "",
+                specs: {
+                    disabled: false,
+                    disabledCols: [],
+                    rowTimes: 0,
+                    preferValues: [],
+                    colTimes: 0,
+                    valueTimes: new Map(),
+                },
+            })
+            this.#rows.push(newMap);
+            return;
+        }
+        this.#rows.forEach((row: Map<string, RowType>, rowIndex: number) => {
+            const label = `${Table.indexToLabel(row.size)}${rowIndex}`;
+            if (rowIndex === 0) {
+                row.set(label, {
+                    value: headerValue ?? "",
+                    specs: {
+                        disabled: false,
+                        disabledCols: [],
+                        rowTimes: 0,
+                        preferValues: [],
+                        colTimes: 0,
+                        valueTimes: new Map(),
+                    },
+                })
+                return;
+            }
+            row.set(label, {
+                value: "",
+                hasConflict: false,
+            })
+        })
+    }
+    insertRow () {
+        if (this.size === 0) {
+            const newMap = new Map();
+            newMap.set("A0", {
+                value: "",
+                specs: {
+                    disabled: false,
+                    disabledCols: [],
+                    rowTimes: 0,
+                    preferValues: [],
+                    colTimes: 0,
+                    valueTimes: new Map(),
+                },
+            })
+            this.#rows.push(newMap);
+            return;
+        }
+        const newMap = new Map();
+        const newRow = Array.from(this.size > 0 ? this.#rows[0].keys() : []);
+        newRow.forEach((_: string, index: number) => {
+            if (index === 0) {
+                newMap.set(
+                `${Table.indexToLabel(index)}${this.size}`, {
+                value: "",
+                specs: {
+                    disabled: false,
+                    disabledCols: [],
+                    rowTimes: 0,
+                    preferValues: [],
+                    colTimes: 0,
+                    valueTimes: new Map(),
+                }})
+                return;
+            }
+            newMap.set(
+            `${Table.indexToLabel(index)}${this.size}`, {
+            value: "", hasConflict: false })
+        })
+        this.#rows.push(newMap);
+    }
+    deleteColumn () {
+        if (this.size === 0) return;
+        if (this.#rows[0].size === 1) {
+            this.#rows = [];
+            return;
+        };
+        const label = Table.indexToLabel(this.#rows[0].size-1);
+        this.#rows.forEach((row, rowIndex) => {
+            row.delete(`${label}${rowIndex}`);
+        });
+    }
+    deleteRow () {
+        if (this.size === 0) return;
+        this.#rows.pop();
+    }
+    edit (colIndex: number, rowIndex: number, value: string): boolean {
+        const letter = Table.indexToLabel(colIndex);
+        const label = `${letter}${rowIndex}`;
+        if (!this.#rows[rowIndex]) return false;
+        const cellExists: boolean = this.#rows[rowIndex].has(label);
+        if (!cellExists) return false;
+        if (rowIndex === 0 || colIndex === 0) {
+            const columnIsDuplicate = Array.from(this.#rows[0].values()).some(v => String(v.value).toLowerCase() === String(value).toLowerCase());
+            if (columnIsDuplicate === true) return false;
+            const rowIsDuplicate = this.#rows.some(v => v.get(label)?.value.toLowerCase() === value.toLowerCase());
+            if (rowIsDuplicate === true) return false;
+        }
+        const obj = this.#rows[rowIndex].get(label);
+        if (obj !== undefined) {
+            obj.value = value;
+        }
+        return true;
+    }
+    // This method is currently returning undefined
+    fetch(colIndex: number, rowIndex: number): string | undefined {
+        const label = Table.indexToLabel(colIndex);
+        return this.#rows[rowIndex].get(label)?.value;
+    }
+}
+export class TableExtended extends Table {
+    #values: Set<string> = new Set();
+    #columnType: "text" | "date" | "time" = "text";
+    #interval: number = 1;
+
+    constructor(
+        name: string,
+        storedRows?: Array<Map<string, RowType>>, 
+        storedValues?: Set<string>,
+        storedColumnType?: "text" | "date" | "time",
+        storedInterval?: number) {
+        super(name, storedRows);
+        this.#values = storedValues ?? new Set();
+        this.#columnType = storedColumnType ?? "text";
+        this.#interval = storedInterval ?? 1;
+    }
+    get values() {
+        return this.#values;
+    }
+    get columnType() {
+        return this.#columnType;
+    }
+    set columnType(type: "text" | "date" | "time") {
+        this.#columnType = type;
+    }
+    get interval() {
+        return this.#interval;
+    }
+    set interval(num: number) {
+        this.#interval = num;
+    }
+    addValue(value:string) {
+        this.#values.add(value);
+        if (this.rows.length) {
+            this.rows[0].forEach(col => {
+                if (col.specs) {
+                    col.specs.valueTimes.set(value, this.size);
+                }
+            })
+        }
+    }
+    deleteValue(value:string) {
+        this.#values.delete(value);
+        if (this.rows.length) {
+            this.rows[0].forEach(col => {
+                if (col.specs) {
+                    col.specs.valueTimes.delete(value);
+                }
+            })
+        }
+    }
+}
