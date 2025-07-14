@@ -65,7 +65,7 @@ export default function InputSelect ({ rowIndex, colIndex }: {
         <Select
         id={ label }
         name={ label }
-        variant="bordered"
+        variant={ conflict ? "faded" : "bordered" }
         color={ conflict ? "warning" : "default"}
         size="lg"
         classNames={{
