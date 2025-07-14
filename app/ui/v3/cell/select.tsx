@@ -42,8 +42,8 @@ export default function InputSelect ({ rowIndex, colIndex }: {
             maxListboxHeight={10}
             id={ label }
             name={ label }
-            variant="bordered"
-            color={ conflict ? "warning" : "default"}
+            variant={ conflict ? "faded" : "bordered" }
+            color={ conflict ? "warning" : "default" }
             size="lg"
             classNames={{
                 innerWrapper: "w-[60vw] text-base sm:w-[204px]",
@@ -65,7 +65,7 @@ export default function InputSelect ({ rowIndex, colIndex }: {
         <Select
         id={ label }
         name={ label }
-        variant="bordered"
+        variant={ conflict ? "faded" : "bordered" }
         color={ conflict ? "warning" : "default"}
         size="lg"
         classNames={{
