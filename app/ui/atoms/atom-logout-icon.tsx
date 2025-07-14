@@ -20,7 +20,7 @@ export default function SignOutButton () {
             textDecoration: "none"
         }}
         endContent={ <Logout /> }>
-            { lang === "es" ? "Cerrar sesión" : "Sign out"}
+            { lang === "es" ? "Salir" : "Sign out"}
         </Button>
     </form>
 }
