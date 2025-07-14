@@ -52,7 +52,7 @@ export default function DashboardTable ({ metadata }: {
                                     size="lg"
                                     classNames={{
                                         base: "pr-4 text-white",
-                                        content: "text-white",
+                                        content: "text-white font-semibold",
                                     }}>{row.table_name}</Chip>
                                 </Link>
                             </TableCell>
