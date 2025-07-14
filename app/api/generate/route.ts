@@ -59,7 +59,31 @@ export async function POST (request: NextRequest) {
             
             The output generated must be an Object containing:
                 1. rows: A property holding an Array of Objects. The child objects will be these properties: colIndex(number), rowIndex(number), name (i.e. "A3")(string), value(string), and hasConflict(boolean).
-                2. conflicts: An array of strings containing any descriptive conflicts found while generating the schedule, as instance, any conflict with contradictory criteria. The conflict texts must be in this language: ${lang}
+                2. conflicts: An array of strings containing any descriptive conflicts found while generating the schedule, as instance, any conflict with contradictory criteria. The conflict texts must be in this language: ${lang}. Each conflict text must cover these questions:
+                    a. In which column the conflict is located?
+                    b. What cell key (i.e. "A3") has the conflict?
+                    c. Which specification was met?
+                    d. Which specification was not met?
+                    e. Why the conflict occured?
+                2.1. Use this specification's names instead of the abbreviated keys:
+                    a. disabled:
+                        i. English: "Disable on all columns"
+                         ii. Spanish: "Deshabilitar en todas las columnas"
+                    b. disabledCols:
+                        i. English: "Disable these columns"
+                        ii. Spanish: "Deshabilitar estas columnas"
+                    c. rowTimes:
+                         i. English: "In how many columns should it appear?"
+                         ii. Spanish: "¿En cuántas columnas debería aparecer?"
+                    d. preferValues:
+                          i. English: "Prefer the following values to use in this row"
+                           ii. Spanish: "Preferir usar estos valores en la fila"
+                    e. colTimes:
+                          i. English: "Amount of rows to fill in this column"
+                           ii. Spanish: "Número de filas a llenar en esta columna"
+                     f. valueTimes:
+                           i. English: "Use the value "<insert value>" this amount of times"
+                            ii. Spanish: "Usar el valor "<insert value>" esta cantidad de veces"
 
             Rules to follow:
             1. **Randomness**
