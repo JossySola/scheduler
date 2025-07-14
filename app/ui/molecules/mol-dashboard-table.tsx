@@ -51,7 +51,8 @@ export default function DashboardTable ({ metadata }: {
                                     variant="solid" 
                                     size="lg"
                                     classNames={{
-                                        base: "pr-4"
+                                        base: "pr-4 text-white",
+                                        content: "text-white",
                                     }}>{row.table_name}</Chip>
                                 </Link>
                             </TableCell>
