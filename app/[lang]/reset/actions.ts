@@ -17,19 +17,19 @@ export async function passwordResetAction(prevState: { message: string }, formDa
 
     if (!password || !confirmation) {
         return {
-            message: locale === "es" ? "Por favor, llena todos los campos." : "Please fill out both input fields."
+            message: locale === "es" ? "Por favor, llena todos los campos." : "Please fill out both input fields.",
         }
     }
 
     if (password.length < 8) {
         return {
-            message: locale === "es" ? "Tu contraseña debe tener un mínimo de 8 caracteres." : "Your password must have at least 8 characters."
+            message: locale === "es" ? "Tu contraseña debe tener un mínimo de 8 caracteres." : "Your password must have at least 8 characters.",
         }
     }
 
     if (password !== confirmation || !token) {
         return {
-            message: locale === "es" ? "Confirmación de contraseña fallida" : "Password confirmation failed."
+            message: locale === "es" ? "Confirmación de contraseña fallida" : "Password confirmation failed.",
         }
     }
 
@@ -39,20 +39,20 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     `;
     if (isTokenExpired.rowCount === 0) {
         return {
-            message: locale === "es" ? "El token no se ha encontrado" : "Token not found"
+            message: locale === "es" ? "El token no se ha encontrado" : "Token not found",
         }
     }
     const { expires_at, used_at } = isTokenExpired.rows[0];
     if (used_at) {
         return {
-            message: locale === "es" ? "Este token ya ha sido usado. Genera uno nuevo." : "This token has already been used. Request a new one."
+            message: locale === "es" ? "Este token ya ha sido usado. Genera uno nuevo." : "This token has already been used. Request a new one.",
         }
     }
     const expires = new Date(expires_at).toISOString();
     const now = new Date().toISOString();
     if (expires < now) {
         return {
-            message: locale === "es" ? "Este token ha expirado. Genera uno nuevo." : "The token has expired. Request a new one."
+            message: locale === "es" ? "Este token ha expirado. Genera uno nuevo." : "The token has expired. Request a new one.",
         }
     }
 
@@ -65,14 +65,14 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         const exposed = await isPasswordPwned(password);
         if (typeof exposed === 'number' && exposed > 0) {
             return {
-                message: locale === "es" ? "Después de validar la contraseña, parece que ha sido expuesta y comprometida previamente. Por favor, usa una nueva contraseña más segura." : "After a password checkup, it appears this password has been exposed in a data breach in the past. Please use a stronger password."
+                message: locale === "es" ? "Después de validar la contraseña, parece que ha sido expuesta y comprometida previamente. Por favor, usa una nueva contraseña más segura." : "After a password checkup, it appears this password has been exposed in a data breach in the past. Please use a stronger password.",
             }
         }
         const hashed = await hashPasswordAction(password);
         const key = await generateKmsDataKey();
         if (!key?.CiphertextBlob) {
             return {
-                message: locale === "es" ? "Token inválido." : "Invalid key."
+                message: locale === "es" ? "Token inválido." : "Invalid key.",
             }
         }
         const query = await sql`
@@ -83,7 +83,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         `;
         if (query.rowCount === 0) {
             return {
-                message: locale === "es" ? "Proceso fallido." : "Password reset failed."
+                message: locale === "es" ? "Proceso fallido." : "Password reset failed.",
             }
         }
 
@@ -96,7 +96,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
 
         if (invalidate.rowCount === 0) {
             return {
-                message: locale === "es" ? "Fallo en completar el proceso." : "Failed to end process."
+                message: locale === "es" ? "Fallo en completar el proceso." : "Failed to end process.",
             }
         }
 
@@ -106,7 +106,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
         });
 
         return {
-            message: locale === "es" ? "¡Proceso completado!" : "Reset successful!"
+            message: locale === "es" ? "¡Proceso completado!" : "Reset successful!",
         }
     }
     // The user has used their own credentials
@@ -118,7 +118,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     `;
     if (oldPassword.rowCount === 0) {
         return {
-            message: locale === "es" ? "Usuario no encontrado." : "User not found."
+            message: locale === "es" ? "Usuario no encontrado." : "User not found.",
         }
     }
     const decryptedPassword = oldPassword.rows[0].decrypted_password;
@@ -126,14 +126,14 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     const comparison = await verifyPasswordAction(decryptedPassword, password);
     if (comparison) {
         return {
-            message: locale === "es" ? "La nueva contraseña no debe ser la misma a la anterior." : "New password cannot be the same as the old password."
+            message: locale === "es" ? "La nueva contraseña no debe ser la misma a la anterior." : "New password cannot be the same as the old password.",
         }
     }
 
     const exposed = await isPasswordPwned(password);
     if (typeof exposed === 'number' && exposed > 0) {
         return {
-            message: locale === "es" ? "Después de validar la contraseña, parece que ha sido expuesta y comprometida previamente. Por favor, usa una nueva contraseña más segura." : "After a password checkup, it appears this password has been exposed in a data breach in the past. Please use a stronger password."
+            message: locale === "es" ? "Después de validar la contraseña, parece que ha sido expuesta y comprometida previamente. Por favor, usa una nueva contraseña más segura." : "After a password checkup, it appears this password has been exposed in a data breach in the past. Please use a stronger password.",
         }
     }
     
@@ -141,7 +141,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     const key = await generateKmsDataKey();
     if (!key?.CiphertextBlob) {
         return {
-            message: locale === "es" ? "Token inválido." : "Invalid key."
+            message: locale === "es" ? "Token inválido." : "Invalid key.",
         }
     }
     const query = await sql`
@@ -152,7 +152,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     `;
     if (query.rowCount === 0) {
         return {
-            message: locale === "es" ? "Proceso fallido." : "Password reset failed."
+            message: locale === "es" ? "Proceso fallido." : "Password reset failed.",
         }
     }
 
@@ -165,7 +165,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
 
     if (invalidate.rowCount === 0) {
         return {
-            message: locale === "es" ? "Fallo en completar el proceso." : "Failed to end process."
+            message: locale === "es" ? "Fallo en completar el proceso." : "Failed to end process.",
         }
     }
 
@@ -175,6 +175,6 @@ export async function passwordResetAction(prevState: { message: string }, formDa
     });
 
     return {
-        message: locale === "es" ? "¡Proceso completado!" : "Reset successful!"
+        message: locale === "es" ? "¡Proceso completado!" : "Reset successful!",
     }
 }
