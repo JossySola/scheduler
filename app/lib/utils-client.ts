@@ -117,7 +117,7 @@ export class Table {
     }
     // Setters & Getters
     get size (): number {
-        return this.#rows.length;
+        return this.#rows.length ?? 0;
     }
     get rows (): Array<Map<string, RowType>> {
         return this.#rows;
