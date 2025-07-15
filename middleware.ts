@@ -23,7 +23,7 @@ export default middleware((req: AuthenticatedRequest) => {
         if ([`/${locale}/login`, `/${locale}/signup`].includes(pathname) && req.auth) {
             return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
         }
-        if ([`/${locale}/dashboard`, `/${locale}/table`].includes(pathname) && !req.auth) {
+        if ([`/${locale}/dashboard`, `/${locale}/table`, `/${locale}/table/`].includes(pathname) && !req.auth) {
             return NextResponse.redirect(new URL(`/${locale}/login`, req.url));
         }
     }
