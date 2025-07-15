@@ -49,7 +49,7 @@ export default function DashboardTable ({ metadata }: {
                                     <Chip 
                                     endContent={ <PencilEdit width={12} /> } 
                                     variant="solid" 
-                                    color="warning"
+                                    color="primary"
                                     size="lg"
                                     classNames={{
                                         base: "pr-4",
