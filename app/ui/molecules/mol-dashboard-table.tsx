@@ -48,9 +48,9 @@ export default function DashboardTable ({ metadata }: {
                                 className="text-md tracking-wide no-underline">
                                     <Chip 
                                     endContent={ <PencilEdit width={12} /> } 
-                                    variant="solid" 
-                                    color="primary"
-                                    size="lg"
+                                    variant="flat" 
+                                    color="warning"
+                                    size="md"
                                     classNames={{
                                         base: "pr-4",
                                         content: "font-semibold",
