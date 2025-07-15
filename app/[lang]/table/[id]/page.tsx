@@ -10,12 +10,27 @@ export default async function Page ({ params }: {
 }) {
     const { id, lang } = await params;
     const session = await auth();
+
     if (session?.user?.id) {
+        const owner = await sql`
+        SELECT user_id
+        FROM scheduler_users_tables
+        WHERE id = ${id};
+        `.then(result => result.rowCount !== 0 ? result.rows[0] : null).catch(() => undefined);
+        if (owner !== session.user.id) {
+            return (
+                <section className="w-full h-full inline-flex items-center justify-center">
+                    <h2>{ lang === "es" ? "No eres el propietario de este horario 🤚🏾" : "You are not the owner of this schedule 🤚🏾" }</h2>
+                </section>
+            )
+        }
+
         // Replaced API endpoint with direct query logic
         const keys = await sql`
         SELECT table_name_key, table_rows_key, table_values_key
         FROM scheduler_users_tables
         WHERE id = ${id};`.then(result => result.rowCount !== 0 ? result.rows[0] : null).catch(() => null);
+
 
         if (keys && keys.table_name_key && keys.table_rows_key && keys.table_values_key) {
             const name_key = await decryptKmsDataKey(keys.table_name_key);
@@ -23,7 +38,6 @@ export default async function Page ({ params }: {
             const values_key = await decryptKmsDataKey(keys.table_values_key);
             const serialized_table = await sql`
             SELECT
-                user_id,
                 pgp_sym_decrypt_bytea(table_name, ${name_key}) AS decrypted_name,
                 pgp_sym_decrypt_bytea(table_rows, ${rows_key}) AS decrypted_rows,
                 pgp_sym_decrypt_bytea(table_values, ${values_key}) AS decrypted_values,
