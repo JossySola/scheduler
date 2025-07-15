@@ -17,7 +17,7 @@ export default async function Page ({ params }: {
         SELECT user_id
         FROM scheduler_users_tables
         WHERE id = ${id};
-        `.then(result => result.rowCount !== 0 ? result.rows[0] : null).catch(() => undefined);
+        `.then(result => result.rowCount !== 0 ? result.rows[0].user_id : null).catch(() => undefined);
         if (owner !== session.user.id) {
             return (
                 <section className="w-full h-full flex flex-col items-center justify-center">
