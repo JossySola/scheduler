@@ -19,7 +19,7 @@ export default async function Page ({ params }: {
         `.then(result => result.rowCount !== 0 ? result.rows[0] : null).catch(() => undefined);
         if (owner !== session.user.id) {
             return (
-                <section className="w-full h-full inline-flex items-center justify-center">
+                <section className="w-full h-full flex flex-col items-center justify-center">
                     <h2>{ lang === "es" ? "No eres el propietario de este horario 🤚🏾" : "You are not the owner of this schedule 🤚🏾" }</h2>
                 </section>
             )
