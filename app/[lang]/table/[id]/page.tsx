@@ -4,6 +4,7 @@ import { BackButton } from "@/app/ui/atoms/atom-button-back";
 import Panel from "@/app/ui/v3/client-panel";
 import { auth } from "@/auth";
 import { sql } from "@vercel/postgres";
+import { redirect } from 'next/navigation';
 
 export default async function Page ({ params }: { 
     params: Promise<{ id: string, lang: "en" | "es" }>
@@ -91,4 +92,5 @@ export default async function Page ({ params }: {
             </section>
         }
     }
+    redirect(`/${lang}/login`);
 }
