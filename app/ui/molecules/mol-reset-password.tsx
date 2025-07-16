@@ -13,7 +13,7 @@ export default function ResetPassword({ token }: {
     const { lang } = params;
 
     return (
-        <section className="p-8 w-full flex flex-col justify-center items-center">
+        <section className="w-full p-3 sm:w-[400px] flex flex-col justify-center items-center pt-5">
             <form action={resetAction}>
                 <input type="text" name="token" value={token} readOnly hidden />
                 <FormInputPassword />
