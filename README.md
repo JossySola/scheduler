@@ -1,4 +1,5 @@
-# Scheduler ![icon](https://github.com/user-attachments/assets/3e67832e-a757-44cc-a4a9-ded4055057c4) 
+# Scheduler <img width="32" height="32" alt="icon" src="https://github.com/user-attachments/assets/baa2a494-0e9b-4940-a378-667e8847969f" />
+
 ## Description
 
 I thought of this project after I realized the managers at my current job (*retail store*) were struggling with schedule planification as we are more than 40 employees.
