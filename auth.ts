@@ -12,6 +12,9 @@ import type {
   User,
 } from "@auth/core/types";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
+import { KMSDataKey } from "./app/lib/definitions";
+import { SignatureV4 } from "@aws-sdk/signature-v4";
+import { Sha256 } from "@aws-crypto/sha256-js";
 
 interface Token {
     googleAccessToken?: string;
@@ -30,84 +33,22 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
     providers: [
         Google({
             async profile(profile) {
-                try {
-                    const doesUserExist = await sql`
-                    SELECT 
-                        scheduler_users.id as user_id, 
-                        scheduler_users_providers.provider
-                    FROM 
-                        (SELECT ${profile.email} AS email) AS input
-                    LEFT JOIN 
-                        scheduler_users ON input.email = scheduler_users.email
-                    LEFT JOIN
-                        scheduler_users_providers ON scheduler_users.email = scheduler_users_providers.email 
-                        AND scheduler_users_providers.provider = 'Google';
-                    `;
-                    const data = doesUserExist.rows[0];
-                    // If the user exists AND it already has signed in with provider, return profile
-                    if (data.user_id && data.provider) {
-                        profile.id = data.user_id;
-                        profile.image = profile.picture;
-                        return { ...profile };
-                    }
-                    // If the user exist BUT hasn't signed in with provider,
-                    // Add provider into table AND update the users' profile picture
-                    if (data.user_id && data.provider === null) {
-                        const registerUserProvider = await sql`
-                            INSERT INTO scheduler_users_providers (email, provider)
-                            VALUES (
-                                ${profile.email},
-                                'Google'
-                            );
-                        `;
-                        const insertProfilePicture = await sql`
-                            UPDATE scheduler_users
-                            SET user_image = ${profile.picture}
-                            WHERE email = ${profile.email} AND user_image IS NULL;
-                        `;
-                        profile.id = data.user_id;
-                        profile.image = profile.picture;
-                        return { ... profile };
-                    }
-                    // If the user does not exist
-                    if (data.user_id === null && data.provider === null) {
-                        const registerUser = await sql`
-                            INSERT INTO scheduler_users (name, username, email, user_image)
-                            VALUES (
-                                ${profile.name},
-                                ${profile.name},
-                                ${profile.email},
-                                ${profile.picture}
-                            )
-                            ON CONFLICT (username) DO NOTHING
-                            RETURNING id;
-                        `;
-                        const registerUserProvider = await sql`
-                            INSERT INTO scheduler_users_providers (email, provider)
-                            VALUES (
-                                ${profile.email},
-                                'Google'
-                            );
-                        `;
-                        profile.id = data.user_id;
-                        profile.image = profile.picture;
-                        return { ... profile };
-                    }
-                    return { 
-                        id: "",
-                        name: "",
-                        email: "",
-                        image: "",
-                    };
-                } catch (error) {
-                    console.error("Error during signup API call:", error);
-                    return { 
-                        id: "",
-                        name: "",
-                        email: "",
-                        image: "",
-                    };;
+                if (!profile.email) {
+                    throw new Error("Facebook profile is missing email");
                 }
+                const stored_id = await sql`
+                SELECT scheduler_users.id
+                FROM scheduler_users 
+                JOIN scheduler_users_providers
+                    ON scheduler_users.email = scheduler_users_providers.email
+                    AND scheduler_users_providers.provider = 'google'
+                WHERE scheduler_users.email = ${profile.email};
+                `.then(response => response.rowCount !== 0 ? response.rows[0].id : null);
+                if (stored_id) {
+                    profile.id = stored_id;
+                }
+                profile.image = profile.picture;
+                return { ... profile }
             }
         }),
         Facebook({
@@ -117,84 +58,22 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                 },
             },
             async profile(profile) {
-                try {
-                    const doesUserExist = await sql`
-                    SELECT 
-                        scheduler_users.id as user_id, 
-                        scheduler_users_providers.provider
-                    FROM 
-                        (SELECT ${profile.email} AS email) AS input
-                    LEFT JOIN 
-                        scheduler_users ON input.email = scheduler_users.email
-                    LEFT JOIN
-                        scheduler_users_providers ON scheduler_users.email = scheduler_users_providers.email 
-                        AND scheduler_users_providers.provider = 'Facebook';
-                    `;
-                    const data = doesUserExist.rows[0];
-                    // If the user exists AND it already has signed in with provider, return profile
-                    if (data.user_id && data.provider) {
-                        profile.id = data.user_id;
-                        profile.image = profile.picture.data.url;
-                        return { ...profile };
-                    }
-                    // If the user exist BUT hasn't signed in with provider,
-                    // Add provider into table AND update the users' profile picture
-                    if (data.user_id && data.provider === null) {
-                        const registerUserProvider = await sql`
-                            INSERT INTO scheduler_users_providers (email, provider)
-                            VALUES (
-                                ${profile.email},
-                                'Facebook'
-                            );
-                        `;
-                        const insertProfilePicture = await sql`
-                            UPDATE scheduler_users
-                            SET user_image = ${profile.picture.data.url}
-                            WHERE email = ${profile.email} AND user_image IS NULL;
-                        `;
-                        profile.id = data.user_id;
-                        profile.image = profile.picture.data.url;
-                        return { ... profile };
-                    }
-                    // If the user does not exist
-                    if (data.user_id === null && data.provider === null) {
-                        const registerUser = await sql`
-                            INSERT INTO scheduler_users (name, username, email, user_image)
-                            VALUES (
-                                ${profile.name},
-                                ${profile.name},
-                                ${profile.email},
-                                ${profile.picture.data.url}
-                            )
-                            ON CONFLICT (username) DO NOTHING
-                            RETURNING id;
-                        `;
-                        const registerUserProvider = await sql`
-                            INSERT INTO scheduler_users_providers (email, provider)
-                            VALUES (
-                                ${profile.email},
-                                'Facebook'
-                            );
-                        `;
-                        profile.id = data.user_id;
-                        profile.image = profile.picture.data.url;
-                        return { ... profile };
-                    }
-                    return { 
-                        id: "",
-                        name: "",
-                        email: "",
-                        image: "",
-                    };
-                } catch (error) {
-                    console.error("Error during signup API call:", error);
-                    return { 
-                        id: "",
-                        name: "",
-                        email: "",
-                        image: "",
-                    };
+                if (!profile.email) {
+                    throw new Error("Facebook profile is missing email");
                 }
+                const stored_id = await sql`
+                SELECT scheduler_users.id
+                FROM scheduler_users 
+                JOIN scheduler_users_providers
+                    ON scheduler_users.email = scheduler_users_providers.email
+                    AND scheduler_users_providers.provider = 'facebook'
+                WHERE scheduler_users.email = ${profile.email};
+                `.then(response => response.rowCount !== 0 ? response.rows[0].id : null);
+                if (stored_id) {
+                    profile.id = stored_id;
+                }
+                profile.image = profile.picture.data.url;
+                return { ... profile }
             }
         }),
         Credentials({
@@ -340,6 +219,102 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
         }),
     ],
     callbacks: {
+        async signIn({ user, account }: { user: User, account: Account }) {
+            try {
+                switch(account.provider) {
+                    case "facebook": {
+                        const user_provider = await sql`
+                            SELECT provider
+                            FROM scheduler_users_providers
+                            WHERE email = ${user.email} AND provider = 'facebook';
+                        `.then(response => response.rowCount !== 0 ? response.rows[0].provider : null);
+                        if (user_provider !== null && user_provider === "facebook") {
+                            // If the user has already signed in with Facebook before
+                            return true;
+                        }
+                        // Add record to scheduler_users_providers
+                        const new_key = await generateKmsDataKey();
+                        const insertToProviders = await sql`
+                        INSERT INTO scheduler_users_providers (email, provider, account_id, account_id_key)
+                        VALUES (${user.email}, ${account.provider}, pgp_sym_encrypt(${account.providerAccountId}, ${new_key.Plaintext}), ${new_key.CiphertextBlob});
+                        `.then(response => response.rowCount !== 0 ? true : false);
+                        if (!insertToProviders) {
+                            return false;
+                        }
+                        // Check if user already exists on scheduler_users
+                        const user_record = await sql`
+                        SELECT id FROM scheduler_users WHERE email = ${user.email};
+                        `.then(response => response.rowCount !== 0 ? true : false);
+                        if (user_record) {
+                            return true;
+                        }
+                        // Create a new user record on scheduler_users if it doesn't exist
+                        const new_record = await sql`
+                        INSERT INTO scheduler_users(name, username, email, user_image)
+                        VALUES (
+                            ${user.name},
+                            ${user.name},
+                            ${user.email},
+                            ${user.image}
+                        )
+                        ON CONFLICT (username) DO NOTHING;
+                        `.then(response => response.rowCount !== 0 ? true : false);
+                        if (!new_record) {
+                            return false;
+                        }
+                        return true;
+                    };
+                    case "google": {
+                        const user_provider = await sql`
+                            SELECT provider
+                            FROM scheduler_users_providers
+                            WHERE email = ${user.email} AND provider = 'google';
+                        `.then(response => response.rowCount !== 0 ? response.rows[0].provider : null);
+                        if (user_provider !== null) {
+                            // If the user has already signed in with Facebook before
+                            return true;
+                        }
+                        // Add record to scheduler_users_providers
+                        const new_key = await generateKmsDataKey();
+                        const insertToProviders = await sql`
+                        INSERT INTO scheduler_users_providers (email, provider, account_id, account_id_key)
+                        VALUES (${user.email}, ${account.provider}, pgp_sym_encrypt(${account.providerAccountId}, ${new_key.Plaintext}), ${new_key.CiphertextBlob});
+                        `.then(response => response.rowCount !== 0 ? true : false);
+                        if (!insertToProviders) {
+                            return false;
+                        }
+                        // Check if user already exists on scheduler_users
+                        const user_record = await sql`
+                        SELECT id FROM scheduler_users WHERE email = ${user.email};
+                        `.then(response => response.rowCount !== 0 ? true : false);
+                        if (user_record) {
+                            return true;
+                        }
+                        // Create a new user record on scheduler_users if it doesn't exist
+                        const new_record = await sql`
+                        INSERT INTO scheduler_users(name, username, email, user_image)
+                        VALUES (
+                            ${user.name},
+                            ${user.name},
+                            ${user.email},
+                            ${user.picture}
+                        )
+                        ON CONFLICT (username) DO NOTHING;
+                        `.then(response => response.rowCount !== 0 ? true : false);
+                        if (!new_record) {
+                            return false;
+                        }
+                        return true;
+                    };
+                    default: {
+                        return true;
+                    };
+                }
+            } catch (e) {
+                console.error(e);
+                return false;
+            }
+        },
         async authorized ({ auth }: { auth: null | Session }) {
             return !!auth;
         },
@@ -432,3 +407,53 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
     },
     debug: true,
 })
+
+async function generateKmsDataKey (): Promise<KMSDataKey> {
+  const accessKeyId = process.env.AWS_KMS_KEY;
+  const secretAccessKey = process.env.AWS_KMS_SECRET;
+  const region = 'us-east-1';
+  const service = 'kms';
+  try {
+    if (!accessKeyId || !secretAccessKey) throw new Error("Missing keys", { cause: 400 });
+    const signer = new SignatureV4({
+      credentials: { accessKeyId, secretAccessKey },
+      service,
+      region,
+      sha256: Sha256
+    });
+    const signedRequest = await signer.sign({
+      method: "POST",
+      hostname: "kms.us-east-1.amazonaws.com",
+      protocol: "https:",
+      port: 443,
+      path: "/",
+      headers: {
+        'Content-Type': 'application/x-amz-json-1.1',
+        'X-Amz-Target': 'TrentService.GenerateDataKey',
+        'Host': "kms.us-east-1.amazonaws.com",
+      },
+      body: JSON.stringify({
+        "KeyId": "alias/scheduler",
+        "KeySpec": "AES_256"
+      })
+    })
+    const response = await fetch("https://kms.us-east-1.amazonaws.com", {
+      method: signedRequest.method,
+      headers: signedRequest.headers,
+      body: signedRequest.body
+    });
+    if (!response) throw new Error("No response", { cause: 500 })
+    if (!response.ok) {
+      const errorText = await response.text(); // Get AWS error message
+      throw new Error(`Request failed: ${response.status} - ${errorText}`);
+    }
+    const data: KMSDataKey = await response.json();
+    if (data.CiphertextBlob && data.Plaintext) {
+      return data;
+    } else {
+      throw new Error("Invalid response", { cause: 400 });
+    }
+  } catch (e) {
+    throw e;
+  }
+}

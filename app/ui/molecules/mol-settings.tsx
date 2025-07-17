@@ -28,10 +28,10 @@ export default function Settings ({ lang, data }: {
                         <ModalBody className="flex flex-col items-center">
                             {
                                 data && data.map((row: { provider: string }) => {
-                                    if (row.provider === "Google") {
+                                    if (row.provider === "google") {
                                         return <DisconnectGoogle key={row.provider} />
                                     }
-                                    if (row.provider === "Facebook") {
+                                    if (row.provider === "facebook") {
                                         return <DisconnectFacebook key={row.provider} />
                                     }
                                 })

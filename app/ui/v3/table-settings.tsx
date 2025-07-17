@@ -48,13 +48,13 @@ export default function TableSettings ({ handleGeneration }: {
                             <Tabs
                             fullWidth={ true }
                             classNames={{
-                                tab: table.rows[0].size > 6 ? "" : "overflow-hidden",
-                                tabWrapper: table.rows[0].size > 6 ? "overflow-x-scroll" : "",
-                                tabContent: table.rows[0].size > 6 ? "" : "w-full truncate",
+                                tab: ((table.size && table.rows[0].size) ?? 0) > 6 ? "" : "overflow-hidden",
+                                tabWrapper: ((table.size && table.rows[0].size) ?? 0) > 6 ? "overflow-x-scroll" : "",
+                                tabContent: ((table.size && table.rows[0].size) ?? 0) > 6 ? "" : "w-full truncate",
                             }}
                             aria-label={ lang === "es" ? "Ajustes de columna" : "Columns' Specifications" }>
                                 {
-                                    table.size > 0 ? Array.from(table.rows[0].values()).map((col: RowType, colIndex: number) => {
+                                    table && table.size > 0 ? Array.from(table.rows[0].values()).map((col: RowType, colIndex: number) => {
                                         const isDate = zod.iso.date().safeParse(col.value).success;
                                         const isTime = zod.iso.time().safeParse(col.value).success;
                                         const title = () => {
@@ -98,7 +98,7 @@ export default function TableSettings ({ handleGeneration }: {
                             }}
                             aria-label={ lang === "es" ? "Ajuste de filas" : "Rows' Specifications" }>
                                 {
-                                    table.size > 0 ? table.rows.map((map: Map<string, RowType>, rowIndex: number) => {
+                                    table && table.size > 0 ? table.rows.map((map: Map<string, RowType>, rowIndex: number) => {
                                         const rawTitle = map.get(`A${rowIndex}`)?.value;
                                         const title = rawTitle && rawTitle.trim() !== "" 
                                             ? rawTitle 

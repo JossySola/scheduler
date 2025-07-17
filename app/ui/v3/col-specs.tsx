@@ -24,13 +24,13 @@ export default function ColSpecs ({ colIndex, title }: {
                 <NumberInput
                 value={number}
                 minValue={0}
-                maxValue={table.size > 0 ? table.size - 1 : 0}
+                maxValue={table && table.size > 0 ? table.size - 1 : 0}
                 label={ lang === "es" ? "Número de filas a llenar en esta columna" : "Amount of rows to fill in this column" }
                 aria-label={ lang === "es" ? "Número de filas a llenar en esta columna" : "Amount of rows to fill in this column" }
                 labelPlacement="inside"
                 onValueChange={setNumber} />
                 {
-                    table.values && Array.from(table.values.values()).map((value: string, index: number) => {
+                    table && table.values && Array.from(table.values.values()).map((value: string, index: number) => {
                         return <ValueSlider key={index} value={value} colIndex={colIndex} />
                     })
                 }

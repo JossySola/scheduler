@@ -4,7 +4,7 @@ import { Timestamp } from "../atoms/atom-timestamp";
 import Link from "next/link";
 import { Link as HeroLink } from "@heroui/react";
 import DeleteTableModal from "./mol-delete-table-modal";
-import { PlusCircle } from "../icons";
+import { PencilEdit, PlusCircle } from "../icons";
 import { useParams } from "next/navigation";
 
 export default function DashboardTable ({ metadata }: {
@@ -42,7 +42,21 @@ export default function DashboardTable ({ metadata }: {
                         const createdDate = `${months[created.getMonth()]} ${created.getDate()}, ${created.getFullYear()}`
                         return (
                         <TableRow key={`${row.table_name}${index}`}>
-                            <TableCell><Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/${row.table_id}`} className="text-lg font-semibold tracking-wide">{row.table_name}</Link></TableCell>
+                            <TableCell>
+                                <Link 
+                                href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/${row.table_id}`} 
+                                className="text-md tracking-wide no-underline">
+                                    <Chip 
+                                    endContent={ <PencilEdit width={12} /> } 
+                                    variant="flat" 
+                                    color="warning"
+                                    size="md"
+                                    classNames={{
+                                        base: "pr-4",
+                                        content: "font-semibold",
+                                    }}>{row.table_name}</Chip>
+                                </Link>
+                            </TableCell>
                             <TableCell>{createdDate}</TableCell>
                             <TableCell><Timestamp updated_at={row.updated_at}/></TableCell>
                             <TableCell>

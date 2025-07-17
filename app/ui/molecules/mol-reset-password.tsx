@@ -13,14 +13,16 @@ export default function ResetPassword({ token }: {
     const { lang } = params;
 
     return (
-        <form action={resetAction}>
-            <input type="text" name="token" value={token} readOnly hidden />
-            <FormInputPassword />
-            
-            <p aria-live="polite" className="text-danger">{resetState.message}</p>
-            <ActionButton type="submit" loading={pending} disabled={pending}>
-                { lang === "es" ? "Cambiar contraseña" : "Change password" }
-            </ActionButton>
-        </form>
+        <section className="w-full p-3 sm:w-[400px] flex flex-col justify-center items-center pt-5">
+            <form action={resetAction}>
+                <input type="text" name="token" value={token} readOnly hidden />
+                <FormInputPassword />
+                
+                <p aria-live="polite" className="text-danger">{resetState.message}</p>
+                <ActionButton type="submit" loading={pending} disabled={pending}>
+                    { lang === "es" ? "Cambiar contraseña" : "Change password" }
+                </ActionButton>
+            </form>
+        </section>
     )
 }

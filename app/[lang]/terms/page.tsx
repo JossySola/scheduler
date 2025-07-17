@@ -5,6 +5,100 @@ export default async function Page ({ params }: {
     params: Promise<{ lang: "es" | "en"}>
 }) {
     const lang = (await params).lang;
+
+    if (lang === "es") {
+        return (
+            <section className="p-10 pb-[6rem] text-base/7 h-fit">
+
+                <h1>Términos de Uso</h1>
+
+                <i>Fecha de entrada en vigor: 8 de abril de 2025.</i>
+                <Divider className="my-4" />
+                <h2>1. Aceptación de los Términos</h2>
+                
+                <p>Al acceder y utilizar Scheduler ("la aplicación web"), aceptas cumplir con estos Términos de Uso. Si no estás de acuerdo, no podrás utilizar el servicio.</p>
+            
+                <h2>2. Registro de Cuenta y Seguridad</h2>
+
+                <ul className="pl-8 list-disc">
+                    <li>Debes proporcionar información precisa y completa al registrarte.</li>
+                    <li>Eres responsable de mantener la confidencialidad de tus credenciales de acceso.</li>
+                    <li>No debes compartir tu cuenta con otras personas ni utilizar la cuenta de otro usuario.</li>
+                </ul>
+
+                <h2>3. Política de Contraseñas</h2>
+                
+                <ul className="pl-8 list-disc">
+                    <li>Tu contraseña debe tener al menos 8 caracteres.</li>
+                    <li>Se recomienda encarecidamente usar la sugerencia del Gestor de Contraseñas, ya que ofrece contraseñas altamente seguras.</li>
+                    <li>Todas las contraseñas se verifican contra una <Code size="sm">base de datos pública de contraseñas expuestas <a href="#footer"><sup>1</sup></a></Code> por seguridad, se cifran usando <Code size="sm">Argon2id <a href="#footer"><sup>2</sup></a></Code> y se encriptan antes de ser almacenadas.</li>
+                </ul>
+
+                <h2>4. Contenido Generado por el Usuario (Horarios y Tablas)</h2>
+                
+                <ul className="pl-8 list-disc">
+                    <li>Conservas la propiedad de los horarios y tablas que crees.</li>
+                    <li>Todos los horarios y tablas se encriptan <a href="#footer"><sup>3</sup></a> utilizando algoritmos de cifrado robustos antes de su almacenamiento.</li>
+                    <li>Puedes eliminar tus horarios en cualquier momento.</li>
+                </ul>
+                
+                <h2>5. Eliminación de Cuenta y Eliminación de Datos</h2>
+                
+                <ul className="pl-8 list-disc">
+                    <li>Puedes eliminar tu cuenta en cualquier momento, lo que borrará todos los datos vinculados y desconectará cualquier proveedor asociado.</li>
+                    <li>Puedes desconectar tu cuenta de Google o Facebook sin necesidad de eliminar tu cuenta.</li>
+                </ul>
+                
+                <h2>6. Uso de Inteligencia Artificial</h2>
+
+                <ul className="pl-8 list-disc">
+                    <li>Nuestra aplicación web ofrece asistencia en la creación de horarios mediante <Code size="sm">inteligencia artificial <a href="#footer"><sup>4</sup></a></Code> a través de un servicio externo.</li>
+                    <li>No garantizamos la precisión, fiabilidad o eficacia de los horarios generados por IA.</li>
+                    <li>Al utilizar la función de generación de IA, aceptas sus <Link href="https://www.anthropic.com/legal/consumer-terms">Términos y Condiciones</Link>.</li>
+                </ul>
+
+                <h2>7. Actividades Prohibidas</h2>
+                
+                <p>Al utilizar nuestra aplicación web, aceptas NO realizar lo siguiente:</p>
+                
+                <ul className="pl-8 list-disc">
+                    <li>Usar el servicio para actividades ilegales, fraudulentas o perjudiciales.</li>
+                    <li>Intentar acceder sin autorización a otras cuentas y/o datos confidenciales.</li>
+                    <li>Interferir con la funcionalidad de la plataforma (por ejemplo, hackeo o explotación de vulnerabilidades).</li>
+                </ul>
+                
+                <h2>8. Limitación de Responsabilidad</h2>
+                
+                <p>Ofrecemos esta aplicación web "tal como está". Aunque tomamos la seguridad en serio, no nos responsabilizamos por:</p>
+                
+                <ul className="pl-8 list-disc">
+                    <li>Cualquier pérdida de datos debido a fallos inesperados del sistema.</li>
+                    <li>Accesos no autorizados causados por contraseñas débiles o negligencia del usuario.</li>
+                    <li>Inexactitudes en los horarios generados por IA.</li>
+                </ul>
+
+                <h2>9. Terminación del Acceso</h2>
+                
+                <p>Nos reservamos el derecho de suspender o cancelar el acceso a tu cuenta si violas estos términos.</p>
+                
+
+                <h2>10. Actualizaciones de estos Términos</h2>
+
+                <p>Podemos actualizar estos Términos de Uso en cualquier momento. Si se producen cambios significativos, notificaremos a los usuarios por correo electrónico o mediante una notificación en la aplicación.</p>
+
+                <h2>11. Información de Contacto</h2>
+                
+                <p>Si tienes preguntas o inquietudes sobre estos términos, contáctanos {<Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`}>aquí</Link>}.</p>
+                <Divider className="my-4"/>
+                <footer className="text-tiny dark:bg-[#1A1A1A]" id="footer">
+                    <p className="mb-1">1 <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> es un servicio que proporciona una lista de contraseñas que han sido expuestas previamente en filtraciones de datos. Esto se utiliza para evitar el uso de contraseñas inseguras. Desde nuestro lado, verificamos tu contraseña usando un método que preserva la privacidad y asegura que nunca se revele por completo.</p>
+                    <p className="mb-1">2 <Link href="https://en.wikipedia.org/wiki/Argon2">Argon2id</Link> es una versión híbrida de <b>Argon2</b>, que es una función de derivación de claves usada para cifrar contraseñas.</p>
+                    <p className="mb-1">3 Los datos sensibles se encriptan antes de almacenarse en nuestra base de datos usando un algoritmo de cifrado robusto y claves gestionadas de forma segura.</p>
+                    <p className="mb-1">4 <Link href="https://www.anthropic.com/legal/privacy">Política de Privacidad de Anthropic.</Link> Para las funciones relacionadas con IA, usamos un modelo de lenguaje compatible con la privacidad proporcionado por Anthropic.</p>
+                </footer>
+            </section>
+        )
+    }
     return (
         <section className="p-10 pb-[6rem] text-base/7 h-fit">
 

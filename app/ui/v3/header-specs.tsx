@@ -28,7 +28,7 @@ export default function HeaderSpecs() {
         onChange={ e => { 
             table.columnType = e.target.value as "text" | "date" | "time";
             // Reset all headers' values
-            if (table.rows[0].size > 0) {
+            if (table.rows && table.rows[0] && table.rows[0].size > 0) {
                 table.rows[0].forEach(header => header.value = "");
             }
             if (e.target.value === "time") {

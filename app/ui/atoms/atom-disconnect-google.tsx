@@ -1,23 +1,19 @@
 "use client"
-import { useState } from "react"
-import { ActionButton, SecondaryButton } from "./atom-button";
+import { useActionState } from "react"
 import { DisconnectGoogleAction } from "@/app/[lang]/dashboard/actions";
 import { useParams } from "next/navigation";
 import { BreadcrumbItem, Breadcrumbs, Button, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { LogoGoogle } from "../icons";
 
 export default function DisconnectGoogle () {
-    const [disconnected, setDisconnected] = useState<boolean>(false);
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const [ state, action, isLoading ] = useActionState(DisconnectGoogleAction, { message: "" });
     const params = useParams();
     const { lang } = params;
 
     return (
         <>
-        {
-            !disconnected ? <Button className="text-black bg-white border-1 border-black" endContent={<LogoGoogle />} onPress={onOpen}>{ lang === "es" ? "Desconectar Google" : "Disconnect from Google" }</Button> : null
-        }
-        
+        <Button isLoading={ isLoading } isDisabled={ isLoading } className="text-black bg-white border-1 border-black" endContent={<LogoGoogle />} onPress={onOpen}>{ lang === "es" ? "Desconectar Google" : "Disconnect from Google" }</Button>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
                 {(onClose) => (
@@ -46,7 +42,7 @@ export default function DisconnectGoogle () {
                                     </Breadcrumbs>
                                 </li>
                             </ul>
-                            <i>Si este es tu único método para iniciar sesión, ya no podrás acceder a esta cuenta.</i>
+                            <i className="text-danger">Si este es tu único método para iniciar sesión, la cuenta será eliminada permanentemente.</i>
                         </> : 
                         <>
                             <ul className="pl-8 list-decimal">
@@ -60,20 +56,18 @@ export default function DisconnectGoogle () {
                                     </Breadcrumbs>
                                 </li>
                             </ul>
-                            <i>If this is the only signin method you have left, you may not be able to log in.</i>
+                            <i className="text-danger">If this is the only sign in method you have, the account will be completely and permanently deleted.</i>
                         </>
                     }
                     </ModalBody>
-                    <ModalFooter className="flex flex-row justify-between items-center">
-                        <ActionButton onPress={async () => {
-                            const response = await DisconnectGoogleAction();
-                            if (response === 200) {
-                                setDisconnected(true);
-                            }
-                        }}>
-                            { lang === "es" ? "Desconectar" : "Disconnect"}
-                        </ActionButton>
-                        <SecondaryButton onPress={onClose}>{ lang === "es" ? "Cancelar" : "Cancel" }</SecondaryButton>
+                    <ModalFooter className="flex flex-col justify-center items-center gap-3">
+                        <p className="text-danger text-tiny">{ state.message }</p>
+                        <form action={action}>
+                            <Button type="submit" size="md" className="bg-black text-white dark:bg-white dark:text-black" isLoading={ isLoading } isDisabled={ isLoading }>
+                                { lang === "es" ? "Desconectar" : "Disconnect"}
+                            </Button>
+                        </form>
+                        <Button size="md" variant="bordered" onPress={onClose}>{ lang === "es" ? "Cancelar" : "Cancel" }</Button>
                     </ModalFooter>
                     </>
                 )}

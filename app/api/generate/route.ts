@@ -59,7 +59,31 @@ export async function POST (request: NextRequest) {
             
             The output generated must be an Object containing:
                 1. rows: A property holding an Array of Objects. The child objects will be these properties: colIndex(number), rowIndex(number), name (i.e. "A3")(string), value(string), and hasConflict(boolean).
-                2. conflicts: An array of strings containing any descriptive conflicts found while generating the schedule, as instance, any conflict with contradictory criteria. The conflict texts must be in this language: ${lang}
+                2. conflicts: An array of strings containing any descriptive conflicts found while generating the schedule, as instance, any conflict with contradictory criteria. The conflict texts must be in this language: ${lang}. Each conflict text must cover these questions:
+                    a. In which column the conflict is located?
+                    b. What cell key (i.e. "A3") has the conflict?
+                    c. Which specification was met?
+                    d. Which specification was not met?
+                    e. Why the conflict occured?
+                2.1. Use this specification's names instead of the abbreviated keys:
+                    a. disabled:
+                        i. English: "Disable on all columns"
+                         ii. Spanish: "Deshabilitar en todas las columnas"
+                    b. disabledCols:
+                        i. English: "Disable these columns"
+                        ii. Spanish: "Deshabilitar estas columnas"
+                    c. rowTimes:
+                         i. English: "In how many columns should it appear?"
+                         ii. Spanish: "¿En cuántas columnas debería aparecer?"
+                    d. preferValues:
+                          i. English: "Prefer the following values to use in this row"
+                           ii. Spanish: "Preferir usar estos valores en la fila"
+                    e. colTimes:
+                          i. English: "Amount of rows to fill in this column"
+                           ii. Spanish: "Número de filas a llenar en esta columna"
+                     f. valueTimes:
+                           i. English: "Use the value "<insert value>" this amount of times"
+                            ii. Spanish: "Usar el valor "<insert value>" esta cantidad de veces"
 
             Rules to follow:
             1. **Randomness**
@@ -72,13 +96,13 @@ export async function POST (request: NextRequest) {
             Having in mind that the column headers are located at the first array of the main array ("Rows") and the row headers are located in the first element of each row (array), we will begin to iterate "Rows":
             1. First row (array in "Rows"): column headers. Save each column specification and index to have them available when we start working with the next rows.
             2. Create an array and start inserting arrays containing a string set to each cell's name, an empty string as the second element, and the boolean 'false' as the third element, these child arrays will represent a cell, BUT only insert the cells that are not row or column headers. For example: [["A1", "", false], ["B2", "", false], ["C3", "", false], ... ]. Hereafter, I refer to this array as "Output". Hereafter, by "fill the cell" I mean "assign it to the string at the second element of the cell (array)".
-            2. If there is a conflict in a specific cell, find the array containing the cell's name in question in Output and set the third element to true.
-            3. For each consecutive row (array) in "Rows", check for the "specs" property in the first element, which is the row header:
+            3. If there is a conflict in a specific cell, find the array containing the cell's name in question in Output and set the third element to true.
+            4. For each consecutive row (array) in "Rows", check for the "specs" property in the first element, which is the row header:
                 a. If the property "disabled" is "true", do nothing and continue with the next row.
                 b. If "disabledCols" has content, leave each array's second element that have the corresponding cell name that is part of the row, with the empty string it started in Output. Keep these disabled columns in mind.
                 c. If "preferValues" has content, save them to work with the next and last specification. If it does not have content, use all values from "Values" at least once in random order. If there are less values than columns, you can also repeat them randomly. If there are more values than columns, choose the values randomly to fill the cells.
                 d. If "rowTimes" is greater than 0, randomly (order and location) fill the cells with the "preferValues"'s values if applicable, avoiding the cells with empty strings you set in step "b". If there are no columns left to apply this specification, add this issue in "conflicts". If there are some columns available but not enough for this specification to succeed, fill those available columns and annotate this in "conflicts". If there are more columns than "rowTimes", fill the amount of cells specified and the remaining fill them with empty strings. If "rowTimes" is 0, fill all available columns with any assigned or random values, and suggest on "conflicts" to use the "disabled" option, to disable the row. Any cell conflicting with a column's specification fill it as requested but add this in "conflicts".
-            4. If the "Values" array is populated, set the prior values with the value's index as a string, so instead of words the value must be index numbers as strings as the inputs are going to be a Select type. Otherwise, use words.
+            5. If the "Values" array is populated, set the prior values with the value's index as a string, so instead of words the value must be index numbers as strings as the inputs are going to be a Select type. Otherwise, use words.
             
             
             This is an example of how the output should look like:
@@ -134,7 +158,7 @@ export async function POST (request: NextRequest) {
         Generate a highly strategic schedule with the following data and criteria:
         **Rows**: ${JSON.stringify(rows)}
         **Values**: ${JSON.stringify(values)}
-        This is previous output: ${previous ? JSON.stringify(previous) : null}, do not repeat it/them.`,
+        This is previous output: ${previous ? JSON.stringify(previous) : null}, do not repeat it, so you make subsequent generations different if it has the same criteria.`,
     });
     return result.toTextStreamResponse();
 } 
