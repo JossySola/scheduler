@@ -2,8 +2,8 @@
 import { Input } from "@heroui/react";
 import { useParams } from "next/navigation";
 import { SetStateAction, useState } from "react";
-import { EyeFilledIcon, EyeSlashFilledIcon } from "./atom-eyeslash";
 import Link from "next/link";
+import { Eye, EyeOff } from "../icons";
 
 export default function FormInputPassword ({ password, setPassword, confirmation, setConfirmation }: {
     password?: string,
@@ -43,11 +43,15 @@ export default function FormInputPassword ({ password, setPassword, confirmation
                 size="lg"
                 onValueChange={ setPassword }
                 endContent={
-                    <button aria-label="toggle password visibility" className="focus:outline-none" type="button" onClick={toggleVisibility}>
+                    <button 
+                    aria-label="toggle password visibility"
+                    className="focus:outline-none cursor-pointer"
+                    type="button"
+                    onClick={ toggleVisibility }>
                         { isVisible ? (
-                            <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                            <EyeOff />
                         ) : (
-                            <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                            <Eye />
                         )}
                     </button>
                 }/>
@@ -68,11 +72,15 @@ export default function FormInputPassword ({ password, setPassword, confirmation
                 size="lg"
                 onValueChange={ setConfirmation }
                 endContent={
-                    <button aria-label="toggle password visibility" className="focus:outline-none" type="button" onClick={toggleVisibility}>
+                    <button 
+                    aria-label="toggle password visibility"
+                    className="focus:outline-none cursor-pointer"
+                    type="button"
+                    onClick={ toggleVisibility }>
                         { isVisible ? (
-                            <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                            <EyeOff />
                         ) : (
-                            <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                            <Eye />
                         )}
                     </button>
                 }/>
@@ -101,11 +109,15 @@ export default function FormInputPassword ({ password, setPassword, confirmation
             size="lg"
             onValueChange={ setPassword ?? setLocalPassword }
             endContent={
-                <button aria-label="toggle password visibility" className="focus:outline-none" type="button" onClick={toggleVisibility}>
+                <button 
+                aria-label="toggle password visibility"
+                className="focus:outline-none cursor-pointer"
+                type="button"
+                onClick={ toggleVisibility }>
                     { isVisible ? (
-                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        <EyeOff />
                     ) : (
-                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        <Eye />
                     )}
                 </button>
             }/>
@@ -126,11 +138,15 @@ export default function FormInputPassword ({ password, setPassword, confirmation
             size="lg"
             onValueChange={ setConfirmation ?? setLocalConfirmation }
             endContent={
-                <button aria-label="toggle password visibility" className="focus:outline-none" type="button" onClick={toggleVisibility}>
+                <button 
+                aria-label="toggle password visibility"
+                className="focus:outline-none cursor-pointer"
+                type="button"
+                onClick={ toggleVisibility }>
                     { isVisible ? (
-                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        <EyeOff />
                     ) : (
-                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        <Eye />
                     )}
                 </button>
             }/>
