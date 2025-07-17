@@ -4,7 +4,7 @@ import Settings from "@/app/ui/molecules/mol-settings";
 import { auth } from "@/auth";
 import { QueryResultRow, sql } from "@vercel/postgres";
 import DashboardTable from "@/app/ui/molecules/mol-dashboard-table";
-import { decryptKmsDataKey } from "@/app/lib/utils";
+import { decryptKmsDataKey, signedOnlyWithProvider } from "@/app/lib/utils";
 
 interface ProviderData {
     provider: string,
@@ -54,11 +54,12 @@ export default async function Page ({ params }: {
             .catch(() => null);
         })) 
         : null;
+        const onlyWithProvider = await signedOnlyWithProvider(session.user.id);
         return (
             <section>
                 <section className="w-full flex flex-row justify-center gap-6 p-5 sm:justify-start sm:p-10">
                         <UserProfile />
-                        <Settings lang={lang} data={providersResponse}/>
+                        <Settings lang={lang} data={providersResponse} onlyWithProvider={onlyWithProvider} />
                 </section>
                 <DashboardTable metadata={ table_names ? table_names as metadata : [] } />
             </section>

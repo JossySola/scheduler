@@ -6,137 +6,116 @@ import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
 import { decryptKmsDataKey, verifyPasswordAction } from "@/app/lib/utils";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
+export async function DeleteAccount_NoPassword () {
+    const session = await auth();
+    const requestHeaders = headers();
+    const locale = (await requestHeaders).get("x-user-locale") || "en";
+    try {
+        const providers = await sql`
+        SELECT provider FROM scheduler_users_providers
+        WHERE email = ${session.user.email};
+        `.then(response => response.rowCount !== 0 ? response.rows : null);
+
+        if (providers) {
+            providers.forEach(async (element) => {
+                if (element.provider === 'google') {
+                    await DisconnectGoogleAction();
+                }
+                if (element.provider === 'facebook') {
+                    await DisconnectFacebookAction();
+                }
+            })
+        }
+        await signOut();
+    } catch (error) {
+        if (isRedirectError(error)) {
+            redirect(`/${locale}/signup`);
+        }
+        return {
+            message: locale === "es" ? "Hubo un problema para completar el proceso, por favor contáctanos." : "There was an issue while completing the process, please contact us."
+        }
+    }
+}
 export async function DeleteAccountAction (state: { message: string }, formData: FormData) {
     const session = await auth();
     const password = formData.get("password")?.toString();
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
+
     if (session && session.user && session.user.id && password) {
-        // Verify password
-        // Disconnect providers
-        // Delete account
-        // Signout
-        const passwordTuple = await sql`
-        SELECT password AS encrypted_password, user_password_key FROM scheduler_users
+        // Get password KMS key
+        const password_key = await sql`
+        SELECT user_password_key FROM scheduler_users
         WHERE id = ${session.user.id};
-        `;
+        `.then(response => response.rowCount !== 0 ? response.rows[0].user_password_key : null);
+        // Decrypt KMS key
+        const decrypted_key = password_key ? await decryptKmsDataKey(password_key) : null;
+        // Get and decrypt BYTEA password
+        const decrypted_password = decrypted_key 
+        ? await sql`SELECT pgp_sym_decrypt_bytea(password, ${decrypted_key}) AS decrypted_password FROM scheduler_users WHERE id = ${session.user.id};`.then(response => response.rowCount !== 0 ? response.rows[0].decrypted_password : null)
+        : null;
+        // Verify hashed password
+        const verification = decrypted_password 
+        ? await verifyPasswordAction(decrypted_password, password)
+        : null;
+        
+        if (verification === false) {
+            // If verification fails
+            return {
+                message: locale === "es" ? "Contraseña incorrecta" : "Invalid password"
+            }
+        } else if (verification === null) {
+            // If either prior variables returned null
+            return {
+                message: locale === "es" ? "Hubo un error al iniciar el proceso" : "An error has occurred while starting the process"
+            }
+        }
+
+        // The password is correct, proceed:
         const providers = await sql`
             SELECT provider FROM scheduler_users_providers
             WHERE email = ${session.user.email};
-        `;
-        if (passwordTuple.rowCount !== 0 && passwordTuple.rows[0].encrypted_password !== null) {
-            const key = passwordTuple.rows[0].user_password_key;
-            const accessKeyId: string = process.env.AWS_KMS_KEY!;
-            const secretAccessKey: string = process.env.AWS_KMS_SECRET!;
-            const KeyId: string = process.env.AWS_KMS_ARN!;
-            const client = new KMSClient({
-                region: "us-east-1",
-                credentials: {
-                    accessKeyId,
-                    secretAccessKey,
-                },
-            });
-            const command = new DecryptCommand({
-                CiphertextBlob: Buffer.from(key, "base64"),
-                KeyId,
-            });
-            const result = await client.send(command);
-            const decrypted_key = Buffer.from(result.Plaintext ?? "").toString("base64");
-            const decryption = await sql`
-            SELECT pgp_sym_decrypt_bytea(password, ${decrypted_key}) AS decrypted_password
-            FROM scheduler_users
-            WHERE id = ${session.user.id};
-            `;
-            if (decryption.rowCount === 0) {
-                return {
-                    message: locale === "es" ? "Hubo un error en el proceso, por favor contáctanos." : "There was an error in the process, please contact us."
-                }
-            }
-            const decrypted_password = decryption.rows[0]["decrypted_password"].toString();
-            const passwordIsValid = await verifyPasswordAction(decrypted_password, password);
-            if (passwordIsValid === false) {
-                return {
-                    message: locale === "es" ? "Contraseña incorrecta" : "Incorrect password"
-                }
-            }
-            if (providers.rows.length) {
-                providers.rows.forEach(async (item) => {
-                    if (item.provider === "Google") {
-                        await DisconnectGoogleAction();
-                    }
-                    if (item.provider === "Facebook") {
-                        await DisconnectFacebookAction();
-                    }
-                })
-            }
-            try {
-                await sql`DELETE FROM scheduler_users_tables WHERE user_id = ${session.user.id};`
-                await sql`DELETE FROM scheduler_users_providers WHERE email = ${session.user.email};`
-                await sql`DELETE FROM scheduler_login_attempts WHERE email = ${session.user.email};`
-                await sql`DELETE FROM scheduler_email_confirmation_tokens WHERE email = ${session.user.email};`
-                await sql`UPDATE scheduler_users
-                    SET
-                        name = '[deleted user]',
-                        username = CONCAT('deleted_', id),
-                        email = CONCAT(id, '@deleted.com'),
-                        birthday = NULL,
-                        password = NULL,
-                        user_password_key = CONCAT('deleted_', id),
-                        deleted_at = NOW(),
-                        user_image = NULL
-                    WHERE id = ${session.user.id};
-                `;
-                await signOut();
-            } catch (error) {
-                if (isRedirectError(error)) {
-                    redirect(`/${locale}/signup`);
-                }
-                return {
-                    message: locale === "es" ? "Hubo un problema para completar el proceso, por favor contáctanos." : "There was an issue while completing the process, please contact us."
-                }
-            }
-        } else if (passwordTuple.rows[0].encrypted_password === null && passwordTuple.rows[0].user_password_key === null && providers.rowCount !== 0) {
-            providers.rows.forEach(async (item) => {
-                if (item.provider === "Google") {
+        `.then(response => response.rowCount !== 0 ? response.rows : null);
+
+        if (providers) {
+            providers.forEach(async (element) => {
+                if (element.provider === 'google') {
                     await DisconnectGoogleAction();
                 }
-                if (item.provider === "Facebook") {
+                if (element.provider === 'facebook') {
                     await DisconnectFacebookAction();
                 }
             })
-            try {
-                await sql`DELETE FROM scheduler_users_tables WHERE user_id = ${session.user.id};`
-                await sql`DELETE FROM scheduler_users_providers WHERE user_id = ${session.user.id};`
-                await sql`DELETE FROM scheduler_login_attempts WHERE email = ${session.user.email};`
-                await sql`DELETE FROM scheduler_email_confirmation_tokens WHERE email = ${session.user.email};`
-                await sql`UPDATE scheduler_users
-                    SET
-                        name = '[deleted user]',
-                        username = CONCAT('deleted_', id),
-                        email = CONCAT(id, '@deleted.com'),
-                        birthday = NULL,
-                        password = NULL,
-                        user_password_key = CONCAT('deleted_', id),
-                        deleted_at = NOW(),
-                        user_image = NULL
-                    WHERE id = ${session.user.id};
-                `;
-                await signOut();
-            } catch (error) {
-                if (isRedirectError(error)) {
-                    redirect(`/${locale}/signup`);
-                }
-                return {
-                    message: locale === "es" ? "Hubo un problema para completar el proceso, por favor contáctanos." : "There was an issue while completing the process, please contact us."
-                }
-            }
         }
-        return {
-            message: locale === "es" ? "Tu registro tiene un error 😬, por favor contáctanos." : "Your record has an error 😬, please contact us."
+
+        try {
+            await sql`DELETE FROM scheduler_users_tables WHERE user_id = ${session.user.id};`
+            await sql`DELETE FROM scheduler_users_providers WHERE email = ${session.user.email};`
+            await sql`DELETE FROM scheduler_login_attempts WHERE email = ${session.user.email};`
+            await sql`DELETE FROM scheduler_email_confirmation_tokens WHERE email = ${session.user.email};`
+            await sql`UPDATE scheduler_users
+                SET
+                    name = '[deleted user]',
+                    username = CONCAT('deleted_', id),
+                    email = CONCAT(id, '@deleted.com'),
+                    birthday = NULL,
+                    password = NULL,
+                    user_password_key = CONCAT('deleted_', id),
+                    deleted_at = NOW(),
+                    user_image = NULL
+                WHERE id = ${session.user.id};
+            `;
+            await signOut();
+        } catch (error) {
+            if (isRedirectError(error)) {
+                redirect(`/${locale}/signup`);
+            }
+            return {
+                message: locale === "es" ? "Hubo un problema para completar el proceso, por favor contáctanos." : "There was an issue while completing the process, please contact us."
+            }
         }
     }
     return {

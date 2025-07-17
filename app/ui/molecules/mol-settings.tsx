@@ -6,15 +6,17 @@ import { ActionButton, SecondaryButton } from "../atoms/atom-button";
 import { redirect } from "next/navigation";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { SettingsGearFill } from "../icons";
+import { SessionProvider } from "next-auth/react";
 
-export default function Settings ({ lang, data }: {
+export default function Settings ({ lang, data, onlyWithProvider }: {
     lang: string,
-    data: Array<{ provider: string }>
+    data: Array<{ provider: string }>,
+    onlyWithProvider: boolean | null,
 }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     return (
-        <>
+        <SessionProvider>
             <Button isIconOnly aria-label={ lang === "es" ? "Ajustes" : "Settings"} onPress={onOpen}>
                 <SettingsGearFill />
             </Button>
@@ -37,7 +39,7 @@ export default function Settings ({ lang, data }: {
                                 })
                             }
                             <ActionButton onPress={() => redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/recover`)}>{ lang === "es" ? "Restaurar contraseña" : "Reset password" }</ActionButton>
-                            <DangerButton />
+                            <DangerButton onlyWithProvider={ onlyWithProvider } />
                         </ModalBody>
                         <ModalFooter>
                             <SecondaryButton onPress={onClose}>{ lang === "es" ? "Cerrar" : "Close" }</SecondaryButton>
@@ -46,6 +48,6 @@ export default function Settings ({ lang, data }: {
                     )}
                 </ModalContent>
             </Modal>
-        </>
+        </SessionProvider>
     )
 }
