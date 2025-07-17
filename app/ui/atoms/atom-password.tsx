@@ -1,8 +1,8 @@
 'use client'
 import { Input } from "@heroui/react";
 import { useParams } from "next/navigation";
-import { useState } from "react"
-import { EyeFilledIcon, EyeSlashFilledIcon } from "./atom-eyeslash";
+import { useState } from "react";
+import { Eye, EyeOff } from "../icons";
 
 export default function Password () {
     const [ isVisible, setIsVisible ] = useState<boolean>(false);
@@ -27,11 +27,15 @@ export default function Password () {
         value={ password }
         onValueChange={ setPassword }
         endContent={
-            <button aria-label="toggle password visibility" className="focus:outline-none" type="button" onClick={toggleVisibility}>
+            <button 
+            aria-label="toggle password visibility"
+            className="focus:outline-none cursor-pointer"
+            type="button"
+            onClick={ toggleVisibility }>
                 { isVisible ? (
-                    <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                    <EyeOff />
                 ) : (
-                    <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                    <Eye />
                 )}
             </button>
         } />
