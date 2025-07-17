@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
-import { verifyPasswordAction } from "@/app/lib/utils";
+import { decryptKmsDataKey, verifyPasswordAction } from "@/app/lib/utils";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export async function DeleteAccountAction (state: { message: string }, formData: FormData) {
@@ -145,73 +145,143 @@ export async function DeleteAccountAction (state: { message: string }, formData:
 }
 
 export async function DisconnectGoogleAction () {
+    const requestHeaders = headers();
+    const locale = (await requestHeaders).get("x-user-locale") || "en";
     const session = await auth();
-    const token = session?.googleAccessToken;
-    const email = session?.user?.email;
+    const token = session.googleAccessToken;
     
-    if (!token || !email) {
-        return null;
-    }
-
     const request = await fetch(`https://oauth2.googleapis.com/revoke?token=${token}`, {
         method: 'POST',
         headers: {
             'Content-type': 'application/x-www-form-urlencoded'
         }
     })
-    
-    if (request.status === 200) {
-        await sql`
-            DELETE FROM scheduler_users_providers
-            WHERE email = ${email} AND provider = 'Google';
-        `;
 
-        const providers = await sql`
-           SELECT * FROM scheduler_users_providers
-           WHERE email = ${email}; 
-        `;
+    if (request.ok && request.status === 200) {
+        const user_record = await sql`
+        SELECT scheduler_users.password, scheduler_users_providers.provider
+        FROM scheduler_users
+        LEFT JOIN scheduler_users_providers
+        ON scheduler_users.email = scheduler_users_providers.email
+        WHERE scheduler_users.email = ${session.user.email};`
+        .then(response => response.rowCount !== 0 ? response.rows[0] : null);
 
-        if (providers.rowCount === 0) {
-            return await signOut();
+        if (user_record && user_record.password === null && user_record.provider === null) {
+            await sql`DELETE FROM scheduler_users_providers WHERE email = ${session.user.email};`;
+            await sql`DELETE FROM scheduler_users_tables WHERE email = ${session.user.email};`;
+            await sql`DELETE FROM scheduler_password_resets WHERE email = ${session.user.email};`;
+            await sql`DELETE FROM scheduler_login_attempts WHERE email = ${session.user.email};`;
+            await sql`DELETE FROM scheduler_email_confirmation_tokens WHERE email = ${session.user.email};`;
+            await sql`UPDATE scheduler_users
+                SET
+                    name = '[deleted user]',
+                    username = CONCAT('deleted_', id),
+                    email = CONCAT(id, '@deleted.com'),
+                    birthday = NULL,
+                    password = NULL,
+                    user_password_key = CONCAT('deleted_', id),
+                    deleted_at = NOW(),
+                    user_image = NULL
+                WHERE id = ${session.user.id} AND email = ${session.user.email};
+            `;
+            await signOut();
         }
+        const image: string | null = await sql`SELECT user_image FROM scheduler_users WHERE email = ${session.user.email};`
+        .then(response => response.rowCount !== 0 ? response.rows[0].user_image : null);
+        if (image) {
+            if (image.includes('google')) {
+                await sql`
+                UPDATE scheduler_users
+                SET user_image = NULL
+                WHERE email = ${session.user.email};
+                `;
+                session.user.image = "";
+            }
+        }
+        await sql`DELETE FROM scheduler_users_providers WHERE email = ${session.user.email} AND provider = 'google';`;
+        await signOut();
     }
-
-    return request.status;
+    return {
+        message: locale === "es" ? "La petición no tuvo éxito con el proveedor." : "The process returned unsuccessful by the provider."
+    }
 }
 export async function DisconnectFacebookAction () {
+    const requestHeaders = headers();
+    const locale = (await requestHeaders).get("x-user-locale") || "en";
     const session = await auth();
-    const token = session?.facebookAccessToken;
-    const sub = session?.user?.facebookSub;
-    const email = session?.user?.email;
+    const token = session.facebookAccessToken;
+    const key = await sql`
+    SELECT account_id_key
+    FROM scheduler_users_providers
+    WHERE provider = 'facebook' AND email = ${session.user.email};`
+    .then(response => response.rowCount !== 0 ? response.rows[0].account_id_key : null);
+    
+    if (key) {
+        const decrypted_key = await decryptKmsDataKey(key);
+        const id = await sql`
+        SELECT pgp_sym_decrypt_bytea(account_id, ${decrypted_key}) AS decrypted_id
+        FROM scheduler_users_providers
+        WHERE provider = 'facebook' AND email = ${session.user.email};`
+        .then(response => response.rowCount !== 0 ? response.rows[0].decrypted_id: null);
+        
+        const request = await fetch(`https://graph.facebook.com/${id}/permissions`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
 
-    if (!token || !email || !sub) {
-        return null;
-    }
+        if (request.ok && request.status === 200) {
+            const user_record = await sql`
+            SELECT scheduler_users.password, scheduler_users_providers.provider
+            FROM scheduler_users
+            LEFT JOIN scheduler_users_providers
+            ON scheduler_users.email = scheduler_users_providers.email
+            WHERE scheduler_users.email = ${session.user.email};`
+            .then(response => response.rowCount !== 0 ? response.rows[0] : null);
 
-    const request = await fetch(`https://graph.facebook.com/${sub}/permissions`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${token}`
+            if (user_record && user_record.password === null && user_record.provider === null) {
+                await sql`DELETE FROM scheduler_users_providers WHERE email = ${session.user.email};`;
+                await sql`DELETE FROM scheduler_users_tables WHERE email = ${session.user.email};`;
+                await sql`DELETE FROM scheduler_password_resets WHERE email = ${session.user.email};`;
+                await sql`DELETE FROM scheduler_login_attempts WHERE email = ${session.user.email};`;
+                await sql`DELETE FROM scheduler_email_confirmation_tokens WHERE email = ${session.user.email};`;
+                await sql`UPDATE scheduler_users
+                    SET
+                        name = '[deleted user]',
+                        username = CONCAT('deleted_', id),
+                        email = CONCAT(id, '@deleted.com'),
+                        birthday = NULL,
+                        password = NULL,
+                        user_password_key = CONCAT('deleted_', id),
+                        deleted_at = NOW(),
+                        user_image = NULL
+                    WHERE id = ${session.user.id} AND email = ${session.user.email};
+                `;
+                await signOut();
+            }
+            const image: string | null = await sql`SELECT user_image FROM scheduler_users WHERE email = ${session.user.email};`
+            .then(response => response.rowCount !== 0 ? response.rows[0].user_image : null);
+            if (image) {
+                if (image.includes('fbsbx')) {
+                    await sql`
+                    UPDATE scheduler_users
+                    SET user_image = NULL
+                    WHERE email = ${session.user.email};
+                    `;
+                    session.user.image = "";
+                }
+            }
+            await sql`DELETE FROM scheduler_users_providers WHERE email = ${session.user.email} AND provider = 'facebook';`;
+            await signOut();
         }
-    })
-
-    if (request.status === 200) {
-        await sql`
-            DELETE FROM scheduler_users_providers
-            WHERE email = ${email} AND provider = 'Facebook';
-        `;
-
-        const providers = await sql`
-            SELECT * FROM scheduler_users_providers
-            WHERE email = ${email}; 
-         `;
- 
-         if (providers.rowCount === 0) {
-            return await signOut();
+        return {
+            message: locale === "es" ? "La petición no tuvo éxito con el proveedor." : "The process returned unsuccessful by the provider."
         }
     }
-
-    return request.status;
+    return {
+        message: locale === "es" ? "Hubo un error inesperado, inténtalo nuevamente y/o contáctanos para reportar el problema." : "An unexpected error has occured, please try again and/or contact us to report the issue."
+    }
 }
 export async function DeleteTableAction (previousState: { message: string }, formData: FormData) {
     const requestHeaders = headers();
