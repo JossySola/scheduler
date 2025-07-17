@@ -20,17 +20,17 @@ export default async function SignNav () {
         <Navbar className="bg-transparent" shouldHideOnScroll>
             <NavbarContent justify="start">
                 <NavbarBrand className="sm:hidden">
-                    <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/`}>
+                    <Link href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/`}>
                         <SchedulerIcon />
                     </Link>
                 </NavbarBrand>
                 <NavbarBrand className="hidden sm:dark:inline-block">
-                    <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/`}>
+                    <Link href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/`}>
                         <SchedulerWhite height={25} />
                     </Link>
                 </NavbarBrand>
                 <NavbarBrand className="hidden dark:hidden sm:inline-block">
-                    <Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/`}>
+                    <Link href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/`}>
                         <SchedulerBlack height={25} />
                     </Link>
                 </NavbarBrand>

@@ -27,7 +27,7 @@ export default function SaveButton () {
                 color: newSave.state.ok ? "success" : "danger",
             })
             if (newSave.state.id) {
-                redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/table/${newSave.state.id}`);
+                redirect(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/table/${newSave.state.id}`);
             }
         }
     }, [newSave.state]);

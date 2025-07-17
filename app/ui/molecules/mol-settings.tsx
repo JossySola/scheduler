@@ -38,7 +38,7 @@ export default function Settings ({ lang, data, onlyWithProvider }: {
                                     }
                                 })
                             }
-                            <ActionButton onPress={() => redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/recover`)}>{ lang === "es" ? "Restaurar contraseña" : "Reset password" }</ActionButton>
+                            <ActionButton onPress={() => redirect(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/recover`)}>{ lang === "es" ? "Restaurar contraseña" : "Reset password" }</ActionButton>
                             <DangerButton onlyWithProvider={ onlyWithProvider } />
                         </ModalBody>
                         <ModalFooter>
