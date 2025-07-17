@@ -5,6 +5,7 @@ declare module "next-auth" {
         user: {
             id: string;
             role?: string;
+            picture?: string;
         } & DefaultSession["user"];
         googleAccessToken?: string;
         facebookAccessToken?: string;
@@ -19,6 +20,7 @@ declare module "next-auth" {
         username?: string;
         image?: string;
         role?: string;
+        picture?: string;
     }
 }
 declare module "@auth/core/types" {
@@ -28,6 +30,7 @@ declare module "@auth/core/types" {
         email?: string | undefined;
         googleSub?: string | undefined;
         facebookSub?: string | undefined;
+        picture?: string;
     }
     interface Session extends DefaultSession {
         googleAccessToken?: string | undefined;
