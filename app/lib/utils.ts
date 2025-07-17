@@ -267,6 +267,22 @@ export async function hashPasswordAction (password: string): Promise<string> {
   const { hash } = await import('argon2');
   return await hash(password);
 }
+export async function signedOnlyWithProvider (id: string): Promise<boolean | null> {
+  const result = await sql`
+  SELECT password, user_password_key
+  FROM scheduler_users
+  WHERE id = ${id};
+  `.then(response => {
+    if (response.rowCount !== 0) {
+      if (response.rows[0].password === null && response.rows[0].user_password_key === null) {
+        return true;
+      }
+      return false;
+    }
+    return null;
+  });
+  return result;
+}
 function toBase64Url (str: string): string {
   return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
