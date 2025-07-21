@@ -44,13 +44,14 @@ export async function DeleteAccountAction (state: { message: string }, formData:
     const password = formData.get("password")?.toString();
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
-
+    
     if (session && session.user && session.user.id && password) {
         // Get password KMS key
         const password_key = await sql`
         SELECT user_password_key FROM scheduler_users
         WHERE id = ${session.user.id};
-        `.then(response => response.rowCount !== 0 ? response.rows[0].user_password_key : null);
+        `.then(response => response.rowCount !== 0 ? response.rows[0].user_password_key : null)
+        .catch(e => console.error(e));
         // Decrypt KMS key
         const decrypted_key = password_key ? await decryptKmsDataKey(password_key) : null;
         // Get and decrypt BYTEA password
@@ -59,9 +60,8 @@ export async function DeleteAccountAction (state: { message: string }, formData:
         : null;
         // Verify hashed password
         const verification = decrypted_password 
-        ? await verifyPasswordAction(decrypted_password, password)
+        ? await verifyPasswordAction(decrypted_password.toString(), password)
         : null;
-        
         if (verification === false) {
             // If verification fails
             return {
@@ -92,6 +92,7 @@ export async function DeleteAccountAction (state: { message: string }, formData:
         }
 
         try {
+            await sql`DELETE FROM scheduler_password_resets WHERE email = ${session.user.email};`
             await sql`DELETE FROM scheduler_users_tables WHERE user_id = ${session.user.id};`
             await sql`DELETE FROM scheduler_users_providers WHERE email = ${session.user.email};`
             await sql`DELETE FROM scheduler_login_attempts WHERE email = ${session.user.email};`
