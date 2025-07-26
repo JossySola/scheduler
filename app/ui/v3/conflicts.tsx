@@ -24,7 +24,7 @@ export default function Conflicts ({ conflicts }: {
                             <i className="text-md">{ lang === "es" ? "Recuerda que también puedes editar las celdas manualmente sin necesidad de Generar la tabla nuevamente" : "You can always edit the cells manually without generating the table again" }</i>
                             {
                                 conflicts 
-                                ? conflicts.map(conflict => conflict !== undefined ? <Alert className="text-lg" color="warning" description={ conflict } radius="lg"/> : null)
+                                ? conflicts.map((conflict, index) => conflict !== undefined ? <Alert key={index} className="text-lg" color="warning" description={ conflict } radius="lg"/> : null)
                                 : <p className="text-danger">{ lang === "es" ? "No hay conflictos" : "No conflicts" }</p>
                             }
                         </ModalBody>
