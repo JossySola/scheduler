@@ -232,15 +232,6 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                             // If the user has already signed in with Facebook before
                             return true;
                         }
-                        // Add record to scheduler_users_providers
-                        const new_key = await generateKmsDataKey();
-                        const insertToProviders = await sql`
-                        INSERT INTO scheduler_users_providers (email, provider, account_id, account_id_key)
-                        VALUES (${user.email}, ${account.provider}, pgp_sym_encrypt(${account.providerAccountId}, ${new_key.Plaintext}), ${new_key.CiphertextBlob});
-                        `.then(response => response.rowCount !== 0 ? true : false);
-                        if (!insertToProviders) {
-                            return false;
-                        }
                         // Check if user already exists on scheduler_users
                         const user_record = await sql`
                         SELECT id FROM scheduler_users WHERE email = ${user.email};
@@ -262,6 +253,15 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         if (!new_record) {
                             return false;
                         }
+                        // Add record to scheduler_users_providers
+                        const new_key = await generateKmsDataKey();
+                        const insertToProviders = await sql`
+                        INSERT INTO scheduler_users_providers (email, provider, account_id, account_id_key)
+                        VALUES (${user.email}, ${account.provider}, pgp_sym_encrypt(${account.providerAccountId}, ${new_key.Plaintext}), ${new_key.CiphertextBlob});
+                        `.then(response => response.rowCount !== 0 ? true : false);
+                        if (!insertToProviders) {
+                            return false;
+                        }
                         return true;
                     };
                     case "google": {
@@ -273,15 +273,6 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         if (user_provider !== null) {
                             // If the user has already signed in with Facebook before
                             return true;
-                        }
-                        // Add record to scheduler_users_providers
-                        const new_key = await generateKmsDataKey();
-                        const insertToProviders = await sql`
-                        INSERT INTO scheduler_users_providers (email, provider, account_id, account_id_key)
-                        VALUES (${user.email}, ${account.provider}, pgp_sym_encrypt(${account.providerAccountId}, ${new_key.Plaintext}), ${new_key.CiphertextBlob});
-                        `.then(response => response.rowCount !== 0 ? true : false);
-                        if (!insertToProviders) {
-                            return false;
                         }
                         // Check if user already exists on scheduler_users
                         const user_record = await sql`
@@ -302,6 +293,15 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         ON CONFLICT (username) DO NOTHING;
                         `.then(response => response.rowCount !== 0 ? true : false);
                         if (!new_record) {
+                            return false;
+                        }
+                        // Add record to scheduler_users_providers
+                        const new_key = await generateKmsDataKey();
+                        const insertToProviders = await sql`
+                        INSERT INTO scheduler_users_providers (email, provider, account_id, account_id_key)
+                        VALUES (${user.email}, ${account.provider}, pgp_sym_encrypt(${account.providerAccountId}, ${new_key.Plaintext}), ${new_key.CiphertextBlob});
+                        `.then(response => response.rowCount !== 0 ? true : false);
+                        if (!insertToProviders) {
                             return false;
                         }
                         return true;
