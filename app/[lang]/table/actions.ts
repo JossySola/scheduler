@@ -100,7 +100,7 @@ export async function SaveNewTableAction (name: string, rows: Array<Map<string, 
         })
     })
     if (session && session.user) {
-        const num_tables: number | null = await sql`SELECT num_tables FROM scheduler_users WHERE id = ${session.user.id}`.then(result => result.rows[0].num_tables ?? null).catch(reason => console.error(reason));
+        const num_tables: number | null = await sql`SELECT num_tables FROM scheduler_users WHERE id = ${session.user.id}`.then(result => result.rowCount !== 0 ? result.rows[0].num_tables : null).catch(reason => console.error(reason));
         if (num_tables === 3 || num_tables === null) {
             return {
                 ok: false,
