@@ -25,13 +25,13 @@ export default async function App ({ params }: {
         <h2>Just in 🖐🏾 steps</h2>
 
         <h3>Start by adding the rows and columns you need</h3>
-        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full">
+        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full rounded-xl shadow-xl/30">
           <source src="/assets/rows.mp4" type="video/mp4" />
           Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
         </video>
 
         <h3>Set the column headers' type and their values</h3>
-        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full">
+        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full rounded-xl shadow-xl/30">
           <source src="/assets/headers-panel.mp4" type="video/mp4" />
           Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
         </video>
@@ -54,7 +54,7 @@ export default async function App ({ params }: {
         </div>
 
         <h3></h3>
-        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full">
+        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full rounded-xl shadow-xl/30">
           <source src="/assets/result.mp4" type="video/mp4" />
           Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
         </video>
