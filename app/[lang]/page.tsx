@@ -9,7 +9,7 @@ export default async function App ({ params }: {
   const lang = (await params).lang;
   return (
     <main className="w-full flex flex-col justify-center items-center gap-3">
-      <div className="p-5 flex flex-col items-center gap-10">
+      <div className="w-full lg:w-[900px] p-5 flex flex-col items-center gap-10">
         <header className="flex flex-col justify-center items-center relative w-full text-center h-[80vh]">
           <div className="blur-sm absolute top-[35%] flex flex-inline items-start min-w-[400px] w-full h-full">
             <ColorStrains width={"100%"} />
