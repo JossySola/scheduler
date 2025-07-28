@@ -8,54 +8,58 @@ export default async function App ({ params }: {
 }) {
   const lang = (await params).lang;
   return (
-    <main className="w-full p-8 flex flex-col justify-center items-center gap-3">
-      
-      <header className="flex flex-col justify-center items-center relative w-full text-center h-[85vh]">
-        <div className="absolute top-[35%] flex flex-inline items-start min-w-[400px] w-full h-full">
-          <ColorStrains width={"100%"} />
+    <main className="w-full flex flex-col justify-center items-center gap-3">
+      <div className="p-5 flex flex-col items-center gap-10">
+        <header className="flex flex-col justify-center items-center relative w-full text-center h-[80vh]">
+          <div className="blur-sm absolute top-[35%] flex flex-inline items-start min-w-[400px] w-full h-full">
+            <ColorStrains width={"100%"} />
+          </div>
+          <h1 className="z-3">
+          The AI does the thinking, you get the strategic schedule.
+          </h1>
+        </header>
+
+        <h2 className="text-center w-full">Workforce planning, shift coordination, and custom time blocks.</h2>
+        <Benefits />
+        
+        <h2>Just in 🖐🏾 steps</h2>
+
+        <h3>Start by adding the rows and columns you need</h3>
+        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full">
+          <source src="/assets/rows.mp4" type="video/mp4" />
+          Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
+        </video>
+
+        <h3>Set the column headers' type and their values</h3>
+        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full">
+          <source src="/assets/headers-panel.mp4" type="video/mp4" />
+          Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
+        </video>
+
+        <h3>Add the values you'll use</h3>
+        
+        <div className="min-x-[264px] w-[364px] h-auto rounded-xl overflow-hidden shadow-xl/30">
+          <video autoPlay={true} loop muted playsInline preload="metadata" className="w-full object-[53%_100%] object-cover aspect-[5/11.5] ">
+            <source src="/assets/values.mp4" type="video/mp4" />
+            Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
+          </video>
         </div>
-        <h1 className="z-3">
-        The AI does the thinking, you get the strategic schedule.
-        </h1>
-      </header>
+        
+        
+        <div className="min-x-[264px] w-[364px] h-auto rounded-xl overflow-hidden shadow-xl/30">
+          <video autoPlay={true} loop muted playsInline preload="metadata" className="w-full object-[53%_100%] object-cover aspect-[5/11.5] ">
+            <source src="/assets/generate.mp4" type="video/mp4" />
+            Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
+          </video>
+        </div>
 
-      <h2 className="text-center w-full">Workforce planning, shift coordination, and custom time blocks.</h2>
-      <Benefits />
+        <h3></h3>
+        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full">
+          <source src="/assets/result.mp4" type="video/mp4" />
+          Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
+        </video>
+      </div>
       
-      <h2>Just in 🖐🏾 steps</h2>
-
-      <h3>Start by adding the rows and columns you need</h3>
-      <video autoPlay={true} loop muted playsInline width={732} preload="metadata">
-        <source src="/assets/rows.mp4" type="video/mp4" />
-        Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-      </video>
-      <h3>Set the column headers' type and their values</h3>
-      <video autoPlay={true} loop muted playsInline width={732} preload="metadata">
-        <source src="/assets/headers-panel.mp4" type="video/mp4" />
-        Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-      </video>
-      <video autoPlay={true} loop muted playsInline width={1064} preload="metadata">
-        <source src="/assets/headers-settings.mp4" type="video/mp4" />
-        Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-      </video>
-
-      <h3>Add the values you'll use</h3>
-      <video autoPlay={true} loop muted playsInline width={1064} preload="metadata">
-        <source src="/assets/values.mp4" type="video/mp4" />
-        Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-      </video>
-      
-      <h3>Adjust the rows and columns settings based on your requirements</h3>
-      <video autoPlay={true} loop muted playsInline width={1064} preload="metadata" className="bg-[transparent]">
-        <source src="/assets/generate.mp4" type="video/mp4" />
-        Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-      </video>
-
-      <h3></h3>
-      <video autoPlay={false} loop muted playsInline width={732} preload="metadata">
-        <source src="/assets/result.mp4" type="video/mp4" />
-        Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-      </video>
       <footer className="text-[#27272a] dark:text-[#f4f4f5] dark:bg-[#27272A] flex flex-col justify-start items-start gap-2 w-full h-fit bg-[#F4F4F5] bottom-0 p-10 pb-20 sm:grid sm:grid-cols-[auto_3px_auto]">
           <ul className="m-3 sm:col-start-1">
             <li id="legal-1" className="flex flex-row gap-3 justify-start items-start mb-2"><span className="text-tiny">1</span>{ lang === "es" ? <span className="text-tiny"><b>Claude</b> <ClaudeTiny /> es un modelo de inteligencia artificial perteneciente a la empresa Anthropic PBC ©. Su nombre, ícono, así como el logo <AnthropicTiny/> usados en esta aplicación web, son propiedad de <Link href="https://www.anthropic.com/">Anthropic PBC ©</Link>.</span> : <span className="text-tiny"><b>Claude</b> <ClaudeTiny/> is an Artificial Intelligence model property of Anthropic PBC ©. Its name and icon, as well as <AnthropicTiny/> logo used in this web application are property of <Link href="https://www.anthropic.com/">Anthropic PBC ©</Link>.</span> }</li>
