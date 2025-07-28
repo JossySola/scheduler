@@ -11,7 +11,7 @@ export default async function App ({ params }: {
     <main className="w-full flex flex-col justify-center items-center gap-3">
       <div className="w-full lg:w-[900px] p-5 flex flex-col items-center gap-10">
         <header className="flex flex-col justify-center items-center relative w-full text-center h-[80vh]">
-          <div className="blur-sm absolute top-[35%] flex flex-inline items-start min-w-[400px] w-full h-full">
+          <div className="blur-sm absolute top-[35%] flex flex-inline items-start w-full h-full">
             <ColorStrains width={"100%"} />
           </div>
           <h1 className="z-3">
@@ -38,7 +38,7 @@ export default async function App ({ params }: {
 
         <h3>Add the values you'll use</h3>
         
-        <div className="min-x-[264px] w-[364px] h-auto rounded-xl overflow-hidden shadow-xl/30">
+        <div className="w-[364px] h-auto rounded-xl overflow-hidden shadow-xl/30">
           <video autoPlay={true} loop muted playsInline preload="metadata" className="w-full object-[53%_100%] object-cover aspect-[5/11.5] ">
             <source src="/assets/values.mp4" type="video/mp4" />
             Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
@@ -46,7 +46,7 @@ export default async function App ({ params }: {
         </div>
         
         
-        <div className="min-x-[264px] w-[364px] h-auto rounded-xl overflow-hidden shadow-xl/30">
+        <div className="w-[364px] h-auto rounded-xl overflow-hidden shadow-xl/30">
           <video autoPlay={true} loop muted playsInline preload="metadata" className="w-full object-[53%_100%] object-cover aspect-[5/11.5] ">
             <source src="/assets/generate.mp4" type="video/mp4" />
             Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
