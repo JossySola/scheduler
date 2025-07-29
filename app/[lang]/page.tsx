@@ -15,28 +15,63 @@ export default async function App ({ params }: {
             <ColorStrains width={"100%"} />
           </div>
           <h1 className="z-3">
-          The AI does the thinking, you get the strategic schedule.
+            {
+              lang === "es" 
+              ? "La IA hace el análisis, tu obtienes el horario estratégico."
+              : "The AI does the thinking, you get the strategic schedule." 
+            }
           </h1>
         </header>
 
-        <h2 className="text-center w-full">Workforce planning, shift coordination, and custom time blocks.</h2>
+        <h2 className="text-center w-full">
+          {
+            lang === "es" 
+            ? "Planificación de trabajo, coordinación de horarios y bloques de tiempo ajustables"
+            : "Workforce planning, shift coordination, and custom time blocks." 
+          }
+        </h2>
         <Benefits />
         
-        <h2>Just in 🖐🏾 steps</h2>
+        <h2>
+          {
+            lang === "es" 
+            ? "Sólo en 🖐🏾 pasos"
+            : "Just in 🖐🏾 steps" 
+          }
+        </h2>
 
-        <h3>Start by adding the rows and columns you need</h3>
+        <h3>
+          {
+            lang === "es" 
+            ? "Empieza añadiendo filas y columnas"
+            : "Start by adding the rows and columns you need" 
+          }
+        </h3>
         <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full rounded-xl shadow-xl/30">
           <source src="/assets/rows.mp4" type="video/mp4" />
           Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
         </video>
 
-        <h3>Set the column headers' type and their values</h3>
+        <h3>
+          {
+            lang === "es" 
+            ? "Asigna los tipos de encabezados y sus valores"
+            : "Set the column headers' type and their values" 
+          }
+          
+        </h3>
         <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full rounded-xl shadow-xl/30">
           <source src="/assets/headers-panel.mp4" type="video/mp4" />
           Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
         </video>
 
-        <h3>Add the values you'll use</h3>
+        <h3>
+          {
+            lang === "es" 
+            ? "Añade los valores que usarás"
+            : "Add the values you'll use" 
+          }
+        </h3>
         
         <div className="w-[364px] h-auto rounded-xl overflow-hidden shadow-xl/30">
           <video autoPlay={true} loop muted playsInline preload="metadata" className="w-full object-[53%_100%] object-cover aspect-[5/11.5] ">
