@@ -17,7 +17,7 @@ export default function InputDate ({ rowIndex, colIndex, setA1, A1 }: {
     const label = `${TableExtended.indexToLabel(colIndex)}${rowIndex}`;
     const { lang } = useParams<{ lang: "en" | "es" }>();
     const { table } = useContext(TableContext);
-    const [ date, setDate ] = useState<CalendarDate | null>(() => {
+    const [ date, setDate ] = useState<CalendarDate | null | undefined>(() => {
         const storedValue = table.rows[rowIndex].get(label)?.value;
         const verification = zod.iso.date().safeParse(storedValue);
         if (storedValue && verification.success) {
