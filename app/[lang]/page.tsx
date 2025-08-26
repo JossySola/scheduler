@@ -2,6 +2,7 @@ import { Divider } from "@heroui/react";
 import Link from "next/link";
 import { AnthropicTiny, ClaudeTiny } from "../ui/atoms/atom-anthropic";
 import Benefits from "../ui/landing/benefits";
+import Steps from "../ui/landing/steps";
 
 export default async function App ({ params }: {
   params: Promise<{ lang: "en" | "es" }>,
@@ -9,7 +10,7 @@ export default async function App ({ params }: {
   const lang = (await params).lang;
   return (
     <main className="w-full flex flex-col justify-center items-center gap-3">
-      <div className="w-full lg:w-[900px] p-5 flex flex-col items-center gap-10">
+      <div className="w-full lg:w-[900px] p-5 flex flex-col items-center gap-50">
         <header className="flex flex-col justify-center items-center relative w-full text-center h-[80vh]">
           <div className="blur-sm absolute top-[35%] flex flex-inline items-start w-full h-full">
             <ColorStrains width={"100%"} />
@@ -23,76 +24,8 @@ export default async function App ({ params }: {
           </h1>
         </header>
 
-        <h2 className="text-center w-full">
-          {
-            lang === "es" 
-            ? "Planificación de trabajo, coordinación de horarios y bloques de tiempo ajustables"
-            : "Workforce planning, shift coordination, and custom time blocks." 
-          }
-        </h2>
         <Benefits />
-        
-        <h2>
-          {
-            lang === "es" 
-            ? "Sólo en 🖐🏾 pasos"
-            : "Just in 🖐🏾 steps" 
-          }
-        </h2>
-
-        <h3>
-          {
-            lang === "es" 
-            ? "Empieza añadiendo filas y columnas"
-            : "Start by adding the rows and columns you need" 
-          }
-        </h3>
-        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full rounded-xl shadow-xl/30">
-          <source src="/assets/rows.mp4" type="video/mp4" />
-          Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-        </video>
-
-        <h3>
-          {
-            lang === "es" 
-            ? "Asigna los tipos de encabezados y sus valores"
-            : "Set the column headers' type and their values" 
-          }
-          
-        </h3>
-        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full rounded-xl shadow-xl/30">
-          <source src="/assets/headers-panel.mp4" type="video/mp4" />
-          Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-        </video>
-
-        <h3>
-          {
-            lang === "es" 
-            ? "Añade los valores que usarás"
-            : "Add the values you'll use" 
-          }
-        </h3>
-        
-        <div className="w-[364px] h-auto rounded-xl overflow-hidden shadow-xl/30">
-          <video autoPlay={true} loop muted playsInline preload="metadata" className="w-full object-[53%_100%] object-cover aspect-[5/11.5] ">
-            <source src="/assets/values.mp4" type="video/mp4" />
-            Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-          </video>
-        </div>
-        
-        
-        <div className="w-[364px] h-auto rounded-xl overflow-hidden shadow-xl/30">
-          <video autoPlay={true} loop muted playsInline preload="metadata" className="w-full object-[53%_100%] object-cover aspect-[5/11.5] ">
-            <source src="/assets/generate.mp4" type="video/mp4" />
-            Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-          </video>
-        </div>
-
-        <h3></h3>
-        <video autoPlay={true} loop muted playsInline preload="metadata" className="max-w-[732px] w-full rounded-xl shadow-xl/30">
-          <source src="/assets/result.mp4" type="video/mp4" />
-          Seems like this mp4 video cannot be played. Retry by refreshing the page, using another browser or using a more stable internet connection.
-        </video>
+        <Steps />
       </div>
       
       <footer className="text-[#27272a] dark:text-[#f4f4f5] dark:bg-[#27272A] flex flex-col justify-start items-start gap-2 w-full h-fit bg-[#F4F4F5] bottom-0 p-10 pb-20 sm:grid sm:grid-cols-[auto_3px_auto]">
