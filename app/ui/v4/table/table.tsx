@@ -4,34 +4,6 @@ import { Button } from "@heroui/react";
 import { flexRender } from "@tanstack/react-table";
 import Filter from "./filter";
 
-type RowHeader = {
-    value: string,
-    disable: boolean,
-    count: number,
-    enabledValues: Array<string>,
-    enabledColumns: Array<string>,
-}
-type ColHeader = {
-    value: string,
-    numberOfRows: number,
-    amountOfValues: Array<number>,
-}
-type Data = {
-    value: string,
-}
-type Cell = RowHeader | ColHeader | Data;
-type TData = {
-    [index: string]: string,
-    value: string,
-}
-type TestData = {
-    firstName: string,
-    lastName: string,
-    age: number,
-    visits: number,
-    progress: number,
-    status: string
-}
 export default function Table() {
     const { 
         table,
