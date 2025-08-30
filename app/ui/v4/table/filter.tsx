@@ -18,6 +18,9 @@ export default function Filter({
         <Input
         type="text"
         variant="faded"
+        classNames={{
+            input: "w-[50vw] text-base sm:w-[204px]",
+        }}        
         value={(columnFilterValue ?? '') as string}
         onValueChange={e => column.setFilterValue(e)}
         placeholder={params.lang === "en" ? "Search..." : "Buscar..."}
