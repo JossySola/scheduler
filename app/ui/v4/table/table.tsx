@@ -6,9 +6,11 @@ import Filter from "./filter";
 import { ChevronDoubleDown, ChevronDoubleLeft, ChevronDoubleRight, ChevronDoubleUp, Sort, SortAscending, SortDescending } from "../../icons";
 import { useParams } from "next/navigation";
 import Settings from "./settings";
+import { useState } from "react";
 
 export default function Table() {
     const params = useParams<{ lang: "en" | "es" }>();
+    const [ values, setValues ] = useState<Set<string>>(new Set());    
     const { 
         table,
         setData,
@@ -16,11 +18,11 @@ export default function Table() {
         handleAddRow, 
         handleDeleteColumn, 
         handleDeleteRow 
-    } = useVirtualizedTable();
+    } = useVirtualizedTable(values);
 
     return (
         <section className="w-5/6 grid grid-rows-[auto_auto] grid-cols-[auto_1fr] justify-self-center my-15">
-            <Settings />
+            <Settings values={values} setValues={setValues} />
             <div className="col-start-2 col-span-1 flex flex-row gap-2">
                 <Button 
                 isIconOnly
@@ -73,9 +75,13 @@ export default function Table() {
                                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                                         {
                                                             header.column.getCanSort()
-                                                            ? <button className="cursor-pointer" onClick={header.column.getToggleSortingHandler()} aria-label="Sort button">
+                                                            ?   <Button 
+                                                                variant="light" 
+                                                                className="w-fit p-0" 
+                                                                onPress={() => header.column.getToggleSortingHandler()} 
+                                                                aria-label="Sort button">
                                                                 <Sort />
-                                                            </button>
+                                                            </Button>
                                                             : null
                                                         }
                                                         {{
