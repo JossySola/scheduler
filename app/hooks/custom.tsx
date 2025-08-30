@@ -1,5 +1,5 @@
 "use client"
-import { ColumnDef, createColumnHelper, getCoreRowModel, getFilteredRowModel, getSortedRowModel, Column, Table, useReactTable, RowData } from "@tanstack/react-table";
+import { ColumnDef, createColumnHelper, getCoreRowModel, getFilteredRowModel, getSortedRowModel, Column, Table, useReactTable, RowData, SortingState } from "@tanstack/react-table";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
 import { Input } from "@heroui/react";
@@ -125,6 +125,7 @@ const defaultColumn: Partial<ColumnDef<VTData>> = {
     }
 }
 export function useVirtualizedTable () {
+    const [sorting, setSorting] = useState<SortingState>([]);
     const [data, setData] = useState<Array<VTData>>([]);
     // Data is an array of objects that will be turned into the rows of your table.
     // Each object in the array represents a row of data.
@@ -136,7 +137,7 @@ export function useVirtualizedTable () {
     const [columns, setColumns] = useState<Array<ColumnDef<VTData>>>([
         {
             id: "indexes",
-            cell: ({row}) => <div>{row.index}</div>,
+            cell: ({row}) => <div className="w-[1.5rem] h-full flex flex-col justify-center items-center">{row.index}</div>,
         }
     ]);
     // Column Defs are just plain objects and it is where we tell TanStack Table
@@ -151,6 +152,10 @@ export function useVirtualizedTable () {
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        onSortingChange: setSorting,
+        state: {
+            sorting,
+        },
         meta: {
             updateData: (rowIndex, columnId, value) => {
                 setData(prev =>
@@ -185,6 +190,9 @@ export function useVirtualizedTable () {
                     id: columnName,
                     header: () => <span>{columnName}</span>,
                     footer: props => props.column.id,
+                    sortUndefined: 'last',
+                    sortDescFirst: false,
+                    enableSorting: true,
                 }
             ]
         });
