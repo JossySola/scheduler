@@ -5,6 +5,7 @@ import { flexRender } from "@tanstack/react-table";
 import Filter from "./filter";
 import { ChevronDoubleDown, ChevronDoubleLeft, ChevronDoubleRight, ChevronDoubleUp, Sort, SortAscending, SortDescending } from "../../icons";
 import { useParams } from "next/navigation";
+import Settings from "./settings";
 
 export default function Table() {
     const params = useParams<{ lang: "en" | "es" }>();
@@ -19,6 +20,7 @@ export default function Table() {
 
     return (
         <section className="w-5/6 grid grid-rows-[auto_auto] grid-cols-[auto_1fr] justify-self-center my-15">
+            <Settings />
             <div className="col-start-2 col-span-1 flex flex-row gap-2">
                 <Button 
                 isIconOnly
