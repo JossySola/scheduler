@@ -118,6 +118,7 @@ const defaultColumn: Partial<ColumnDef<VTData>> = {
         }, [initialValue]);
         return (
             <Input
+            variant="bordered"
             value={value as string ?? ""}
             onValueChange={setValue}
             onBlur={onBlur} />
@@ -229,8 +230,6 @@ export function useVirtualizedTable () {
         if (!data.length) return;
         setData(prev => prev.slice(0, -1));
     }
-
-
     return {
         table,
         setData,
