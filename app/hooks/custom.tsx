@@ -1,8 +1,9 @@
 "use client"
-import { ColumnDef, createColumnHelper, getCoreRowModel, getFilteredRowModel, getSortedRowModel, Column, Table, useReactTable, RowData, SortingState } from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState } from "@tanstack/react-table";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
 import { Input } from "@heroui/react";
+import { motion } from "motion/react";
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
@@ -117,11 +118,13 @@ const defaultColumn: Partial<ColumnDef<VTData>> = {
             setValue(initialValue)
         }, [initialValue]);
         return (
-            <Input
-            variant="bordered"
-            value={value as string ?? ""}
-            onValueChange={setValue}
-            onBlur={onBlur} />
+            <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
+                <Input
+                variant="bordered"
+                value={value as string ?? ""}
+                onValueChange={setValue}
+                onBlur={onBlur} />
+            </motion.div>
         )
     }
 }
