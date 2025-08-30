@@ -106,29 +106,7 @@ export function useCallbackAction <T, Args extends any[]>(callback: (...args: Ar
 export type VTData = {
     [columnKey: string]: string;
 }
-const defaultColumn: Partial<ColumnDef<VTData>> = {
-    cell: ({ getValue, row: { index }, column: { id },
-    table }) => {
-        const initialValue = getValue();
-        const [value, setValue] = useState(initialValue);
-        const onBlur = () => {
-            table.options.meta?.updateData(index, id, value)
-        }
-        useEffect(() => {
-            setValue(initialValue)
-        }, [initialValue]);
-        return (
-            <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
-                <Input
-                variant="bordered"
-                value={value as string ?? ""}
-                onValueChange={setValue}
-                onBlur={onBlur} />
-            </motion.div>
-        )
-    }
-}
-export function useVirtualizedTable () {
+export function useVirtualizedTable (values: Set<string>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [data, setData] = useState<Array<VTData>>([]);
     // Data is an array of objects that will be turned into the rows of your table.
@@ -148,6 +126,31 @@ export function useVirtualizedTable () {
     // how each column should access and/or transform row data with either an
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
+    const defaultColumn: Partial<ColumnDef<VTData>> = {
+        cell: ({ getValue, row: { index }, column: { id },
+        table }) => {
+            const initialValue = getValue();
+            const [value, setValue] = useState(initialValue);
+            const onBlur = () => {
+                table.options.meta?.updateData(index, id, value)
+            }
+            useEffect(() => {
+                setValue(initialValue)
+            }, [initialValue]);
+            return (
+                <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
+                    <Input
+                    variant="bordered"
+                    classNames={{
+                        input: "w-[50vw] text-base sm:w-[204px]",
+                    }}
+                    value={value as string ?? ""}
+                    onValueChange={setValue}
+                    onBlur={onBlur} />
+                </motion.div>
+            )
+        }
+    }
 
     const table = useReactTable({
         columns,
