@@ -2,8 +2,13 @@
 import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, useDisclosure } from "@heroui/react";
 import { useParams } from "next/navigation"
 import { Box, SettingsGearFill } from "../../icons";
+import { Dispatch, SetStateAction } from "react";
+import ValuesList from "./list";
 
-export default function Settings() {
+export default function Settings({ values, setValues }: {
+    values: Set<string>,
+    setValues: Dispatch<SetStateAction<Set<string>>>
+}) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     return (
@@ -27,7 +32,7 @@ export default function Settings() {
 
                             </DrawerHeader>
                             <DrawerBody>
-
+                                <ValuesList values={values} setValues={setValues} />
                             </DrawerBody>
                             <DrawerFooter>
                                 <Button size="lg" color="default" variant="flat" onPress={onClose}>
