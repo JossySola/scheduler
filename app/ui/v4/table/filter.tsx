@@ -2,8 +2,9 @@
 import { Input } from "@heroui/react";
 import { Column, Table } from "@tanstack/react-table";
 import { useParams } from "next/navigation";
+import { memo } from "react";
 
-export default function Filter({
+const Filter = memo(function ({
     column,
     table,
 }: {
@@ -11,7 +12,6 @@ export default function Filter({
     table: Table<any>
 }) {
     const params = useParams<{ lang: "en" | "es" }>();
-    const firstValue = table.getPreFilteredRowModel().flatRows[0]?.getValue(column.id);
     const columnFilterValue = column.getFilterValue();
 
     return (
@@ -26,4 +26,5 @@ export default function Filter({
         placeholder={params.lang === "en" ? "Search..." : "Buscar..."}
         />
     )
-}
+});
+export default Filter;
