@@ -2,7 +2,7 @@
 import { Input } from "@heroui/react";
 import { Column, Table } from "@tanstack/react-table";
 import { useParams } from "next/navigation";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 
 const Filter = memo(function ({
     column,
@@ -11,9 +11,12 @@ const Filter = memo(function ({
     column: Column<any, any>,
     table: Table<any>
 }) {
-    const params = useParams<{ lang: "en" | "es" }>();
     const columnFilterValue = column.getFilterValue();
-
+    const [value, setValue] = useState<string>((columnFilterValue ?? '') as string);
+    const params = useParams<{ lang: "en" | "es" }>();
+    useEffect(() => {
+        column.setFilterValue(value);
+    }, [value]);
     return (
         <Input
         type="text"
@@ -21,8 +24,8 @@ const Filter = memo(function ({
         classNames={{
             input: "w-[50vw] text-base sm:w-[204px]",
         }}        
-        value={(columnFilterValue ?? '') as string}
-        onValueChange={e => column.setFilterValue(e)}
+        value={value}
+        onValueChange={setValue}
         placeholder={params.lang === "en" ? "Search..." : "Buscar..."}
         />
     )
