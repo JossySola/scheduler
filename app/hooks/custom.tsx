@@ -1,5 +1,5 @@
 "use client"
-import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState } from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState, Getter, Table } from "@tanstack/react-table";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
 import { Input } from "@heroui/react";
@@ -127,8 +127,16 @@ export function useVirtualizedTable (values: Set<string>) {
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
     const defaultColumn: Partial<ColumnDef<VTData>> = {
-        cell: ({ getValue, row: { index }, column: { id },
-        table }) => {
+        cell: useCallback(({ getValue, row: { index }, column: { id }, table }: {
+            getValue: Getter<unknown>,
+            row: {
+                index: number,
+            },
+            column: {
+                id: string,
+            },
+            table: Table<VTData>,
+        }) => {
             const initialValue = getValue();
             const [value, setValue] = useState(initialValue);
             const onBlur = () => {
@@ -149,9 +157,9 @@ export function useVirtualizedTable (values: Set<string>) {
                     onBlur={onBlur} />
                 </motion.div>
             )
-        }
+        }, [])
     }
-
+    
     const table = useReactTable({
         columns,
         data,
