@@ -91,7 +91,7 @@ export default function Table() {
                                                     </div>
                                                     {header.column.getCanFilter() 
                                                     ? <div>
-                                                        <Filter column={header.column} table={table} />
+                                                        <Filter column={header.column} />
                                                     </div>
                                                     : null}
                                                 </div>

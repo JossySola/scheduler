@@ -6,10 +6,8 @@ import { memo, useEffect, useState } from "react";
 
 const Filter = memo(function ({
     column,
-    table,
 }: {
     column: Column<any, any>,
-    table: Table<any>
 }) {
     const columnFilterValue = column.getFilterValue();
     const [value, setValue] = useState<string>((columnFilterValue ?? '') as string);
