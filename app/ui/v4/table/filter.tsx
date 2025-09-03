@@ -1,6 +1,6 @@
 "use client"
 import { Input } from "@heroui/react";
-import { Column, Table } from "@tanstack/react-table";
+import { Column } from "@tanstack/react-table";
 import { useParams } from "next/navigation";
 import { memo, useEffect, useState } from "react";
 
@@ -20,8 +20,8 @@ const Filter = memo(function ({
         type="text"
         variant="faded"
         classNames={{
-            input: "w-[50vw] text-base sm:w-[204px]",
-        }}        
+            mainWrapper: "w-[55vw] h-[48px] sm:w-64"
+        }}  
         value={value}
         onValueChange={setValue}
         placeholder={params.lang === "en" ? "Search..." : "Buscar..."}
