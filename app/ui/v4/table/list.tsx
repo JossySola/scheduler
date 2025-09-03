@@ -67,7 +67,6 @@ export default function ValuesList({ values, setValues }: {
             }
             {
                 values && Array.from(values.values()).map((item, index) => {
-                    console.log(item)
                     return (
                         <AnimatePresence key={index}>
                             <motion.li 
