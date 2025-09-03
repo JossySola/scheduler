@@ -1,35 +1,34 @@
 "use client"
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useParams } from 'next/navigation';
-import { motion } from 'motion/react';
+import { motion, stagger } from 'motion/react';
 
 export default function Benefits () {
     const params = useParams<{ lang: "en" | "es" }>();
     const { lang } = params;
     
     const container = {
-        hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { delayChildren: 0.5 } },
+        hidden: { opacity: 0, transition: { when: "afterChildren " } },
+        visible: { opacity: 1, transition: { when: "beforeChildren", delayChildren: stagger(0.5) } },
     }
     const item = {
-        hidden: { opacity: 0 },
-        visible: { opacity: 1 },
+        hidden: { opacity: 0, x: -100 },
+        visible: { opacity: 1, x: 0 },
     }
     return (
-        <section className='w-full lg:w-[900px] p-5 flex flex-col justify-center items-center gap-y-[50vh]'>
-            <motion.h2 initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="text-center w-full">
-            {
-                lang === "es" 
-                ? "Planificación de trabajo, coordinación de horarios y bloques de tiempo ajustables"
-                : "Workforce planning, shift coordination, and custom time blocks." 
-            }
-            </motion.h2>
+        <section className='w-full lg:w-[900px] p-5 flex flex-col justify-center items-center gap-y-[45vh]'>
+
+            <motion.ul variants={container} initial="hidden" whileInView="visible">
+                <motion.li variants={item} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? "Planificación de trabajo" : "Workforce planning" }</motion.li>
+                <motion.li variants={item} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? "Coordinación de horarios" : "Shift coordination" }</motion.li>
+                <motion.li variants={item} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? "y bloques de tiempo ajustables" : "and custom time blocks" }</motion.li>
+            </motion.ul>
 
             <motion.section 
             variants={container}
             initial="hidden"
             whileInView="visible"
-            className="w-full flex flex-col md:flex-row justify-center items-center md:justify-between gap-10 text-center sm:text-left">
+            className="w-full flex flex-col md:flex-row justify-center items-center md:justify-between gap-5 text-center sm:text-right">
                 <motion.h3
                 variants={item}>
                     {
@@ -45,7 +44,7 @@ export default function Benefits () {
             variants={container}
             initial="hidden"
             whileInView="visible" 
-            className="w-full flex flex-col sm:flex-row justify-center items-center md:justify-between gap-10 text-center sm:text-left">
+            className="w-full flex flex-col sm:flex-row justify-center items-center md:justify-between gap-5 text-center sm:text-right">
                 <motion.h3 variants={item}>
                     {
                         lang === "es"
@@ -60,7 +59,7 @@ export default function Benefits () {
             variants={container}
             initial="hidden"
             whileInView="visible" 
-            className="w-full flex flex-col sm:flex-row justify-center items-center gap-10 text-center">
+            className="w-full flex flex-col sm:flex-row justify-center items-center gap-5 text-center sm:text-right">
                 <motion.h3 variants={item}>
                     {
                         lang === "es"

@@ -9,7 +9,7 @@ export default function Steps() {
     const { lang } = params;
     return (
         <section className="flex flex-col items-center gap-[30vh]">
-            <motion.h1 initial={{ scale: 0.5 }} whileInView={{ scale: 1 }}>
+            <motion.h1 initial={{ scale: 0.5 }} whileInView={{ scale: 1 }} className="w-full text-center">
             {
                 lang === "es" 
                 ? "Sólo en 🖐🏾 pasos"
