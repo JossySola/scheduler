@@ -1,9 +1,8 @@
 "use client"
-import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState, Getter, Table } from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState } from "@tanstack/react-table";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
-import { Input } from "@heroui/react";
-import { motion } from "motion/react";
+import CellRenderer from "../ui/v4/table/cell";
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
@@ -106,8 +105,9 @@ export function useCallbackAction <T, Args extends any[]>(callback: (...args: Ar
 export type VTData = {
     [columnKey: string]: string;
 }
-export function useVirtualizedTable (values: Set<string>) {
+export function useVirtualizedTable () {
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [values, setValues] = useState<Set<string>>(new Set());     
     const [data, setData] = useState<Array<VTData>>([]);
     // Data is an array of objects that will be turned into the rows of your table.
     // Each object in the array represents a row of data.
@@ -127,39 +127,8 @@ export function useVirtualizedTable (values: Set<string>) {
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
     const defaultColumn: Partial<ColumnDef<VTData>> = {
-        cell: useCallback(({ getValue, row: { index }, column: { id }, table }: {
-            getValue: Getter<unknown>,
-            row: {
-                index: number,
-            },
-            column: {
-                id: string,
-            },
-            table: Table<VTData>,
-        }) => {
-            const initialValue = getValue();
-            const [value, setValue] = useState(initialValue);
-            const onBlur = () => {
-                table.options.meta?.updateData(index, id, value)
-            }
-            useEffect(() => {
-                setValue(initialValue)
-            }, [initialValue]);
-            return (
-                <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
-                    <Input
-                    variant="bordered"
-                    classNames={{
-                        input: "w-[50vw] text-base sm:w-[204px]",
-                    }}
-                    value={value as string ?? ""}
-                    onValueChange={setValue}
-                    onBlur={onBlur} />
-                </motion.div>
-            )
-        }, [])
+        cell: props => <CellRenderer {...props} values={values} />,
     }
-    
     const table = useReactTable({
         columns,
         data,
@@ -246,6 +215,8 @@ export function useVirtualizedTable (values: Set<string>) {
     }
     return {
         table,
+        values,
+        setValues,
         setData,
         handleAddColumn,
         handleAddRow,
