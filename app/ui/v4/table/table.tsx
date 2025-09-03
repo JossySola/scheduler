@@ -6,20 +6,19 @@ import Filter from "./filter";
 import { ChevronDoubleDown, ChevronDoubleLeft, ChevronDoubleRight, ChevronDoubleUp, Sort, SortAscending, SortDescending } from "../../icons";
 import { useParams } from "next/navigation";
 import Settings from "./settings";
-import { useState } from "react";
 
 export default function Table() {
     const params = useParams<{ lang: "en" | "es" }>();
-    const [ values, setValues ] = useState<Set<string>>(new Set());    
     const { 
         table,
         setData,
+        values,
+        setValues,
         handleAddColumn, 
         handleAddRow, 
         handleDeleteColumn, 
         handleDeleteRow 
-    } = useVirtualizedTable(values);
-
+    } = useVirtualizedTable();
     return (
         <section className="w-5/6 grid grid-rows-[auto_auto] grid-cols-[auto_1fr] justify-self-center my-15">
             <Settings values={values} setValues={setValues} />
@@ -66,27 +65,26 @@ export default function Table() {
                     {
                         table.getHeaderGroups().map(headerGroup => {
                             return (
-                                <tr key={headerGroup.id} className="flex flex-row gap-3 ml-[1.5rem]">
+                                <tr key={headerGroup.id} className="flex flex-row justify-start gap-2 ml-[24px]">
                                     {
                                         headerGroup.headers.map(header => (
                                             <th key={header.id} colSpan={header.colSpan}>
                                                 <div>
-                                                    <div className="flex flex-row justify-center items-center gap-3">
+                                                    <div className="flex flex-row justify-center items-center gap-3 py-3">
                                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                                         {
                                                             header.column.getCanSort()
-                                                            ?   <Button 
-                                                                variant="light" 
-                                                                className="w-fit p-0" 
-                                                                onPress={() => header.column.getToggleSortingHandler()} 
+                                                            ?   <button
+                                                                className="w-fit p-0 cursor-pointer select-none" 
+                                                                onClick={header.column.getToggleSortingHandler()} 
                                                                 aria-label="Sort button">
                                                                 <Sort />
-                                                            </Button>
+                                                            </button>
                                                             : null
                                                         }
                                                         {{
-                                                            asc: <SortAscending />,
-                                                            desc: <SortDescending />,
+                                                            asc: <SortAscending color="#71717a" />,
+                                                            desc: <SortDescending color="#71717a" />,
                                                         }[header.column.getIsSorted() as string] ?? null}
                                                     </div>
                                                     {header.column.getCanFilter() 
@@ -106,7 +104,7 @@ export default function Table() {
                 <tbody className="flex flex-col gap-3">
                 {
                     table.getRowModel().rows.map(row => {
-                        return <tr key={row.id} className="flex flex-row gap-3">
+                        return <tr key={row.id} className="flex flex-row justify-start gap-2">
                             { 
                                 row.getVisibleCells().map(col => {
                                     return <td key={col.id}>
