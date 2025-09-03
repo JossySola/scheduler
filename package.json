@@ -1,6 +1,6 @@
 {
   "name": "scheduler",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "type": "module",
   "private": true,
   "scripts": {
@@ -17,7 +17,7 @@
     "@auth/pg-adapter": "^1.10.0",
     "@aws-crypto/client-browser": "^4.2.1",
     "@aws-crypto/sha256-js": "^5.2.0",
-    "@aws-sdk/client-kms": "^3.873.0",
+    "@aws-sdk/client-kms": "^3.879.0",
     "@aws-sdk/hash-node": "^3.370.0",
     "@aws-sdk/signature-v4": "^3.370.0",
     "@aws-sdk/types": "^3.862.0",
@@ -29,8 +29,8 @@
     "@sendgrid/mail": "^8.1.5",
     "@tailwindcss/postcss": "^4.1.12",
     "@tanstack/react-table": "^8.21.3",
-    "@types/react": "^19.1.11",
-    "@types/react-dom": "^19.1.7",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
     "@vercel/analytics": "^1.5.0",
     "@vercel/postgres": "^0.10.0",
     "@vercel/speed-insights": "^1.2.0",
@@ -40,7 +40,7 @@
     "geist": "^1.4.2",
     "lottie-react": "^2.4.1",
     "motion": "^12.23.12",
-    "next": "^15.5.0",
+    "next": "^15.5.2",
     "next-auth": "^5.0.0-beta.29",
     "next-themes": "^0.4.6",
     "pg": "^8.16.3",
@@ -50,7 +50,7 @@
     "server-only": "^0.0.1",
     "tailwindcss": "^4.1.12",
     "ts-node": "^10.9.2",
-    "use-debounce": "^10.0.5",
+    "use-debounce": "^10.0.6",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -59,13 +59,13 @@
     "@types/node": "^20.19.11",
     "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^9.34.0",
-    "eslint-config-next": "^15.5.0",
+    "eslint-config-next": "^15.5.2",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^15.15.0",
     "jsdom": "^26.1.0",
     "node-fetch": "^3.3.2",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.41.0",
+    "typescript-eslint": "^8.42.0",
     "vitest": "^3.2.4"
   }
 }
