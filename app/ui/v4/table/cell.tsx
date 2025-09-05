@@ -30,12 +30,33 @@ export default function CellRenderer ({getValue, row, column, table, values}: {
     const handleDuplicates = useDebouncedCallback((val: string) => {
         setIsDuplicate(false);
         if (column.id === "A" && val.length) {
-            const isDuplicate = table.getRowModel().rows.some((r, idx) => r.getValue(column.id) === val && idx !== row.index);
+            const isDuplicate = table.getRowModel().rows.some((r, idx) => {
+                const value = r.getValue(column.id);
+                if (typeof value === "string") {
+                    if (value.toUpperCase() === val.toUpperCase() && idx !== row.index) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                return value === val && idx !== row.index;
+            });
             setIsDuplicate(isDuplicate);
             return;
         }
         if (row.index === 0 && val.length) {
-            const isDuplicate = table.getRowModel().rows.some((r, idx) => r.getValue(column.id) === val && idx !== row.index);
+            const cells = table.getRowModel().rows[0].getVisibleCells();
+            const isDuplicate = cells.some(cell => {
+                const value = cell.getValue();
+                if (typeof value === "string") {
+                    if (value.toUpperCase() === val.toUpperCase() && cell.column.id !== column.id) {    
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                value === val && cell.column.id !== column.id
+            });
             setIsDuplicate(isDuplicate);
             return;
         }
