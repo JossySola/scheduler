@@ -19,18 +19,12 @@ export default function ValuesList({ values, setValues }: {
             return;
         }
         setValues(prev => {
-            if (values.size === 0) {
-                const newSet = new Set([value]);
-                newSet.add(value);
-                return newSet;
-            }
             const newSet = new Set(prev);
             newSet.add(value);
             return newSet;
         });
     }
     const handleRemoveItem = (value: string) => {
-        if (values.size === 0) return;
         setValues(prev => {
             const newSet = new Set(prev);
             newSet.delete(value);
