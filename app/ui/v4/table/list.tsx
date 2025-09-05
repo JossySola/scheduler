@@ -19,16 +19,14 @@ export default function ValuesList({ values, setValues }: {
             return;
         }
         setValues(prev => {
-            const newSet = new Set(prev);
-            newSet.add(value);
-            return newSet;
+            const newSet = new Set([value]);
+            return prev.union(newSet);
         });
     }
     const handleRemoveItem = (value: string) => {
         setValues(prev => {
-            const newSet = new Set(prev);
-            newSet.delete(value);
-            return newSet;
+            const newSet = new Set([value]);
+            return prev.difference(newSet);
         });
     }
     const handleValueChange = (value: string) => {
