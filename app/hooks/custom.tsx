@@ -2,7 +2,7 @@
 import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState } from "@tanstack/react-table";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
-import CellRenderer from "../ui/v4/table/cell";
+import CellRenderer from "../ui/v4/input/cell";
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
@@ -107,7 +107,9 @@ export type VTData = {
 }
 export function useVirtualizedTable () {
     const [sorting, setSorting] = useState<SortingState>([]);
-    const [values, setValues] = useState<Set<string>>(new Set());     
+    const [values, setValues] = useState<Set<string>>(new Set());
+    const [interval, setInterval] = useState<number>(1);
+    const [headerType, setHeaderType] = useState<"text" | "time" | "date">("text");
     const [data, setData] = useState<Array<VTData>>([]);
     // Data is an array of objects that will be turned into the rows of your table.
     // Each object in the array represents a row of data.
@@ -127,7 +129,7 @@ export function useVirtualizedTable () {
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
     const defaultColumn: Partial<ColumnDef<VTData>> = {
-        cell: props => <CellRenderer {...props} values={values} />,
+        cell: props => <CellRenderer {...props} values={values} interval={interval} headerType={headerType} setInterval={setInterval} setHeaderType={setHeaderType} />,
     }
     const table = useReactTable({
         columns,
@@ -215,12 +217,22 @@ export function useVirtualizedTable () {
     }
     return {
         table,
-        values,
-        setValues,
         setData,
-        handleAddColumn,
-        handleAddRow,
-        handleDeleteColumn,
-        handleDeleteRow,
+        state: {
+            values,
+            interval,
+            headerType,
+        },
+        setter: {
+            setValues,
+            setInterval,
+            setHeaderType,
+        },
+        controls: {
+            handleAddColumn,
+            handleAddRow,
+            handleDeleteColumn,
+            handleDeleteRow,
+        },
     }
 }
