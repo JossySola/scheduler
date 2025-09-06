@@ -20,7 +20,7 @@ const Filter = memo(function ({
         type="text"
         variant="faded"
         classNames={{
-            mainWrapper: "w-[55vw] h-[48px] sm:w-64"
+            mainWrapper: "w-[63vw] h-[48px] sm:w-64"
         }}  
         value={value}
         onValueChange={setValue}

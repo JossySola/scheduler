@@ -3,7 +3,7 @@ import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, 
 import { useParams } from "next/navigation"
 import { Box, SettingsGearFill } from "../../icons";
 import { Dispatch, SetStateAction } from "react";
-import ValuesList from "./list";
+import ValuesList from "../table/list";
 
 export default function Settings({ values, setValues }: {
     values: Set<string>,

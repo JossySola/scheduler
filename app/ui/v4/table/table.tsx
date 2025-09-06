@@ -2,33 +2,30 @@
 import { useVirtualizedTable } from "@/app/hooks/custom";
 import { Button } from "@heroui/react";
 import { flexRender } from "@tanstack/react-table";
-import Filter from "./filter";
+import Filter from "../input/filter";
 import { ChevronDoubleDown, ChevronDoubleLeft, ChevronDoubleRight, ChevronDoubleUp, Sort, SortAscending, SortDescending } from "../../icons";
 import { useParams } from "next/navigation";
-import Settings from "./settings";
+import Settings from "../drawer/settings";
 
 export default function Table() {
     const params = useParams<{ lang: "en" | "es" }>();
     const { 
         table,
         setData,
-        values,
-        setValues,
-        handleAddColumn, 
-        handleAddRow, 
-        handleDeleteColumn, 
-        handleDeleteRow 
+        controls,
+        state,
+        setter,
     } = useVirtualizedTable();
     return (
         <section className="w-5/6 grid grid-rows-[auto_auto] grid-cols-[auto_1fr] justify-self-center my-15">
-            <Settings values={values} setValues={setValues} />
+            <Settings values={state.values} setValues={setter.setValues} />
             <div className="col-start-2 col-span-1 flex flex-row gap-2">
                 <Button 
                 isIconOnly
                 className="p-2"
                 size="lg"
                 variant="bordered" 
-                onPress={() => handleDeleteColumn()}>
+                onPress={() => controls.handleDeleteColumn()}>
                     <ChevronDoubleLeft width={32} height={32} />
                 </Button>
                 <Button 
@@ -36,7 +33,7 @@ export default function Table() {
                 className="p-2"
                 size="lg"
                 aria-label={params.lang === "es" ? "Añadir columna" : "Add column"} 
-                onPress={() => handleAddColumn()}>
+                onPress={() => controls.handleAddColumn()}>
                     <ChevronDoubleRight width={32} height={32}/>
                 </Button>
             </div>
@@ -47,7 +44,7 @@ export default function Table() {
                 size="lg"
                 variant="bordered"
                 aria-label={params.lang === "es" ? "Eliminar fila" : "Delete row"} 
-                onPress={() => handleDeleteRow()}>
+                onPress={() => controls.handleDeleteRow()}>
                     <ChevronDoubleUp width={32} height={32} />
                 </Button>
                 <Button 
@@ -55,7 +52,7 @@ export default function Table() {
                 className="p-2"
                 size="lg"
                 aria-label={params.lang === "es" ? "Añadir fila" : "Add row"}                 
-                onPress={() => handleAddRow()}>
+                onPress={() => controls.handleAddRow()}>
                     <ChevronDoubleDown width={32} height={32} />
                 </Button>
             </div>

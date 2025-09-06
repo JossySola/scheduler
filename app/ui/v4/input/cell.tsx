@@ -7,13 +7,18 @@ import { useState } from "react";
 import { Header } from "../../icons";
 import { useDebouncedCallback } from "use-debounce";
 import { useParams } from "next/navigation";
+import HeaderModal from "../modal/header-modal";
 
-export default function CellRenderer ({getValue, row, column, table, values}: {
+export default function CellRenderer ({getValue, row, column, table, values, interval, headerType, setInterval, setHeaderType}: {
     getValue: Getter<unknown>,
     row: { index: number },
     column: { id: string },
     table: Table<VTData>,
-    values: Set<string>
+    values: Set<string>,
+    interval: number,
+    headerType: "text" | "time" | "date",
+    setInterval: (interval: number) => void,
+    setHeaderType: (type: "text" | "time" | "date") => void,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const initialValue = getValue();
@@ -71,7 +76,7 @@ export default function CellRenderer ({getValue, row, column, table, values}: {
             selectionMode="single"
             variant="bordered"
             size="lg"
-            classNames={{ mainWrapper: "w-[55vw] sm:w-64" }}
+            classNames={{ mainWrapper: "w-[63vw] sm:w-64" }}
             selectedKeys={selection}
             onChange={(event) => handleSelectionChange(event.target.value)}
             >
@@ -87,13 +92,19 @@ export default function CellRenderer ({getValue, row, column, table, values}: {
                 <Input
                     variant="bordered"
                     classNames={{
-                    mainWrapper: "w-[55vw] sm:w-64",
+                    mainWrapper: "w-[63vw] sm:w-64",
                     inputWrapper: "h-[48px]",
                     }}
                     value={(value as string) ?? ""}
                     onChange={e => handleDuplicates(e.target.value)}
                     onValueChange={setValue}
-                    startContent={row.index === 0 || column.id === "A" ? <Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> : null}
+                    startContent={
+                        row.index === 0 || column.id === "A" 
+                        ? row.index === 0 && column.id === "B" 
+                            ? <HeaderModal interval={interval} setInterval={setInterval} headerType={headerType} setHeaderType={setHeaderType} />
+                            : <Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> 
+                        : null
+                    }
                     onBlur={onBlur}
                     errorMessage={
                         isDuplicate 
