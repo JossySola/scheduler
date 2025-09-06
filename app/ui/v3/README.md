@@ -1,1 +1,0 @@
-The name `v3` only references the 3rd refactorization so far targeting the Panel and Table Route/Components.

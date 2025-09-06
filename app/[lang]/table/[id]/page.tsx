@@ -1,7 +1,6 @@
 import { decryptKmsDataKey } from "@/app/lib/utils";
 import { RowType } from "@/app/lib/utils-client";
 import { BackButton } from "@/app/ui/atoms/atom-button-back";
-import Panel from "@/app/ui/v3/client-panel";
 import { auth } from "@/auth";
 import { sql } from "@vercel/postgres";
 import { redirect } from 'next/navigation';
@@ -76,12 +75,7 @@ export default async function Page ({ params }: {
                 
                 return (
                     <section className="w-full h-fit mt-15 mb-20">
-                        <Panel 
-                        name={table.name}
-                        stored_rows={table.rows}
-                        stored_values={table.values}
-                        stored_type={table.type}
-                        stored_interval={table.interval} />
+
                     </section>
                 )
             }
