@@ -13,7 +13,7 @@ export default function Benefits () {
     }
     const item = {
         hidden: { opacity: 0, x: -100 },
-        visible: { opacity: 1, x: 0 },
+        visible: { opacity: 1, x: 0, transition: { delay: 1 } },
     }
     return (
         <section className='w-full lg:w-[900px] p-5 flex flex-col justify-center items-center gap-y-[20vh]'>
