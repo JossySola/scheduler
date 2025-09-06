@@ -23,11 +23,11 @@ export default function HeaderModal({interval, setInterval, headerType, setHeade
                     { onClose => (
                         <>
                             <ModalHeader>
-                                {lang === "es" ? "Ajustes" : "Settings"}
+                                {lang === "es" ? "Ajustes de encabezado" : "Header settings"}
                             </ModalHeader>
                             <ModalBody>
                                 <Select
-                                label={ lang === "es" ? "Tipo de encabezado" : "Header type" }
+                                label={ lang === "es" ? "Tipo de encabezados" : "Headers' type" }
                                 selectedKeys={[headerType]}
                                 onChange={(e) => handleSelectionChange(e.target.value)}>
                                     <SelectItem key="text">
