@@ -19,9 +19,9 @@ export default function Benefits () {
         <section className='w-full lg:w-[900px] p-5 flex flex-col justify-center items-center gap-y-[45vh]'>
 
             <motion.ul variants={container} initial="hidden" whileInView="visible">
-                <motion.li variants={item} className="text-4xl/15 before:content-['✅ ']">{ lang === "es" ? "Planificación de trabajo" : "Workforce planning" }</motion.li>
-                <motion.li variants={item} className="text-4xl/15 before:content-['✅ ']">{ lang === "es" ? "Coordinación de horarios" : "Shift coordination" }</motion.li>
-                <motion.li variants={item} className="text-4xl/15 before:content-['✅ ']">{ lang === "es" ? "y bloques de tiempo ajustables" : "and custom time blocks" }</motion.li>
+                <motion.li variants={item} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? " Planificación de trabajo" : "Workforce planning" }</motion.li>
+                <motion.li variants={item} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? " Coordinación de horarios" : "Shift coordination" }</motion.li>
+                <motion.li variants={item} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? " y bloques de tiempo ajustables" : "and custom time blocks" }</motion.li>
             </motion.ul>
 
             <motion.section 
