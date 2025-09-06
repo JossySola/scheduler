@@ -8,7 +8,7 @@ export default function Steps() {
     const params = useParams<{ lang: "en" | "es" }>();
     const { lang } = params;
     return (
-        <section className="flex flex-col items-center gap-[25vh]">
+        <section className="flex flex-col items-center gap-[25vh] mx-5">
             <motion.h1 initial={{ scale: 0.5 }} whileInView={{ scale: 1 }} className="w-full text-center">
             {
                 lang === "es" 
@@ -112,7 +112,7 @@ export default function Steps() {
             </video>
             </motion.div>
 
-            <div className="flex flex-col items-center w-full text-3xl text-center gap-10 mb-5">
+            <div className="flex flex-col items-center w-full text-3xl text-center gap-10 mb-10">
                 <p>
                     {
                     lang === "es"
