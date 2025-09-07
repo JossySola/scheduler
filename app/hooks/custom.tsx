@@ -1,6 +1,6 @@
 "use client"
 import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState } from "@tanstack/react-table";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
 import CellRenderer from "../ui/v4/input/cell";
 
@@ -128,9 +128,19 @@ export function useVirtualizedTable () {
     // how each column should access and/or transform row data with either an
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
-    const defaultColumn: Partial<ColumnDef<VTData>> = {
-        cell: props => <CellRenderer {...props} values={values} interval={interval} headerType={headerType} setInterval={setInterval} setHeaderType={setHeaderType} />,
-    }
+    const defaultColumn = useMemo<Partial<ColumnDef<VTData>>>(() => ({
+        cell: props => (
+            <CellRenderer 
+                {...props} 
+                values={values} 
+                interval={interval} 
+                headerType={headerType} 
+                setInterval={setInterval}
+                setHeaderType={setHeaderType}
+            />
+        ),
+    }), [values, interval, headerType]);
+
     const table = useReactTable({
         columns,
         data,
