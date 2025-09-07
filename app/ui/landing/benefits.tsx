@@ -11,17 +11,21 @@ export default function Benefits () {
         hidden: { opacity: 0, transition: { when: "afterChildren " } },
         visible: { opacity: 1, transition: { when: "beforeChildren", delayChildren: stagger(0.5) } },
     }
-    const item = {
+    const check = {
         hidden: { opacity: 0, x: -100 },
         visible: { opacity: 1, x: 0 },
     }
+    const item = {
+        hidden: { opacity: 0, x: -100 },
+        visible: { opacity: 1, x: 0, transition: { delay: 0.5 } },
+    }
     return (
-        <section className='w-full lg:w-[900px] p-5 flex flex-col justify-center items-center gap-y-[45vh]'>
+        <section className='w-full lg:w-[900px] p-5 flex flex-col justify-center items-center gap-y-[20vh]'>
 
             <motion.ul variants={container} initial="hidden" whileInView="visible">
-                <motion.li variants={item} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? " Planificación de trabajo" : " Workforce planning" }</motion.li>
-                <motion.li variants={item} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? " Coordinación de horarios" : " Shift coordination" }</motion.li>
-                <motion.li variants={item} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? " y bloques de tiempo ajustables" : " and custom time blocks" }</motion.li>
+                <motion.li variants={check} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? " Planificación de trabajo" : " Workforce planning" }</motion.li>
+                <motion.li variants={check} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? " Coordinación de horarios" : " Shift coordination" }</motion.li>
+                <motion.li variants={check} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? " y bloques de tiempo ajustables" : " and custom time blocks" }</motion.li>
             </motion.ul>
 
             <motion.section 
