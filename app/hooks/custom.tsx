@@ -106,11 +106,14 @@ export function useCallbackAction <T, Args extends any[]>(callback: (...args: Ar
 export type VTData = {
     [columnKey: string]: string;
 }
-export function useVirtualizedTable () {
+export function useVirtualizedTable (
+    headerType: SharedSelection, 
+    setHeaderType: React.Dispatch<React.SetStateAction<SharedSelection>>,
+    interval: number, 
+    setInterval: React.Dispatch<React.SetStateAction<number>>,
+) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [values, setValues] = useState<Set<string>>(new Set());
-    const [interval, setInterval] = useState<number>(1);
-    const [headerType, setHeaderType] = useState<"text" | "date" | "time">("text");
     const [data, setData] = useState<Array<VTData>>([]);
     // Data is an array of objects that will be turned into the rows of your table.
     // Each object in the array represents a row of data.
@@ -238,13 +241,9 @@ export function useVirtualizedTable () {
         setData,
         state: {
             values,
-            interval,
-            headerType,
         },
         setter: {
             setValues,
-            setInterval,
-            setHeaderType,
             setColumns,
         },
         controls: {

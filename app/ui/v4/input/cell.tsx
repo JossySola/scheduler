@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { VTData } from "@/app/hooks/custom"
 import { Input, Select, SelectItem, SharedSelection } from "@heroui/react";
 import { Getter, Table } from "@tanstack/react-table"
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Header } from "../../icons";
 import { useDebouncedCallback } from "use-debounce";
 import { useParams } from "next/navigation";
@@ -16,15 +16,16 @@ export default function CellRenderer ({getValue, row, column, table, values, int
     table: Table<VTData>,
     values: Set<string>,
     interval: number,
-    headerType: "text" | "date" | "time",
+    headerType: SharedSelection,
     setInterval: Dispatch<SetStateAction<number>>,
-    setHeaderType: Dispatch<SetStateAction<"text" | "date" | "time">>,
+    setHeaderType: Dispatch<SetStateAction<SharedSelection>>,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const initialValue = getValue();
     const [value, setValue] = useState<string>(initialValue as string);
     const [selection, setSelection] = useState<string>(initialValue as string);
     const [isDuplicate, setIsDuplicate] = useState<boolean>(false);
+    
     const onBlur = () => {
         table.options.meta?.updateData(row.index, column.id, value);
     };
