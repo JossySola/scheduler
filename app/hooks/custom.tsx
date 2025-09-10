@@ -110,7 +110,7 @@ export function useVirtualizedTable () {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [values, setValues] = useState<Set<string>>(new Set());
     const [interval, setInterval] = useState<number>(1);
-    const [headerType, setHeaderType] = useState<SharedSelection>(new Set(["text"]));
+    const [headerType, setHeaderType] = useState<"text" | "date" | "time">("text");
     const [data, setData] = useState<Array<VTData>>([]);
     // Data is an array of objects that will be turned into the rows of your table.
     // Each object in the array represents a row of data.

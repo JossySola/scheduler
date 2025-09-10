@@ -16,9 +16,9 @@ export default function CellRenderer ({getValue, row, column, table, values, int
     table: Table<VTData>,
     values: Set<string>,
     interval: number,
-    headerType: SharedSelection,
+    headerType: "text" | "date" | "time",
     setInterval: Dispatch<SetStateAction<number>>,
-    setHeaderType: Dispatch<SetStateAction<SharedSelection>>,
+    setHeaderType: Dispatch<SetStateAction<"text" | "date" | "time">>,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const initialValue = getValue();
