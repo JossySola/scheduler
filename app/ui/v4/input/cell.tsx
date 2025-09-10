@@ -1,9 +1,9 @@
 "use client"
 import { motion } from "motion/react";
 import { VTData } from "@/app/hooks/custom"
-import { Input, Select, SelectItem } from "@heroui/react";
+import { Input, Select, SelectItem, SharedSelection } from "@heroui/react";
 import { Getter, Table } from "@tanstack/react-table"
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Header } from "../../icons";
 import { useDebouncedCallback } from "use-debounce";
 import { useParams } from "next/navigation";
@@ -16,9 +16,9 @@ export default function CellRenderer ({getValue, row, column, table, values, int
     table: Table<VTData>,
     values: Set<string>,
     interval: number,
-    headerType: "text" | "time" | "date",
-    setInterval: (interval: number) => void,
-    setHeaderType: (type: "text" | "time" | "date") => void,
+    headerType: SharedSelection,
+    setInterval: Dispatch<SetStateAction<number>>,
+    setHeaderType: Dispatch<SetStateAction<SharedSelection>>,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const initialValue = getValue();
