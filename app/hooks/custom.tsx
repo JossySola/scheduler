@@ -3,6 +3,7 @@ import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, use
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
 import CellRenderer from "../ui/v4/input/cell";
+import { SharedSelection } from "@heroui/react";
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
@@ -109,7 +110,7 @@ export function useVirtualizedTable () {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [values, setValues] = useState<Set<string>>(new Set());
     const [interval, setInterval] = useState<number>(1);
-    const [headerType, setHeaderType] = useState<"text" | "time" | "date">("text");
+    const [headerType, setHeaderType] = useState<SharedSelection>(new Set(["text"]));
     const [data, setData] = useState<Array<VTData>>([]);
     // Data is an array of objects that will be turned into the rows of your table.
     // Each object in the array represents a row of data.
@@ -129,19 +130,23 @@ export function useVirtualizedTable () {
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
     const defaultColumn = useMemo<Partial<ColumnDef<VTData>>>(() => ({
-        cell: props => (
-            <CellRenderer 
-                {...props} 
-                values={values} 
-                interval={interval} 
-                headerType={headerType} 
-                setInterval={setInterval}
-                setHeaderType={setHeaderType}
-            />
-        ),
+        cell: props => {
+            const cellProps = {
+                getValue: props.getValue,
+                row: props.row,
+                column: props.column,
+                table: props.table,
+                values,
+                interval,
+                headerType,
+                setInterval,
+                setHeaderType,
+            };
+            return <CellRenderer {...cellProps} />;
+        },
     }), [values, interval, headerType]);
 
-    const table = useReactTable({
+    const tableConfig = useMemo(() => ({
         columns,
         data,
         defaultColumn,
@@ -151,9 +156,12 @@ export function useVirtualizedTable () {
         onSortingChange: setSorting,
         state: {
             sorting,
+            values,
+            interval,
+            headerType,
         },
         meta: {
-            updateData: (rowIndex, columnId, value) => {
+            updateData: (rowIndex: number, columnId: string, value: unknown) => {
                 setData(prev =>
                     prev.map((row, index) => {
                         if (index === rowIndex) {
@@ -167,11 +175,11 @@ export function useVirtualizedTable () {
                 )
             }
         },
-    });
+    }), [columns, data, defaultColumn, sorting, values, interval, headerType]);
+    const table = useReactTable(tableConfig);
     // Row Models run under the hood to transform the original data in useful ways that
     // are needed for data grid features like filtering, sorting, grouping, expanding,
     // and pagination.
-    
     const handleAddColumn = () => {
         const columnName = generateColumnName(columns.length - 1);
         setData(prev => prev.map(row => {
@@ -237,6 +245,7 @@ export function useVirtualizedTable () {
             setValues,
             setInterval,
             setHeaderType,
+            setColumns,
         },
         controls: {
             handleAddColumn,
