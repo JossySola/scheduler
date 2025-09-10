@@ -1,20 +1,18 @@
 "use client"
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, NumberInput, Select, SelectItem, useDisclosure } from "@heroui/react"
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, NumberInput, Select, SelectItem, SharedSelection, useDisclosure } from "@heroui/react"
 import { SettingsSliders } from "../../icons";
 import { useParams } from "next/navigation";
-import { ChangeEvent, ChangeEventHandler } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
 export default function HeaderModal({interval, setInterval, headerType, setHeaderType}: {
     interval: number,
-    setInterval: (interval: number) => void,
-    headerType: "text" | "time" | "date",
-    setHeaderType: (type: "text" | "time" | "date") => void,
+    setInterval: Dispatch<SetStateAction<number>>,
+    headerType: SharedSelection,
+    setHeaderType: Dispatch<SetStateAction<SharedSelection>>,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
-    const handleSelectionChange = (value: string) => {
-        setHeaderType(value as "text" | "time" | "date");
-    }
+
     return (
         <>
             <Button isIconOnly onPress={onOpen} size="sm" color="primary"><SettingsSliders /></Button>
@@ -28,8 +26,9 @@ export default function HeaderModal({interval, setInterval, headerType, setHeade
                             <ModalBody>
                                 <Select
                                 label={ lang === "es" ? "Tipo de encabezados" : "Headers' type" }
-                                selectedKeys={[headerType]}
-                                onChange={(e) => handleSelectionChange(e.target.value)}>
+                                selectionMode="single"
+                                selectedKeys={headerType}
+                                onSelectionChange={setHeaderType}>
                                     <SelectItem key="text">
                                         {lang === "es" ? "Texto" : "Text"}
                                     </SelectItem>
