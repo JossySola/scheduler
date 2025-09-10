@@ -18,7 +18,7 @@ export default function Table() {
     } = useVirtualizedTable();
     return (
         <section className="w-full px-5 md:w-5/6 grid grid-rows-[auto_auto] grid-cols-[auto_1fr] justify-self-center my-15">
-            <Settings values={state.values} setValues={setter.setValues} />
+            <Settings values={state.values} setValues={setter.setValues} setColumns={setter.setColumns} />
             <div className="col-start-2 col-span-1 flex flex-row gap-2">
                 <Button 
                 isIconOnly
