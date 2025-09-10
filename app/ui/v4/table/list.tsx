@@ -4,10 +4,13 @@ import { useParams } from "next/navigation";
 import { Button, Input } from "@heroui/react";
 import { AnimatePresence, motion } from "motion/react";
 import { PlusCircle, Trash } from "../../icons";
+import { ColumnDef } from "@tanstack/react-table";
+import { VTData } from "@/app/hooks/custom";
 
-export default function ValuesList({ values, setValues }: {
+export default function ValuesList({ values, setValues, setColumns }: {
     values: Set<string>,
-    setValues: Dispatch<SetStateAction<Set<string>>>
+    setValues: Dispatch<SetStateAction<Set<string>>>,
+    setColumns: Dispatch<SetStateAction<ColumnDef<VTData>[]>>,
 }) {
     const [input, setInput] = useState<string>("");
     const [isDuplicate, setIsDuplicate] = useState<boolean>(false);
@@ -22,12 +25,18 @@ export default function ValuesList({ values, setValues }: {
             const newSet = new Set([value]);
             return prev.union(newSet);
         });
+        if (values.size === 0) {
+            setColumns(prev => prev.slice());
+        }
     }
     const handleRemoveItem = (value: string) => {
         setValues(prev => {
             const newSet = new Set([value]);
             return prev.difference(newSet);
         });
+        if (values.size === 1) {
+            setColumns(prev => prev.slice());
+        }
     }
     const handleValueChange = (value: string) => {
         setInput(value);
