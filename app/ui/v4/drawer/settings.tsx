@@ -4,10 +4,13 @@ import { useParams } from "next/navigation"
 import { Box, SettingsGearFill } from "../../icons";
 import { Dispatch, SetStateAction } from "react";
 import ValuesList from "../table/list";
+import { ColumnDef } from "@tanstack/react-table";
+import { VTData } from "@/app/hooks/custom";
 
-export default function Settings({ values, setValues }: {
+export default function Settings({ values, setValues, setColumns }: {
     values: Set<string>,
-    setValues: Dispatch<SetStateAction<Set<string>>>
+    setValues: Dispatch<SetStateAction<Set<string>>>,
+    setColumns: Dispatch<SetStateAction<ColumnDef<VTData>[]>>,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -32,7 +35,7 @@ export default function Settings({ values, setValues }: {
 
                             </DrawerHeader>
                             <DrawerBody>
-                                <ValuesList values={values} setValues={setValues} />
+                                <ValuesList values={values} setValues={setValues} setColumns={setColumns} />
                             </DrawerBody>
                             <DrawerFooter>
                                 <Button size="lg" color="default" variant="flat" onPress={onClose}>
