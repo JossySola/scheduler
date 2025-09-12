@@ -1,29 +1,25 @@
 "use client"
 import { useVirtualizedTable } from "@/app/hooks/custom";
-import { Button, SharedSelection } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { flexRender } from "@tanstack/react-table";
 import Filter from "../input/filter";
 import { ChevronDoubleDown, ChevronDoubleLeft, ChevronDoubleRight, ChevronDoubleUp, Sort, SortAscending, SortDescending } from "../../icons";
 import { useParams } from "next/navigation";
 import Settings from "../drawer/settings";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function Table() {
     const params = useParams<{ lang: "en" | "es" }>();
-    const [headerType, setHeaderType] = useState<SharedSelection>(() => new Set([""]));
-    const [interval, setInterval] = useState<number>(1);
     const { 
         table,
         setData,
         controls,
         state,
         setter,
-    } = useVirtualizedTable(headerType, setHeaderType, interval, setInterval);
-
+    } = useVirtualizedTable();
     useEffect(() => {
-        console.log("HeaderType changed ON TABLE:", Array.from(headerType));
-    }, [headerType]);
-    
+        //console.log(state.headerType)
+    }, [state.headerType]);
     return (
         <section className="w-full px-5 md:w-5/6 grid grid-rows-[auto_auto] grid-cols-[auto_1fr] justify-self-center my-15">
             <Settings values={state.values} setValues={setter.setValues} setColumns={setter.setColumns} />
