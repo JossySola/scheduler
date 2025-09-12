@@ -12,7 +12,7 @@ export default function HeaderModal({interval, setInterval, headerType, setHeade
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
-    const [selection, setSelection] = useState<SharedSelection>(new Set(["text"]));
+    const [selection, setSelection] = useState<SharedSelection>(new Set(headerType));
     const [number, setNumber] = useState<number>(0);
     useEffect(() => {
         setHeaderType(selection);
