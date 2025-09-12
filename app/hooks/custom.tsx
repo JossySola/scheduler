@@ -106,12 +106,9 @@ export function useCallbackAction <T, Args extends any[]>(callback: (...args: Ar
 export type VTData = {
     [columnKey: string]: string;
 }
-export function useVirtualizedTable (
-    headerType: SharedSelection, 
-    setHeaderType: React.Dispatch<React.SetStateAction<SharedSelection>>,
-    interval: number, 
-    setInterval: React.Dispatch<React.SetStateAction<number>>,
-) {
+export function useVirtualizedTable () {
+    const [interval, setInterval] = useState<number>(1);
+    const [headerType, setHeaderType] = useState<SharedSelection>(() => new Set(["text"]));
     const [sorting, setSorting] = useState<SortingState>([]);
     const [values, setValues] = useState<Set<string>>(new Set());
     const [data, setData] = useState<Array<VTData>>([]);
@@ -132,6 +129,14 @@ export function useVirtualizedTable (
     // how each column should access and/or transform row data with either an
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
+    useEffect(() => {
+        if (Array.from(headerType)[0] === "date") {
+            setInterval(1);
+        } else if (Array.from(headerType)[0] === "time") {
+            setInterval(30);
+        }
+    }, [headerType]);
+
     const defaultColumn = useMemo<Partial<ColumnDef<VTData>>>(() => ({
         cell: props => {
             const cellProps = {
@@ -241,10 +246,14 @@ export function useVirtualizedTable (
         setData,
         state: {
             values,
+            headerType,
+            interval,
         },
         setter: {
             setValues,
             setColumns,
+            setHeaderType,
+            setInterval,
         },
         controls: {
             handleAddColumn,
