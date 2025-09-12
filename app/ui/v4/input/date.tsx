@@ -57,7 +57,7 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
                 }}
                 startContent={
                     row.index === 0 || column.id === "A" 
-                    ? row.index === 0 && column.id === "B" 
+                    ? row.index === 0 && column.id === "A"
                         ? <HeaderModal interval={interval} setInterval={setInterval} headerType={headerType} setHeaderType={setHeaderType} />
                         : <Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> 
                     : null

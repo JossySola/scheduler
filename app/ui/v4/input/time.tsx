@@ -47,7 +47,7 @@ export default function TimeInput({ initialValue, handleDuplicates, isDuplicate,
             }}
             startContent={
                 row.index === 0 || column.id === "A" 
-                ? row.index === 0 && column.id === "B" 
+                ? row.index === 0 && column.id === "A"
                     ? <HeaderModal interval={interval} setInterval={setInterval} headerType={headerType} setHeaderType={setHeaderType} />
                     : <ClockDashed /> 
                 : null
