@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { ActionButton } from "@/app/ui/atoms/atom-button";
 import { getDeviceInfo } from "@/app/lib/utils-client";
-import { z } from "zod";
+import * as z from "zod/v4";
 import emailjs from '@emailjs/browser';
 import { PaperAirplane, RefreshClockwise } from "@/app/ui/icons";
 
@@ -99,7 +99,7 @@ async function reportAction (previousState: { message: string, ok: boolean }, fo
     const parseResult = reportSchema.safeParse(rawData);
 
     if (!parseResult.success) {
-        const errorMessage = parseResult.error.errors[0].message;
+        const errorMessage = parseResult.error.issues[0].message;
         return {
             message: `❌ ${errorMessage}`,
             ok: false,

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod/v4";
 
 export const tableGenerationSchema = z.object({
     rows: z.array(z.object({
