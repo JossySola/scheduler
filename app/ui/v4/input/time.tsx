@@ -2,7 +2,7 @@
 import { motion } from "motion/react";
 import * as zod from "zod/v4";
 import { useParams } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { parseTime, Time } from "@internationalized/date";
 import { SharedSelection } from "@heroui/react";
 import { TimeInput as TimeHeroUi } from "@heroui/react";
@@ -33,7 +33,10 @@ export default function TimeInput({ initialValue, handleDuplicates, isDuplicate,
             return null;
         }
         return null;
-    }) 
+    });
+    const onBlur = () => {
+        table.options.meta?.updateData(row.index, column.id, value?.toString() ?? "");
+    };     
     return (
         <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
             <TimeHeroUi
@@ -49,13 +52,13 @@ export default function TimeInput({ initialValue, handleDuplicates, isDuplicate,
                     : <ClockDashed /> 
                 : null
             }
+            onBlur={onBlur}
             value={value}
             onChange={e => {
+                setValue(e);                
                 if (e) {
                     handleDuplicates(e.toString());
                 }
-                setValue(e);
-                table.options.meta?.updateData(row.index, column.id, value);
             }}
             errorMessage={
                 isDuplicate 

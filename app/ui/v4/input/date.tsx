@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { SharedSelection } from "@heroui/react";
 import HeaderModal from "../modal/header-modal";
 import { Header } from "../../icons";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useParams } from "next/navigation";
 import { CalendarDate, parseDate } from "@internationalized/date";
 import { DatePicker } from "@heroui/date-picker";
@@ -25,7 +25,6 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const [value, setValue] = useState<CalendarDate| null>(() => {
-        console.log(initialValue)
         if (initialValue && typeof initialValue === "string") {
             const isDate = z.iso.date().safeParse(initialValue);
             if (isDate.success) {
@@ -38,9 +37,9 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
         }
         return null;
     });
-    useEffect(() => {
-        console.log(value?.toString())
-    }, [value])
+    const onBlur = () => {
+        table.options.meta?.updateData(row.index, column.id, value?.toString() ?? "");
+    }; 
     return (
         <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
             <DatePicker
@@ -48,13 +47,13 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
                 classNames={{
                 inputWrapper: "w-[63vw] sm:w-64 h-[48px]",
                 }}
+                onBlur={onBlur}
                 value={value}
                 onChange={e => {
+                    setValue(e);                    
                     if (e) {
                         handleDuplicates(e.toString());
                     }
-                    setValue(e);                    
-                    table.options.meta?.updateData(row.index, column.id, value?.toString());
                 }}
                 startContent={
                     row.index === 0 || column.id === "A" 
