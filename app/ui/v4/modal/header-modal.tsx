@@ -13,7 +13,7 @@ export default function HeaderModal({interval, setInterval, headerType, setHeade
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const [selection, setSelection] = useState<SharedSelection>(new Set(headerType));
-    const [number, setNumber] = useState<number>(0);
+    const [number, setNumber] = useState<number>(interval);
     useEffect(() => {
         setHeaderType(selection);
     }, [selection]);
@@ -49,7 +49,7 @@ export default function HeaderModal({interval, setInterval, headerType, setHeade
                                 <NumberInput
                                 label={ lang === "es" ? "Intervalo de tiempo" : "Time interval" } 
                                 value={number} 
-                                minValue={0}
+                                minValue={1}
                                 onValueChange={setNumber} 
                                 size="lg" />
                             </ModalBody>
