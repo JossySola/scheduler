@@ -14,6 +14,7 @@ const config: Config = {
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
+        danger: 'oklch(57.7% 0.245 27.325)',
       },
     },
   },
