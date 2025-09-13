@@ -5,7 +5,7 @@ import HeaderModal from "../modal/header-modal";
 import { Header } from "../../icons";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useParams } from "next/navigation";
-import { ColumnDef, Table } from "@tanstack/react-table";
+import { Table } from "@tanstack/react-table";
 import { VTData } from "@/app/hooks/custom";
 
 export default function Input({ initialValue, handleDuplicates, isDuplicate, table, row, column, interval, headerType, setInterval, setHeaderType }: {
@@ -38,9 +38,7 @@ export default function Input({ initialValue, handleDuplicates, isDuplicate, tab
                 onValueChange={setValue}
                 startContent={
                     row.index === 0 || column.id === "A" 
-                    ? row.index === 0 && column.id === "A"
-                        ? <HeaderModal interval={interval} setInterval={setInterval} headerType={headerType} setHeaderType={setHeaderType} />
-                        : <Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> 
+                    ? <Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> 
                     : null
                 }
                 onBlur={onBlur}
