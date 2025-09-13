@@ -8,6 +8,7 @@ import Input from "./input";
 import Select from "./select";
 import DateInput from "./date";
 import TimeInput from "./time";
+import CellHeaderSettings from "./cell-header-settings";
 
 export default function CellRenderer ({getValue, row, column, table, values, interval, headerType, setInterval, setHeaderType}: {
     getValue: Getter<unknown>,
@@ -56,7 +57,23 @@ export default function CellRenderer ({getValue, row, column, table, values, int
             return;
         }
     }, 500);
-    if (row.index !== 0 && column.id !== "A") {
+    if (row.index === 0 && column.id === "A") {
+        const props = {
+            initialValue,
+            handleDuplicates,
+            isDuplicate,
+            table,
+            row,
+            column,
+            interval,
+            headerType,
+            setInterval,
+            setHeaderType,
+        }
+        return (
+            <CellHeaderSettings {...props} />
+        )
+    } else if (row.index !== 0 && column.id !== "A") {
         if (values.size === 0) {
             const props = {
                 initialValue,
