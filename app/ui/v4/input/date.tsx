@@ -47,6 +47,7 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
             table.options.meta?.triggerRefresh();                
                 return;
             }
+            table.options.meta?.updateData(row.index, column.id, calendar.toString() ?? "");
         }
     }; 
     return (
