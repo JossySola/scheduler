@@ -3,8 +3,11 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Numbe
 import { SettingsSliders } from "../../icons";
 import { useParams } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Table } from "@tanstack/react-table";
+import { VTData } from "@/app/hooks/custom";
 
-export default function HeaderModal({interval, setInterval, headerType, setHeaderType}: {
+export default function HeaderModal({table, interval, setInterval, headerType, setHeaderType}: {
+    table: Table<VTData>,
     interval: number,
     setInterval: Dispatch<SetStateAction<number>>,
     headerType: SharedSelection,
@@ -15,11 +18,13 @@ export default function HeaderModal({interval, setInterval, headerType, setHeade
     const [selection, setSelection] = useState<SharedSelection>(new Set(headerType));
     const [number, setNumber] = useState<number>(interval);
     useEffect(() => {
-        setHeaderType(selection);
+        setHeaderType(prev => {
+            if (Array.from(prev)[0] !== Array.from(selection)[0]) {
+                table.options.meta?.triggerRefresh();
+            }
+            return selection;
+        });
     }, [selection]);
-    useEffect(() => {
-        setInterval(number);
-    }, [number]);
     return (
         <>
             <Button isIconOnly onPress={onOpen} size="sm" color="primary"><SettingsSliders /></Button>
