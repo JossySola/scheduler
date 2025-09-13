@@ -6,7 +6,6 @@ import Filter from "../input/filter";
 import { ChevronDoubleDown, ChevronDoubleLeft, ChevronDoubleRight, ChevronDoubleUp, Sort, SortAscending, SortDescending } from "../../icons";
 import { useParams } from "next/navigation";
 import Settings from "../drawer/settings";
-import { useEffect } from "react";
 
 export default function Table() {
     const params = useParams<{ lang: "en" | "es" }>();
@@ -17,9 +16,6 @@ export default function Table() {
         state,
         setter,
     } = useVirtualizedTable();
-    useEffect(() => {
-        //console.log(state.headerType)
-    }, [state.headerType]);
     return (
         <section className="w-full px-5 md:w-5/6 grid grid-rows-[auto_auto] grid-cols-[auto_1fr] justify-self-center my-15">
             <Settings values={state.values} setValues={setter.setValues} setColumns={setter.setColumns} />
