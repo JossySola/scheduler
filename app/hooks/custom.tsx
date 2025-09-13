@@ -7,7 +7,8 @@ import { SharedSelection } from "@heroui/react";
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
-    updateData: (rowIndex: number, columnId: string, value: unknown) => void
+    updateData: (rowIndex: number, columnId: string, value: unknown) => void,
+    triggerRefresh: () => void,
   }
 }
 
@@ -137,6 +138,10 @@ export function useVirtualizedTable () {
         }
     }, [headerType]);
 
+    const triggerRefresh = () => {
+        setColumns(prev => prev.slice());
+    }
+
     const defaultColumn = useMemo<Partial<ColumnDef<VTData>>>(() => ({
         cell: props => {
             const cellProps = {
@@ -181,7 +186,8 @@ export function useVirtualizedTable () {
                         return row;
                     })
                 )
-            }
+            },
+            triggerRefresh,
         },
     }), [columns, data, defaultColumn, sorting, values, interval, headerType]);
     const table = useReactTable(tableConfig);
