@@ -1,8 +1,6 @@
 "use client"
 import { motion } from "motion/react";
 import { SharedSelection } from "@heroui/react";
-import HeaderModal from "../modal/header-modal";
-import { Header } from "../../icons";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useParams } from "next/navigation";
 import { CalendarDate, parseDate } from "@internationalized/date";
@@ -28,9 +26,7 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
         if (initialValue && typeof initialValue === "string") {
             const isDate = z.iso.date().safeParse(initialValue);
             if (isDate.success) {
-                const date = new Date(initialValue);
-                const calendar = new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
-                return parseDate(calendar.toString());
+                return parseDate(initialValue.toString());
             } else {
                 return null;
             }
@@ -38,7 +34,20 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
         return null;
     });
     const onBlur = () => {
-        table.options.meta?.updateData(row.index, column.id, value?.toString() ?? "");
+        if (value) {
+            const calendar = parseDate(value.toString());
+            if (row.index === 0 && column.id === "B") {
+                let nextDate = calendar;
+                table.getRowModel().rows[0]?.getAllCells().forEach((cell, index) => {
+                    if (index > 1) {
+                        table.options.meta?.updateData(0, cell.column.id, nextDate.toString() ?? "");
+                        nextDate = nextDate.add({ days: interval });                        
+                    }
+                })
+            table.options.meta?.triggerRefresh();                
+                return;
+            }
+        }
     }; 
     return (
         <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
@@ -55,13 +64,6 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
                         handleDuplicates(e.toString());
                     }
                 }}
-                startContent={
-                    row.index === 0 || column.id === "A" 
-                    ? row.index === 0 && column.id === "A"
-                        ? <HeaderModal interval={interval} setInterval={setInterval} headerType={headerType} setHeaderType={setHeaderType} />
-                        : <Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> 
-                    : null
-                }
                 errorMessage={
                     isDuplicate 
                     ? lang === "en" 
