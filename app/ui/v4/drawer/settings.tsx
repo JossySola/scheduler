@@ -27,7 +27,7 @@ export default function Settings({ values, setValues, setColumns }: {
                     <SettingsGearFill width={32} height={32} />
                 </Button>
             </div>
-            <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
+            <Drawer isOpen={isOpen} size="md" backdrop="blur" onOpenChange={onOpenChange}>
                 <DrawerContent>
                     {onClose => (
                         <>
