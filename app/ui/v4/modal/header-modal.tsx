@@ -25,6 +25,9 @@ export default function HeaderModal({table, interval, setInterval, headerType, s
             return selection;
         });
     }, [selection]);
+    useEffect(() => {
+        setInterval(number);
+    }, [number])
     return (
         <>
             <Button isIconOnly onPress={onOpen} size="sm" color="primary"><SettingsSliders /></Button>
