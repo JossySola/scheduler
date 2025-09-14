@@ -68,8 +68,8 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
                 errorMessage={
                     isDuplicate 
                     ? lang === "en" 
-                        ? "Duplicate value" 
-                        : "Valor duplicado"
+                        ? "Duplicate header" 
+                        : "Encabezado duplicado"
                     : undefined
                 }
                 isInvalid={isDuplicate}
