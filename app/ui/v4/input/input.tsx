@@ -28,6 +28,7 @@ export default function Input({ initialValue, handleDuplicates, isDuplicate, tab
     return (
         <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
             <InputHeroUI
+                size="lg"
                 variant="bordered"
                 classNames={{
                 mainWrapper: "w-[63vw] sm:w-64",
