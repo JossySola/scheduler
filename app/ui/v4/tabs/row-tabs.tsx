@@ -132,11 +132,11 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                 }
                                 }>
                                     {
-                                        table.getRowModel().rows[0].getAllCells().map((cell, index) => index !== 0 && index !== 1 && (
+                                        table.getRowModel().rows[0].getAllCells().map((cell, cIndex) => index !== 0 && index !== 1 && (
                                             <Checkbox
                                             isDisabled={disabledRows[index] || false}
                                             size="lg"
-                                            key={index}
+                                            key={cIndex}
                                             value={cell.getValue() as string}>
                                                 {cell.getValue() as string}
                                             </Checkbox>
@@ -153,12 +153,12 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                 value={ enabledValues[index] || [] }
                                 onChange={ (values) => handleEnabledValuesChange(index, values) }>
                                     {
-                                        values && Array.from(values).map((val: string, index: number) => {
+                                        values && Array.from(values).map((val: string, cIndex: number) => {
                                             return (
                                                 <Checkbox
                                                 isDisabled={disabledRows[index] || false}
                                                 size="lg"
-                                                key={index}
+                                                key={cIndex}
                                                 value={val}>
                                                     {val}
                                                 </Checkbox>
