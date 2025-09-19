@@ -118,7 +118,6 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                 }} />
 
                                 <CheckboxGroup
-                                isDisabled={disabledRows[index] || false}
                                 color="primary"
                                 label={
                                     lang === "es" ? "Deshabilitar estas columnas" : "Disable these columns"
@@ -132,7 +131,7 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                 }
                                 }>
                                     {
-                                        table.getRowModel().rows[0].getAllCells().map((cell, cIndex) => index !== 0 && index !== 1 && (
+                                        table.getRowModel().rows[0].getAllCells().map((cell, cIndex) => cIndex !== 0 && cIndex !== 1 && (
                                             <Checkbox
                                             isDisabled={disabledRows[index] || false}
                                             size="lg"
@@ -145,7 +144,6 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                 </CheckboxGroup>
 
                                 <CheckboxGroup
-                                isDisabled={disabledRows[index] || false}
                                 color="primary"
                                 label={
                                     lang === "es" ? "Preferir estos valores" : "Prefer these values"
