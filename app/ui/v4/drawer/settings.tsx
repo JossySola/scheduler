@@ -51,8 +51,9 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
                                 <h3>{ lang === "es" ? "Criteria de Filas" : "Rows Specifications" }</h3>
                                 <RowTabs
                                 table={table}
-                                setRowSpecs={setRowSpecs} />
-                                
+                                setRowSpecs={setRowSpecs}
+                                values={values} />
+
                                 <h3>{ lang === "es" ? "Valores de celdas" : "Cells values" }</h3>
                                 <ValuesList values={values} setValues={setValues} setColumns={setColumns} />
                             </DrawerBody>
