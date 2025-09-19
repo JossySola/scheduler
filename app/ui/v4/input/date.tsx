@@ -53,6 +53,7 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
     return (
         <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
             <DatePicker
+                size="lg"
                 variant="bordered"
                 classNames={{
                 inputWrapper: "w-[63vw] sm:w-64 h-[48px]",
