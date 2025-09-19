@@ -12,16 +12,6 @@ declare module '@tanstack/react-table' {
   }
 }
 
-export type RowSpecs = {
-    disable:boolean,
-    count: number,
-    enabledValues: Array<string>,
-    enabledColumns: Array<string>,
-}
-export type ColSpecs = {
-    numberOfRows: number,
-    amountOfValues: Array<number>,
-}
 export function useForcePanelUpdate () {
     const [, setState] = useState(true);
     const panelUpdate = useCallback(() => {
@@ -107,7 +97,37 @@ export function useCallbackAction <T, Args extends any[]>(callback: (...args: Ar
 export type VTData = {
     [columnKey: string]: string;
 }
+export type RowSpecs = {
+    disable: DisableRow,
+    count: RowCount,
+    enabledValues: EnabledValues,
+    enabledColumns: EnabledColumns,
+    preferValues: PreferValues,
+}
+export type ColSpecs = {
+    numberOfRows: ValAmount,
+    amountOfValues: NumRows,
+}
+export type ValAmount = { [key: string]: number }
+export type NumRows = { [key: string]: number }
+export type DisableRow = { [key: number]: boolean }
+export type RowCount = { [key: number]: number }
+export type EnabledValues = { [key: number]: Array<string> }
+export type EnabledColumns = { [key: number]: Array<string> }
+export type PreferValues = { [key: number]: Array<string> }
+
 export function useVirtualizedTable () {
+    const [colSpecs, setColSpecs] = useState<ColSpecs>({
+        numberOfRows: {},
+        amountOfValues: {},
+    });
+    const [rowSpecs, setRowSpecs] = useState<RowSpecs>({
+        disable: {},
+        count: {},
+        enabledValues: {},
+        enabledColumns: {},
+        preferValues: {}
+    });
     const [interval, setInterval] = useState<number>(1);
     const [headerType, setHeaderType] = useState<SharedSelection>(() => new Set(["text"]));
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -254,12 +274,16 @@ export function useVirtualizedTable () {
             values,
             headerType,
             interval,
+            colSpecs,
+            rowSpecs,
         },
         setter: {
             setValues,
             setColumns,
             setHeaderType,
             setInterval,
+            setColSpecs,
+            setRowSpecs,
         },
         controls: {
             handleAddColumn,
