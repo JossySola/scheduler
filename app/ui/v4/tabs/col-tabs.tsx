@@ -35,7 +35,7 @@ export default function ColTabs({table, values, colSpecs, setColSpecs}: {
         return table.getRowModel().rows[0]?.getAllCells().map(cell => cell.getValue());
     }, [table]);
     const numberOfRows = useMemo(() => {
-        return table.getRowModel().rows.length;
+        return table.getRowModel().rows.length - 1;
     }, [table]);
 
     const handleSliderChange = (colName: string, value: number | number[]) => { 
@@ -56,7 +56,7 @@ export default function ColTabs({table, values, colSpecs, setColSpecs}: {
     return (
         <Tabs aria-label="Column settings tabs" size="lg" className="w-full">
             {
-                cols && cols.map((col, index) => index !== 0 && (
+                cols && cols.map((col, index) => index !== 0 && index !== 1 && (
                     <Tab 
                     key={index} 
                     title={ 
@@ -70,6 +70,7 @@ export default function ColTabs({table, values, colSpecs, setColSpecs}: {
                             <CardBody className="flex flex-col gap-5 p-5">
                                 <NumberInput 
                                 minValue={ 0 }
+                                maxValue={ numRows[col as string] || numberOfRows }
                                 value={ numRows[col as string] || numberOfRows }
                                 onChange={ (value) => handleNumberInputChange(col as string, value) }
                                 size="lg"
