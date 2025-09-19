@@ -130,7 +130,7 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                 }
                                 }>
                                     {
-                                        table.getRowModel().rows[0].getAllCells().map((cell, index) => index !== 0 && (
+                                        table.getRowModel().rows[0].getAllCells().map((cell, index) => index !== 0 && index !== 1 && (
                                             <Checkbox
                                             size="lg"
                                             key={index}
