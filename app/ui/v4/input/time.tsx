@@ -70,8 +70,8 @@ export default function TimeInput({ initialValue, handleDuplicates, isDuplicate,
             errorMessage={
                 isDuplicate 
                 ? lang === "en" 
-                    ? "Duplicate value" 
-                    : "Valor duplicado"
+                    ? "Duplicate header" 
+                    : "Encabezado duplicado"
                 : undefined
             }
             isInvalid={isDuplicate} />

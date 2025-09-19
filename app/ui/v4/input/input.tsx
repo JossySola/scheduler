@@ -45,8 +45,8 @@ export default function Input({ initialValue, handleDuplicates, isDuplicate, tab
                 errorMessage={
                     isDuplicate 
                     ? lang === "en" 
-                        ? "Duplicate value" 
-                        : "Valor duplicado"
+                        ? "Duplicate header" 
+                        : "Encabezado duplicado"
                     : undefined
                 }
                 isInvalid={isDuplicate}

@@ -47,6 +47,7 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
             table.options.meta?.triggerRefresh();                
                 return;
             }
+            table.options.meta?.updateData(row.index, column.id, calendar.toString() ?? "");
         }
     }; 
     return (
@@ -67,8 +68,8 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
                 errorMessage={
                     isDuplicate 
                     ? lang === "en" 
-                        ? "Duplicate value" 
-                        : "Valor duplicado"
+                        ? "Duplicate header" 
+                        : "Encabezado duplicado"
                     : undefined
                 }
                 isInvalid={isDuplicate}
