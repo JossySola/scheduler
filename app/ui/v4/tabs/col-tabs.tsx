@@ -1,0 +1,98 @@
+"use client"
+import { ColSpecs, NumRows, ValAmount, VTData } from "@/app/hooks/custom";
+import { Card, CardBody, NumberInput, Slider, Tab, Tabs } from "@heroui/react";
+import { Table } from "@tanstack/react-table";
+import { useParams } from "next/navigation";
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+
+export default function ColTabs({table, values, setColSpecs}: {
+    table: Table<VTData>,
+    values: Set<string>,  
+    setColSpecs: Dispatch<SetStateAction<ColSpecs>>,
+}) {
+    const { lang } = useParams<{ lang: "es" | "en" }>();
+    const [valAmount, setValAmount] = useState<ValAmount>({});
+    const [numRows, setNumRows] = useState<NumRows>({});
+
+    useEffect(() => {
+        setColSpecs(prev => {
+            return {
+                ...prev,
+                numberOfRows: {
+                    ...prev.numberOfRows,
+                    ...numRows,
+                },
+                amountOfValues: {
+                    ...prev.amountOfValues,
+                    ...valAmount,
+                },
+            }
+        })
+    }, [valAmount, numRows]);
+
+    const cols = useMemo(() => {
+        return table.getRowModel().rows[0]?.getAllCells().map(cell => cell.getValue());
+    }, [table]);
+    const numberOfRows = useMemo(() => {
+        return table.getRowModel().rows.length;
+    }, [table]);
+
+    const handleSliderChange = (colName: string, value: number | number[]) => { 
+        if (Array.isArray(value)) return;
+        setValAmount(prev => ({
+            ...prev,
+            [colName]: value,
+        }))
+    }
+    const handleNumberInputChange = (colName: string, value: number | ChangeEvent<HTMLInputElement>) => { 
+        if (typeof value === "object") return;
+        setNumRows(prev => ({   
+            ...prev,
+            [colName]: value,
+        }
+        ))
+    }
+    return (
+        <Tabs aria-label="Column settings tabs" size="lg" className="w-full">
+            {
+                cols && cols.map((col, index) => index !== 0 && (
+                    <Tab 
+                    key={index} 
+                    title={ 
+                        col && typeof col === "string" 
+                            ? col 
+                            : lang === "es" 
+                                ? "Sin nombre" 
+                                : "No name yet"
+                    }>
+                       <Card>
+                            <CardBody className="flex flex-col gap-5 p-5">
+                                <NumberInput 
+                                minValue={ 0 }
+                                value={ numRows[col as string] || numberOfRows }
+                                onChange={ (value) => handleNumberInputChange(col as string, value) }
+                                size="lg"
+                                label={ lang === "es" ? "Número de filas a llenar en ésta columna" : "Number of rows to fill on this column" }/>
+                                {
+                                    values && Array.from(values).map((val: string, index: number) => {
+                                        return (
+                                            <Slider
+                                            label={ lang === "es" ? `Usar "${val} éste número de veces:` : `Use "${val}" this amount of times:` }
+                                            key={ index }
+                                            minValue={ 0 }
+                                            maxValue={ numberOfRows }
+                                            value={ valAmount[col as string] || 0 }
+                                            onChange={ (value) => handleSliderChange(col as string, value) }
+                                            size="lg"
+                                            step={1} />
+                                        )
+                                    })
+                                }
+                            </CardBody>
+                        </Card> 
+                    </Tab>
+                ))
+            }
+        </Tabs>
+    )
+}
