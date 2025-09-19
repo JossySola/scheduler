@@ -111,10 +111,10 @@ export type ColSpecs = {
 export type ValAmount = { [key: string]: number }
 export type NumRows = { [key: string]: number }
 export type DisableRow = { [key: number]: boolean }
-export type RowCount = { [key: number]: number }
-export type EnabledValues = { [key: number]: Array<string> }
-export type EnabledColumns = { [key: number]: Array<string> }
-export type PreferValues = { [key: number]: Array<string> }
+export type RowCount = { [key: string]: number }
+export type EnabledValues = { [key: string]: Array<string> }
+export type EnabledColumns = { [key: string]: Array<string> }
+export type PreferValues = { [key: string]: Array<string> }
 
 export function useVirtualizedTable () {
     const [colSpecs, setColSpecs] = useState<ColSpecs>({
