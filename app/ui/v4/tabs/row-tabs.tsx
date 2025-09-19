@@ -102,6 +102,7 @@ export default function RowTabs({ table, setRowSpecs, values }: {
                                 </Switch>
                                 <NumberInput
                                 labelPlacement="outside"
+                                size="lg"
                                 label={
                                     lang === "es" ? "Número de columnas a llenar en la fila" : "Number of columns to fill on this row"
                                 }
@@ -129,6 +130,7 @@ export default function RowTabs({ table, setRowSpecs, values }: {
                                     {
                                         table.getRowModel().rows[0].getAllCells().map((cell, index) => index !== 0 && (
                                             <Checkbox
+                                            size="lg"
                                             key={index}
                                             value={cell.getValue() as string}>
                                                 {cell.getValue() as string}
@@ -153,6 +155,7 @@ export default function RowTabs({ table, setRowSpecs, values }: {
                                         values && Array.from(values).map((val: string, index: number) => {
                                             return (
                                                 <Checkbox
+                                                size="lg"
                                                 key={index}
                                                 value={val}>
                                                     {val}
