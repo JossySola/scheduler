@@ -103,6 +103,7 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                     }
                                 </Switch>
                                 <NumberInput
+                                isDisabled={disabledRows[index] || false}
                                 labelPlacement="outside"
                                 size="lg"
                                 label={
@@ -132,6 +133,7 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                     {
                                         table.getRowModel().rows[0].getAllCells().map((cell, index) => index !== 0 && index !== 1 && (
                                             <Checkbox
+                                            isDisabled={disabledRows[index] || false}
                                             size="lg"
                                             key={index}
                                             value={cell.getValue() as string}>
@@ -152,6 +154,7 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                         values && Array.from(values).map((val: string, index: number) => {
                                             return (
                                                 <Checkbox
+                                                isDisabled={disabledRows[index] || false}
                                                 size="lg"
                                                 key={index}
                                                 value={val}>
