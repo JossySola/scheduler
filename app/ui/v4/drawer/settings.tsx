@@ -4,13 +4,20 @@ import { useParams } from "next/navigation"
 import { Box, SettingsGearFill } from "../../icons";
 import { Dispatch, SetStateAction } from "react";
 import ValuesList from "../table/list";
-import { ColumnDef } from "@tanstack/react-table";
-import { VTData } from "@/app/hooks/custom";
+import { ColumnDef, Table } from "@tanstack/react-table";
+import { ColSpecs, RowSpecs, VTData } from "@/app/hooks/custom";
+import ColTabs from "../tabs/col-tabs";
+import RowTabs from "../tabs/row-tabs";
 
-export default function Settings({ values, setValues, setColumns }: {
+export default function Settings({ table, values, colSpecs, rowSpecs, setValues, setColumns, setColSpecs, setRowSpecs }: {
+    table: Table<VTData>,
     values: Set<string>,
+    colSpecs: ColSpecs,
+    rowSpecs: RowSpecs,
     setValues: Dispatch<SetStateAction<Set<string>>>,
     setColumns: Dispatch<SetStateAction<ColumnDef<VTData>[]>>,
+    setColSpecs: Dispatch<SetStateAction<ColSpecs>>,
+    setRowSpecs: Dispatch<SetStateAction<RowSpecs>>,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -35,6 +42,18 @@ export default function Settings({ values, setValues, setColumns }: {
 
                             </DrawerHeader>
                             <DrawerBody>
+                                <h3>{ lang === "es" ? "Criteria de Columnas" : "Columns Specifications" }</h3>
+                                <ColTabs 
+                                table={table} 
+                                values={values}
+                                setColSpecs={setColSpecs} />
+
+                                <h3>{ lang === "es" ? "Criteria de Filas" : "Rows Specifications" }</h3>
+                                <RowTabs
+                                table={table}
+                                setRowSpecs={setRowSpecs} />
+                                
+                                <h3>{ lang === "es" ? "Valores de celdas" : "Cells values" }</h3>
                                 <ValuesList values={values} setValues={setValues} setColumns={setColumns} />
                             </DrawerBody>
                             <DrawerFooter>
