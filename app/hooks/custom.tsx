@@ -102,7 +102,6 @@ export type RowSpecs = {
     count: RowCount,
     enabledValues: EnabledValues,
     enabledColumns: EnabledColumns,
-    preferValues: PreferValues,
 }
 export type ColSpecs = {
     numberOfRows: ValAmount,
@@ -114,7 +113,6 @@ export type DisableRow = { [key: number]: boolean }
 export type RowCount = { [key: string]: number }
 export type EnabledValues = { [key: string]: Array<string> }
 export type EnabledColumns = { [key: string]: Array<string> }
-export type PreferValues = { [key: string]: Array<string> }
 
 export function useVirtualizedTable () {
     const [colSpecs, setColSpecs] = useState<ColSpecs>({
@@ -126,7 +124,6 @@ export function useVirtualizedTable () {
         count: {},
         enabledValues: {},
         enabledColumns: {},
-        preferValues: {}
     });
     const [interval, setInterval] = useState<number>(1);
     const [headerType, setHeaderType] = useState<SharedSelection>(() => new Set(["text"]));

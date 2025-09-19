@@ -1,21 +1,21 @@
 "use client"
-import { DisableRow, EnabledColumns, EnabledValues, PreferValues, RowCount, RowSpecs, VTData } from "@/app/hooks/custom";
+import { DisableRow, EnabledColumns, EnabledValues, RowCount, RowSpecs, VTData } from "@/app/hooks/custom";
 import { Card, CardBody, Checkbox, CheckboxGroup, NumberInput, Switch, Tab, Tabs } from "@heroui/react";
 import { Table } from "@tanstack/react-table";
 import { useParams } from "next/navigation";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
-export default function RowTabs({ table, setRowSpecs, values }: {
+export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
     table: Table<VTData>,
+    rowSpecs: RowSpecs,
     setRowSpecs: React.Dispatch<React.SetStateAction<RowSpecs>>,
     values: Set<string>,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
-    const [disabledRows, setDisabledRows] = useState<DisableRow>({});
-    const [amountCols, setAmountCols] = useState<RowCount>({});
-    const [enabledValues, setEnabledValues] = useState<EnabledValues>({});
-    const [enabledColumns, setEnabledColumns] = useState<EnabledColumns>({});
-    const [preferValues, setPreferValues] = useState<PreferValues>({});
+    const [disabledRows, setDisabledRows] = useState<DisableRow>( rowSpecs.disable || {});
+    const [amountCols, setAmountCols] = useState<RowCount>( rowSpecs.count || {});
+    const [enabledValues, setEnabledValues] = useState<EnabledValues>( rowSpecs.enabledValues || {});
+    const [enabledColumns, setEnabledColumns] = useState<EnabledColumns>( rowSpecs.enabledColumns || {});
 
     useEffect(() => {
         setRowSpecs(prev => ({
@@ -36,12 +36,8 @@ export default function RowTabs({ table, setRowSpecs, values }: {
                 ...prev.enabledColumns,
                 ...enabledColumns,
             },
-            preferValues: {
-                ...prev.preferValues,
-                ...preferValues,
-            },
         }))
-    }, [disabledRows, amountCols, enabledValues, enabledColumns, preferValues]);
+    }, [disabledRows, amountCols, enabledValues, enabledColumns]);
 
     const numberOfCols = useMemo(() => {
         return table.getRowModel().rows[0]?.getAllCells().length;
@@ -62,6 +58,12 @@ export default function RowTabs({ table, setRowSpecs, values }: {
         setDisabledRows(prev => ({
             ...prev,
             [rowIndex]: isDisabled,
+        }))
+    }
+    const handleEnabledValuesChange = (rowIndex: number, values: string[]) => {
+        setEnabledValues(prev => ({
+            ...prev,
+            [rowIndex]: values,
         }))
     }
     return (
@@ -144,13 +146,8 @@ export default function RowTabs({ table, setRowSpecs, values }: {
                                 label={
                                     lang === "es" ? "Preferir estos valores" : "Prefer these values"
                                 }
-                                value={ preferValues[index] || [] }
-                                onChange={ (values) => {
-                                    setPreferValues(prev => ({
-                                        ...prev,
-                                        [index]: values,
-                                    }))
-                                }}>
+                                value={ enabledValues[index] || [] }
+                                onChange={ (values) => handleEnabledValuesChange(index, values) }>
                                     {
                                         values && Array.from(values).map((val: string, index: number) => {
                                             return (

@@ -5,14 +5,15 @@ import { Table } from "@tanstack/react-table";
 import { useParams } from "next/navigation";
 import { ChangeEvent, Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
-export default function ColTabs({table, values, setColSpecs}: {
+export default function ColTabs({table, values, colSpecs, setColSpecs}: {
     table: Table<VTData>,
-    values: Set<string>,  
+    values: Set<string>,
+    colSpecs: ColSpecs,
     setColSpecs: Dispatch<SetStateAction<ColSpecs>>,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
-    const [valAmount, setValAmount] = useState<ValAmount>({});
-    const [numRows, setNumRows] = useState<NumRows>({});
+    const [valAmount, setValAmount] = useState<ValAmount>(colSpecs.amountOfValues || {});
+    const [numRows, setNumRows] = useState<NumRows>(colSpecs.numberOfRows || {});
 
     useEffect(() => {
         setColSpecs(prev => {

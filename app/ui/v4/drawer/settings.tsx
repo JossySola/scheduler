@@ -46,11 +46,13 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
                                 <ColTabs 
                                 table={table} 
                                 values={values}
+                                colSpecs={colSpecs}
                                 setColSpecs={setColSpecs} />
 
                                 <h3>{ lang === "es" ? "Criteria de Filas" : "Rows Specifications" }</h3>
                                 <RowTabs
                                 table={table}
+                                rowSpecs={rowSpecs}
                                 setRowSpecs={setRowSpecs}
                                 values={values} />
 
