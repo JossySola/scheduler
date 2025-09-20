@@ -97,18 +97,20 @@ export function useCallbackAction <T, Args extends any[]>(callback: (...args: Ar
 export type VTData = {
     [columnKey: string]: string;
 }
+
+export type ColSpecs = {
+    numberOfRows: NumRows,
+    amountOfValues: ValAmount,
+}
+export type NumRows = { [key: string]: number }
+export type ValAmount = { [key: string]: Array<number> }
+
 export type RowSpecs = {
     disable: DisableRow,
     count: RowCount,
     enabledValues: EnabledValues,
     enabledColumns: EnabledColumns,
 }
-export type ColSpecs = {
-    numberOfRows: ValAmount,
-    amountOfValues: NumRows,
-}
-export type ValAmount = { [key: string]: number }
-export type NumRows = { [key: string]: number }
 export type DisableRow = { [key: number]: boolean }
 export type RowCount = { [key: string]: number }
 export type EnabledValues = { [key: string]: Array<string> }
@@ -154,6 +156,11 @@ export function useVirtualizedTable () {
             setInterval(30);
         }
     }, [headerType]);
+    useEffect(() => {
+        for (let value of Object.values(colSpecs.amountOfValues)) {
+
+        }
+    }, [values]);
 
     const triggerRefresh = () => {
         setColumns(prev => prev.slice());
