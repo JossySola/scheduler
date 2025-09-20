@@ -12,8 +12,8 @@ export default function ColTabs({table, values, colSpecs, setColSpecs}: {
     setColSpecs: Dispatch<SetStateAction<ColSpecs>>,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
+    const [numRows, setNumRows] = useState<NumRows>(colSpecs.numberOfRows || {});    
     const [valAmount, setValAmount] = useState<ValAmount>(colSpecs.amountOfValues || {});
-    const [numRows, setNumRows] = useState<NumRows>(colSpecs.numberOfRows || {});
 
     useEffect(() => {
         setColSpecs(prev => {
@@ -38,20 +38,45 @@ export default function ColTabs({table, values, colSpecs, setColSpecs}: {
         return table.getRowModel().rows.length - 1;
     }, [table]);
 
-    const handleSliderChange = (colName: string, value: number | number[]) => { 
-        if (Array.isArray(value)) return;
-        setValAmount(prev => ({
-            ...prev,
-            [colName]: value,
-        }))
+    const handleSliderChange = (colName: string, value: number | number[], index: number) => { 
+        if (Array.isArray(value)) {
+            value = value[0];
+        };
+        
+        setValAmount(prev => {
+            const currentArray = prev[colName] || [];
+            console.log(currentArray)
+            if (currentArray.length > 0) {
+                const newArray = [...currentArray];
+                console.log(newArray[index])
+                if (newArray[index] === undefined) {
+                    newArray.push(value);
+                    return ({
+                        ...prev,
+                        [colName]: newArray,
+                    })
+                }
+                newArray[index] = value;
+                return ({
+                    ...prev,
+                    [colName]: newArray,
+                })
+            } else {
+                const newArray = Array(Array.from(values).length).fill(0);
+                newArray[index] = value;
+                return ({
+                    ...prev,
+                    [colName]: newArray,
+                })
+            }
+        })
     }
     const handleNumberInputChange = (colName: string, value: number | ChangeEvent<HTMLInputElement>) => { 
         if (typeof value === "object") return;
         setNumRows(prev => ({   
             ...prev,
             [colName]: value,
-        }
-        ))
+        }))
     }
     return (
         <Tabs aria-label="Column settings tabs" size="lg" className="w-full">
@@ -76,15 +101,19 @@ export default function ColTabs({table, values, colSpecs, setColSpecs}: {
                                 size="lg"
                                 label={ lang === "es" ? "Número de filas a llenar en ésta columna" : "Number of rows to fill on this column" }/>
                                 {
-                                    values && Array.from(values).map((val: string, index: number) => {
+                                    values && Array.from(values).map((val: string, valIndex: number) => {
                                         return (
                                             <Slider
-                                            label={ lang === "es" ? `Usar "${val} éste número de veces:` : `Use "${val}" this amount of times:` }
-                                            key={ index }
+                                            label={ lang === "es" ? `Usar "${val}" éste número de veces:` : `Use "${val}" this amount of times:` }
+                                            key={ valIndex }
                                             minValue={ 0 }
                                             maxValue={ numberOfRows }
-                                            value={ valAmount[col as string] || 0 }
-                                            onChange={ (value) => handleSliderChange(col as string, value) }
+                                            value={ 
+                                                valAmount[col as string] && Array.isArray(valAmount[col as string])
+                                                ? valAmount[col as string][valIndex] 
+                                                : 0 
+                                            }
+                                            onChange={ (value) => handleSliderChange(col as string, value, valIndex) }
                                             size="lg"
                                             step={1} />
                                         )
