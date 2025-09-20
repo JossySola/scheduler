@@ -156,11 +156,6 @@ export function useVirtualizedTable () {
             setInterval(30);
         }
     }, [headerType]);
-    useEffect(() => {
-        for (let value of Object.values(colSpecs.amountOfValues)) {
-
-        }
-    }, [values]);
 
     const triggerRefresh = () => {
         setColumns(prev => prev.slice());
@@ -271,9 +266,21 @@ export function useVirtualizedTable () {
         if (!data.length) return;
         setData(prev => prev.slice(0, -1));
     }
+    const getTableStates = () => {
+        return {
+            values: Array.from(values),
+            headerType: Array.from(headerType),
+            data,
+            columns,
+            interval,
+            colSpecs,
+            rowSpecs,
+        }
+    }
     return {
         table,
         setData,
+        getTableStates,
         state: {
             values,
             headerType,
