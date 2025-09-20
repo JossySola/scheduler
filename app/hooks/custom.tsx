@@ -149,13 +149,6 @@ export function useVirtualizedTable () {
     // how each column should access and/or transform row data with either an
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
-    useEffect(() => {
-        if (Array.from(headerType)[0] === "date") {
-            setInterval(1);
-        } else if (Array.from(headerType)[0] === "time") {
-            setInterval(30);
-        }
-    }, [headerType]);
 
     const triggerRefresh = () => {
         setColumns(prev => prev.slice());

@@ -27,7 +27,14 @@ export default function HeaderModal({table, interval, setInterval, headerType, s
     }, [selection]);
     useEffect(() => {
         setInterval(number);
-    }, [number])
+    }, [number]);
+    useEffect(() => {
+        if (Array.from(selection)[0] === "date") {
+            setInterval(1);
+        } else if (Array.from(selection)[0] === "time") {
+            setInterval(30);
+        }
+    }, [selection]);
     return (
         <>
             <Button isIconOnly onPress={onOpen} size="sm" color="primary"><SettingsSliders /></Button>
