@@ -1,6 +1,6 @@
 "use client"
 import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState } from "@tanstack/react-table";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Key, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
 import CellRenderer from "../ui/v4/input/cell";
 import { SharedSelection } from "@heroui/react";
@@ -10,21 +10,6 @@ declare module '@tanstack/react-table' {
     updateData: (rowIndex: number, columnId: string, value: unknown) => void,
     triggerRefresh: () => void,
   }
-}
-
-export function useForcePanelUpdate () {
-    const [, setState] = useState(true);
-    const panelUpdate = useCallback(() => {
-        setState(x => !x);
-    }, []);
-    return panelUpdate;
-}
-export function useSettingsUpdate () {
-    const [, setState] = useState(true);
-    const settingsUpdate = useCallback(() => {
-        setState(x => !x);
-    }, []);
-    return settingsUpdate;
 }
 export function useCallbackAction <T, Args extends any[]>(callback: (...args: Args) => Promise<T>, initialState: T): {
     state: T;
@@ -115,23 +100,67 @@ export type DisableRow = { [key: number]: boolean }
 export type RowCount = { [key: string]: number }
 export type EnabledValues = { [key: string]: Array<string> }
 export type EnabledColumns = { [key: string]: Array<string> }
+export type StatesType = {
+    values: Array<string>,
+    headerType: Array<Key>,
+    data: Array<VTData>,
+    interval: number,
+    colSpecs: ColSpecs,
+    rowSpecs: RowSpecs,
+    title: string,
+    colsNum: Array<string>,
+}
 
-export function useVirtualizedTable () {
-    const [colSpecs, setColSpecs] = useState<ColSpecs>({
+export function useVirtualizedTable (storedData?: {
+    user_id: string,
+    name: string,
+    data: Array<{ [key: string]: string }>,
+    values: Array<string>,
+    type: Array<string>,
+    interval: number,
+    cols_specs: { numberOfRows: { [key: string]: number }, amountOfValues: { [key: string]: Array<number> } },
+    rows_specs: { disable: { [key: number]: boolean }, count: { [key: string]: number }, enabledValues: { [key: string]: Array<string> }, enabledColumns: { [key: string]: Array<string> } },
+    created_at: number,
+    updated_at: number,
+    cols_num: Array<string>,
+}) {
+    const [colSpecs, setColSpecs] = useState<ColSpecs>(
+        (storedData && storedData.cols_specs) 
+        ?? {
         numberOfRows: {},
         amountOfValues: {},
-    });
-    const [rowSpecs, setRowSpecs] = useState<RowSpecs>({
+        }
+    );
+    const [rowSpecs, setRowSpecs] = useState<RowSpecs>(
+        (storedData && storedData.rows_specs)
+        ?? {
         disable: {},
         count: {},
         enabledValues: {},
         enabledColumns: {},
+        }
+    );
+    const [interval, setInterval] = useState<number>((storedData && storedData.interval) ?? 1);
+    const [headerType, setHeaderType] = useState<SharedSelection>(() => {
+        if (storedData && storedData.type) {
+            return new Set(storedData.type);
+        }
+        return new Set(["text"]);
     });
-    const [interval, setInterval] = useState<number>(1);
-    const [headerType, setHeaderType] = useState<SharedSelection>(() => new Set(["text"]));
     const [sorting, setSorting] = useState<SortingState>([]);
-    const [values, setValues] = useState<Set<string>>(new Set());
-    const [data, setData] = useState<Array<VTData>>([]);
+    const [values, setValues] = useState<Set<string>>(() => {
+        if (storedData && storedData.values) {
+            return new Set(storedData.values);
+        }
+        return new Set();
+    });
+    const [data, setData] = useState<Array<VTData>>(() => {
+        if (storedData && storedData.data) {
+            return storedData.data;
+        }
+        return [];
+    });
+    const [title, setTitle] = useState<string>((storedData && storedData.name) ?? "");
     // Data is an array of objects that will be turned into the rows of your table.
     // Each object in the array represents a row of data.
     
@@ -139,12 +168,33 @@ export function useVirtualizedTable () {
     // When called with a row type (TData), it returns a utility for creating different
     // column definition types (Accessor Columns, Display Columns, Grouping Columns).    
     
-    const [columns, setColumns] = useState<Array<ColumnDef<VTData>>>([
-        {
-            id: "indexes",
-            cell: ({row}) => <div className="w-[1.5rem] h-full flex flex-col justify-center items-center">{row.index}</div>,
+    const [columns, setColumns] = useState<Array<ColumnDef<VTData>>>(() => {
+        if (storedData && storedData.cols_num.length > 0) {
+            return storedData.cols_num.map((colName, index) => {
+                if (index === 0) {
+                    return {
+                        id: "indexes",
+                        cell: ({row}) => <div className="w-[1.5rem] h-full flex flex-col justify-center items-center">{row.index}</div>,
+                    }
+                }
+                return {
+                accessorKey: colName,
+                id: colName,
+                header: () => <span>{colName}</span>,
+                footer: props => props.column.id,
+                sortUndefined: 'last',
+                sortDescFirst: false,
+                enableSorting: true,
+                }
+            });
         }
-    ]);
+        return [
+            {
+                id: "indexes",
+                cell: ({row}) => <div className="w-[1.5rem] h-full flex flex-col justify-center items-center">{row.index}</div>,
+            }
+        ]
+    });
     // Column Defs are just plain objects and it is where we tell TanStack Table
     // how each column should access and/or transform row data with either an
     // accessorKey or accessorFn. Column Defs are the single most important part
@@ -263,8 +313,9 @@ export function useVirtualizedTable () {
         return {
             values: Array.from(values),
             headerType: Array.from(headerType),
+            colsNum: table.getAllColumns().map(col => col.id),
+            title,
             data,
-            columns,
             interval,
             colSpecs,
             rowSpecs,
@@ -272,7 +323,6 @@ export function useVirtualizedTable () {
     }
     return {
         table,
-        setData,
         getTableStates,
         state: {
             values,
@@ -280,6 +330,7 @@ export function useVirtualizedTable () {
             interval,
             colSpecs,
             rowSpecs,
+            title,
         },
         setter: {
             setValues,
@@ -288,6 +339,7 @@ export function useVirtualizedTable () {
             setInterval,
             setColSpecs,
             setRowSpecs,
+            setTitle,
         },
         controls: {
             handleAddColumn,
