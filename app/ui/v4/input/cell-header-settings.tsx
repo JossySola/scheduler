@@ -6,6 +6,7 @@ import { Table } from "@tanstack/react-table";
 import { VTData } from "@/app/hooks/custom";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useParams } from "next/navigation";
+import { Header } from "../../icons";
 
 export default function CellHeaderSettings({ initialValue, handleDuplicates, isDuplicate, table, row, column, interval, headerType, setInterval, setHeaderType }: {
     initialValue: unknown,
@@ -35,7 +36,8 @@ export default function CellHeaderSettings({ initialValue, handleDuplicates, isD
                 value={(value as string) ?? ""}
                 onChange={e => handleDuplicates(e.target.value)}
                 onValueChange={setValue}
-                startContent={ <HeaderModal table={table} interval={interval} setInterval={setInterval} headerType={headerType} setHeaderType={setHeaderType} />}
+                startContent={<Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> }
+                endContent={<HeaderModal table={table} interval={interval} setInterval={setInterval} headerType={headerType} setHeaderType={setHeaderType} />}
                 onBlur={onBlur}
                 errorMessage={
                     isDuplicate 
