@@ -131,7 +131,7 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                 }
                                 }>
                                     {
-                                        table.getRowModel().rows[0].getAllCells().map((cell, cIndex) => cIndex !== 0 && cIndex !== 1 && cIndex !== 2 && (
+                                        table.getRowModel().rows[0].getAllCells().map((cell, cIndex) => cIndex !== 0 && cIndex !== 1 && (
                                             <Checkbox
                                             isDisabled={disabledRows[index] || false}
                                             size="lg"
