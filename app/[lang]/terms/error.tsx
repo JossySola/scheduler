@@ -24,7 +24,7 @@ export default function Error({
         }
     }, [state.ok]);
     return (
-        <section className="w-full h-full flex flex-col justify-center items-center gap-5">
+        <section className="w-full h-full flex flex-col justify-center items-center gap-5 text-center p-5">
             <h2>{ lang === "es" ? "Algo inesperado ha ocurrido 😢" : "Something unexpected has happened 😢" }</h2>
             <div className="flex flex-row justify-center items-center gap-3">
                 <p>{ lang === "es" ? "Intentar de nuevo" : "Try again" }</p>
