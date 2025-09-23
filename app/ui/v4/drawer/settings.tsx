@@ -56,7 +56,7 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
                                 setRowSpecs={setRowSpecs}
                                 values={values} />
 
-                                <h3>{ lang === "es" ? "Valores de celdas" : "Cells values" }</h3>
+                                <h3>{ lang === "es" ? "Valores de celdas" : "Cell values" }</h3>
                                 <ValuesList values={values} setValues={setValues} setColumns={setColumns} />
                             </DrawerBody>
                             <DrawerFooter>
