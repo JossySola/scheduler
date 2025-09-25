@@ -1,7 +1,7 @@
 "use client"
 import { useParams } from "next/navigation"
 import { ActionButton, SecondaryButton } from "../atoms/atom-button"
-import { Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
+import { Button, Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { useActionState } from "react";
 import { Trash } from "../icons";
 import { DeleteTableAction } from "@/app/[lang]/dashboard/actions";
@@ -17,7 +17,8 @@ export default function DeleteTableModal ({ table_id, table_name }: {
 
     return (
         <>
-        <ActionButton onPress={onOpen} color="danger" endContent={<Trash />}>{ lang === "es" ? "Borrar" : "Delete"}</ActionButton>
+        <Button isIconOnly className="relative sm:hidden" onPress={onOpen} color="danger" aria-label={ lang === "es" ? "Eliminar horario" : "Delete schedule"}><Trash /></Button>
+        <Button className="hidden sm:inline-flex" onPress={onOpen} color="danger" endContent={<Trash />} aria-label={ lang === "es" ? "Eliminar horario" : "Delete schedule"}>{ lang === "es" ? "Borrar" : "Delete"}</Button>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
                 {onClose => (
