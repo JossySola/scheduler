@@ -22,6 +22,7 @@ body {
 }
 h1 {
   font-size: 3rem;
+  line-height: normal;
   margin: 0.5rem 0;
   font-family: var(--font-geist-bold);
 }
