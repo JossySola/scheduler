@@ -12,7 +12,7 @@ export default function Select({ value, table, row, column, values }: {
     column: { id: string },
     values: Set<string>,
 }) {
-    const [selection, setSelection] = useState<string>("");
+    const [selection, setSelection] = useState<string>(value);
     const handleSelectionChange = (newSelection: string) => {
         setSelection(newSelection);
         table.options.meta?.updateData(row.index, column.id, newSelection);
