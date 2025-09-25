@@ -68,7 +68,7 @@ function Confirmation ({ onlyWithProvider }: { onlyWithProvider: boolean | null 
                     isLoading={ isLoading } 
                     isDisabled={ isLoading } 
                     size="md"
-                    className="text-black bg-white dark:text-white dark:bg-black"
+                    className="dark:text-black dark:bg-white text-white bg-black"
                     onPress={ noPasswordAction }>
                         { lang === "es" ? "Confirmar" : "Confirm" }
                     </Button>
