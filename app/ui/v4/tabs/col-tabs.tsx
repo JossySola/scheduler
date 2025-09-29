@@ -45,10 +45,8 @@ export default function ColTabs({table, values, colSpecs, setColSpecs}: {
         
         setValAmount(prev => {
             const currentArray = prev[colName] || [];
-            console.log(currentArray)
             if (currentArray.length > 0) {
                 const newArray = [...currentArray];
-                console.log(newArray[index])
                 if (newArray[index] === undefined) {
                     newArray.push(value);
                     return ({
