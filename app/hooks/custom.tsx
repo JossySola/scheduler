@@ -199,6 +199,10 @@ export function useVirtualizedTable (storedData?: {
     // how each column should access and/or transform row data with either an
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
+    useEffect(() => {
+        console.log("Cols specs changed: ", colSpecs);
+        console.log("Row specs changed: ", rowSpecs);
+    }, [colSpecs, rowSpecs]);
 
     const triggerRefresh = () => {
         setColumns(prev => prev.slice());
@@ -276,6 +280,17 @@ export function useVirtualizedTable (storedData?: {
                 }
             ]
         });
+        setColSpecs(prev => ({
+            ...prev,
+            numberOfRows: {
+                ...prev.numberOfRows,
+                [columnName]: data.length > 0 ? data.length - 1 : 0,
+            },
+            amountOfValues: {
+                ...prev.amountOfValues,
+                [columnName]: new Array().fill(0, data.length - 1, columns.length - 1),
+            },
+        }));
     }
     const handleAddRow = () => {
         if (columns.length === 1) {
@@ -290,6 +305,25 @@ export function useVirtualizedTable (storedData?: {
             });
         })
         setData(prev => [...prev, newRow]);
+        setRowSpecs(prev => ({
+            ...prev,
+            disable: {
+                ...prev.disable,
+                [data.length]: false,
+            },
+            count: {
+                ...prev.count,
+                [data.length]: 0,
+            },
+            enabledValues: {
+                ...prev.enabledValues,
+                [data.length]: [],
+            },
+            enabledColumns: {
+                ...prev.enabledColumns,
+                [data.length]: [],
+            },
+        }));
     }
     const handleDeleteColumn = () => {
         if (columns.length === 1) return;
@@ -304,10 +338,20 @@ export function useVirtualizedTable (storedData?: {
                 return rest;
             }
         ));
+        setColSpecs(prev => ({
+            numberOfRows: Object.fromEntries(Object.entries(prev.numberOfRows).filter(([key]) => key !== label)),
+            amountOfValues: Object.fromEntries(Object.entries(prev.amountOfValues).filter(([key]) => key !== label)),
+        }));
     }
     const handleDeleteRow = () => {
         if (!data.length) return;
         setData(prev => prev.slice(0, -1));
+        setRowSpecs(prev => ({
+            disable: Object.fromEntries(Object.entries(prev.disable).filter(([key]) => Number(key) !== (data.length - 1))),
+            count: Object.fromEntries(Object.entries(prev.count).filter(([key]) => key !== generateColumnName(data.length - 1))),
+            enabledValues: Object.fromEntries(Object.entries(prev.enabledValues).filter(([key]) => Number(key) !== (data.length - 1))),
+            enabledColumns: Object.fromEntries(Object.entries(prev.enabledColumns).filter(([key]) => Number(key) !== (data.length - 1))),
+        }));
     }
     const getTableStates = () => {
         return {
