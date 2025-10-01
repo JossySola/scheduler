@@ -3,7 +3,7 @@ import { DisableRow, EnabledColumns, EnabledValues, RowCount, RowSpecs, VTData }
 import { Card, CardBody, Checkbox, CheckboxGroup, NumberInput, Switch, Tab, Tabs } from "@heroui/react";
 import { Table } from "@tanstack/react-table";
 import { useParams } from "next/navigation";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 
 export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
     table: Table<VTData>,
@@ -16,28 +16,6 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
     const [amountCols, setAmountCols] = useState<RowCount>( rowSpecs.count || {});
     const [enabledValues, setEnabledValues] = useState<EnabledValues>( rowSpecs.enabledValues || {});
     const [enabledColumns, setEnabledColumns] = useState<EnabledColumns>( rowSpecs.enabledColumns || {});
-
-    useEffect(() => {
-        setRowSpecs(prev => ({
-            ...prev,
-            disable: {
-                ...prev.disable,
-                ...disabledRows,
-            },
-            count: {
-                ...prev.count,
-                ...amountCols,
-            },
-            enabledValues: {
-                ...prev.enabledValues,
-                ...enabledValues,
-            },
-            enabledColumns: {
-                ...prev.enabledColumns,
-                ...enabledColumns,
-            },
-        }))
-    }, [disabledRows, amountCols, enabledValues, enabledColumns]);
 
     const numberOfCols = useMemo(() => {
         return table.getRowModel().rows[0]?.getAllCells().length;
@@ -52,19 +30,53 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
             ...prev,
             [colName]: value,
         }
-        ))
+        ));
+        setRowSpecs(prev => ({
+            ...prev,
+            count: {
+                ...prev.count,
+                [colName]: value,
+            },
+        }));
     }
-    const handleDisabledRowChange = (rowIndex: number, isDisabled: boolean) => {
+    const handleDisabledRowChange = (rowIndex: string, isDisabled: boolean) => {
         setDisabledRows(prev => ({
             ...prev,
             [rowIndex]: isDisabled,
+        }));
+        setRowSpecs(prev => ({
+            ...prev,
+            disable: {
+                ...prev.disable,
+                [rowIndex]: isDisabled,
+            },
         }))
     }
-    const handleEnabledValuesChange = (rowIndex: number, values: string[]) => {
+    const handleEnabledValuesChange = (rowIndex: string, values: string[]) => {
         setEnabledValues(prev => ({
             ...prev,
             [rowIndex]: values,
-        }))
+        }));
+        setRowSpecs(prev => ({
+            ...prev,
+            enabledValues: {
+                ...prev.enabledValues,
+                [rowIndex]: values,
+            },
+        }));
+    }
+    const handleEnabledColumnsChange = (rowIndex: string, values: string[]) => {
+        setEnabledColumns(prev => ({
+            ...prev,
+            [rowIndex]: values,
+        }));
+        setRowSpecs(prev => ({
+            ...prev,
+            enabledColumns: {
+                ...prev.enabledColumns,
+                [rowIndex]: values,
+            },
+        }));
     }
     return (
         <Tabs 
@@ -97,7 +109,7 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                 color="danger" 
                                 size="lg"
                                 isSelected={ disabledRows[index] || false }
-                                onValueChange={ (e) => handleDisabledRowChange(index, e) }>
+                                onValueChange={ (e) => handleDisabledRowChange(index.toString(), e) }>
                                     {
                                         lang === "es" ? "Deshabilitar fila" : "Disable row"
                                     }
@@ -111,8 +123,8 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                 }
                                 minValue={0}
                                 maxValue={numberOfCols ?? 1}
-                                value={amountCols[row as string] || 0}
-                                onChange={(value) => handleNumberInputChange(row as string, value)}
+                                value={amountCols[index] || 0}
+                                onChange={(value) => handleNumberInputChange(index.toString(), value)}
                                 classNames={{
                                     inputWrapper: "mt-10",
                                 }} />
@@ -123,13 +135,7 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                     lang === "es" ? "Deshabilitar estas columnas" : "Disable these columns"
                                 }
                                 value={ enabledColumns[index] || [] }
-                                onChange={ (values) => {
-                                    setEnabledColumns(prev => ({
-                                        ...prev,
-                                        [index]: values,
-                                    }))
-                                }
-                                }>
+                                onChange={ (values) => handleEnabledColumnsChange(index.toString(), values) }>
                                     {
                                         table.getRowModel().rows[0].getAllCells().map((cell, cIndex) => cIndex !== 0 && cIndex !== 1 && (
                                             <Checkbox
@@ -155,7 +161,7 @@ export default function RowTabs({ table, rowSpecs, setRowSpecs, values }: {
                                     lang === "es" ? "Preferir estos valores" : "Prefer these values"
                                 }
                                 value={ enabledValues[index] || [] }
-                                onChange={ (values) => handleEnabledValuesChange(index, values) }>
+                                onChange={ (values) => handleEnabledValuesChange(index.toString(), values) }>
                                     {
                                         values && Array.from(values).map((val: string, cIndex: number) => {
                                             return (
