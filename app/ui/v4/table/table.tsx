@@ -1,15 +1,18 @@
 "use client"
 import { useVirtualizedTable } from "@/app/hooks/custom";
-import { Button, Input } from "@heroui/react";
+import { addToast, Button, Input } from "@heroui/react";
 import { flexRender } from "@tanstack/react-table";
 import Filter from "../input/filter";
 import { ArrowCircleLeft, ChevronDoubleDown, ChevronDoubleLeft, ChevronDoubleRight, ChevronDoubleUp, Sort, SortAscending, SortDescending } from "../../icons";
 import { useParams, useRouter } from "next/navigation";
 import Settings from "../drawer/settings";
 import SaveButton from "../button/save";
+import { experimental_useObject as useObject } from '@ai-sdk/react';
+import { tableGenerationSchema } from "@/app/api/generate/schema";
+import { SessionProvider } from "next-auth/react";
 
 export default function Table({storedData}: {
-    storedData?: { 
+    storedData?: {
     user_id: string,
     name: string,
     data: Array<{ [key: string]: string }>,
@@ -25,13 +28,32 @@ export default function Table({storedData}: {
 }) {
     const router = useRouter();
     const {lang} = useParams<{ lang: "en" | "es" }>();
+    const { isLoading, stop, object, submit } = useObject({
+        api: '/api/generate',
+        headers: {
+            'Content-Type': 'text/plain',
+        },
+        schema: tableGenerationSchema,
+        onFinish: ({ object }) => {
+            addToast({
+                title: lang === "es" ? "Generación con IA" : "AI Schedule Generation",
+                description: lang === "es" ? "¡Generación completada!" : "AI generation completed!",
+                color: "success",            
+            })
+        },
+        onError: () => addToast({
+            title: lang === "es" ? "Generación con IA" : "AI Schedule Generation",
+            description: lang === "es" ? "Hubo un error al generar el horario con IA. Inténtalo nuevamente y/o reporta este problema." : "An error has occurred while generating the schedule. Please try again and/or report the issue.",
+            color: "danger",            
+        })
+    })    
     const { 
         table,
         controls,
         getTableStates,
         state,
         setter,
-    } = useVirtualizedTable(storedData);
+    } = useVirtualizedTable(isLoading, object, storedData);
     
     return (
         <>
@@ -59,15 +81,19 @@ export default function Table({storedData}: {
         </div>
 
         <section className="w-full px-5 md:w-5/6 grid grid-rows-[auto_auto] grid-cols-[auto_1fr] justify-self-center my-15">
-            <Settings 
-            values={state.values} 
-            setValues={setter.setValues} 
-            setColumns={setter.setColumns}
-            table={table}
-            colSpecs={state.colSpecs}
-            rowSpecs={state.rowSpecs}
-            setColSpecs={setter.setColSpecs}
-            setRowSpecs={setter.setRowSpecs} />
+            <SessionProvider>
+                <Settings 
+                values={state.values} 
+                setValues={setter.setValues} 
+                setColumns={setter.setColumns}
+                table={table}
+                colSpecs={state.colSpecs}
+                rowSpecs={state.rowSpecs}
+                setColSpecs={setter.setColSpecs}
+                setRowSpecs={setter.setRowSpecs}
+                getTableStates={getTableStates}
+                handleSubmit={submit} />
+            </SessionProvider>
             <div className="col-start-2 col-span-1 flex flex-row justify-between gap-2">
                 <div className="flex flex-row gap-2">
                     <Button 
