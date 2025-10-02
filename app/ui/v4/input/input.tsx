@@ -1,6 +1,6 @@
 "use client"
 import { motion } from "motion/react";
-import { Input as InputHeroUI, SharedSelection } from "@heroui/react";
+import { Input as InputHeroUI, SharedSelection, Spinner } from "@heroui/react";
 import HeaderModal from "../modal/header-modal";
 import { Header } from "../../icons";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -8,7 +8,8 @@ import { useParams } from "next/navigation";
 import { Table } from "@tanstack/react-table";
 import { VTData } from "@/app/hooks/custom";
 
-export default function Input({ initialValue, handleDuplicates, isDuplicate, table, row, column, interval, headerType, setInterval, setHeaderType }: {
+export default function Input({ isLoading, initialValue, handleDuplicates, isDuplicate, table, row, column, interval, headerType, setInterval, setHeaderType }: {
+    isLoading: boolean,
     initialValue: unknown,
     handleDuplicates: (val: string) => void,
     isDuplicate: boolean,
@@ -38,9 +39,11 @@ export default function Input({ initialValue, handleDuplicates, isDuplicate, tab
                 onChange={e => handleDuplicates(e.target.value)}
                 onValueChange={setValue}
                 startContent={
-                    row.index === 0 || column.id === "A" 
-                    ? <Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> 
-                    : null
+                    isLoading
+                    ? <Spinner size="md" variant="simple" color="secondary"/>
+                    : row.index === 0 || column.id === "A" 
+                        ? <Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> 
+                        : null
                 }
                 onBlur={onBlur}
                 errorMessage={

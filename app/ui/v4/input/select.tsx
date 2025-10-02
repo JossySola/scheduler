@@ -1,11 +1,12 @@
 "use client"
 import { motion } from "motion/react";
-import { Select as SelectHeroUi, SelectItem } from "@heroui/react";
+import { Select as SelectHeroUi, SelectItem, Spinner } from "@heroui/react";
 import { useState } from "react";
 import { Table } from "@tanstack/react-table";
 import { VTData } from "@/app/hooks/custom";
 
-export default function Select({ value, table, row, column, values }: {
+export default function Select({ isLoading, value, table, row, column, values }: {
+    isLoading: boolean,
     value: string,
     table: Table<VTData>,
     row: { index: number },
@@ -22,6 +23,11 @@ export default function Select({ value, table, row, column, values }: {
         <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
             <SelectHeroUi
             isVirtualized={isVirtual}
+            startContent={
+                isLoading
+                ? <Spinner size="md" variant="simple" color="secondary"/>
+                : null
+            }
             selectionMode="single"
             variant="bordered"
             size="lg"
