@@ -113,10 +113,10 @@ export type StatesType = {
 
 export function useVirtualizedTable (
     isLoading: boolean, 
-    object: (PartialObject<{
+    object: PartialObject<{
         data: Partial<Record<string, string>>[],
         conflicts: string[],
-    }> | undefined)[] | undefined,
+    }> | undefined,
     storedData?: {
     user_id: string,
     name: string,
