@@ -131,31 +131,18 @@ export async function POST (request: NextRequest) {
                     iv. On the "count" property, if the row's key's value is cero, fill all the row's cells with empty strings. Otherwise, fill just the amount of cells based on this value using the values' index (just if the prior values' array is populated) kept in the prior step in random order, if there are no values provided in the prompt use whatever value you think fits the context based on the columns and rows and using the language based on the "lang" value in the prompt. If the are more cells to fill than values to use, reuse the values (if provided) randomly in random order.
                 b. Check the "colSpecs" object, iterate over each row created in the prior step and:
                     i. On the "amountOfValues" property, if the column's key's value is an empty array, move on into the next step. Otherwise, based on the "rows" length, use the best performant iteration algorithm. The task is to guarantee that each value is used the correct amount of times for each column. If any row has a conflict with this column specification, do not modify the row's cell's column and add this conflict into the "conflict" array. If there is no conflict with the rows specifications, replace with an empty string the cells necessary to meet this criteria. 
-                    ii. On the "numberOfRows" property, based on the "rows" length, use the best performant iteration algorithm. The task is to guarantee that each column has the correct amount of rows filled. If any row has a conflict with this column specification, do not modify the row's cell's column and add this conflict into the "conflict" array. If there is no conflict with the rows specifications, replace with an empty string the cells necessary to meet this criteria. 
-            4. Create a new array and insert the completed object into this new array. Now repeat steps 1 to 3 until you have stored all possible versions of the table based on the specifications. The amount of versions depends on the amount of data (rows and columns), the bigger the dataset, the fewer versions, keeping in mind that the process cannot take more than 60 seconds.
-
+                    ii. On the "numberOfRows" property, based on the "rows" length, use the best performant iteration algorithm. The task is to guarantee that each column has the correct amount of rows filled. If any row has a conflict with this column specification, do not modify the row's cell's column and add this conflict into the "conflict" array. If there is no conflict with the rows specifications, replace with an empty string the cells necessary to meet this criteria.
+            
             This is an example of how the output should look like (if the values were: V1, V2, V3):
-            [
-                {
-                    data: [
-                        { A: 'A0', B: 'B0', C: 'C0', D: 'D0' },
-                        { A: 'A1', B: '0', C: '2', D: '2' },
-                        { A: 'A2', B: '1', C: '1', D: '0' },
-                        { A: 'A3', B: '2', C: '0', D: '1' }
-                    ],
-                    conflicts: ["In the row 'A2' it was expected to fill 5 columns but the table only has 3, resolve this contradicting specification under 'Row Specifications'.", ...],
-                },
-                {
-                    data: [
-                        { A: 'A0', B: 'B0', C: 'C0', D: 'D0' },
-                        { A: 'A1', B: '2', C: '1', D: '0' },
-                        { A: 'A2', B: '1', C: '0', D: '2' },
-                        { A: 'A3', B: '0', C: '2', D: '1' }
-                    ],
-                    conflicts: ["In the column 'B0' it was expected to use the value "V1" two times, but right now the value "V1" has been distributed in a way that the column only uses it once. Resolve this contradiction under 'Column Specifications'.", ...],
-                },
-                ...                          
-            ]
+            {
+                data: [
+                    { A: 'A0', B: 'B0', C: 'C0', D: 'D0' },
+                    { A: 'A1', B: '0', C: '2', D: '2' },
+                    { A: 'A2', B: '1', C: '1', D: '0' },
+                    { A: 'A3', B: '2', C: '0', D: '1' }
+                ],
+                conflicts: ["In the row 'A2' it was expected to fill 5 columns but the table only has 3, resolve this contradicting specification under 'Row Specifications'.", ...],
+            }
         `,
         prompt: `
         Generate a highly strategic schedule with the following data and specifications
