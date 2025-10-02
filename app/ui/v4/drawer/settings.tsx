@@ -2,14 +2,16 @@
 import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, useDisclosure } from "@heroui/react";
 import { useParams } from "next/navigation"
 import { Box, SettingsGearFill } from "../../icons";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, Key, SetStateAction, useMemo } from "react";
 import ValuesList from "../table/list";
 import { ColumnDef, Table } from "@tanstack/react-table";
 import { ColSpecs, RowSpecs, VTData } from "@/app/hooks/custom";
 import ColTabs from "../tabs/col-tabs";
 import RowTabs from "../tabs/row-tabs";
+import { useSession } from "next-auth/react";
+import { tableGenerationSchema } from "@/app/api/generate/schema";
 
-export default function Settings({ table, values, colSpecs, rowSpecs, setValues, setColumns, setColSpecs, setRowSpecs }: {
+export default function Settings({ table, values, colSpecs, rowSpecs, setValues, setColumns, setColSpecs, setRowSpecs, getTableStates, handleSubmit }: {
     table: Table<VTData>,
     values: Set<string>,
     colSpecs: ColSpecs,
@@ -18,9 +20,23 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
     setColumns: Dispatch<SetStateAction<ColumnDef<VTData>[]>>,
     setColSpecs: Dispatch<SetStateAction<ColSpecs>>,
     setRowSpecs: Dispatch<SetStateAction<RowSpecs>>,
+    getTableStates: () => {
+        values: string[];
+        headerType: Key[];
+        cols: string[];
+        title: string;
+        data: VTData[];
+        interval: number;
+        colSpecs: ColSpecs;
+        rowSpecs: RowSpecs;
+    },
+    handleSubmit: (input: any) => void,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { data: session } = useSession();
+    const rows = useMemo(() => table.getRowModel().rows.map(row =>  row.original["A"]), [tableGenerationSchema]);
+
     return (
         <>
             <div className="col-start-1 row-start-1 w-full flex flex-row justify-end items-center pr-5">
@@ -71,6 +87,23 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
                                 size="lg"
                                 className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg" 
                                 onPress={ () => {
+                                    const {
+                                        values,
+                                        data,
+                                        cols,
+                                        colSpecs,
+                                        rowSpecs,
+                                    } = getTableStates();
+                                    handleSubmit({
+                                        lang,
+                                        user_id: session?.user?.id,
+                                        values,
+                                        data,
+                                        rows,
+                                        cols,
+                                        colSpecs,
+                                        rowSpecs,
+                                    });
                                     onClose();
                                 } } 
                                 endContent={<Box />}>
