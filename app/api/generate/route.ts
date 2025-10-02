@@ -3,30 +3,58 @@ import { streamObject } from "ai";
 import { NextRequest } from "next/server";
 import { tableGenerationSchema } from "./schema";
 import { anthropic } from "@ai-sdk/anthropic";
+import { VTData } from "@/app/hooks/custom";
+import * as z from "zod/v4";
 
-type ObjectType = {
-    value: string,
-    specs?: {
-        disabled: boolean,
-        disabledCols: Array<string>,
-        rowTimes: number,
-        preferValues: Array<string>,
-        colTimes: number,
-        valueTimes: Array<[string, number]>,
-    },
-};
+// TYPES
+type Values = Array<string>;
+type Data = Array<VTData>;
+type ColsSpecs = {
+    numberOfRows: { [key: string]: number };
+    amountOfValues: {
+        [key: string]: number;
+    }
+}
+type RowsSpecs = {
+    disabled: { [key: string]: boolean };
+    count: { [key: string]: number };
+    enabledValues: { [key: string]: Array<string> };
+    enabledColumns: { [key: string]: Array<string> };
+}
+type Columns = Array<string>;
+type Rows = Array<string>;
+type Payload = {
+    values: Values;
+    data: Data;
+    rows: Rows;
+    cols: Columns;
+    colSpecs: ColsSpecs;
+    rowSpecs: RowsSpecs;
+    lang: "en" | "es";
+    user_id: string;
+}
+// SCHEMAS
+
 export async function POST (request: NextRequest) {
-    const payload = await request.json();
-    const rows: Array<Array<ObjectType>> = payload.rows;
-    const values: Array<string> = payload.values;
-    const previous: Array<{ 
-        colIndex: number, 
-        rowIndex: number, 
-        name: string, 
-        value: string, 
-        hasConflict: boolean 
-    }> = payload.previous;
-    const lang: string = payload.lang;
+    const payload: Payload = await request.json();
+    const data = payload.data;
+    const values = payload.values;
+    const lang = payload.lang;
+    const cols = payload.cols;
+    const rows = payload.rows;
+    const colSpecs = payload.colSpecs;
+    const rowSpecs = payload.rowSpecs;
+    const user_id = payload.user_id;
+
+    console.log("data", data);
+    console.log("values", values);
+    console.log("lang", lang);
+    console.log("cols", cols);
+    console.log("rows", rows);
+    console.log("cols specs", colSpecs);
+    console.log("row specs", rowSpecs);
+    console.log("user id", user_id);
+/*
     const result = streamObject({
         model: anthropic('claude-opus-4-20250514'),
         temperature: 1,
@@ -37,52 +65,50 @@ export async function POST (request: NextRequest) {
 
             The rows that you are going to check are structured this way:
             Every cell is indexed, a capital letter for each column and an index number for each row. So for instance, the first cell in the table is "A0", the second column in the first row is "A1", the second cell in the second row at the first column is "B0".
-            The data structure used is an Array of Maps. Each Map represents a row, and each Map key represents the indexed column.
-            The cells that are located either in the first row (column headers) or in the first column in all rows (row headers) contain an object property called "specs".
-            All cells including headers contain a property called "value" (string). The property "conflict" (boolean) is only part of normal cells.
-            The "specs" property, which is exclusive of headers, is an object containing the next properties:
-                1. disabled
-                2. disabledCols
-                3. rowTimes
-                4. preferValues
-                5. colTimes
-                6. valueTimes
-            Each one specifies the following criteria:
-                Specifications for rows:
-                    1. "disabled": Type: boolean. Whether the row is disabled, if so, no work has to be done in the row and all of its cells must be empty.
-                    2. "disabledCols": Type: Array<string>. It contains the "value" string of the columns that should not be filled for the current row, meaning these columns in the row should be empty.
-                    3. "rowTimes": Type: number. It specifies how many cells must be filled in with a value in the current row.
-                    4. "preferValues": Type: Array<string>. It contains the values that must be used in the current row.
-                Specifications for columns:
-                    1. "colTimes": Type: number. It specifies how many rows must be filled in with a value in the current column.
-                    2. "valueTimes": Type: Map<string, number>. The string specifies the "value" and the number specifies the amount of times that value must be assigned in the current column.
             
+            The "rowsSpecs" property is an object containing the next properties:
+                1. disabled
+                2. count
+                3. enabledValues
+                4. enabledColumns
+            Each one specifies the following criteria:
+                    1. "disabled": Type: { [key: number]: boolean }. Whether the row is disabled, if so, no work has to be done in the row and all of its cells must be empty.
+                    2. "count": Type: { [key: string]: number }. It specifies how many cells must be filled in with a value in the current row.
+                    3. "enabledValues": Type: { [key: string]: Array<string> }. It contains the values that must be used in the current row.
+                    4. "enabledColumns": Type: { [key: string]: Array<string> }. It contains the "value" string of the columns that should not be filled for the current row, meaning these columns in the row should be empty.
+           
+            The "colsSpecs" property is an object containing the next properties:
+                1. numberOfRows
+                2. amountOfValues
+            Each one specifies the following criteria:
+                1. "numberOfRows": Type: { [key: string]: number }. It specifies how many rows must be filled in with a value in the current column.
+                2. "amountOfValues": Type: { [key: string]: Array<number> }. The key specifies the column. The array contains the numbers specifying the amount of times that value must be assigned on each column. The indexes should be the same as the index order in the "values" array provided in the prompt. If the array is empty, it means the user hasn't set a specific number, so work with the number of rows as the number for each column.
+        
             The output generated must be an Object containing:
-                1. rows: A property holding an Array of Objects. The child objects will be these properties: colIndex(number), rowIndex(number), name (i.e. "A3")(string), value(string), and hasConflict(boolean).
+                1. data: A property holding an Array of Objects. Each object represents a row in the schedule and every key:value pair represents a cell in that row. The key is the cell's name (i.e. "A") and the value is the value assigned to that cell (i.e. "Math", "0", "1", etc). If a cell is empty, the value must be an empty string ("").
                 2. conflicts: An array of strings containing any descriptive conflicts found while generating the schedule, as instance, any conflict with contradictory criteria. The conflict texts must be in this language: ${lang}. Each conflict text must cover these questions:
                     a. In which column the conflict is located?
                     b. What cell key (i.e. "A3") has the conflict?
-                    c. Which specification was met?
-                    d. Which specification was not met?
-                    e. Why the conflict occured?
-                2.1. Use this specification's names instead of the abbreviated keys:
-                    a. disabled:
-                        i. English: "Disable on all columns"
-                         ii. Spanish: "Deshabilitar en todas las columnas"
-                    b. disabledCols:
-                        i. English: "Disable these columns"
-                        ii. Spanish: "Deshabilitar estas columnas"
-                    c. rowTimes:
-                         i. English: "In how many columns should it appear?"
-                         ii. Spanish: "¿En cuántas columnas debería aparecer?"
-                    d. preferValues:
-                          i. English: "Prefer the following values to use in this row"
-                           ii. Spanish: "Preferir usar estos valores en la fila"
-                    e. colTimes:
-                          i. English: "Amount of rows to fill in this column"
-                           ii. Spanish: "Número de filas a llenar en esta columna"
-                     f. valueTimes:
-                           i. English: "Use the value "<insert value>" this amount of times"
+                    c. Which specification was not met?
+                    d. Why the conflict occured?
+                    2.1. Use this specification's names instead of the abbreviated keys:
+                        a. disabled:
+                            i. English: "Disable on all columns"
+                            ii. Spanish: "Deshabilitar en todas las columnas"
+                        b. disabledCols:
+                            i. English: "Disable these columns"
+                            ii. Spanish: "Deshabilitar estas columnas"
+                        c. rowTimes:
+                            i. English: "In how many columns should it appear?"
+                            ii. Spanish: "¿En cuántas columnas debería aparecer?"
+                        d. preferValues:
+                            i. English: "Prefer the following values to use in this row"
+                            ii. Spanish: "Preferir usar estos valores en la fila"
+                        e. colTimes:
+                            i. English: "Amount of rows to fill in this column"
+                            ii. Spanish: "Número de filas a llenar en esta columna"
+                        f. valueTimes:
+                            i. English: "Use the value "<insert value>" this amount of times"
                             ii. Spanish: "Usar el valor "<insert value>" esta cantidad de veces"
 
             Rules to follow:
@@ -93,72 +119,54 @@ export async function POST (request: NextRequest) {
                 - Do not fill rows that have a disabled specification. No need to add it as a conflict.
                 
             These are the suggested steps to follow in order to generate the most strategic schedule, however, after reading these steps if you come up with a better process that would generate an even more strategic schedule, you're free to do that:
-            Having in mind that the column headers are located at the first array of the main array ("Rows") and the row headers are located in the first element of each row (array), we will begin to iterate "Rows":
-            1. First row (array in "Rows"): column headers. Save each column specification and index to have them available when we start working with the next rows.
-            2. Create an array and start inserting arrays containing a string set to each cell's name, an empty string as the second element, and the boolean 'false' as the third element, these child arrays will represent a cell, BUT only insert the cells that are not row or column headers. For example: [["A1", "", false], ["B2", "", false], ["C3", "", false], ... ]. Hereafter, I refer to this array as "Output". Hereafter, by "fill the cell" I mean "assign it to the string at the second element of the cell (array)".
-            3. If there is a conflict in a specific cell, find the array containing the cell's name in question in Output and set the third element to true.
-            4. For each consecutive row (array) in "Rows", check for the "specs" property in the first element, which is the row header:
-                a. If the property "disabled" is "true", do nothing and continue with the next row.
-                b. If "disabledCols" has content, leave each array's second element that have the corresponding cell name that is part of the row, with the empty string it started in Output. Keep these disabled columns in mind.
-                c. If "preferValues" has content, save them to work with the next and last specification. If it does not have content, use all values from "Values" at least once in random order. If there are less values than columns, you can also repeat them randomly. If there are more values than columns, choose the values randomly to fill the cells.
-                d. If "rowTimes" is greater than 0, randomly (order and location) fill the cells with the "preferValues"'s values if applicable, avoiding the cells with empty strings you set in step "b". If there are no columns left to apply this specification, add this issue in "conflicts". If there are some columns available but not enough for this specification to succeed, fill those available columns and annotate this in "conflicts". If there are more columns than "rowTimes", fill the amount of cells specified and the remaining fill them with empty strings. If "rowTimes" is 0, fill all available columns with any assigned or random values, and suggest on "conflicts" to use the "disabled" option, to disable the row. Any cell conflicting with a column's specification fill it as requested but add this in "conflicts".
-            5. If the "Values" array is populated, set the prior values with the value's index as a string, so instead of words the value must be index numbers as strings as the inputs are going to be a Select type. Otherwise, use words.
-            
-            
-            This is an example of how the output should look like:
-            {
-                rows: [
-                    {
-                        colIndex: 2,
-                        rowIndex: 1,
-                        name: "B1",
-                        value: "1",
-                        hasConflict: true
-                    },
-                    {
-                        colIndex: 3,
-                        rowIndex: 1,
-                        name: "C1",
-                        value: "0",
-                        hasConflict: true
-                    },
-                    {
-                        colIndex: 2,
-                        rowIndex: 2,
-                        name: "B2",
-                        value: "0",
-                        hasConflict: false
-                    },
-                    {
-                        colIndex: 3,
-                        rowIndex: 2,
-                        name: "C2",
-                        value: "2",
-                        hasConflict: false
-                    },
-                    {
-                        colIndex: 2,
-                        rowIndex: 3,
-                        name: "B3",
-                        value: "0",
-                        hasConflict: false
-                    },
-                    {
-                        colIndex: 3,
-                        rowIndex: 3,
-                        name: "C3",
-                        value: "0",
-                        hasConflict: false
-                    },
-                ],
-                conflicts: ["In the row 'Chema' it was expected to fill 5 columns but the table only has 2, resolve a contradicting specification under 'Row Specifications'.", ...],
-            }
+
+            Having in mind that the column headers are located at the first array of the main array ("Rows") and the row headers are located at the object's key called "A":
+            1. Create and object with two properties: "data" and "conflicts", each one having an empty array as value.
+            2. Create a new array to use for "data" and insert into the array the first object which will contain the column headers. Populate the object with key:value pairs, the key being the column (i.e. A, B, C, etc.) and the value being the headers' values at "cols" provided in the prompt.
+            3. For each of the next objects created based on the "rows" provided in the prompt (representing different rows based on "rows" provided in the prompt):
+                a. Check the "rowSpecs" object, check each property's key matching the row's index with the key's name:
+                    i. On the "disable" property, if the value is "true", break the following steps and work directly with the next row.
+                    ii. On the "enabledColumns" property, if the row's key's value is an empty array, it means you can use all the cells in the row, so go to the next step. Otherwise, fill the cells with an empty string for each column that IS NOT in the array.
+                    iii. On the "enabledValues" property, if the row's key's value is an empty array, it means you can use any of the values provided at "values" in the prompt. Otherwise, maintain the array to use in the next step.
+                    iv. On the "count" property, if the row's key's value is cero, fill all the row's cells with empty strings. Otherwise, fill just the amount of cells based on this value using the values' index (just if the prior values' array is populated) kept in the prior step in random order, if there are no values provided in the prompt use whatever value you think fits the context based on the columns and rows and using the language based on the "lang" value in the prompt. If the are more cells to fill than values to use, reuse the values (if provided) randomly in random order.
+                b. Check the "colSpecs" object, iterate over each row created in the prior step and:
+                    i. On the "amountOfValues" property, if the column's key's value is an empty array, move on into the next step. Otherwise, based on the "rows" length, use the best performant iteration algorithm. The task is to guarantee that each value is used the correct amount of times for each column. If any row has a conflict with this column specification, do not modify the row's cell's column and add this conflict into the "conflict" array. If there is no conflict with the rows specifications, replace with an empty string the cells necessary to meet this criteria. 
+                    ii. On the "numberOfRows" property, based on the "rows" length, use the best performant iteration algorithm. The task is to guarantee that each column has the correct amount of rows filled. If any row has a conflict with this column specification, do not modify the row's cell's column and add this conflict into the "conflict" array. If there is no conflict with the rows specifications, replace with an empty string the cells necessary to meet this criteria. 
+            4. Create a new array and insert the completed object into this new array. Now repeat steps 1 to 3 until you have stored all possible versions of the table based on the specifications. The amount of versions depends on the amount of data (rows and columns), the bigger the dataset, the fewer versions, keeping in mind that the process cannot take more than 60 seconds.
+
+            This is an example of how the output should look like (if the values were: V1, V2, V3):
+            [
+                {
+                    data: [
+                        { A: 'A0', B: 'B0', C: 'C0', D: 'D0' },
+                        { A: 'A1', B: '0', C: '2', D: '2' },
+                        { A: 'A2', B: '1', C: '1', D: '0' },
+                        { A: 'A3', B: '2', C: '0', D: '1' }
+                    ],
+                    conflicts: ["In the row 'A2' it was expected to fill 5 columns but the table only has 3, resolve this contradicting specification under 'Row Specifications'.", ...],
+                },
+                {
+                    data: [
+                        { A: 'A0', B: 'B0', C: 'C0', D: 'D0' },
+                        { A: 'A1', B: '2', C: '1', D: '0' },
+                        { A: 'A2', B: '1', C: '0', D: '2' },
+                        { A: 'A3', B: '0', C: '2', D: '1' }
+                    ],
+                    conflicts: ["In the column 'B0' it was expected to use the value "V1" two times, but right now the value "V1" has been distributed in a way that the column only uses it once. Resolve this contradiction under 'Column Specifications'.", ...],
+                },
+                ...                          
+            ]
         `,
         prompt: `
-        Generate a highly strategic schedule with the following data and criteria:
+        Generate a highly strategic schedule with the following data and specifications
+        **Language**: ${lang}
         **Rows**: ${JSON.stringify(rows)}
+        **Columns**: ${JSON.stringify(cols)}
         **Values**: ${JSON.stringify(values)}
-        This is previous output: ${previous ? JSON.stringify(previous) : null}, do not repeat it, so you make subsequent generations different if it has the same criteria.`,
+        **Columns Specs**: ${JSON.stringify(colSpecs)}
+        **Rows Specs**: ${JSON.stringify(rowSpecs)}
+        `,
     });
     return result.toTextStreamResponse();
+*/
 } 
