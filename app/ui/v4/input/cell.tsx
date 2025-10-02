@@ -10,7 +10,8 @@ import DateInput from "./date";
 import TimeInput from "./time";
 import CellHeaderSettings from "./cell-header-settings";
 
-export default function CellRenderer ({getValue, row, column, table, values, interval, headerType, setInterval, setHeaderType}: {
+export default function CellRenderer ({isLoading, getValue, row, column, table, values, interval, headerType, setInterval, setHeaderType}: {
+    isLoading: boolean,
     getValue: Getter<unknown>,
     row: { index: number },
     column: { id: string },
@@ -76,6 +77,7 @@ export default function CellRenderer ({getValue, row, column, table, values, int
     } else if (row.index !== 0 && column.id !== "A") {
         if (values.size === 0) {
             const props = {
+                isLoading,
                 initialValue,
                 handleDuplicates,
                 isDuplicate,
@@ -92,6 +94,7 @@ export default function CellRenderer ({getValue, row, column, table, values, int
             );        
         } else if (values.size > 0) {
             const props = {
+                isLoading,
                 value: typeof initialValue === "string" ? initialValue : "",
                 table,
                 row,
@@ -104,6 +107,7 @@ export default function CellRenderer ({getValue, row, column, table, values, int
         }
     } else if (row.index === 0 && column.id !== "A") {
         const props = {
+            isLoading,
             initialValue,
             handleDuplicates,
             isDuplicate,
@@ -129,6 +133,7 @@ export default function CellRenderer ({getValue, row, column, table, values, int
         );
     } else {
         const props = {
+            isLoading,
             initialValue,
             handleDuplicates,
             isDuplicate,
