@@ -70,7 +70,7 @@ export default async function Page ({ params }: {
                     rows_specs: JSON.parse(serialized_table.decrypted_rows_specs),
                     created_at: serialized_table.created_at,
                     updated_at: serialized_table.updated_at,
-                    cols_num: serialized_table.table_cols_num ? JSON.parse(serialized_table.table_cols_num): [],
+                    cols: serialized_table.table_cols_num ? JSON.parse(serialized_table.table_cols_num): [],
                 }
                 
                 return (

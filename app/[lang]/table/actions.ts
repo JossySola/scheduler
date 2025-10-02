@@ -59,7 +59,7 @@ export async function SaveNewTableAction (states: StatesType) {
                 ${cols_specs_key.CiphertextBlob},
                 pgp_sym_encrypt(${JSON.stringify(states.rowSpecs)}, ${rows_specs_key.Plaintext}),
                 ${rows_specs_key.CiphertextBlob},
-                ${JSON.stringify(states.colsNum)}
+                ${JSON.stringify(states.cols)}
             )
             RETURNING id;
             `
@@ -127,7 +127,7 @@ export async function SaveTableAction (
                 table_interval = ${states.interval},
                 table_cols_specs = pgp_sym_encrypt(${JSON.stringify(states.colSpecs)}, ${cols_specs_key}),
                 table_rows_specs = pgp_sym_encrypt(${JSON.stringify(states.rowSpecs)}, ${rows_specs_key}),
-                table_cols_num = ${JSON.stringify(states.colsNum)},
+                table_cols_num = ${JSON.stringify(states.cols)},
                 updated_at = NOW()
             WHERE user_id = ${session.user.id} AND id = ${table_id};`
             .then(() => ({ ok: true, message: locale === "es" ? "¡Horario guardado!" : "Schedule saved!" }))

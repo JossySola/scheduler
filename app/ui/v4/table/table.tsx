@@ -23,7 +23,7 @@ export default function Table({storedData}: {
     rows_specs: { disable: { [key: number]: boolean }, count: { [key: string]: number }, enabledValues: { [key: string]: Array<string> }, enabledColumns: { [key: string]: Array<string> } },
     created_at: number,
     updated_at: number,
-    cols_num: Array<string>,
+    cols: Array<string>,
     }
 }) {
     const router = useRouter();
