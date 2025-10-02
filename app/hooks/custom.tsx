@@ -4,6 +4,7 @@ import { Key, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
 import CellRenderer from "../ui/v4/input/cell";
 import { SharedSelection } from "@heroui/react";
+import { DeepPartial } from "ai";
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
@@ -110,6 +111,7 @@ export type StatesType = {
     title: string,
     cols: Array<string>,
 }
+type PartialObject<T> = DeepPartial<T>;
 
 export function useVirtualizedTable (
     isLoading: boolean, 
