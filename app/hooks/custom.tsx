@@ -113,10 +113,10 @@ export type StatesType = {
 
 export function useVirtualizedTable (
     isLoading: boolean, 
-    object: ({
+    object: (PartialObject<{
         data: Partial<Record<string, string>>[],
         conflicts: string[],
-    } | undefined)[] | undefined,
+    }> | undefined)[] | undefined,
     storedData?: {
     user_id: string,
     name: string,
@@ -128,7 +128,7 @@ export function useVirtualizedTable (
     rows_specs: { disable: { [key: number]: boolean }, count: { [key: string]: number }, enabledValues: { [key: string]: Array<string> }, enabledColumns: { [key: string]: Array<string> } },
     created_at: number,
     updated_at: number,
-    cols_num: Array<string>,
+    cols: Array<string>,
 }) {
     const [colSpecs, setColSpecs] = useState<ColSpecs>(
         (storedData && storedData.cols_specs) 
@@ -175,8 +175,8 @@ export function useVirtualizedTable (
     // column definition types (Accessor Columns, Display Columns, Grouping Columns).    
     
     const [columns, setColumns] = useState<Array<ColumnDef<VTData>>>(() => {
-        if (storedData && storedData.cols_num.length > 0) {
-            return storedData.cols_num.map((colName, index) => {
+        if (storedData && storedData.cols.length > 0) {
+            return storedData.cols.map((colName, index) => {
                 if (index === 0) {
                     return {
                         id: "indexes",
