@@ -108,10 +108,16 @@ export type StatesType = {
     colSpecs: ColSpecs,
     rowSpecs: RowSpecs,
     title: string,
-    colsNum: Array<string>,
+    cols: Array<string>,
 }
 
-export function useVirtualizedTable (storedData?: {
+export function useVirtualizedTable (
+    isLoading: boolean, 
+    object: ({
+        data: Partial<Record<string, string>>[],
+        conflicts: string[],
+    } | undefined)[] | undefined,
+    storedData?: {
     user_id: string,
     name: string,
     data: Array<{ [key: string]: string }>,
@@ -199,10 +205,6 @@ export function useVirtualizedTable (storedData?: {
     // how each column should access and/or transform row data with either an
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
-    useEffect(() => {
-        console.log("Cols specs changed: ", colSpecs);
-        console.log("Row specs changed: ", rowSpecs);
-    }, [colSpecs, rowSpecs]);
 
     const triggerRefresh = () => {
         setColumns(prev => prev.slice());
@@ -220,6 +222,7 @@ export function useVirtualizedTable (storedData?: {
                 headerType,
                 setInterval,
                 setHeaderType,
+                isLoading
             };
             return <CellRenderer {...cellProps} />;
         },
@@ -357,7 +360,7 @@ export function useVirtualizedTable (storedData?: {
         return {
             values: Array.from(values),
             headerType: Array.from(headerType),
-            colsNum: table.getAllColumns().map(col => col.id),
+            cols: table.getRowModel().rows[0].getAllCells().map(cell => cell.getValue()).slice(1) as string[],
             title,
             data,
             interval,
