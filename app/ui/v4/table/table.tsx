@@ -10,24 +10,27 @@ import SaveButton from "../button/save";
 import { experimental_useObject as useObject } from '@ai-sdk/react';
 import { tableGenerationSchema } from "@/app/api/generate/schema";
 import { SessionProvider } from "next-auth/react";
+import { useState } from "react";
+import Conflicts from "../modal/conflicts";
 
 export default function Table({storedData}: {
     storedData?: {
-    user_id: string,
-    name: string,
-    data: Array<{ [key: string]: string }>,
-    values: Array<string>,
-    type: Array<string>,
-    interval: number,
-    cols_specs: { numberOfRows: { [key: string]: number }, amountOfValues: { [key: string]: Array<number> } },
-    rows_specs: { disable: { [key: number]: boolean }, count: { [key: string]: number }, enabledValues: { [key: string]: Array<string> }, enabledColumns: { [key: string]: Array<string> } },
-    created_at: number,
-    updated_at: number,
-    cols: Array<string>,
+        user_id: string,
+        name: string,
+        data: Array<{ [key: string]: string }>,
+        values: Array<string>,
+        type: Array<string>,
+        interval: number,
+        cols_specs: { numberOfRows: { [key: string]: number }, amountOfValues: { [key: string]: Array<number> } },
+        rows_specs: { disable: { [key: number]: boolean }, count: { [key: string]: number }, enabledValues: { [key: string]: Array<string> }, enabledColumns: { [key: string]: Array<string> } },
+        created_at: number,
+        updated_at: number,
+        cols: Array<string>,
     }
 }) {
     const router = useRouter();
     const {lang} = useParams<{ lang: "en" | "es" }>();
+    const [conflicts, setConflicts] = useState<Array<string | undefined>>([]);
     const { isLoading, stop, object, submit } = useObject({
         api: '/api/generate',
         headers: {
@@ -39,11 +42,14 @@ export default function Table({storedData}: {
                 title: lang === "es" ? "Generación con IA" : "AI Schedule Generation",
                 description: lang === "es" ? "¡Generación completada!" : "AI generation completed!",
                 color: "success",            
-            })
+            });
+            window!.sessionStorage.setItem("x-scheduler-ai", JSON.stringify([object]));
+            if (object) setter.setData(object.data);
+            if (object && object.conflicts) setConflicts(object.conflicts);
         },
-        onError: () => addToast({
+        onError: (e) => addToast({
             title: lang === "es" ? "Generación con IA" : "AI Schedule Generation",
-            description: lang === "es" ? "Hubo un error al generar el horario con IA. Inténtalo nuevamente y/o reporta este problema." : "An error has occurred while generating the schedule. Please try again and/or report the issue.",
+            description: lang === "es" ? "Hubo un error al generar el horario con IA. Inténtalo nuevamente y/o reporta este problema." : `An error has occurred while generating the schedule. Please try again and/or report the issue. ${e}`,
             color: "danger",            
         })
     })    
@@ -53,8 +59,7 @@ export default function Table({storedData}: {
         getTableStates,
         state,
         setter,
-    } = useVirtualizedTable(isLoading, object, storedData);
-    
+    } = useVirtualizedTable(isLoading, storedData);
     return (
         <>
         <div className="w-full md:w-5/6 justify-self-center grid grid-cols-[1fr_3fr_1fr] mb-10 px-5">
@@ -78,6 +83,11 @@ export default function Table({storedData}: {
                 input: "text-2xl",
                 clearButton: "p-0 top-[65%]",
             }} />
+            {
+                conflicts.length 
+                ? <div className="flex flex-col justify-center items-center"><Conflicts conflicts={conflicts} /></div>
+                : null
+            }
         </div>
 
         <section className="w-full px-5 md:w-5/6 grid grid-rows-[auto_auto] grid-cols-[auto_1fr] justify-self-center my-15">
@@ -92,7 +102,8 @@ export default function Table({storedData}: {
                 setColSpecs={setter.setColSpecs}
                 setRowSpecs={setter.setRowSpecs}
                 getTableStates={getTableStates}
-                handleSubmit={submit} />
+                handleSubmit={submit}
+                previousStorage={window!.sessionStorage.getItem("x-scheduler-ai")} />
             </SessionProvider>
             <div className="col-start-2 col-span-1 flex flex-row justify-between gap-2">
                 <div className="flex flex-row gap-2">
