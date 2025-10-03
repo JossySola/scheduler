@@ -11,7 +11,7 @@ import RowTabs from "../tabs/row-tabs";
 import { useSession } from "next-auth/react";
 import { tableGenerationSchema } from "@/app/api/generate/schema";
 
-export default function Settings({ table, values, colSpecs, rowSpecs, setValues, setColumns, setColSpecs, setRowSpecs, getTableStates, handleSubmit }: {
+export default function Settings({ table, values, colSpecs, rowSpecs, setValues, setColumns, setColSpecs, setRowSpecs, getTableStates, handleSubmit, previousStorage }: {
     table: Table<VTData>,
     values: Set<string>,
     colSpecs: ColSpecs,
@@ -20,6 +20,7 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
     setColumns: Dispatch<SetStateAction<ColumnDef<VTData>[]>>,
     setColSpecs: Dispatch<SetStateAction<ColSpecs>>,
     setRowSpecs: Dispatch<SetStateAction<RowSpecs>>,
+    previousStorage: string | null,
     getTableStates: () => {
         values: string[];
         headerType: Key[];
@@ -89,7 +90,6 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
                                 onPress={ () => {
                                     const {
                                         values,
-                                        data,
                                         cols,
                                         colSpecs,
                                         rowSpecs,
@@ -98,11 +98,11 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
                                         lang,
                                         user_id: session?.user?.id,
                                         values,
-                                        data,
                                         rows,
                                         cols,
                                         colSpecs,
                                         rowSpecs,
+                                        previousStorage,
                                     });
                                     onClose();
                                 } } 
