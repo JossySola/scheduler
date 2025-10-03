@@ -1,5 +1,5 @@
 "use client"
-import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState } from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState, HeaderContext } from "@tanstack/react-table";
 import { Key, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
 import CellRenderer from "../ui/v4/input/cell";
@@ -81,7 +81,7 @@ export function useCallbackAction <T, Args extends any[]>(callback: (...args: Ar
   };
 }
 export type VTData = {
-    [columnKey: string]: string;
+    [columnKey: string]: string | undefined;
 }
 
 export type ColSpecs = {
@@ -114,24 +114,21 @@ export type StatesType = {
 type PartialObject<T> = DeepPartial<T>;
 
 export function useVirtualizedTable (
-    isLoading: boolean, 
-    object: PartialObject<{
-        data: Partial<Record<string, string>>[],
-        conflicts: string[],
-    }> | undefined,
+    isLoading: boolean,
     storedData?: {
-    user_id: string,
-    name: string,
-    data: Array<{ [key: string]: string }>,
-    values: Array<string>,
-    type: Array<string>,
-    interval: number,
-    cols_specs: { numberOfRows: { [key: string]: number }, amountOfValues: { [key: string]: Array<number> } },
-    rows_specs: { disable: { [key: number]: boolean }, count: { [key: string]: number }, enabledValues: { [key: string]: Array<string> }, enabledColumns: { [key: string]: Array<string> } },
-    created_at: number,
-    updated_at: number,
-    cols: Array<string>,
-}) {
+        user_id: string,
+        name: string,
+        data: Array<{ [key: string]: string }>,
+        values: Array<string>,
+        type: Array<string>,
+        interval: number,
+        cols_specs: { numberOfRows: { [key: string]: number }, amountOfValues: { [key: string]: Array<number> } },
+        rows_specs: { disable: { [key: number]: boolean }, count: { [key: string]: number }, enabledValues: { [key: string]: Array<string> }, enabledColumns: { [key: string]: Array<string> } },
+        created_at: number,
+        updated_at: number,
+        cols: Array<string>,
+    }
+) {
     const [colSpecs, setColSpecs] = useState<ColSpecs>(
         (storedData && storedData.cols_specs) 
         ?? {
@@ -175,33 +172,40 @@ export function useVirtualizedTable (
     //const columnHelper = createColumnHelper<VTData>();
     // When called with a row type (TData), it returns a utility for creating different
     // column definition types (Accessor Columns, Display Columns, Grouping Columns).    
-    
+
     const [columns, setColumns] = useState<Array<ColumnDef<VTData>>>(() => {
-        if (storedData && storedData.cols.length > 0) {
-            return storedData.cols.map((colName, index) => {
-                if (index === 0) {
-                    return {
-                        id: "indexes",
-                        cell: ({row}) => <div className="w-[1.5rem] h-full flex flex-col justify-center items-center">{row.index}</div>,
-                    }
-                }
-                return {
-                accessorKey: colName,
-                id: colName,
-                header: () => <span>{colName}</span>,
-                footer: props => props.column.id,
-                sortUndefined: 'last',
-                sortDescFirst: false,
-                enableSorting: true,
-                }
-            });
+        if (storedData && storedData.data.length > 0) {
+            const dataKeys = Object.keys(storedData.data[0]).toSorted();
+            return [
+                {
+                    id: "indexes",
+                    cell: ({ row }) => (
+                        <div className="w-[1.5rem] h-full flex flex-col justify-center items-center">
+                            {row.index}
+                        </div>
+                    ),
+                },
+                ...dataKeys.map(colName => ({
+                    accessorKey: colName,
+                    id: colName,
+                    header: () => <span>{colName}</span>,
+                    footer: (props: HeaderContext<VTData, unknown>) => props.column.id,
+                    sortUndefined: "last" as "last",
+                    sortDescFirst: false,
+                    enableSorting: true,
+                })),
+            ];
         }
         return [
             {
                 id: "indexes",
-                cell: ({row}) => <div className="w-[1.5rem] h-full flex flex-col justify-center items-center">{row.index}</div>,
+                cell: ({ row }) => (
+                    <div className="w-[1.5rem] h-full flex flex-col justify-center items-center">
+                        {row.index}
+                    </div>
+                ),
             }
-        ]
+        ];
     });
     // Column Defs are just plain objects and it is where we tell TanStack Table
     // how each column should access and/or transform row data with either an
@@ -224,11 +228,11 @@ export function useVirtualizedTable (
                 headerType,
                 setInterval,
                 setHeaderType,
-                isLoading
+                isLoading,
             };
             return <CellRenderer {...cellProps} />;
         },
-    }), [values, interval, headerType]);
+    }), [values, interval, headerType, isLoading]);
 
     const tableConfig = useMemo(() => ({
         columns,
@@ -243,6 +247,7 @@ export function useVirtualizedTable (
             values,
             interval,
             headerType,
+            isLoading,
         },
         meta: {
             updateData: (rowIndex: number, columnId: string, value: unknown) => {
@@ -359,10 +364,13 @@ export function useVirtualizedTable (
         }));
     }
     const getTableStates = () => {
+        const cols = columns
+            .filter(col => col.id !== "indexes")
+            .map(col => col.id as string);
         return {
             values: Array.from(values),
             headerType: Array.from(headerType),
-            cols: table.getRowModel().rows[0].getAllCells().map(cell => cell.getValue()).slice(1) as string[],
+            cols,
             title,
             data,
             interval,
@@ -389,6 +397,7 @@ export function useVirtualizedTable (
             setColSpecs,
             setRowSpecs,
             setTitle,
+            setData,
         },
         controls: {
             handleAddColumn,
