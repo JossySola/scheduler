@@ -6,6 +6,8 @@ export default async function Page () {
     const session = await auth();
 
     if (session && session.user) {
-        return <Table />;
+        return <section className="w-full h-fit mt-15 mb-20">
+            <Table />
+        </section>
     }
 }
