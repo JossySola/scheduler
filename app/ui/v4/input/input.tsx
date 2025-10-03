@@ -1,7 +1,6 @@
 "use client"
 import { motion } from "motion/react";
 import { Input as InputHeroUI, SharedSelection, Spinner } from "@heroui/react";
-import HeaderModal from "../modal/header-modal";
 import { Header } from "../../icons";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useParams } from "next/navigation";
