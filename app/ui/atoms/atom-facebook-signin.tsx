@@ -14,7 +14,7 @@ export default function FacebookSignIn ({ lang }: {
             type="submit"
             isLoading={ pending }
             isDisabled={ pending }
-            className="bg-white border-1 border-black text-black shadow-md font-medium m-1 w-full text-md" 
+            className="provider-button" 
             endContent={<LogoFacebook />}
             >
                 { lang === "es" ? "Continúa con Facebook" : "Continue with Facebook" }

@@ -7,8 +7,8 @@ import FormInputBirthday from "../atoms/atom-form-input-birthday";
 import FormInputEmail from "../atoms/atom-form-input-email";
 import FormInputPassword from "../atoms/atom-form-input-password";
 import { validateAction } from "@/app/[lang]/signup/actions";
-import { ActionButton } from "../atoms/atom-button";
 import { ArrowCircleRight, Envelope } from "../icons";
+import { Button } from "@heroui/react";
 
 export default function SignupForm ({ lang }: {
     lang: "en" | "es"
@@ -40,22 +40,21 @@ export default function SignupForm ({ lang }: {
                         <Envelope width={32} height={32} />
                     </div>
                 </section> :
-                <form className="flex flex-col items-center">
+                <form className="flex flex-col items-center" action={validateForm}>
                     <FormInputName name={ name } setName={ setName } />
                     <FormInputUsername username={ username } setUsername={ setUsername } />
                     <FormInputBirthday birthday={ birthday } setBirthday={ setBirthday } />
                     <FormInputEmail email={ email } setEmail={ setEmail } />
                     <FormInputPassword password={ password } confirmation={ confirmation } setPassword={ setPassword } setConfirmation={ setConfirmation } />
                     <p aria-live="polite" className="text-danger text-center">{ validateState.message }</p>
-                    <ActionButton 
-                    className="bg-white text-black m-3" 
+                    <Button 
+                    className="action-button" 
                     type="submit" 
-                    disabled={ validatePending } 
-                    loading={ validatePending } 
-                    formAction={ validateForm }
+                    isDisabled={ validatePending } 
+                    isLoading={ validatePending }
                     endContent={<ArrowCircleRight />}>
                         { lang === "es" ? "Siguiente" : "Next" }
-                    </ActionButton>
+                    </Button>
                     
                 </form>
             }

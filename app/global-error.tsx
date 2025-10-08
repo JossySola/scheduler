@@ -2,7 +2,6 @@
 import { Button, Form, Textarea } from "@heroui/react";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useActionState, useEffect } from "react";
-import { ActionButton } from "@/app/ui/atoms/atom-button";
 import { getDeviceInfo } from "@/app/lib/utils-client";
 import * as z from "zod/v4";
 import emailjs from '@emailjs/browser';
@@ -77,13 +76,18 @@ export default function Error({
                 defaultValue={ JSON.stringify(getDeviceInfo()) }/>
 
                 <p>{ state.message }</p>
-                <ActionButton disabled={ pending || state.ok } loading={ pending } type="submit" endContent={ <PaperAirplane /> }>
+                <Button 
+                isDisabled={ pending || state.ok } 
+                isLoading={ pending } 
+                type="submit" 
+                className="action-button"
+                endContent={ <PaperAirplane /> }>
                     {
                         state.ok ? 
                         lang === "es" ? "Enviado" : "Sent" :
                         lang === "es" ? "Enviar" : "Send"
                     }
-                </ActionButton>
+                </Button>
             </Form>
         </section>
     )

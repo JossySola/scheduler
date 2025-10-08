@@ -1,6 +1,5 @@
 "use client"
-import { useParams } from "next/navigation"
-import { ActionButton, SecondaryButton } from "../atoms/atom-button"
+import { useParams } from "next/navigation";
 import { Button, Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { useActionState } from "react";
 import { Trash } from "../icons";
@@ -31,11 +30,18 @@ export default function DeleteTableModal ({ table_id, table_name }: {
                             <p>{ lang === "es" ? "El horario se eliminará permanentemente." : "The schedule will be deleted permanently." }</p>
                             <input value={ table_id } name="item_id" readOnly hidden />
                             <span className="text-danger">{ state.message }</span>
-                            <ActionButton type="submit" color="danger" loading={ pending } disabled={ pending }>{ lang === "es" ? "Eliminar" : "Delete" }</ActionButton>
+                            <Button 
+                            type="submit" 
+                            color="danger" 
+                            className="primary-button"
+                            isLoading={ pending } 
+                            isDisabled={ pending }>
+                                { lang === "es" ? "Eliminar" : "Delete" }
+                            </Button>
                         </Form>
                     </ModalBody>
                     <ModalFooter>
-                        <SecondaryButton onPress={ onClose }>{ lang === "es" ? "Cancelar" : "Cancel" }</SecondaryButton>
+                        <Button className="secondary-button" onPress={ onClose }>{ lang === "es" ? "Cancelar" : "Cancel" }</Button>
                     </ModalFooter>
                     </>
                 )}

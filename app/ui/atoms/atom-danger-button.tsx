@@ -1,6 +1,5 @@
 "use client"
-import { useActionState, useState } from "react"
-import { ActionButton, SecondaryButton } from "./atom-button";
+import { useActionState, useState } from "react";
 import { DeleteAccount_NoPassword, DeleteAccountAction } from "@/app/[lang]/dashboard/actions";
 import { useParams } from "next/navigation";
 import {
@@ -23,7 +22,12 @@ export default function DangerButton ({ onlyWithProvider }: { onlyWithProvider: 
     const { lang } = params;
     return (
         <>
-        <ActionButton color="danger" onPress={ onOpen }>{ lang === "es" ? "Eliminar cuenta" : "Delete account" }</ActionButton>
+        <Button 
+        color="danger" 
+        className="action-button" 
+        onPress={ onOpen }>
+            { lang === "es" ? "Eliminar cuenta" : "Delete account" }
+        </Button>
         <Modal isOpen={ isOpen } onOpenChange={ onOpenChange } >
                 <ModalContent>
                     {onClose => (
@@ -35,7 +39,7 @@ export default function DangerButton ({ onlyWithProvider }: { onlyWithProvider: 
                                 <Confirmation onlyWithProvider={ onlyWithProvider }/>
                             </ModalBody>
                             <ModalFooter>
-                                <SecondaryButton onPress={ onClose }>{ lang === "es" ? "Cancelar" : "Cancel" }</SecondaryButton>
+                                <Button className="secondary-button" onPress={ onClose }>{ lang === "es" ? "Cancelar" : "Cancel" }</Button>
                             </ModalFooter>
                         </>
                     )}
@@ -68,7 +72,7 @@ function Confirmation ({ onlyWithProvider }: { onlyWithProvider: boolean | null 
                     isLoading={ isLoading } 
                     isDisabled={ isLoading } 
                     size="md"
-                    className="dark:text-black dark:bg-white text-white bg-black"
+                    className="action-button"
                     onPress={ noPasswordAction }>
                         { lang === "es" ? "Confirmar" : "Confirm" }
                     </Button>
@@ -103,7 +107,13 @@ function Confirmation ({ onlyWithProvider }: { onlyWithProvider: boolean | null 
                         </button>   
                     }/>
                     <p className="text-danger">{ deleteState && deleteState.message }</p>
-                    <ActionButton loading={ pending } disabled={ pending } type="submit">{ lang === "es" ? "Confirmar" : "Confirm" }</ActionButton>
+                    <Button 
+                    isLoading={ pending } 
+                    isDisabled={ pending } 
+                    className="action-button" 
+                    type="submit">
+                        { lang === "es" ? "Confirmar" : "Confirm" }
+                    </Button>
                 </Form>
             )
         }

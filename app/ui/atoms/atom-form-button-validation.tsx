@@ -1,7 +1,7 @@
 "use client"
 import { validateAction } from "@/app/[lang]/signup/actions";
 import { SetStateAction, useActionState, useEffect } from "react";
-import { ActionButton } from "./atom-button";
+import { Button } from "@heroui/react";
 
 export default function FormButtonValidation ({ text, setValidated, endContent }: { 
     text: string,
@@ -19,15 +19,22 @@ export default function FormButtonValidation ({ text, setValidated, endContent }
     return (
         <>
             <p className="text-danger">{ nextState.message }</p>
-            <ActionButton
+            <Button
             type="submit"
             form="register"
-            formAction={nextAction} 
-            disabled={pending}
-            loading={pending}
+            className="action-button"
+            onSubmit={data => {
+                const form = data.currentTarget.form;
+                if (form) {
+                    const formData = new FormData(form); 
+                    nextAction(formData);
+                }
+            }}
+            isDisabled={pending}
+            isLoading={pending}
             endContent={endContent}>
                 { text }
-            </ActionButton>
+            </Button>
         </>
     )
 }

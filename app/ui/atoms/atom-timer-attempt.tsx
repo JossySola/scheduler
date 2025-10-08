@@ -1,7 +1,7 @@
 "use client"
 import { CircularProgress } from "@heroui/react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
 export default function CountdownTimer({ nextAttempt }: { nextAttempt: string }) {
     // The argument format is: 2025-02-16T12:34:56.789Z.

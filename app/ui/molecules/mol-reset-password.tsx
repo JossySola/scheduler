@@ -1,9 +1,9 @@
 "use client"
-import { ActionButton } from "@/app/ui/atoms/atom-button";
 import { useActionState } from "react";
 import { passwordResetAction } from "../../[lang]/reset/actions";
 import FormInputPassword from "../atoms/atom-form-input-password";
 import { useParams } from "next/navigation";
+import { Button } from "@heroui/react";
 
 export default function ResetPassword({ token }: {
     token: string
@@ -19,9 +19,9 @@ export default function ResetPassword({ token }: {
                 <FormInputPassword />
                 
                 <p aria-live="polite" className="text-danger">{resetState.message}</p>
-                <ActionButton type="submit" loading={pending} disabled={pending}>
+                <Button type="submit" className="action-button" isLoading={pending} isDisabled={pending}>
                     { lang === "es" ? "Cambiar contraseña" : "Change password" }
-                </ActionButton>
+                </Button>
             </form>
         </section>
     )

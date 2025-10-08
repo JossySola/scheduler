@@ -1,14 +1,17 @@
 "use client"
 import { useParams } from "next/navigation";
-import { PrimaryButtonAsLink } from "./atom-button";
+import { Button, Link } from "@heroui/react";
 
 export default function SignUpButton () {
     const params = useParams();
     const { lang } = params;
 
     return (
-        <PrimaryButtonAsLink link={`/${lang}/signup`}>
+        <Button
+        as={Link}
+        className="primary-button"
+        href={`/${lang}/signup`}>
             { lang === "es" ? "Regístrate" : "Sign Up" }
-        </PrimaryButtonAsLink>
+        </Button>
     )
 }

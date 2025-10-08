@@ -13,7 +13,14 @@ export default function DisconnectFacebook () {
 
     return (
         <>
-        <Button isLoading={ isLoading } isDisabled={ isLoading } className="text-black bg-white border-1 border-black" endContent={<LogoFacebook />} onPress={onOpen}>{ lang === "es" ? "Desconectar Facebook" : "Disconnect from Facebook"}</Button>
+        <Button 
+        isLoading={ isLoading } 
+        isDisabled={ isLoading } 
+        className="provider-button" 
+        endContent={<LogoFacebook />} 
+        onPress={onOpen}>
+            { lang === "es" ? "Desconectar Facebook" : "Disconnect from Facebook"}
+        </Button>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
                 {(onClose) => (
@@ -58,7 +65,7 @@ export default function DisconnectFacebook () {
                     <ModalFooter className="flex flex-col justify-center items-center gap-3">
                         <p className="text-danger text-tiny">{ state.message }</p>
                         <form action={action}>
-                            <Button type="submit" size="md" className="bg-black text-white dark:bg-white dark:text-black" isLoading={ isLoading } isDisabled={ isLoading }>
+                            <Button type="submit" size="md" className="action-button" isLoading={ isLoading } isDisabled={ isLoading }>
                                 { lang === "es" ? "Desconectar" : "Disconnect"}
                             </Button>
                         </form>
