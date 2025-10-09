@@ -45,9 +45,7 @@ a {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
-  }
-}
-@layer components {
+  }  
   .magicBorder {
     border-image: linear-gradient(94deg, #0090F7, #BA62FC, #F2416B, #F55600);
     border-image-slice: 1;
@@ -79,18 +77,18 @@ a {
     margin: calc(var(--spacing) * 5);
     width: fit-content;
     color: white;
+    text-decoration: none;
     font-size: var(--text-base);
     box-shadow: var(--shadow-md); /* 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) */
-    background-image: linear-gradient(to top right, var(--tw-gradient-stops));
-    --tw-gradient-from: var(--color-violet-600);
-    --tw-gradient-to: var(--color-blue-500);
+    background-image: linear-gradient(to top right, var(--color-violet-600), var(--color-blue-500));
   }
   .provider-button {
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
     background-color: white;
     color: black;
     padding: calc(var(--spacing) * 5);
-    margin: calc(var(--spacing) * 5);
+    margin-top: calc(var(--spacing) * 2.5);    
+    margin-bottom: calc(var(--spacing) * 2.5);
     width: 100%;
     font-size: var(--text-lg);
   }
