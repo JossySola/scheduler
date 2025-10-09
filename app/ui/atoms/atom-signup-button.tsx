@@ -1,6 +1,6 @@
 "use client"
-import { useParams } from "next/navigation";
-import { Button, Link } from "@heroui/react";
+import { redirect, useParams } from "next/navigation";
+import { Button } from "@heroui/react";
 
 export default function SignUpButton () {
     const params = useParams();
@@ -8,9 +8,8 @@ export default function SignUpButton () {
 
     return (
         <Button
-        as={Link}
         className="primary-button"
-        href={`/${lang}/signup`}>
+        onPress={() => redirect(`/${lang}/signup`)}>
             { lang === "es" ? "Regístrate" : "Sign Up" }
         </Button>
     )
