@@ -8,7 +8,9 @@ import FormInputEmail from "../atoms/atom-form-input-email";
 import FormInputPassword from "../atoms/atom-form-input-password";
 import { validateAction } from "@/app/[lang]/signup/actions";
 import { ArrowCircleRight, Envelope } from "../icons";
-import { Button } from "@heroui/react";
+import { Button, Divider } from "@heroui/react";
+import GoogleSignIn from "../atoms/atom-google-signin";
+import FacebookSignIn from "../atoms/atom-facebook-signin";
 
 export default function SignupForm ({ lang }: {
     lang: "en" | "es"
@@ -30,6 +32,13 @@ export default function SignupForm ({ lang }: {
 
     return (
         <section className="w-full sm:w-[400px] p-3 flex flex-col items-center justify-center">
+            <div className="my-5 text-center w-full">
+                <h4 className="tracking-tight text-3xl my-5">{ lang === "es" ? "Entra usando un proveedor" : "Sign in using a provider" }</h4>
+                <GoogleSignIn lang={ lang } />
+                <FacebookSignIn lang={ lang } />                
+            </div>
+            <Divider />
+            <h4 className="tracking-tight text-2xl my-5">{ lang === "es" ? "o regístrate" : "or create an account" }</h4>            
             {
                 validated ? <section className="p-10 flex flex-col justify-start items-center">
                     <h3 className="text-center">{ lang === "es" ? "Hemos enviado un enlace a tu correo electrónico." : "A confirmation link has been sent."}</h3>
@@ -58,7 +67,6 @@ export default function SignupForm ({ lang }: {
                     
                 </form>
             }
-            <SignInProviders lang={ lang.toString() as "en" | "es" } />
         </section>
     )
 }
