@@ -12,9 +12,9 @@ export default function FooterLegal () {
                 <Button radius="full" className="bg-[#f0eee670] dark:bg-[#3F3F4670] backdrop-blur-sm w-fit"><BookOpen /></Button>
             </DropdownTrigger>
             <DropdownMenu>
-                <DropdownItem key="privacy" href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/privacy`}>{ lang === "es" ? "Privacidad" : "Privacy" }</DropdownItem>
-                <DropdownItem key="terms" href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/terms`}>{ lang === "es" ? "Términos de Uso" : "Terms of Use" }</DropdownItem>
-                <DropdownItem key="delete-data" href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/delete-my-data`}>{ lang === "es" ? "Eliminar mi información" : "Delete My Data" }</DropdownItem>
+                <DropdownItem key="privacy" href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/privacy`}>{ lang === "es" ? "Privacidad" : "Privacy" }</DropdownItem>
+                <DropdownItem key="terms" href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/terms`}>{ lang === "es" ? "Términos de Uso" : "Terms of Use" }</DropdownItem>
+                <DropdownItem key="delete-data" href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/delete-my-data`}>{ lang === "es" ? "Eliminar mi información" : "Delete My Data" }</DropdownItem>
             </DropdownMenu>
         </Dropdown>
     )

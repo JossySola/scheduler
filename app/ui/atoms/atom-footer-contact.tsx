@@ -12,7 +12,7 @@ export default function FooterContact () {
                 <Button radius="full" className="bg-[#f0eee670] dark:bg-[#3F3F4670] backdrop-blur-sm w-fit"><Envelope /></Button>
             </DropdownTrigger>
             <DropdownMenu>
-                <DropdownItem key="contact" href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/contact`}>{ lang === "es" ? "Contacto" : "Contact" }</DropdownItem>
+                <DropdownItem key="contact" href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`}>{ lang === "es" ? "Contacto" : "Contact" }</DropdownItem>
             </DropdownMenu>
         </Dropdown>
     )

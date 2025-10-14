@@ -38,11 +38,11 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
         await signIn("credentials", {
             username,
             password,
-            redirectTo: `${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${locale}/dashboard`,
+            redirectTo: `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`,
         })
     } catch (err) {
         if (isRedirectError(err)) {
-            redirect(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${locale}/dashboard`);
+            redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`);
         }
         if (err && typeof err === "object") {
             if ((err as RouteError).type && (err as RouteError).type === "CallbackRouteError") {
@@ -110,7 +110,7 @@ export async function LogInAction (prevState: { message: string, nextAttempt: nu
 export async function GoogleSignInAction (prevState: { message: string }, formData: FormData) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
-    await signIn("google", { redirect: true, redirectTo: `${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${locale}/dashboard`});
+    await signIn("google", { redirect: true, redirectTo: `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`});
     return {
         message: "Google signup"
     }
@@ -118,7 +118,7 @@ export async function GoogleSignInAction (prevState: { message: string }, formDa
 export async function FacebookSignInAction (prevState: { message: string }, formData: FormData) {
     const requestHeaders = headers();
     const locale = (await requestHeaders).get("x-user-locale") || "en";
-    await signIn("facebook", { redirect: true, redirectTo: `${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${locale}/dashboard`});
+    await signIn("facebook", { redirect: true, redirectTo: `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`});
     return {
         message: "Facebook signup"
     }
