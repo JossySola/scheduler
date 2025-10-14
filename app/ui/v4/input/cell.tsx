@@ -88,7 +88,7 @@ export default function CellRenderer ({isLoading, getValue, row, column, table, 
                 headerType,
                 setInterval,
                 setHeaderType,
-            }           
+            }
             return (
                 <Input {...props} />
             );        
@@ -107,7 +107,6 @@ export default function CellRenderer ({isLoading, getValue, row, column, table, 
         }
     } else if (row.index === 0 && column.id !== "A") {
         const props = {
-            isLoading,
             initialValue,
             handleDuplicates,
             isDuplicate,
