@@ -3,7 +3,7 @@ import DangerButton from "../atoms/atom-danger-button";
 import DisconnectGoogle from "../atoms/atom-disconnect-google";
 import DisconnectFacebook from "../atoms/atom-disconnect-facebook";
 import { redirect } from "next/navigation";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
+import { Button, Divider, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { SettingsGearFill } from "../icons";
 import { SessionProvider } from "next-auth/react";
 
@@ -37,12 +37,16 @@ export default function Settings ({ lang, data, onlyWithProvider }: {
                                     }
                                 })
                             }
-                            <Button 
-                            className="action-button" 
-                            onPress={() => redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/recover`)}>
-                                { lang === "es" ? "Restaurar contraseña" : "Reset password" }
-                            </Button>
-                            <DangerButton onlyWithProvider={ onlyWithProvider } />
+                            <Divider />
+                            <div className="flex flex-col gap-1">
+                                <Button 
+                                className="action-button" 
+                                onPress={() => redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/recover`)}>
+                                    { lang === "es" ? "Restaurar contraseña" : "Reset password" }
+                                </Button>
+                                <DangerButton onlyWithProvider={ onlyWithProvider } />
+                            </div>
+
                         </ModalBody>
                         <ModalFooter>
                             <Button className="secondary-button" onPress={onClose}>{ lang === "es" ? "Cerrar" : "Close" }</Button>

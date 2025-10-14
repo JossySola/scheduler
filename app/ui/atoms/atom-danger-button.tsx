@@ -23,8 +23,7 @@ export default function DangerButton ({ onlyWithProvider }: { onlyWithProvider: 
     return (
         <>
         <Button 
-        color="danger" 
-        className="action-button" 
+        color="danger"
         onPress={ onOpen }>
             { lang === "es" ? "Eliminar cuenta" : "Delete account" }
         </Button>
@@ -65,9 +64,9 @@ function Confirmation ({ onlyWithProvider }: { onlyWithProvider: boolean | null 
         }
         if (onlyWithProvider === true) {
             return (
-                <section className="flex flex-col justify-center items-center gap-5">
-                    <p className="text-danger text-lg">{ lang === "es" ? "Esta acción es permanente e irreversible 🛑" : "This action is permanent and irreversible 🛑" }</p>
-                    <p className="text-danger">{ noPasswordState && noPasswordState.message }</p>
+                <section className="flex flex-col justify-center items-center gap-3">
+                    <p className="text-danger text-2xl text-center">{ lang === "es" ? "Esta acción es permanente e irreversible" : "This action is permanent and irreversible" }</p>
+                    <p className="text-danger text-center">{ noPasswordState && noPasswordState.message }</p>
                     <Button 
                     isLoading={ isLoading } 
                     isDisabled={ isLoading } 
@@ -80,7 +79,7 @@ function Confirmation ({ onlyWithProvider }: { onlyWithProvider: boolean | null 
             )
         } else if (onlyWithProvider === false) {
             return (
-                <Form action={ deleteAction } className="m-5 flex flex-col items-center">
+                <Form action={ deleteAction } className="m-3 flex flex-col items-center">
                     <Input 
                     isRequired
                     name="password"
@@ -106,7 +105,7 @@ function Confirmation ({ onlyWithProvider }: { onlyWithProvider: boolean | null 
                             )}
                         </button>   
                     }/>
-                    <p className="text-danger">{ deleteState && deleteState.message }</p>
+                    <p className="text-danger text-center">{ deleteState && deleteState.message }</p>
                     <Button 
                     isLoading={ pending } 
                     isDisabled={ pending } 
