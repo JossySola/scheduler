@@ -8,7 +8,7 @@ export default function Steps() {
     const params = useParams<{ lang: "en" | "es" }>();
     const { lang } = params;
     return (
-        <section className="flex flex-col items-center gap-[25vh] mx-10">
+        <section className="flex flex-col items-center gap-[40vh] mx-10 mt-[40vh] mb-[20vh]">
             <motion.h1 initial={{ scale: 0.5 }} whileInView={{ scale: 1 }} className="w-full text-center">
             {
                 lang === "es" 

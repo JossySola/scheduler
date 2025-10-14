@@ -20,7 +20,7 @@ export default function Benefits () {
         visible: { opacity: 1, x: 0, transition: { delay: 0.5 } },
     }
     return (
-        <section className='w-full lg:w-[900px] p-5 flex flex-col justify-center items-center gap-y-[20vh]'>
+        <section className='w-full lg:w-[900px] p-5 flex flex-col justify-center items-center gap-y-[50vh]'>
 
             <motion.ul variants={container} initial="hidden" whileInView="visible">
                 <motion.li variants={check} className="text-4xl/15 before:content-['✅']">{ lang === "es" ? " Planificación de trabajo" : " Workforce planning" }</motion.li>
