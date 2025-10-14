@@ -27,13 +27,12 @@ export default function DeleteTableModal ({ table_id, table_name }: {
                     </ModalHeader>
                     <ModalBody className="flex flex-col justify-center items-center">
                         <Form action={ action } className="m-5 flex flex-col items-center">
-                            <p>{ lang === "es" ? "El horario se eliminará permanentemente." : "The schedule will be deleted permanently." }</p>
+                            <p className="text-center">{ lang === "es" ? "El horario se eliminará permanentemente." : "The schedule will be deleted permanently." }</p>
                             <input value={ table_id } name="item_id" readOnly hidden />
                             <span className="text-danger">{ state.message }</span>
                             <Button 
                             type="submit" 
-                            color="danger" 
-                            className="primary-button"
+                            color="danger"
                             isLoading={ pending } 
                             isDisabled={ pending }>
                                 { lang === "es" ? "Eliminar" : "Delete" }
