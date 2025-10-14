@@ -503,3 +503,109 @@ export function WarningFill ({ width = 16, height = 16, color = "currentcolor"})
         </svg>
     )
 }
+export function Warning ({ width = 16, height = 16, color = "currentcolor"}) {
+    return (
+        <svg 
+        data-testid="geist-icon"
+        height={ height } 
+        strokeLinejoin="round" 
+        viewBox="0 0 16 16" 
+        width={ width } 
+        style={{ color }}>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M8.55846 2H7.44148L1.88975 13.5H14.1102L8.55846 2ZM9.90929 1.34788C9.65902 0.829456 9.13413 0.5 8.55846 0.5H7.44148C6.86581 0.5 6.34092 0.829454 6.09065 1.34787L0.192608 13.5653C-0.127943 14.2293 0.355835 15 1.09316 15H14.9068C15.6441 15 16.1279 14.2293 15.8073 13.5653L9.90929 1.34788ZM8.74997 4.75V5.5V8V8.75H7.24997V8V5.5V4.75H8.74997ZM7.99997 12C8.55226 12 8.99997 11.5523 8.99997 11C8.99997 10.4477 8.55226 10 7.99997 10C7.44769 10 6.99997 10.4477 6.99997 11C6.99997 11.5523 7.44769 12 7.99997 12Z" 
+            fill="currentColor">
+            </path>
+        </svg>
+    )
+}
+export function SortAscending ({ width = 16, height = 16, color = "currentcolor" }) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height }
+        strokeLinejoin="round" 
+        style={{ color }}
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M12.5303 1.21967C12.2374 0.926777 11.7626 0.926777 11.4697 1.21967L9.21967 3.46967L8.68934 4L9.75 5.06066L10.2803 4.53033L11.25 3.56066V13.25V14H12.75V13.25V3.56066L13.7197 4.53033L14.25 5.06066L15.3107 4L14.7803 3.46967L12.5303 1.21967ZM1.75 4H1V5.5H1.75H5.25H6V4H5.25H1.75ZM1.75 8.25H1V9.75H1.75H4.25H5V8.25H4.25H1.75ZM1.75 12.5H1V14H1.75H7.25H8V12.5H7.25H1.75Z" 
+            fill="currentColor">
+            </path>
+        </svg>
+    )
+}
+export function SortDescending ({ width = 16, height = 16, color = "currentcolor" }) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        viewBox="0 0 16 16" 
+        width={ width } 
+        style={{ color }}>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M1.75 12H1V10.5H1.75H5.25H6V12H5.25H1.75ZM1.75 7.75H1V6.25H1.75H4.25H5V7.75H4.25H1.75ZM1.75 3.5H1V2H1.75H7.25H8V3.5H7.25H1.75ZM12.5303 14.7803C12.2374 15.0732 11.7626 15.0732 11.4697 14.7803L9.21967 12.5303L8.68934 12L9.75 10.9393L10.2803 11.4697L11.25 12.4393V2.75V2H12.75V2.75V12.4393L13.7197 11.4697L14.25 10.9393L15.3107 12L14.7803 12.5303L12.5303 14.7803Z" 
+            fill="currentColor">
+            </path>
+        </svg>
+    )
+}
+export function Sort ({ width = 16, height = 16, color = "currentcolor" }) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        viewBox="0 0 16 16"
+        width={ width } 
+        style={{ color }}>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M1 0H1.75H14.25H15V0.75V3V3.31066L14.7803 3.53033L10.5 7.81066V15.25V16H9.75H9H8.7816L8.59734 15.8827L5.84734 14.1327L5.5 13.9117V13.5V7.81066L1.21967 3.53033L1 3.31066V3V0.75V0ZM2.5 1.5V2.68934L6.78033 6.96967L7 7.18934V7.5V13.0883L9 14.361V7.5V7.18934L9.21967 6.96967L13.5 2.68934V1.5H2.5Z" fill="currentColor">
+            </path>
+        </svg>
+    )
+}
+export function Header ({ width = 16, height = 16, color = "currentcolor" }) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }} 
+        viewBox="0 0 16 16" 
+        width={ width }>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M1.5 2.5H14.5V4.995L1.5 4.99499V2.5ZM1.5 6.24499V12.5C1.5 13.0523 1.94772 13.5 2.5 13.5H13.5C14.0523 13.5 14.5 13.0523 14.5 12.5V6.245L1.5 6.24499ZM0 1H1.5H14.5H16V2.5V12.5C16 13.8807 14.8807 15 13.5 15H2.5C1.11929 15 0 13.8807 0 12.5V2.5V1Z" 
+            fill="currentColor"></path>
+        </svg>
+    )
+}
+export function SettingsSliders ({ width = 16, height = 16, color = "currentcolor" }) {
+    return (
+        <svg 
+        data-testid="geist-icon" 
+        height={ height } 
+        strokeLinejoin="round" 
+        style={{ color }} 
+        viewBox="0 0 16 16" 
+        width={ width}>
+            <path 
+            fillRule="evenodd" 
+            clipRule="evenodd" 
+            d="M10.75 5.5C11.7165 5.5 12.5 4.7165 12.5 3.75C12.5 2.7835 11.7165 2 10.75 2C9.7835 2 9 2.7835 9 3.75C9 4.7165 9.7835 5.5 10.75 5.5ZM10.75 0.75C12.1479 0.75 13.3225 1.70608 13.6555 3H15.25H16V4.5H15.25H13.6555C13.3225 5.79392 12.1479 6.75 10.75 6.75C9.35212 6.75 8.17754 5.79392 7.84451 4.5H0.75H0V3H0.75H7.84451C8.17754 1.70608 9.35212 0.75 10.75 0.75ZM15.25 13H16V11.5H15.25L8.15549 11.5C7.82245 10.2061 6.64788 9.25 5.25 9.25C3.85212 9.25 2.67755 10.2061 2.34451 11.5H0.75H0V13H0.75H2.34451C2.67755 14.2939 3.85212 15.25 5.25 15.25C6.64788 15.25 7.82246 14.2939 8.15549 13L15.25 13ZM7 12.2513C7 12.2509 7 12.2504 7 12.25C7 12.2496 7 12.2491 7 12.2487C6.99929 11.2828 6.21606 10.5 5.25 10.5C4.2835 10.5 3.5 11.2835 3.5 12.25C3.5 13.2165 4.2835 14 5.25 14C6.21606 14 6.99929 13.2172 7 12.2513Z" 
+            fill="currentColor">
+            </path>
+        </svg>
+    )
+}

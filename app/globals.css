@@ -21,20 +21,22 @@ body {
   font-family: var(--font-geist-sans), sans-serif;
 }
 h1 {
-  font-size: 2rem;
+  font-size: 3rem;
+  line-height: normal;
   margin: 0.5rem 0;
+  font-family: var(--font-geist-bold);
 }
 h2 {
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   line-height: calc(2 / 1.5);
   font-weight: 600;
   margin: 1rem 0;
 }
 h3 {
-  font-size: 1.3rem;
+  font-size: 1.8rem;
   line-height: calc(2 / 1.5);
-  font-weight: 600;
   margin: 1rem 0;
+  font-family: var(--font-geist-black);
 }
 a {
   text-decoration: underline;
@@ -43,13 +45,51 @@ a {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
-  }
-}
-@layer components {
+  }  
   .magicBorder {
     border-image: linear-gradient(94deg, #0090F7, #BA62FC, #F2416B, #F55600);
     border-image-slice: 1;
     border-style: solid;
     border-width: 1px;
+  }
+  .action-button {
+    background-color: black;
+    color: white;
+    padding: calc(var(--spacing) * 5);
+    margin: calc(var(--spacing) * 5);
+    font-size: var(--text-base); /* 1rem (16px) */ 
+    line-height: var(--text-base--line-height); /* calc(1.5 / 1) */
+    border: 2px;
+    @variant dark {
+      background-color: white;
+      color: black;
+    }
+  }
+  .secondary-button {
+    padding: calc(var(--spacing) * 5);
+    margin: calc(var(--spacing) * 5);
+    font-size: var(--text-base); /* 1rem (16px) */ 
+    line-height: var(--text-base--line-height); /* calc(1.5 / 1) */
+    border: 2px;    
+  }
+  .primary-button {
+    padding: calc(var(--spacing) * 5);
+    margin: calc(var(--spacing) * 5);
+    width: fit-content;
+    color: white;
+    text-decoration: none;
+    font-size: var(--text-base);
+    box-shadow: var(--shadow-md); /* 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) */
+    background-image: linear-gradient(to top right, var(--color-violet-600), var(--color-blue-500));
+  }
+  .provider-button {
+    box-shadow: var(--shadow-md);
+    background-color: white;
+    color: black;
+    padding: calc(var(--spacing) * 5);
+    margin-top: calc(var(--spacing) * 2.5);    
+    margin-bottom: calc(var(--spacing) * 2.5);
+    width: 100%;
+    font-size: var(--text-lg);
   }
 }

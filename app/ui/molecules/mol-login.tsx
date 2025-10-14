@@ -1,6 +1,5 @@
 "use client"
 import { useActionState, useEffect, useState } from "react";
-import { ActionButton } from "../atoms/atom-button";
 import Password from "../atoms/atom-password";
 import Link from "next/link";
 import { Link as HeroLink } from "@heroui/react";
@@ -43,9 +42,9 @@ export default function LogIn ({ lang }: {
                 <p aria-live="polite" className="text-danger">{loginState && loginState.message}</p>
 
                 <CountdownTimer nextAttempt={timestamp} />
-                <ActionButton disabled={pending} loading={pending} type="submit" className="w-full sm:w-full">
+                <Button isDisabled={pending} isLoading={pending} type="submit" className="w-full sm:w-full action-button">
                     { lang === "es" ? "Iniciar sesión" : "Log in"}
-                </ActionButton>
+                </Button>
             </Form>
             
             <Button

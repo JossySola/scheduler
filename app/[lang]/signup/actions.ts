@@ -3,7 +3,7 @@ import "server-only";
 import pool from "@/app/lib/mocks/db";
 import { encrypt, generateKmsDataKey, hashPasswordAction, isPasswordPwned } from "@/app/lib/utils";
 import sgMail from "@sendgrid/mail";
-import { z } from "zod";
+import * as z from "zod/v4";
 import { headers } from "next/headers";
 import { UtilResponse } from "@/app/lib/definitions";
 import { sql } from "@vercel/postgres";
@@ -64,7 +64,7 @@ export async function validateAction (state: { message: string, ok: boolean }, f
       (value) => (typeof value === "string" ? new Date(value) : value),
       z.date({ message: locale === "es" ? "Fecha inválida" : "Invalid date" })
   ).safeParse(birthday);
-  const validEmail = z.string().min(1).email({ message: locale === "es" ? "Correo electrónico inválido" : "Invalid email address" }).safeParse(email);
+  const validEmail = z.email({ message: locale === "es" ? "Correo electrónico inválido" : "Invalid email address" }).safeParse(email);
   const validPassword = z.string().min(8, { message: locale === "es" ? "La contraseña debe tener al menos 8 caracteres" : "Password must have at least 8 characters" }).safeParse(password);
   // Collection of any Zod errors
   const errors = [ validName, validUsername, validBirthday, validEmail, validPassword]
@@ -120,7 +120,7 @@ export async function sendEmailAction (name: string, email: string, token: strin
       message: 'Data is missing'
     }
   }
-  const confirmURL = new URL(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/confirm/v`);
+  const confirmURL = new URL(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/confirm/v`);
   confirmURL.searchParams.set('token', token);
   confirmURL.searchParams.set('email', email);
   const msgEN = {

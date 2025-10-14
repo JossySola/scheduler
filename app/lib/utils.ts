@@ -3,7 +3,7 @@ import "server-only";
 import crypto, { randomBytes } from "crypto";
 import pool from "./mocks/db";
 import sgMail from "@sendgrid/mail";
-import { z } from "zod";
+import * as z from "zod/v4";
 import { KMSDataKey, UserResponse, UtilResponse } from "./definitions";
 import { SignatureV4 } from "@aws-sdk/signature-v4";
 import { Sha256 } from "@aws-crypto/sha256-js";
@@ -108,7 +108,7 @@ export async function sendResetPasswordConfirmation (email: string): Promise<Uti
       message: 'Email must be provided'
     }
   }
-  const validated = z.string().min(1).email({ message: "Invalid e-mail" }).safeParse(email);
+  const validated = z.email({ message: "Invalid e-mail" }).safeParse(email);
   if (!validated.success) {
     return {
       ok: false,

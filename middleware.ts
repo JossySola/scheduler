@@ -49,5 +49,5 @@ export default middleware((req: AuthenticatedRequest) => {
     return response;
 });
 export const config = {
-    matcher: ["/((?!api|_next/static|auth|_next/image|favicon.ico).*)"],
+    matcher: ["/((?!api|_next/static|auth|_next/image|favicon.ico|assets).*)"],
 }

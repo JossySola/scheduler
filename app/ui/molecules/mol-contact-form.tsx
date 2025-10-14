@@ -1,7 +1,7 @@
 "use client"
-import { addToast, Button, Form, Input, Select, SelectItem, Textarea } from "@heroui/react"
-import { useActionState, useEffect } from "react"
-import contactAction from "@/app/[lang]/contact/actions"
+import { addToast, Button, Form, Input, Select, SelectItem, Textarea } from "@heroui/react";
+import { useActionState, useEffect } from "react";
+import contactAction from "@/app/[lang]/contact/actions";
 
 export default function ContactForm ({ lang }: {
     lang: "es" | "en"
@@ -29,8 +29,8 @@ export default function ContactForm ({ lang }: {
         type="submit" 
         isLoading={ contactPending } 
         isDisabled={ contactPending } 
-        className="bg-black text-white dark:bg-white dark:text-black m-5" 
-        formAction={ formAction }>
+        className="action-button" 
+        onSubmit={ () => formAction }>
             { lang === "es" ? "Enviar" : "Send" }
         </Button>
     </Form>

@@ -2,9 +2,8 @@
 import { Button, Form, Input, Textarea } from "@heroui/react";
 import { useParams } from "next/navigation";
 import { useActionState, useEffect } from "react";
-import { ActionButton } from "@/app/ui/atoms/atom-button";
 import { getDeviceInfo } from "@/app/lib/utils-client";
-import { z } from "zod";
+import * as z from "zod/v4";
 import emailjs from '@emailjs/browser';
 import { PaperAirplane, RefreshClockwise } from "@/app/ui/icons";
 
@@ -24,7 +23,7 @@ export default function Error({
         }
     }, [state.ok]);
     return (
-        <section className="w-full h-full flex flex-col justify-center items-center gap-5">
+        <section className="w-full h-full flex flex-col justify-center items-center gap-5 text-center p-5">
             <h2>{ lang === "es" ? "Algo inesperado ha ocurrido 😢" : "Something unexpected has happened 😢" }</h2>
             <div className="flex flex-row justify-center items-center gap-3">
                 <p>{ lang === "es" ? "Intentar de nuevo" : "Try again" }</p>
@@ -65,13 +64,18 @@ export default function Error({
                 defaultValue={ JSON.stringify(getDeviceInfo()) }/>
 
                 <p>{ state.message }</p>
-                <ActionButton disabled={ pending || state.ok } loading={ pending } type="submit" endContent={ <PaperAirplane /> }>
+                <Button 
+                isDisabled={ pending || state.ok } 
+                isLoading={ pending } 
+                type="submit"
+                className="action-button" 
+                endContent={ <PaperAirplane /> }>
                     {
                         state.ok ? 
                         lang === "es" ? "Enviado" : "Sent" :
                         lang === "es" ? "Enviar" : "Send"
                     }
-                </ActionButton>
+                </Button>
             </Form>
         </section>
     )
@@ -99,7 +103,7 @@ async function reportAction (previousState: { message: string, ok: boolean }, fo
     const parseResult = reportSchema.safeParse(rawData);
 
     if (!parseResult.success) {
-        const errorMessage = parseResult.error.errors[0].message;
+        const errorMessage = parseResult.error.issues[0].message;
         return {
             message: `❌ ${errorMessage}`,
             ok: false,

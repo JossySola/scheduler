@@ -1,12 +1,7 @@
-import { z } from "zod";
+import * as z from "zod/v4";
 
+const Keys = z.partialRecord(z.string(), z.string());
 export const tableGenerationSchema = z.object({
-    rows: z.array(z.object({
-        colIndex: z.number(),
-        rowIndex: z.number(),
-        name: z.string(),
-        value: z.string(),
-        hasConflict: z.boolean()
-    })),
+    data: z.array(Keys),
     conflicts: z.array(z.string())
 })

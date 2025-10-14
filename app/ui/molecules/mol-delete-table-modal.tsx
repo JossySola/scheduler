@@ -1,7 +1,6 @@
 "use client"
-import { useParams } from "next/navigation"
-import { ActionButton, SecondaryButton } from "../atoms/atom-button"
-import { Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
+import { useParams } from "next/navigation";
+import { Button, Form, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { useActionState } from "react";
 import { Trash } from "../icons";
 import { DeleteTableAction } from "@/app/[lang]/dashboard/actions";
@@ -17,7 +16,8 @@ export default function DeleteTableModal ({ table_id, table_name }: {
 
     return (
         <>
-        <ActionButton onPress={onOpen} color="danger" endContent={<Trash />}>{ lang === "es" ? "Borrar" : "Delete"}</ActionButton>
+        <Button isIconOnly className="relative sm:hidden" onPress={onOpen} color="danger" aria-label={ lang === "es" ? "Eliminar horario" : "Delete schedule"}><Trash /></Button>
+        <Button className="hidden sm:inline-flex" onPress={onOpen} color="danger" endContent={<Trash />} aria-label={ lang === "es" ? "Eliminar horario" : "Delete schedule"}>{ lang === "es" ? "Borrar" : "Delete"}</Button>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
                 {onClose => (
@@ -30,11 +30,18 @@ export default function DeleteTableModal ({ table_id, table_name }: {
                             <p>{ lang === "es" ? "El horario se eliminará permanentemente." : "The schedule will be deleted permanently." }</p>
                             <input value={ table_id } name="item_id" readOnly hidden />
                             <span className="text-danger">{ state.message }</span>
-                            <ActionButton type="submit" color="danger" loading={ pending } disabled={ pending }>{ lang === "es" ? "Eliminar" : "Delete" }</ActionButton>
+                            <Button 
+                            type="submit" 
+                            color="danger" 
+                            className="primary-button"
+                            isLoading={ pending } 
+                            isDisabled={ pending }>
+                                { lang === "es" ? "Eliminar" : "Delete" }
+                            </Button>
                         </Form>
                     </ModalBody>
                     <ModalFooter>
-                        <SecondaryButton onPress={ onClose }>{ lang === "es" ? "Cancelar" : "Cancel" }</SecondaryButton>
+                        <Button className="secondary-button" onPress={ onClose }>{ lang === "es" ? "Cancelar" : "Cancel" }</Button>
                     </ModalFooter>
                     </>
                 )}

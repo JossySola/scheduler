@@ -1,5 +1,5 @@
-import { ActionButton } from "@/app/ui/atoms/atom-button"
-import { SendResetEmailAction } from "./actions"
+import { Button } from "@heroui/react";
+import { SendResetEmailAction } from "./actions";
 import FormInputEmail from "@/app/ui/atoms/atom-form-input-email";
 
 export default async function Page({ params, searchParams }: {
@@ -40,9 +40,9 @@ export default async function Page({ params, searchParams }: {
                 {
                     code && !error ? <p aria-live="polite" className="text-success m-2">{ lang === "es" ? "¡Correo enviado!" : "Email sent!" }</p> : null
                 }
-                <ActionButton type="submit">
+                <Button className="action-button" type="submit">
                     { lang === "es" ? "Recuperar contraseña" : "Recover password" }
-                </ActionButton>
+                </Button>
             </form>
         </section>
     )

@@ -1,7 +1,6 @@
 import { decryptKmsDataKey } from "@/app/lib/utils";
-import { RowType } from "@/app/lib/utils-client";
 import { BackButton } from "@/app/ui/atoms/atom-button-back";
-import Panel from "@/app/ui/v3/client-panel";
+import Table from "@/app/ui/v4/table/table";
 import { auth } from "@/auth";
 import { sql } from "@vercel/postgres";
 import { redirect } from 'next/navigation';
@@ -12,12 +11,12 @@ export default async function Page ({ params }: {
     const { id, lang } = await params;
     const session = await auth();
 
-    if (session?.user?.id) {
+    if (session && session.user) {
         const owner = await sql`
         SELECT user_id
         FROM scheduler_users_tables
         WHERE id = ${id};
-        `.then(result => result.rowCount !== 0 ? result.rows[0].user_id : null).catch(() => undefined);
+        `.then(result => result.rowCount !== 0 ? result.rows[0].user_id : null).catch(e => console.error(e));
         if (owner !== session.user.id) {
             return (
                 <section className="w-full h-full flex flex-col items-center justify-center">
@@ -28,60 +27,55 @@ export default async function Page ({ params }: {
 
         // Replaced API endpoint with direct query logic
         const keys = await sql`
-        SELECT table_name_key, table_rows_key, table_values_key
+        SELECT table_name_key, table_rows_key, table_values_key, table_rows_specs_key, table_cols_specs_key
         FROM scheduler_users_tables
-        WHERE id = ${id};`.then(result => result.rowCount !== 0 ? result.rows[0] : null).catch(() => null);
+        WHERE id = ${id};`.then(result => result.rowCount !== 0 ? result.rows[0] : null).catch(e => console.error(e));
 
 
-        if (keys && keys.table_name_key && keys.table_rows_key && keys.table_values_key) {
+        if (keys && keys.table_name_key && keys.table_rows_key && keys.table_values_key && keys.table_rows_specs_key && keys.table_cols_specs_key) {
             const name_key = await decryptKmsDataKey(keys.table_name_key);
             const rows_key = await decryptKmsDataKey(keys.table_rows_key);
             const values_key = await decryptKmsDataKey(keys.table_values_key);
+            const rows_specs_key = await decryptKmsDataKey(keys.table_rows_specs_key);
+            const cols_specs_key = await decryptKmsDataKey(keys.table_cols_specs_key);
+
             const serialized_table = await sql`
             SELECT
                 pgp_sym_decrypt_bytea(table_name, ${name_key}) AS decrypted_name,
                 pgp_sym_decrypt_bytea(table_rows, ${rows_key}) AS decrypted_rows,
                 pgp_sym_decrypt_bytea(table_values, ${values_key}) AS decrypted_values,
+                pgp_sym_decrypt_bytea(table_rows_specs, ${rows_specs_key}) AS decrypted_rows_specs,
+                pgp_sym_decrypt_bytea(table_cols_specs, ${cols_specs_key}) AS decrypted_cols_specs,
                 table_type,
                 table_interval,
                 created_at,
-                updated_at
+                updated_at,
+                user_id,
+                table_cols_num
             FROM scheduler_users_tables
             WHERE id = ${id};`
             .then(result => result.rowCount !== 0 ? result.rows[0] : null)
-            .catch(() => null);
+            .catch(e => console.error(e));
             
             if (serialized_table) {
-                const rows: Array<Map<string, RowType>> = JSON.parse(serialized_table.decrypted_rows).map(
-                    (row: Array<[string, RowType]>) => {
-                        for (const [, cell] of row) {
-                            if (cell.specs?.valueTimes) {
-                                cell.specs.valueTimes = new Map(cell.specs.valueTimes);
-                            }
-                        }
-                        return new Map(row);
-                    }
-                )
                 // Remember to deserialize this object if you pass any property as prop to a component
-                const table = {
+                const storedData = {
                     user_id: serialized_table.user_id,
                     name: serialized_table.decrypted_name.toString(),
-                    rows,
+                    data: JSON.parse(serialized_table.decrypted_rows),
                     values: JSON.parse(serialized_table.decrypted_values),
-                    type: serialized_table.table_type,
+                    type: JSON.parse(serialized_table.table_type),
                     interval: serialized_table.table_interval,
+                    cols_specs: JSON.parse(serialized_table.decrypted_cols_specs),
+                    rows_specs: JSON.parse(serialized_table.decrypted_rows_specs),
                     created_at: serialized_table.created_at,
                     updated_at: serialized_table.updated_at,
+                    cols: serialized_table.table_cols_num ? JSON.parse(serialized_table.table_cols_num): [],
                 }
                 
                 return (
                     <section className="w-full h-fit mt-15 mb-20">
-                        <Panel 
-                        name={table.name}
-                        stored_rows={table.rows}
-                        stored_values={table.values}
-                        stored_type={table.type}
-                        stored_interval={table.interval} />
+                        <Table storedData={storedData} />
                     </section>
                 )
             }

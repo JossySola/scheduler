@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link";
-import { useParams } from "next/navigation"
+import { useParams } from "next/navigation";
 import { Anthropic } from "./atom-anthropic";
 
 export default function PowerWithAnthropic () {

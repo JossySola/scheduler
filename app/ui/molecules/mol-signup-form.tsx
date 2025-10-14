@@ -7,8 +7,10 @@ import FormInputBirthday from "../atoms/atom-form-input-birthday";
 import FormInputEmail from "../atoms/atom-form-input-email";
 import FormInputPassword from "../atoms/atom-form-input-password";
 import { validateAction } from "@/app/[lang]/signup/actions";
-import { ActionButton } from "../atoms/atom-button";
 import { ArrowCircleRight, Envelope } from "../icons";
+import { Button, Divider } from "@heroui/react";
+import GoogleSignIn from "../atoms/atom-google-signin";
+import FacebookSignIn from "../atoms/atom-facebook-signin";
 
 export default function SignupForm ({ lang }: {
     lang: "en" | "es"
@@ -30,6 +32,13 @@ export default function SignupForm ({ lang }: {
 
     return (
         <section className="w-full sm:w-[400px] p-3 flex flex-col items-center justify-center">
+            <div className="my-5 text-center w-full">
+                <h4 className="tracking-tight text-3xl my-5">{ lang === "es" ? "Entra usando un proveedor" : "Sign in using a provider" }</h4>
+                <GoogleSignIn lang={ lang } />
+                <FacebookSignIn lang={ lang } />                
+            </div>
+            <Divider />
+            <h4 className="tracking-tight text-2xl my-5">{ lang === "es" ? "o regístrate" : "or create an account" }</h4>            
             {
                 validated ? <section className="p-10 flex flex-col justify-start items-center">
                     <h3 className="text-center">{ lang === "es" ? "Hemos enviado un enlace a tu correo electrónico." : "A confirmation link has been sent."}</h3>
@@ -40,26 +49,24 @@ export default function SignupForm ({ lang }: {
                         <Envelope width={32} height={32} />
                     </div>
                 </section> :
-                <form className="flex flex-col items-center">
+                <form className="flex flex-col items-center" action={validateForm}>
                     <FormInputName name={ name } setName={ setName } />
                     <FormInputUsername username={ username } setUsername={ setUsername } />
                     <FormInputBirthday birthday={ birthday } setBirthday={ setBirthday } />
                     <FormInputEmail email={ email } setEmail={ setEmail } />
                     <FormInputPassword password={ password } confirmation={ confirmation } setPassword={ setPassword } setConfirmation={ setConfirmation } />
                     <p aria-live="polite" className="text-danger text-center">{ validateState.message }</p>
-                    <ActionButton 
-                    className="bg-white text-black m-3" 
+                    <Button 
+                    className="action-button" 
                     type="submit" 
-                    disabled={ validatePending } 
-                    loading={ validatePending } 
-                    formAction={ validateForm }
+                    isDisabled={ validatePending } 
+                    isLoading={ validatePending }
                     endContent={<ArrowCircleRight />}>
                         { lang === "es" ? "Siguiente" : "Next" }
-                    </ActionButton>
+                    </Button>
                     
                 </form>
             }
-            <SignInProviders lang={ lang.toString() as "en" | "es" } />
         </section>
     )
 }

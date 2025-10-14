@@ -6,7 +6,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
+  src: "./fonts/Geist-Regular.woff2",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
@@ -15,6 +15,14 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+const geistBold = localFont({
+  src: "./fonts/Geist-Bold.woff2",
+  variable: "--font-geist-bold"
+})
+const geistBlack = localFont({
+  src: "./fonts/Geist-Black.woff2",
+  variable: "--font-geist-black"
+})
 
 export const metadata: Metadata = {
   title: "Scheduler App",
@@ -51,7 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${geistBold.variable} ${geistBlack.variable} antialiased`}>
         <main>
           <UIProvider>
             {children}
