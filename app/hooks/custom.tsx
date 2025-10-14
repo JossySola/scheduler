@@ -109,7 +109,7 @@ export type StatesType = {
     colSpecs: ColSpecs,
     rowSpecs: RowSpecs,
     title: string,
-    cols: Array<string>,
+    cols: Array<string | undefined>,
 }
 type PartialObject<T> = DeepPartial<T>;
 
@@ -367,9 +367,7 @@ export function useVirtualizedTable (
         }));
     }
     const getTableStates = () => {
-        const cols = columns
-            .filter(col => col.id !== "indexes")
-            .map(col => col.id as string);
+        const cols = table.getRowModel().rows[0] ? Object.values(table.getRowModel().rows[0]!.original).toSorted() : [];
         return {
             values: Array.from(values),
             headerType: Array.from(headerType),

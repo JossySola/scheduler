@@ -24,7 +24,7 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
     getTableStates: () => {
         values: string[];
         headerType: Key[];
-        cols: string[];
+        cols: Array<string | undefined>;
         title: string;
         data: VTData[];
         interval: number;
