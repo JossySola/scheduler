@@ -34,6 +34,7 @@ export default function CellHeaderSettings({ initialValue, handleDuplicates, isD
                 inputWrapper: "h-[48px]",
                 }}
                 value={(value as string) ?? ""}
+                size="lg"
                 onChange={e => handleDuplicates(e.target.value)}
                 onValueChange={setValue}
                 startContent={<Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> }
