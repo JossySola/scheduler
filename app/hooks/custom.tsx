@@ -211,6 +211,9 @@ export function useVirtualizedTable (
     // how each column should access and/or transform row data with either an
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
+    useEffect(() => {
+        triggerRefresh();
+    }, [isLoading]);
 
     const triggerRefresh = () => {
         setColumns(prev => prev.slice());
@@ -265,7 +268,7 @@ export function useVirtualizedTable (
             },
             triggerRefresh,
         },
-    }), [columns, data, defaultColumn, sorting, values, interval, headerType]);
+    }), [columns, data, defaultColumn, sorting, values, interval, headerType, isLoading]);
     const table = useReactTable(tableConfig);
     // Row Models run under the hood to transform the original data in useful ways that
     // are needed for data grid features like filtering, sorting, grouping, expanding,
