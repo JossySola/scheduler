@@ -1,11 +1,11 @@
 "use client"
 import { motion } from "motion/react";
 import { Select as SelectHeroUi, SelectItem, Spinner } from "@heroui/react";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Table } from "@tanstack/react-table";
 import { VTData } from "@/app/hooks/custom";
 
-export default function Select({ isLoading, value, table, row, column, values }: {
+const Select = memo(function Select({ isLoading, value, table, row, column, values }: {
     isLoading: boolean,
     value: string,
     table: Table<VTData>,
@@ -41,4 +41,5 @@ export default function Select({ isLoading, value, table, row, column, values }:
             </SelectHeroUi>
         </motion.div>        
     )
-}
+});
+export default Select;

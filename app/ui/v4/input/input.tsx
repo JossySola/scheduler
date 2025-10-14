@@ -2,13 +2,12 @@
 import { motion } from "motion/react";
 import { Input as InputHeroUI, SharedSelection, Spinner } from "@heroui/react";
 import { Header } from "../../icons";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, memo, SetStateAction, useState } from "react";
 import { useParams } from "next/navigation";
 import { Table } from "@tanstack/react-table";
 import { VTData } from "@/app/hooks/custom";
 
-export default function Input({ isLoading, initialValue, handleDuplicates, isDuplicate, table, row, column, interval, headerType, setInterval, setHeaderType }: {
-    isLoading: boolean,
+const Input = memo(function Input({ isLoading, initialValue, handleDuplicates, isDuplicate, table, row, column }: {
     initialValue: unknown,
     handleDuplicates: (val: string) => void,
     isDuplicate: boolean,
@@ -18,7 +17,8 @@ export default function Input({ isLoading, initialValue, handleDuplicates, isDup
     interval: number,
     headerType: SharedSelection,
     setInterval: Dispatch<SetStateAction<number>>,
-    setHeaderType: Dispatch<SetStateAction<SharedSelection>>,   
+    setHeaderType: Dispatch<SetStateAction<SharedSelection>>,  
+    isLoading?: boolean, 
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
     const [value, setValue] = useState<string>(initialValue as string ?? ""); 
@@ -38,7 +38,7 @@ export default function Input({ isLoading, initialValue, handleDuplicates, isDup
                 onChange={e => handleDuplicates(e.target.value)}
                 onValueChange={setValue}
                 startContent={
-                    isLoading
+                    isLoading && row.index !== 0 && column.id !== "A"
                     ? <Spinner size="md" variant="simple" color="secondary"/>
                     : row.index === 0 || column.id === "A" 
                         ? <Header color={ isDuplicate ? "oklch(57.7% 0.245 27.325)" : "#3f3f46"} /> 
@@ -56,4 +56,5 @@ export default function Input({ isLoading, initialValue, handleDuplicates, isDup
             />
         </motion.div>
     )
-}
+});
+export default Input;
