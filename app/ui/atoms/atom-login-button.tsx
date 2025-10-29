@@ -9,6 +9,7 @@ export default function LogInButton () {
 
     return (
         <Button
+        aria-label={ lang === "es" ? "Iniciar sesión" : "Log in"}
         className="bg-transparent border-2 dark:text-white"
         style={{
             textDecoration: "none"

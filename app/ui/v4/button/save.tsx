@@ -42,6 +42,7 @@ export default function SaveButton({ states }: { states: StatesType }) {
     return (
         <Button
         type="button"
+        aria-label={lang === "es" ? "Guardar tabla" : "Save table"}
         size="lg"
         endContent={<FloppyDisk />}
         isLoading={isNew ? newSave.isPending : save ? save.isPending : false}

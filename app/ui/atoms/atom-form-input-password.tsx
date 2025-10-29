@@ -25,6 +25,7 @@ export default function FormInputPassword ({ password, setPassword, confirmation
             <>
                 <Input 
                 name="password"
+                aria-label={ lang === "es" ? "Crear contraseña" : "Set a password" }
                 type={ isVisible ? "text" : "password" }
                 value={ password }
                 minLength={8}
@@ -58,6 +59,7 @@ export default function FormInputPassword ({ password, setPassword, confirmation
     
                 <Input 
                 name="confirmpwd"
+                aria-label={ lang === "es" ? "Confirmar contraseña" : "Confirm password" }
                 type={ isVisible ? "text" : "password" }
                 value={ confirmation } 
                 minLength={8} 

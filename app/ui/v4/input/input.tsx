@@ -28,6 +28,7 @@ const Input = memo(function Input({ isLoading, initialValue, handleDuplicates, i
     return (
         <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
             <InputHeroUI
+                aria-label={ lang === "en" ? `Input field for row ${row.index} and column ${column.id}` : `Campo de entrada para fila ${row.index} y columna ${column.id}` }
                 size="lg"
                 variant="bordered"
                 classNames={{

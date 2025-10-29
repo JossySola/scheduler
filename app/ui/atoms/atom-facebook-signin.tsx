@@ -15,6 +15,7 @@ export default function FacebookSignIn ({ lang }: {
             isLoading={ pending }
             isDisabled={ pending }
             className="provider-button" 
+            aria-label={ lang === "es" ? "Iniciar sesión con Facebook" : "Sign in with Facebook" }
             endContent={<LogoFacebook />}
             >
                 { lang === "es" ? "Continúa con Facebook" : "Continue with Facebook" }

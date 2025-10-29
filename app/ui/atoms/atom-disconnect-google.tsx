@@ -13,7 +13,13 @@ export default function DisconnectGoogle () {
 
     return (
         <>
-        <Button isLoading={ isLoading } isDisabled={ isLoading } className="provider-button" endContent={<LogoGoogle />} onPress={onOpen}>{ lang === "es" ? "Desconectar Google" : "Disconnect from Google" }</Button>
+        <Button 
+        isLoading={ isLoading } 
+        isDisabled={ isLoading } 
+        className="provider-button" 
+        endContent={<LogoGoogle />} 
+        aria-label={ lang === "es" ? "Desconectar Google" : "Disconnect from Google"}
+        onPress={onOpen}>{ lang === "es" ? "Desconectar Google" : "Disconnect from Google" }</Button>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
                 {(onClose) => (

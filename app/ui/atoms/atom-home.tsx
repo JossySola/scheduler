@@ -10,8 +10,8 @@ export default function HomeAtom() {
     return (
         <Button 
         isIconOnly 
-        aria-label="home" 
-        variant="light" 
+        aria-label={ lang === "es" ? "Ir al panel de control" : "Go to dashboard" }
+        variant="light"
         as={Link} 
         style={{
             textDecoration: "none"
