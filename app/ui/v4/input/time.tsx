@@ -53,6 +53,7 @@ export default function TimeInput({ initialValue, handleDuplicates, isDuplicate,
     return (
         <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
             <TimeHeroUi
+            aria-label={ lang === "en" ? `Input field for row ${row.index} and column ${column.id}` : `Campo de entrada para fila ${row.index} y columna ${column.id}` }
             size="lg"
             variant="bordered"
             classNames={{

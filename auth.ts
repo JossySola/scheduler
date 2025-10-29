@@ -36,15 +36,14 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                 if (!profile.email) {
                     throw new Error("Facebook profile is missing email");
                 }
+                // Check if user exists in scheduler_users
                 const stored_id = await sql`
-                SELECT scheduler_users.id
-                FROM scheduler_users 
-                JOIN scheduler_users_providers
-                    ON scheduler_users.email = scheduler_users_providers.email
-                    AND scheduler_users_providers.provider = 'google'
-                WHERE scheduler_users.email = ${profile.email};
+                SELECT id
+                FROM scheduler_users
+                WHERE email = ${profile.email};
                 `.then(response => response.rowCount !== 0 ? response.rows[0].id : null);
                 if (stored_id) {
+                    // If user exists, set the id to the stored id
                     profile.id = stored_id;
                 }
                 profile.image = profile.picture;
@@ -61,15 +60,14 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                 if (!profile.email) {
                     throw new Error("Facebook profile is missing email");
                 }
+                // Check if user exists in scheduler_users
                 const stored_id = await sql`
-                SELECT scheduler_users.id
-                FROM scheduler_users 
-                JOIN scheduler_users_providers
-                    ON scheduler_users.email = scheduler_users_providers.email
-                    AND scheduler_users_providers.provider = 'facebook'
-                WHERE scheduler_users.email = ${profile.email};
+                SELECT id
+                FROM scheduler_users
+                WHERE email = ${profile.email};
                 `.then(response => response.rowCount !== 0 ? response.rows[0].id : null);
                 if (stored_id) {
+                    // If user exists, set the id to the stored id
                     profile.id = stored_id;
                 }
                 profile.image = profile.picture.data.url;
@@ -236,23 +234,23 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         const user_record = await sql`
                         SELECT id FROM scheduler_users WHERE email = ${user.email};
                         `.then(response => response.rowCount !== 0 ? true : false);
-                        if (user_record) {
-                            return true;
+                        if (!user_record) {
+                            // Create a new user record on scheduler_users if it doesn't exist
+                            const new_record = await sql`
+                            INSERT INTO scheduler_users(name, username, email, user_image)
+                            VALUES (
+                                ${user.name},
+                                ${user.name},
+                                ${user.email},
+                                ${user.image}
+                            )
+                            ON CONFLICT (username) DO NOTHING;
+                            `.then(response => response.rowCount !== 0 ? true : false);
+                            if (!new_record) {
+                                return false;
+                            }
                         }
-                        // Create a new user record on scheduler_users if it doesn't exist
-                        const new_record = await sql`
-                        INSERT INTO scheduler_users(name, username, email, user_image)
-                        VALUES (
-                            ${user.name},
-                            ${user.name},
-                            ${user.email},
-                            ${user.image}
-                        )
-                        ON CONFLICT (username) DO NOTHING;
-                        `.then(response => response.rowCount !== 0 ? true : false);
-                        if (!new_record) {
-                            return false;
-                        }
+                        
                         // Add record to scheduler_users_providers
                         const new_key = await generateKmsDataKey();
                         const insertToProviders = await sql`
@@ -278,23 +276,23 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                         const user_record = await sql`
                         SELECT id FROM scheduler_users WHERE email = ${user.email};
                         `.then(response => response.rowCount !== 0 ? true : false);
-                        if (user_record) {
-                            return true;
+                        if (!user_record) {
+                            // Create a new user record on scheduler_users if it doesn't exist
+                            const new_record = await sql`
+                            INSERT INTO scheduler_users(name, username, email, user_image)
+                            VALUES (
+                                ${user.name},
+                                ${user.name},
+                                ${user.email},
+                                ${user.picture}
+                            )
+                            ON CONFLICT (username) DO NOTHING;
+                            `.then(response => response.rowCount !== 0 ? true : false);
+                            if (!new_record) {
+                                return false;
+                            }
                         }
-                        // Create a new user record on scheduler_users if it doesn't exist
-                        const new_record = await sql`
-                        INSERT INTO scheduler_users(name, username, email, user_image)
-                        VALUES (
-                            ${user.name},
-                            ${user.name},
-                            ${user.email},
-                            ${user.picture}
-                        )
-                        ON CONFLICT (username) DO NOTHING;
-                        `.then(response => response.rowCount !== 0 ? true : false);
-                        if (!new_record) {
-                            return false;
-                        }
+
                         // Add record to scheduler_users_providers
                         const new_key = await generateKmsDataKey();
                         const insertToProviders = await sql`
@@ -328,7 +326,6 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                 const provider = account.provider;
                 const isGoogle = provider === 'google';
                 const isFacebook = provider === 'facebook';
-                
                 if (profile.user_image) {
                     token.image = profile.user_image as string;
                 }

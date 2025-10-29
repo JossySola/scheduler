@@ -12,6 +12,7 @@ export default function SignOutButton () {
     const [ state, action, pending ] = useActionState(SignoutAction, { message: "" })
     return <form action={ action }>
         <Button
+        aria-label={ lang === "es" ? "Cerrar sesión" : "Sign out"}
         type="submit"
         variant="ghost"
         isDisabled={ pending }

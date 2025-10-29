@@ -12,6 +12,7 @@ export default function GoogleSignIn ({ lang }: {
         <form action= { action } className="w-full">
             <Button 
             type="submit"
+            aria-label={ lang === "es" ? "Iniciar sesión con Google" : "Sign in with Google" }
             isLoading={ pending }
             isDisabled={ pending }
             className="provider-button"

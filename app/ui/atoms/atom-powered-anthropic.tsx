@@ -10,6 +10,7 @@ export default function PowerWithAnthropic () {
     return <div className="flex flex-col justify-center items-center bg-[#f0eee670] dark:bg-[#3F3F4670] dark:border-[#52525B] backdrop-blur-sm border-1 py-2 rounded-full bottom-1 shadow-small z-10 w-fit p-5">
         <Link 
         href="https://www.anthropic.com/" 
+        aria-label={ lang === "es" ? "Impulsado con Anthropic" : "Powered with Anthropic"}
         target="_blank" 
         style={{
             textDecoration: "none"

@@ -23,7 +23,8 @@ export default function DangerButton ({ onlyWithProvider }: { onlyWithProvider: 
     return (
         <>
         <Button 
-        color="danger"
+        className="danger-button"
+        aria-label={ lang === "es" ? "Eliminar cuenta" : "Delete account" }
         onPress={ onOpen }>
             { lang === "es" ? "Eliminar cuenta" : "Delete account" }
         </Button>

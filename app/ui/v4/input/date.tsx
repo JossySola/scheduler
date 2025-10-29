@@ -53,6 +53,7 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
     return (
         <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }}>
             <DatePicker
+                aria-label={ lang === "en" ? `Select date for cell row ${row.index} and column ${column.id}` : `Selecciona fecha para la celda fila ${row.index} y columna ${column.id}` }
                 size="lg"
                 variant="bordered"
                 classNames={{

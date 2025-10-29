@@ -17,6 +17,7 @@ export default function DisconnectFacebook () {
         isLoading={ isLoading } 
         isDisabled={ isLoading } 
         className="provider-button" 
+        aria-label={ lang === "es" ? "Desconectar Facebook" : "Disconnect from Facebook"}
         endContent={<LogoFacebook />} 
         onPress={onOpen}>
             { lang === "es" ? "Desconectar Facebook" : "Disconnect from Facebook"}

@@ -8,6 +8,7 @@ export default function SignUpButton () {
 
     return (
         <Button
+        aria-label={ lang === "es" ? "Regístrate" : "Sign Up"}
         className="primary-button"
         onPress={() => redirect(`/${lang}/signup`)}>
             { lang === "es" ? "Regístrate" : "Sign Up" }

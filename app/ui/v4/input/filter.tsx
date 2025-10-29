@@ -17,6 +17,7 @@ const Filter = memo(function ({
     }, [value]);
     return (
         <Input
+        name={ params.lang === "en" ? `Search in column ${column.id}` : `Buscar en la columna ${column.id}` }
         type="text"
         variant="faded"
         classNames={{

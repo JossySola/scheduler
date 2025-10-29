@@ -18,6 +18,7 @@ export default function FormInputEmail ({ email, setEmail }: {
             type="email"
             autoComplete="email"
             className="sm:w-[400px] m-2"
+            aria-label={ lang === "es" ? "Correo electrónico" : "Email" }
             isRequired
             isClearable
             radius="md"

@@ -17,6 +17,7 @@ export default function Password () {
         isRequired
         type={ isVisible ? "text" : "password" }
         name="password"
+        aria-label={ lang === "es" ? "Contraseña" : "Password" }
         radius="sm"
         size="lg"
         variant="bordered"
