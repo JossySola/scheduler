@@ -244,11 +244,15 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                                 ${user.email},
                                 ${user.image}
                             )
-                            ON CONFLICT (username) DO NOTHING;
-                            `.then(response => response.rowCount !== 0 ? true : false);
+                            ON CONFLICT (username) DO NOTHING
+                            RETURNING id;
+                            `.then(response => response.rowCount !== 0 ? response.rows[0].id : false)
+                            .catch(e => console.error(e));
                             if (!new_record) {
                                 return false;
                             }
+                            account.providerAccountId = new_record;
+                            user.id = new_record;
                         }
                         
                         // Add record to scheduler_users_providers
@@ -284,13 +288,17 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                                 ${user.name},
                                 ${user.name},
                                 ${user.email},
-                                ${user.picture}
+                                ${user.image}
                             )
-                            ON CONFLICT (username) DO NOTHING;
-                            `.then(response => response.rowCount !== 0 ? true : false);
+                            ON CONFLICT (username) DO NOTHING
+                            RETURNING id;
+                            `.then(response => response.rowCount !== 0 ? response.rows[0].id : false)
+                            .catch(e => console.error(e));
                             if (!new_record) {
                                 return false;
                             }
+                            account.providerAccountId = new_record;
+                            user.id = new_record;
                         }
 
                         // Add record to scheduler_users_providers
