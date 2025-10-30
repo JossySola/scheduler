@@ -1,6 +1,6 @@
 {
   "name": "scheduler",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "type": "module",
   "private": true,
   "scripts": {
@@ -11,16 +11,16 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^3.0.0-beta.46",
-    "@ai-sdk/react": "^3.0.0-beta.82",
+    "@ai-sdk/anthropic": "^3.0.0-beta.47",
+    "@ai-sdk/react": "^3.0.0-beta.84",
     "@auth/core": "^0.38.0",
     "@auth/pg-adapter": "^1.11.1",
     "@aws-crypto/client-browser": "^4.2.1",
     "@aws-crypto/sha256-js": "^5.2.0",
-    "@aws-sdk/client-kms": "^3.919.0",
+    "@aws-sdk/client-kms": "^3.920.0",
     "@aws-sdk/hash-node": "^3.370.0",
     "@aws-sdk/signature-v4": "^3.370.0",
-    "@aws-sdk/types": "^3.914.0",
+    "@aws-sdk/types": "^3.920.0",
     "@aws-sdk/util-base64": "^3.374.0",
     "@emailjs/browser": "^4.4.1",
     "@heroui/date-picker": "^2.3.28",
@@ -36,7 +36,7 @@
     "@vercel/analytics": "^1.5.0",
     "@vercel/postgres": "^0.10.0",
     "@vercel/speed-insights": "^1.2.0",
-    "ai": "^6.0.0-beta.82",
+    "ai": "^6.0.0-beta.84",
     "argon2": "^0.43.1",
     "dotenv": "^16.6.1",
     "geist": "^1.5.1",
