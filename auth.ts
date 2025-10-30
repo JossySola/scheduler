@@ -272,8 +272,8 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                             FROM scheduler_users_providers
                             WHERE email = ${user.email} AND provider = 'google';
                         `.then(response => response.rowCount !== 0 ? response.rows[0].provider : null);
-                        if (user_provider !== null) {
-                            // If the user has already signed in with Facebook before
+                        if (user_provider !== null && user_provider === "google") {
+                            // If the user has already signed in with Google before
                             return true;
                         }
                         // Check if user already exists on scheduler_users
