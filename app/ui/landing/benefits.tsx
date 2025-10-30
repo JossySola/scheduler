@@ -33,14 +33,14 @@ export default function Benefits () {
             initial="hidden"
             whileInView="visible"
             className="w-full flex flex-col md:flex-row justify-center items-center md:justify-between gap-5 text-center sm:text-right">
-                <motion.h3
+                <motion.h2
                 variants={item}>
                     {
                         lang === "es"
                         ? "Se adapta a tus especificaciones"
                         : "Adapts to your constraints"
                     }
-                </motion.h3>
+                </motion.h2>
                 <DotLottieReact src="/assets/settings.lottie" autoplay loop mode='bounce' />
             </motion.section>
 
@@ -49,13 +49,13 @@ export default function Benefits () {
             initial="hidden"
             whileInView="visible" 
             className="w-full flex flex-col sm:flex-row justify-center items-center md:justify-between gap-5 text-center sm:text-right">
-                <motion.h3 variants={item}>
+                <motion.h2 variants={item}>
                     {
                         lang === "es"
                         ? "Te da todo el control"
                         : "Gives you full control"
                     }
-                </motion.h3>
+                </motion.h2>
                 <DotLottieReact src='/assets/input-types.lottie' speed={0.5} autoplay loop />
             </motion.section>
 
@@ -64,13 +64,13 @@ export default function Benefits () {
             initial="hidden"
             whileInView="visible" 
             className="w-full flex flex-col sm:flex-row justify-center items-center gap-5 text-center sm:text-right">
-                <motion.h3 variants={item}>
+                <motion.h2 variants={item}>
                     {
                         lang === "es"
                         ? "Crece junto tu equipo"
                         : "Scales with your team"
                     }
-                </motion.h3>
+                </motion.h2>
                 <DotLottieReact src='/assets/team.lottie' autoplay loop />
             </motion.section>
         </section>

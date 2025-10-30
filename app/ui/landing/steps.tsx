@@ -9,13 +9,13 @@ export default function Steps() {
     const { lang } = params;
     return (
         <section className="flex flex-col items-center gap-[40vh] mx-10 mt-[40vh] mb-[20vh]">
-            <motion.h1 initial={{ scale: 0.5 }} whileInView={{ scale: 1 }} className="w-full text-center">
+            <motion.h2 initial={{ scale: 0.5 }} whileInView={{ scale: 1 }} className="w-full text-center">
             {
                 lang === "es" 
                 ? "Sólo en 🖐🏾 pasos"
                 : "Just in 🖐🏾 steps" 
             }
-            </motion.h1>
+            </motion.h2>
 
             <motion.div 
             initial={{ opacity: 0, transform: "translateY(150px)" }}
@@ -127,14 +127,13 @@ export default function Steps() {
                     : <>Sign up for free! <a href="#legal-4"><sup className="text-tiny">4</sup></a> 😊</>
                     }
                 </p>
-                <Button as={ Link } href={`${lang}/signup`} className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg text-3xl p-8" 
+                <Button as={ Link } href={`${lang}/signup`} className="bg-linear-to-tr from-violet-600 to-blue-500 text-white shadow-lg text-3xl p-8" 
                 style={{
                     textDecorationLine: "none"
                 }}>
                     { lang === "es" ? "Registrarse" : "Sign Up" }
                 </Button>
             </div>
-            
         </section>
     )
 }
