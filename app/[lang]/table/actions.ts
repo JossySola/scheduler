@@ -132,7 +132,7 @@ export async function SaveTableAction (
             WHERE user_id = ${session.user.id} AND id = ${table_id};`
             .then(() => ({ ok: true, message: locale === "es" ? "¡Horario guardado!" : "Schedule saved!" }))
             .catch(()=> ({ ok: false, message: locale === "es" ? "Ha ocurrido un error 😔" : "An error has occurred 😔" }));
-            revalidatePath(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`);
+            revalidatePath(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${locale}/dashboard`);
             return insert;
         }
         return {
