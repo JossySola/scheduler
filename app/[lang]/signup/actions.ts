@@ -120,7 +120,7 @@ export async function sendEmailAction (name: string, email: string, token: strin
       message: 'Data is missing'
     }
   }
-  const confirmURL = new URL(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/confirm/v`);
+  const confirmURL = new URL(`${process.env.NEXTAUTH_URL}/${lang}/confirm/v`);
   confirmURL.searchParams.set('token', token);
   confirmURL.searchParams.set('email', email);
   const msgEN = {

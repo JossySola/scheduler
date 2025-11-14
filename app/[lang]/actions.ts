@@ -8,7 +8,7 @@ export async function SignoutAction (previousState: { message: string }, formDat
     const lang = (await requestHeaders).get("x-user-locale") || "en";
     await signOut({
         redirect: true,
-        redirectTo: `${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/login`
+        redirectTo: `${process.env.NEXTAUTH_URL}/${lang}/login`
     });
     return {
         message: ""
