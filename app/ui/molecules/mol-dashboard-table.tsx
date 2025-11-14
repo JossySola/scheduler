@@ -12,7 +12,7 @@ export default function DashboardTable ({ metadata }: {
 }) {
     const { lang } = useParams<{ lang: "en" | "es" }>();
     const months = lang === "es" ? ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"] : 
-    ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Octubre", "November", "December"];
+    ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     return (
         <section className="h-screen w-full p-5 pt-0 sm:p-10 sm:pt-0">
             <section className="flex items-center justify-center flex-row sm:justify-start">
