@@ -60,6 +60,7 @@ export default function Table({storedData}: {
         state,
         setter,
     } = useVirtualizedTable(isLoading, storedData);
+    
     return (
         <>
         <div className="w-full md:w-5/6 justify-self-center grid grid-cols-[1fr_3fr_1fr] mb-10 px-5">
@@ -152,7 +153,7 @@ export default function Table({storedData}: {
                     {
                         table.getHeaderGroups().map(headerGroup => {
                             return (
-                                <tr key={headerGroup.id} className="flex flex-row justify-start gap-2 ml-[24px]">
+                                <tr key={headerGroup.id} className="flex flex-row justify-start gap-2 ml-6">
                                     {
                                         headerGroup.headers.map(header => (
                                             <th key={header.id} colSpan={header.colSpan}>
