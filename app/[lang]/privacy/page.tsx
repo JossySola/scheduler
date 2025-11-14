@@ -92,7 +92,7 @@ export default async function Page ({ params }: {
                             <li>Borrará todos los horarios y tablas almacenadas.</li>
                             <li>Desconectará cualquier proveedor vinculado (Google y/o Facebook).</li>
                         </ul>
-                        <i>Para más información, visita: <a href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/delete-my-data`} target="_blank">Eliminar mis datos</a></i>
+                        <i>Para más información, visita: <a href={`${process.env.NEXTAUTH_URL}/${lang}/delete-my-data`} target="_blank">Eliminar mis datos</a></i>
                     </li>
                     <li><b>Desconectar proveedores:</b> Puedes desconectar manualmente tu cuenta de Google o Facebook sin eliminar tu cuenta.</li>
                     <li><b>Cambio de contraseña:</b> Puedes cambiar tu contraseña en cualquier momento.</li>
@@ -129,7 +129,7 @@ export default async function Page ({ params }: {
 
                 <h2>13. Contáctanos</h2>
 
-                <p>Si tienes alguna pregunta sobre esta Política de Privacidad, por favor contáctanos {<Link href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/contact`}>aquí</Link>}.</p>
+                <p>Si tienes alguna pregunta sobre esta Política de Privacidad, por favor contáctanos {<Link href={`${process.env.NEXTAUTH_URL}/${lang}/contact`}>aquí</Link>}.</p>
                 <Divider className="my-4"/>
                 <footer className="text-tiny dark:bg-[#1A1A1A]" id="footer">
                     <p className="mb-1">1 <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> es un servicio que proporciona una lista de contraseñas que han sido expuestas previamente en filtraciones de datos. Esto se utiliza para evitar el uso de contraseñas poco seguras. Desde nuestro lado, verificamos tu contraseña usando un método que preserva la privacidad y asegura que tu contraseña nunca sea revelada.</p>
@@ -228,7 +228,7 @@ export default async function Page ({ params }: {
                         <li>Erase all stored schedules and tables.</li>
                         <li>Disconnect any linked providers (Google and/or Facebook).</li>
                     </ul>
-                    <i>For more information, visit: <a href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/delete-my-data`} target="_blank">Delete My Data</a></i>
+                    <i>For more information, visit: <a href={`${process.env.NEXTAUTH_URL}/${lang}/delete-my-data`} target="_blank">Delete My Data</a></i>
                 </li>
                 <li><b>Disconnecting Providers:</b> You can manually disconnect your account from Google or Facebook without deleting your account.</li>
                 <li><b>Password Change:</b> You can change your password at any time.</li>
@@ -265,7 +265,7 @@ export default async function Page ({ params }: {
 
             <h2>13. Contact Us</h2>
 
-            <p>If you have any questions about this Privacy Policy, please contact us {<Link href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/contact`}>here</Link>}.</p>
+            <p>If you have any questions about this Privacy Policy, please contact us {<Link href={`${process.env.NEXTAUTH_URL}/${lang}/contact`}>here</Link>}.</p>
             <Divider className="my-4"/>
             <footer className="text-tiny dark:bg-[#1A1A1A]" id="footer">
                 <p className="mb-1">1 <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> is a service that provides a list of passwords previously exposed in data breaches. This is used to avoid the use of unsuitable passwords. From our side, we check your password against a public database of exposed passwords (Have I Been Pwned) using a privacy-preserving method that ensures your password is never fully revealed.</p>
