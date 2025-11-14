@@ -33,7 +33,7 @@ export default function CellHeaderSettings({ initialValue, handleDuplicates, isD
                 mainWrapper: "w-[63vw] sm:w-64",
                 inputWrapper: "h-[48px]",
                 }}
-                value={(value as string) ?? ""}
+                value={value}
                 size="lg"
                 onChange={e => handleDuplicates(e.target.value)}
                 onValueChange={setValue}
