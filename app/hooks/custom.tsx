@@ -1,5 +1,5 @@
 "use client"
-import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState, HeaderContext } from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState, HeaderContext, RowModel } from "@tanstack/react-table";
 import { Key, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { generateColumnName } from "../lib/utils-client";
 import CellRenderer from "../ui/v4/input/cell";
@@ -104,6 +104,7 @@ export type EnabledColumns = { [key: string]: Array<string> }
 export type StatesType = {
     values: Array<string>,
     headerType: Array<Key>,
+    rows: Array<{ [key: string]: string }>,
     data: Array<VTData>,
     interval: number,
     colSpecs: ColSpecs,
@@ -180,7 +181,7 @@ export function useVirtualizedTable (
                 {
                     id: "indexes",
                     cell: ({ row }) => (
-                        <div className="w-[1.5rem] h-full flex flex-col justify-center items-center">
+                        <div className="w-6 h-full flex flex-col justify-center items-center">
                             {row.index}
                         </div>
                     ),
@@ -200,7 +201,7 @@ export function useVirtualizedTable (
             {
                 id: "indexes",
                 cell: ({ row }) => (
-                    <div className="w-[1.5rem] h-full flex flex-col justify-center items-center">
+                    <div className="w-6 h-full flex flex-col justify-center items-center">
                         {row.index}
                     </div>
                 ),
@@ -211,14 +212,16 @@ export function useVirtualizedTable (
     // how each column should access and/or transform row data with either an
     // accessorKey or accessorFn. Column Defs are the single most important part
     // of building a table.
+
+    // Effect to trigger a table refresh when isLoading changes
     useEffect(() => {
         triggerRefresh();
     }, [isLoading]);
 
+    // Function to trigger a table refresh
     const triggerRefresh = () => {
         setColumns(prev => prev.slice());
     }
-
     const defaultColumn = useMemo<Partial<ColumnDef<VTData>>>(() => ({
         cell: props => {
             const cellProps = {
@@ -368,9 +371,19 @@ export function useVirtualizedTable (
     }
     const getTableStates = () => {
         const cols = table.getRowModel().rows[0] ? Object.values(table.getRowModel().rows[0]!.original).toSorted() : [];
+        const rows: Array<{ [index: string]: string }> = [];
+        table.getPreFilteredRowModel().rows.forEach(row => {
+            const rowObj: { [index: string]: string } = {};
+            row.getAllCells().forEach(cell => {
+                if (cell.column.id === "indexes") return;
+                rowObj[`${cell.column.id}`] = cell.getValue() as string ?? "";
+            });
+            rows.push(rowObj);
+        });
         return {
             values: Array.from(values),
             headerType: Array.from(headerType),
+            rows,
             cols,
             title,
             data,
