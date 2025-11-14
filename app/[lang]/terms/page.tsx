@@ -88,7 +88,7 @@ export default async function Page ({ params }: {
 
                 <h2>11. Información de Contacto</h2>
                 
-                <p>Si tienes preguntas o inquietudes sobre estos términos, contáctanos {<Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`}>aquí</Link>}.</p>
+                <p>Si tienes preguntas o inquietudes sobre estos términos, contáctanos {<Link href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/contact`}>aquí</Link>}.</p>
                 <Divider className="my-4"/>
                 <footer className="text-tiny dark:bg-[#1A1A1A]" id="footer">
                     <p className="mb-1">1 <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> es un servicio que proporciona una lista de contraseñas que han sido expuestas previamente en filtraciones de datos. Esto se utiliza para evitar el uso de contraseñas inseguras. Desde nuestro lado, verificamos tu contraseña usando un método que preserva la privacidad y asegura que nunca se revele por completo.</p>
@@ -180,7 +180,7 @@ export default async function Page ({ params }: {
 
             <h2>11. Contact Information</h2>
             
-            <p>If you have any questions or concerns about these terms, please contact us {<Link href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`}>here</Link>}.</p>
+            <p>If you have any questions or concerns about these terms, please contact us {<Link href={`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/contact`}>here</Link>}.</p>
             <Divider className="my-4"/>
             <footer className="text-tiny dark:bg-[#1A1A1A]" id="footer">
                 <p className="mb-1">1 <Link href="https://haveibeenpwned.com/Passwords">Have I Been Pwned</Link> is a service that provides a list of passwords previously exposed in data breaches. This is used to avoid the use of unsuitable passwords. From our side, we check your password against a public database of exposed passwords (Have I Been Pwned) using a privacy-preserving method that ensures your password is never fully revealed.</p>

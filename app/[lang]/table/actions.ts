@@ -26,7 +26,6 @@ export async function SaveNewTableAction (states: StatesType) {
         const values_key = await generateKmsDataKey();
         const cols_specs_key = await generateKmsDataKey();
         const rows_specs_key = await generateKmsDataKey();
-
         if (name_key && rows_key && values_key && cols_specs_key && rows_specs_key) {
             const insert = await sql`
             INSERT INTO scheduler_users_tables (
@@ -49,7 +48,7 @@ export async function SaveNewTableAction (states: StatesType) {
                 ${session.user.id},
                 pgp_sym_encrypt(${states.title}, ${name_key.Plaintext}),
                 ${name_key.CiphertextBlob},
-                pgp_sym_encrypt(${JSON.stringify(states.data)}, ${rows_key.Plaintext}),
+                pgp_sym_encrypt(${JSON.stringify(states.rows)}, ${rows_key.Plaintext}),
                 ${rows_key.CiphertextBlob},
                 pgp_sym_encrypt(${JSON.stringify(states.values)}, ${values_key.Plaintext}),
                 ${values_key.CiphertextBlob},
@@ -121,7 +120,7 @@ export async function SaveTableAction (
             UPDATE scheduler_users_tables
             SET 
                 table_name = pgp_sym_encrypt(${states.title}, ${name_key}),
-                table_rows = pgp_sym_encrypt(${JSON.stringify(states.data)}, ${rows_key}),
+                table_rows = pgp_sym_encrypt(${JSON.stringify(states.rows)}, ${rows_key}),
                 table_values = pgp_sym_encrypt(${JSON.stringify(states.values)}, ${values_key}),
                 table_type = ${JSON.stringify(states.headerType)},
                 table_interval = ${states.interval},
@@ -132,7 +131,7 @@ export async function SaveTableAction (
             WHERE user_id = ${session.user.id} AND id = ${table_id};`
             .then(() => ({ ok: true, message: locale === "es" ? "¡Horario guardado!" : "Schedule saved!" }))
             .catch(()=> ({ ok: false, message: locale === "es" ? "Ha ocurrido un error 😔" : "An error has occurred 😔" }));
-            revalidatePath(`${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/dashboard`);
+            revalidatePath(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${locale}/dashboard`);
             return insert;
         }
         return {
