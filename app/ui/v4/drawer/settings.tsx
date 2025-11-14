@@ -2,10 +2,10 @@
 import { Button, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, useDisclosure } from "@heroui/react";
 import { useParams } from "next/navigation"
 import { Box, SettingsGearFill } from "../../icons";
-import { Dispatch, Key, SetStateAction, useMemo } from "react";
+import { Dispatch, SetStateAction, useMemo } from "react";
 import ValuesList from "../table/list";
 import { ColumnDef, Table } from "@tanstack/react-table";
-import { ColSpecs, RowSpecs, VTData } from "@/app/hooks/custom";
+import { ColSpecs, RowSpecs, StatesType, VTData } from "@/app/hooks/custom";
 import ColTabs from "../tabs/col-tabs";
 import RowTabs from "../tabs/row-tabs";
 import { useSession } from "next-auth/react";
@@ -21,16 +21,7 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
     setColSpecs: Dispatch<SetStateAction<ColSpecs>>,
     setRowSpecs: Dispatch<SetStateAction<RowSpecs>>,
     previousStorage: string | null,
-    getTableStates: () => {
-        values: string[];
-        headerType: Key[];
-        cols: Array<string | undefined>;
-        title: string;
-        data: VTData[];
-        interval: number;
-        colSpecs: ColSpecs;
-        rowSpecs: RowSpecs;
-    },
+    getTableStates: () => StatesType,
     handleSubmit: (input: any) => void,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
@@ -86,7 +77,7 @@ export default function Settings({ table, values, colSpecs, rowSpecs, setValues,
                                 isDisabled={ false }
                                 isLoading={ false }
                                 size="lg"
-                                className="bg-gradient-to-tr from-violet-600 to-blue-500 text-white shadow-lg" 
+                                className="bg-linear-to-tr from-violet-600 to-blue-500 text-white shadow-lg" 
                                 onPress={ () => {
                                     const {
                                         values,
