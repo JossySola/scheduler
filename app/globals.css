@@ -69,7 +69,8 @@ a {
     background-color: oklch(57.7% 0.245 27.325);
     color: white;
     padding: calc(var(--spacing) * 5);
-    margin: calc(var(--spacing) * 5);
+    margin-left: calc(var(--spacing) * 5);
+    margin-right: calc(var(--spacing) * 5);
     font-size: var(--text-base); /* 1rem (16px) */ 
     line-height: var(--text-base--line-height); /* calc(1.5 / 1) */
     border: 2px;
