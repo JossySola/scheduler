@@ -39,7 +39,7 @@ export async function verifyTokenAction (state: { message: string }, formData: F
         }
     }
     
-    const signup = await fetch(`${process.env.NEXTAUTH_URL}/api/signup`, {
+    const signup = await fetch(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/api/signup`, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
@@ -126,7 +126,7 @@ async function handleLogin (username: string, password: string, locale: string) 
     }
     const signing = await signIn('credentials', {
         redirect: true,
-        redirectTo: `${process.env.NEXTAUTH_URL}/${locale}/dashboard`,
+        redirectTo: `${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${locale}/dashboard`,
         username,
         password,
     })

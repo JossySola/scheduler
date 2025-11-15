@@ -11,7 +11,7 @@ export async function SendResetEmailAction (formData: FormData) {
     const email = formData.get("email")?.toString();
     const requestHeaders = await headers();
     const lang = requestHeaders.get("x-user-locale") || "en";
-    const responseUrl = new URL(`${process.env.NEXTAUTH_URL}/${lang}/recover`)
+    const responseUrl = new URL(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/recover`)
 
     if (!email) {
         responseUrl.searchParams.append("error", "400")
@@ -31,7 +31,7 @@ export async function SendResetEmailAction (formData: FormData) {
     };
 
     const token = randomUUID();
-    const resetUrl = new URL(`${process.env.NEXTAUTH_URL}/${lang}/reset/q`);
+    const resetUrl = new URL(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/reset/q`);
     resetUrl.searchParams.append('email', email);
     resetUrl.searchParams.append('token', token);
 
