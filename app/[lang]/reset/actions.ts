@@ -102,7 +102,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
 
         await signOut({
             redirect: true,
-            redirectTo: `${process.env.NEXTAUTH_URL}/${locale}/login`
+            redirectTo: `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/login`
         });
 
         return {
@@ -171,7 +171,7 @@ export async function passwordResetAction(prevState: { message: string }, formDa
 
     await signOut({
         redirect: true,
-        redirectTo: `${process.env.NEXTAUTH_URL}/${locale}/login`
+        redirectTo: `${process.env.NEXT_PUBLIC_ORIGIN}/${locale}/login`
     });
 
     return {
