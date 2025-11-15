@@ -41,7 +41,7 @@ export default function Settings ({ lang, data, onlyWithProvider }: {
                             <div className="flex flex-col gap-1">
                                 <Button 
                                 className="action-button" 
-                                onPress={() => redirect(`${process.env.NEXT_PUBLIC_DEV_ORIGIN}/${lang}/recover`)}>
+                                onPress={() => redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/recover`)}>
                                     { lang === "es" ? "Restaurar contraseña" : "Reset password" }
                                 </Button>
                                 <DangerButton onlyWithProvider={ onlyWithProvider } />
