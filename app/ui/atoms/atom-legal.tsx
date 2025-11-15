@@ -17,9 +17,9 @@ export default function FooterLegal () {
                 </Button>
             </DropdownTrigger>
             <DropdownMenu>
-                <DropdownItem key="privacy" href={`${process.env.NEXTAUTH_URL}/${lang}/privacy`}>{ lang === "es" ? "Privacidad" : "Privacy" }</DropdownItem>
-                <DropdownItem key="terms" href={`${process.env.NEXTAUTH_URL}/${lang}/terms`}>{ lang === "es" ? "Términos de Uso" : "Terms of Use" }</DropdownItem>
-                <DropdownItem key="delete-data" href={`${process.env.NEXTAUTH_URL}/${lang}/delete-my-data`}>{ lang === "es" ? "Eliminar mi información" : "Delete My Data" }</DropdownItem>
+                <DropdownItem key="privacy" href={`/${lang}/privacy`}>{ lang === "es" ? "Privacidad" : "Privacy" }</DropdownItem>
+                <DropdownItem key="terms" href={`/${lang}/terms`}>{ lang === "es" ? "Términos de Uso" : "Terms of Use" }</DropdownItem>
+                <DropdownItem key="delete-data" href={`/${lang}/delete-my-data`}>{ lang === "es" ? "Eliminar mi información" : "Delete My Data" }</DropdownItem>
             </DropdownMenu>
         </Dropdown>
     )

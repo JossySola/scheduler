@@ -25,7 +25,7 @@ export default function SaveButton({ states }: { states: StatesType }) {
                 color: newSave.state.ok ? "success" : "danger",
             })
             if (newSave.state.id) {
-                redirect(`${process.env.NEXTAUTH_URL}/${lang}/table/${newSave.state.id}`);                
+                redirect(`/${lang}/table/${newSave.state.id}`);                
             }
         }
     }, [newSave.state]);

@@ -16,7 +16,7 @@ export default function DashboardTable ({ metadata }: {
     return (
         <section className="h-screen w-full p-5 pt-0 sm:p-10 sm:pt-0">
             <section className="flex items-center justify-center flex-row sm:justify-start">
-                <Button as={HeroLink} href={`${process.env.NEXTAUTH_URL}/${lang}/table/new`} color="success" style={{ textDecoration: "none" }} className="text-white text-md mt-3 mb-3" endContent={<PlusCircle />} disabled={ metadata && metadata.length === 3 }>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
+                <Button as={HeroLink} href={`/${lang}/table/new`} color="success" style={{ textDecoration: "none" }} className="text-white text-md mt-3 mb-3" endContent={<PlusCircle />} disabled={ metadata && metadata.length === 3 }>{ lang === "es" ? "Crear nuevo" : "Create new"}</Button>
                 {
                     metadata && metadata.length === 0 || metadata.length === 1 && <Chip className="m-3" variant="dot" color="success">{ lang === "es" ? `Tabla ${metadata.length} de 3` : `Schedule ${metadata.length} out of 3` }</Chip>
                 }
