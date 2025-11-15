@@ -17,7 +17,7 @@ export default function FooterContact () {
                 </Button>
             </DropdownTrigger>
             <DropdownMenu>
-                <DropdownItem key="contact" href={`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/contact`}>{ lang === "es" ? "Contacto" : "Contact" }</DropdownItem>
+                <DropdownItem key="contact" href={`${process.env.NEXTAUTH_URL}/${lang}/contact`}>{ lang === "es" ? "Contacto" : "Contact" }</DropdownItem>
             </DropdownMenu>
         </Dropdown>
     )

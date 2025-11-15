@@ -61,7 +61,7 @@ export default async function Page ({ params, searchParams }: {
           password: raw,
           redirect: false
         });
-        redirect(`${process.env.NEXT_PUBLIC_ORIGIN}/${lang}/dashboard`);
+        redirect(`${process.env.NEXTAUTH_URL}/${lang}/dashboard`);
     } catch (err) {
         return (
             <section className="flex flex-col justify-center items-center h-screen p-10 text-center">
