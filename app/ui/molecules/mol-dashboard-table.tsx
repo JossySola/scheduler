@@ -44,7 +44,7 @@ export default function DashboardTable ({ metadata }: {
                         <TableRow key={`${row.table_name}${index}`}>
                             <TableCell>
                                 <Link 
-                                href={`${process.env.NEXTAUTH_URL}/table/${row.table_id}`} 
+                                href={`/table/${row.table_id}`} 
                                 className="text-md tracking-wide no-underline">
                                     <Chip 
                                     endContent={ <PencilEdit width={12} /> } 
