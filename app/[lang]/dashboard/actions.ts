@@ -285,9 +285,9 @@ export async function DeleteTableAction (previousState: { message: string }, for
         SET num_tables = GREATEST(num_tables - 1, 0)
         WHERE id = ${session.user.id};
         `;
-        revalidatePath(`${process.env.NEXTAUTH_URL}/${locale}/dashboard`);
-        revalidatePath(`${process.env.NEXTAUTH_URL}/${locale}/table/${table_id}`);
-        redirect(`${process.env.NEXTAUTH_URL}/${locale}/dashboard`);
+        revalidatePath(`/${locale}/dashboard`);
+        revalidatePath(`/${locale}/table/${table_id}`);
+        redirect(`/${locale}/dashboard`);
         return {
             message: "Deleted",
         }
