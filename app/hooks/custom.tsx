@@ -176,7 +176,7 @@ export function useVirtualizedTable (
 
     const [columns, setColumns] = useState<Array<ColumnDef<VTData>>>(() => {
         if (storedData && storedData.data.length > 0) {
-            const dataKeys = Object.keys(storedData.data[0]).toSorted();
+            const dataKeys = Object.keys(storedData.data[0]);
             return [
                 {
                     id: "indexes",
