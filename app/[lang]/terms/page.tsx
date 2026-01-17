@@ -8,7 +8,7 @@ export default async function Page ({ params }: {
 
     if (lang === "es") {
         return (
-            <section className="p-10 pb-[6rem] text-base/7 h-fit">
+            <section className="p-10 pb-24 text-base/7 h-fit">
 
                 <h1>Términos de Uso</h1>
 
@@ -100,7 +100,7 @@ export default async function Page ({ params }: {
         )
     }
     return (
-        <section className="p-10 pb-[6rem] text-base/7 h-fit">
+        <section className="p-10 pb-24 text-base/7 h-fit">
 
             <h1>Terms of Use</h1>
 

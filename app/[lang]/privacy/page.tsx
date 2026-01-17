@@ -8,7 +8,7 @@ export default async function Page ({ params }: {
 
     if (lang === "es") {
         return (
-            <section className="p-10 pb-[6rem] text-base/7 h-fit">
+            <section className="p-10 pb-24 text-base/7 h-fit">
                 <h1>Política de Privacidad</h1>
 
                 <i>Fecha de entrada en vigor: 15 de julio de 2025.</i>
@@ -143,7 +143,7 @@ export default async function Page ({ params }: {
         )
     }
     return (
-        <section className="p-10 pb-[6rem] text-base/7 h-fit">
+        <section className="p-10 pb-24 text-base/7 h-fit">
             
             <h1>Privacy Policy</h1>
 

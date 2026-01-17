@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@heroui/react";
 import { SendResetEmailAction } from "./actions";
 import FormInputEmail from "@/app/ui/atoms/atom-form-input-email";
@@ -31,8 +32,8 @@ export default async function Page({ params, searchParams }: {
             <h2>{ lang === "es" ? "Recuperación de contraseña" : "Password Recovery" }</h2>
             {
                 lang === "es" ? 
-                <p className="sm:w-[500px] m-5">Enviarémos un correo electrónico con un enlace. Por favor, sigue las instrucciones que encontrarás en el mensaje. Recuerda checar la carpeta de <b>Spam</b> en caso de no ver el correo en la <b>Bandeja de Entrada</b> o espera unos minutos.</p> :
-                <p className="sm:w-[500px] m-5">We'll send you an e-mail with a link. Please, follow the instructions contained in the e-mail. Remember to check the <b>Spam</b> folder in case you don't see the e-mail in your <b>Inbox</b> or wait a few minutes.</p>
+                <p className="sm:w-125 m-5">Enviarémos un correo electrónico con un enlace. Por favor, sigue las instrucciones que encontrarás en el mensaje. Recuerda checar la carpeta de <b>Spam</b> en caso de no ver el correo en la <b>Bandeja de Entrada</b> o espera unos minutos.</p> :
+                <p className="sm:w-125 m-5">We'll send you an e-mail with a link. Please, follow the instructions contained in the e-mail. Remember to check the <b>Spam</b> folder in case you don't see the e-mail in your <b>Inbox</b> or wait a few minutes.</p>
             }
             <form className="flex flex-col justify-center items-center" action={SendResetEmailAction}>
                 <FormInputEmail />
