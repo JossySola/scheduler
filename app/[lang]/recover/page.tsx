@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@heroui/react";
 import { SendResetEmailAction } from "./actions";
 import FormInputEmail from "@/app/ui/atoms/atom-form-input-email";
