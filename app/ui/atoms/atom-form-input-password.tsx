@@ -34,7 +34,7 @@ export default function FormInputPassword ({ password, setPassword, confirmation
                 isRequired
                 radius="md"
                 variant="bordered"
-                label={ lang === "es" ? "Crear contraseña " : "Set a password " }
+                label={ lang === "es" ? "Crear contraseña" : "Set a password" }
                 description={
                     lang === "es" ? 
                     <p>Recomendamos ampliamente utilizar tu <b>Administrador de Contraseñas</b> para crear una contraseña segura. De este modo, ¡la contraseña quedará guardada en tu dispositivo y podrás utilizarla sin necesidad de memorizarla!</p> :
@@ -68,7 +68,7 @@ export default function FormInputPassword ({ password, setPassword, confirmation
                 isRequired
                 radius="md"
                 variant="bordered"
-                label={ lang === "es" ? "Confirmar contraseña: " : "Confirm password: " }
+                label={ lang === "es" ? "Confirmar contraseña" : "Confirm password" }
                 description={ lang === "es" ? <p>Al completar el proceso de registro e/o iniciando sesión con algún proveedor externo, aceptas nuestros <Link href={`/${lang}/terms`}>Términos y Condiciones</Link>.</p> : <p>By completing the sign up process and/or signing in with an external provider, you agree with our <Link href={`/${lang}/terms`}>Terms & Conditions</Link>.</p> }
                 labelPlacement="outside"
                 size="lg"
@@ -101,7 +101,7 @@ export default function FormInputPassword ({ password, setPassword, confirmation
             isRequired
             radius="md"
             variant="bordered"
-            label={ lang === "es" ? "Crear contraseña " : "Set a password " }
+            label={ lang === "es" ? "Crear contraseña" : "Set a password" }
             description={
                 lang === "es" ? 
                 <p>Recomendamos ampliamente utilizar tu <b>Administrador de Contraseñas</b> para crear una contraseña segura. De este modo, ¡la contraseña quedará guardada en tu dispositivo y podrás utilizarla sin necesidad de memorizarla!</p> :
@@ -134,7 +134,7 @@ export default function FormInputPassword ({ password, setPassword, confirmation
             isRequired
             radius="md"
             variant="bordered"
-            label={ lang === "es" ? "Confirmar contraseña: " : "Confirm password: " }
+            label={ lang === "es" ? "Confirmar contraseña" : "Confirm password" }
             description={ lang === "es" ? <p>Al completar el proceso de registro e/o iniciando sesión con algún proveedor externo, aceptas nuestros <Link href={`/${lang}/terms`}>Términos y Condiciones</Link>.</p> : <p>By completing the sign up process and/or signing in with an external provider, you agree with our <Link href={`/${lang}/terms`}>Terms & Conditions</Link>.</p> }
             labelPlacement="outside"
             size="lg"
