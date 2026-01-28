@@ -13,7 +13,7 @@ export default function FormInputName ({ name, setName }: {
     return (
         <Input 
         name="name"
-        aria-label={ lang === "es" ? "Nombre" : "Name" }
+        aria-label={ lang === "es" ? "Nombre " : "Name " }
         type="text"
         maxLength={30}
         autoComplete="name"
