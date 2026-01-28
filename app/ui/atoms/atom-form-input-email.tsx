@@ -18,12 +18,12 @@ export default function FormInputEmail ({ email, setEmail }: {
             type="email"
             autoComplete="email"
             className="sm:w-[400px] m-2"
-            aria-label={ lang === "es" ? "Correo electrónico" : "Email" }
+            aria-label={ lang === "es" ? "Correo electrónico " : "Email " }
             isRequired
             isClearable
             radius="md"
             variant="bordered"
-            label={ lang === "es" ? "Correo electrónico" : "Email" }
+            label={ lang === "es" ? "Correo electrónico " : "Email " }
             labelPlacement="outside"
             size="lg"
             value={ email }
@@ -40,7 +40,7 @@ export default function FormInputEmail ({ email, setEmail }: {
         isClearable
         radius="md"
         variant="bordered"
-        label={ lang === "es" ? "Correo electrónico" : "Email" }
+        label={ lang === "es" ? "Correo electrónico " : "Email " }
         labelPlacement="outside"
         size="lg"
         value={ localEmail }
