@@ -23,7 +23,7 @@ export default function FormInputEmail ({ email, setEmail }: {
             isClearable
             radius="md"
             variant="bordered"
-            label={ lang === "es" ? "Correo electrónico: " : "Email: " }
+            label={ lang === "es" ? "Correo electrónico" : "Email" }
             labelPlacement="outside"
             size="lg"
             value={ email }
@@ -40,7 +40,7 @@ export default function FormInputEmail ({ email, setEmail }: {
         isClearable
         radius="md"
         variant="bordered"
-        label={ lang === "es" ? "Correo electrónico: " : "Email: " }
+        label={ lang === "es" ? "Correo electrónico" : "Email" }
         labelPlacement="outside"
         size="lg"
         value={ localEmail }
