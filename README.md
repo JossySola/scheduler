@@ -10,7 +10,7 @@ Scheduler is a Next.js web application that leverages advanced AI capabilities t
 - **Personalized Scheduling**: Customizes schedules based on user-provided specifications and values.
 - **Modern UI**: Built with `HeroUI` and `Tailwind CSS` for a responsive, intuitive interface.
 - **Dark Mode Support**: Themes switches based on the user's system preferences.
-- **Database Integration**: `PostgreSQL` database vith `Vercel Postgres`.
+- **Database Integration**: `PostgreSQL` database with `Vercel Postgres`.
 - **Analytics**: Built-in `Vercel Analytics` and `Speed Insights`.
 
 ## Tech Stack
