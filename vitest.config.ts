@@ -24,6 +24,13 @@ export default defineConfig({
                     name: 'Client-side tests',
                     environment: 'happy-dom',
                 }
+            }, 
+            {
+                test: {
+                    include: ['unit-testing/*.vercel.test.{ts,js}'],
+                    name: 'Vercel Edge tests',
+                    environment: 'edge-runtime',
+                }
             }
         ]
     }
