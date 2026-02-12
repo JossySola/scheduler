@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Next Middleware > getLocale > adds locale to the path when it is missing 1`] = `"en"`;
+
+exports[`Next Middleware > getLocale > adds locale to the path when it is missing 2`] = `"/en/dashboard"`;
+
+exports[`Next Middleware > getLocale > returns locale and redirectPath when locale is missing 1`] = `"en"`;
+
+exports[`Next Middleware > getLocale > returns locale and redirectPath when locale is missing 2`] = `"/en/"`;
+
+exports[`Next Middleware > getLocale > returns locale and redirectPath when locale is unsupported 1`] = `"en"`;
+
+exports[`Next Middleware > getLocale > returns locale and redirectPath when locale is unsupported 2`] = `"/en/dashboard"`;
+
+exports[`Next Middleware > getLocale > returns locale from accept-language header when locale is missing 1`] = `"es"`;
+
+exports[`Next Middleware > getLocale > returns locale from accept-language header when locale is missing 2`] = `"/es/dashboard"`;
+
+exports[`Next Middleware > getLocale > returns locale when it is supported 1`] = `"es"`;
+
+exports[`Next Middleware > getLocale > returns locale when it is supported 2`] = `undefined`;
+
+exports[`Next Middleware > getRedirectUrl > does not redirect if user is authenticated and tries to access dashboard or table 1`] = `null`;
+
+exports[`Next Middleware > getRedirectUrl > does not redirect if user is not authenticated and tries to access login or signup 1`] = `null`;
+
+exports[`Next Middleware > getRedirectUrl > redirects to dashboard if user is authenticated and tries to access login or signup 1`] = `"/en/dashboard"`;
+
+exports[`Next Middleware > getRedirectUrl > redirects to login if user is not authenticated and tries to access dashboard or table 1`] = `"/en/login"`;
