@@ -13,7 +13,7 @@ export default defineConfig({
                 extends: true,
                 test: {
                     include: ['unit-testing/*.server.test.{ts,js}'],
-                    name: 'Server-side tests',
+                    name: { label: 'Server-side Tests', color: 'blue' },
                     environment: 'node',
                 }
             },
@@ -21,14 +21,14 @@ export default defineConfig({
                 extends: true,
                 test: {
                     include: ['unit-testing/*.client.test.{ts,js}'],
-                    name: 'Client-side tests',
+                    name: { label: 'Client-side Tests', color: 'green' },
                     environment: 'happy-dom',
                 }
             }, 
             {
                 test: {
                     include: ['unit-testing/*.vercel.test.{ts,js}'],
-                    name: 'Vercel Edge tests',
+                    name: { label: 'Vercel Edge tests', color: 'yellow' },
                     environment: 'edge-runtime',
                 }
             }
