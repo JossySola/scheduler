@@ -1,6 +1,7 @@
 // This is the function that works as the Next middleware
 import { test as baseTest, describe, expect } from 'vitest';
 import { getLocale } from '../../middleware/getLocale';
+import { getRedirectUrl } from '../../middleware/getRedirectUrl';
 
 const test = baseTest.extend<{
     locales: string[];
@@ -47,5 +48,27 @@ describe('Next Middleware', () => {
             expect(locale).toMatchSnapshot();
             expect(redirectPath).toMatchSnapshot();
         });
-    })
+    });
+    describe('getRedirectUrl', () => {
+        test('redirects to dashboard if user is authenticated and tries to access login or signup', () => {
+            const redirectUrl = getRedirectUrl("/en/login", "en", true);
+            expect(redirectUrl).toBe("/en/dashboard");
+            expect(redirectUrl).toMatchSnapshot();
+        });
+        test('redirects to login if user is not authenticated and tries to access dashboard or table', () => {
+            const redirectUrl = getRedirectUrl("/en/dashboard", "en", false);
+            expect(redirectUrl).toBe("/en/login");
+            expect(redirectUrl).toMatchSnapshot();
+        });
+            test('does not redirect if user is authenticated and tries to access dashboard or table', () => {
+            const redirectUrl = getRedirectUrl("/en/dashboard", "en", true);
+            expect(redirectUrl).toBeNull();
+            expect(redirectUrl).toMatchSnapshot();
+        });
+        test('does not redirect if user is not authenticated and tries to access login or signup', () => {
+            const redirectUrl = getRedirectUrl("/en/login", "en", false);
+            expect(redirectUrl).toBeNull();
+            expect(redirectUrl).toMatchSnapshot();
+        });
+    });
 });
