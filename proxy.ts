@@ -3,9 +3,7 @@ import { auth as middleware } from "@/auth";
 import type { User } from '@auth/core/types';
 import { getLocale } from './app/lib/middleware/getLocale';
 import { getRedirectUrl } from './app/lib/middleware/getRedirectUrl';
-
-const locales = ['es', 'en'];
-const defaultLocale = "en";
+import { defaultLocale, locales } from './app/lib/config/i18n';
 
 export interface AuthenticatedRequest extends NextRequest {
     auth: {
