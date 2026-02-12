@@ -7,7 +7,7 @@ export function getLocale(
     const pathnameParts = pathname.split("/");
     const pathnameLocale = pathnameParts[1];
     // Missing locale in the URL, try to get it from the accept-language header and redirect to the correct path
-    if (!pathnameLocale || pathnameLocale.length === 0) {
+    if (!pathnameLocale || !pathnameLocale.match(/^[a-z]{2}(-[A-Z]{2})?$/)) {
         const userLocale = acceptLanguage
         ?.split(",")[0]
         ?.trim()
@@ -23,12 +23,10 @@ export function getLocale(
         };
     }
     // Unsupported locale in the URL, redirect to the default locale path
-    if (!locales.includes(pathnameLocale)) {
+    if (pathnameLocale.match(/^[a-z]{2}(-[A-Z]{2})?$/) && !locales.includes(pathnameLocale)) {
         return {
             locale: defaultLocale,
-            redirectPath: `/${defaultLocale}${pathname.substring(
-                pathnameLocale.length + 1
-            )}`,
+            redirectPath: `/${defaultLocale}${pathname.substring(pathnameLocale.length + 1)}`,
         };
     }
     // Supported locale in the URL, continue with the request
