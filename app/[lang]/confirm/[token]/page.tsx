@@ -1,4 +1,4 @@
-import pool from "@/app/lib/mocks/db";
+import pool from "@/app/lib/tests/mocks/db";
 import { decrypt, decryptKmsDataKey, generateKmsDataKey } from "@/app/lib/utils";
 import { signIn } from "@/auth";
 import Link from "next/link";

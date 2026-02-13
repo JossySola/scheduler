@@ -1,4 +1,4 @@
-import pool from "@/app/lib/mocks/db";
+import pool from "@/app/lib/tests/mocks/db";
 import UserProfile from "@/app/ui/atoms/atom-user-profile";
 import Settings from "@/app/ui/molecules/mol-settings";
 import { auth } from "@/auth";

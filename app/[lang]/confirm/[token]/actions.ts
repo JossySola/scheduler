@@ -1,7 +1,7 @@
 "use server"
 import "server-only";
 import { sql } from "@vercel/postgres";
-import pool from "@/app/lib/mocks/db";
+import pool from "@/app/lib/tests/mocks/db";
 import { signIn } from "@/auth";
 import { headers } from "next/headers";
 

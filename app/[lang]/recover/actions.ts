@@ -1,6 +1,6 @@
 "use server"
 import "server-only";
-import pool from "@/app/lib/mocks/db";
+import pool from "@/app/lib/tests/mocks/db";
 import { randomUUID } from "crypto";
 import sgMail from "@sendgrid/mail";
 import { headers } from "next/headers";

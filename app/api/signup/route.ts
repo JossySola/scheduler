@@ -1,7 +1,7 @@
 "use server"
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
-import pool from "@/app/lib/mocks/db";
+import pool from "@/app/lib/tests/mocks/db";
 import { isPostgreSQLError } from "@/app/lib/definitions";
 import { generateKmsDataKey, hashPasswordAction } from "@/app/lib/utils";
 import { sql } from "@vercel/postgres";

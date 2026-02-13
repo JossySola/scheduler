@@ -1,6 +1,6 @@
 'use server'
 import "server-only";
-import pool from "@/app/lib/mocks/db";
+import pool from "@/app/lib/tests/mocks/db";
 import { encrypt, generateKmsDataKey, hashPasswordAction, isPasswordPwned } from "@/app/lib/utils";
 import sgMail from "@sendgrid/mail";
 import * as z from "zod/v4";

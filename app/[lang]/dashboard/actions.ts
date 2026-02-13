@@ -1,7 +1,7 @@
 "use server"
 import "server-only"
 import { auth, signOut } from "@/auth";
-import pool from "@/app/lib/mocks/db";
+import pool from "@/app/lib/tests/mocks/db";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";

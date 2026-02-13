@@ -2,7 +2,7 @@
 import "server-only";
 import { decryptKmsDataKey, generateKmsDataKey, hashPasswordAction, isPasswordPwned, verifyPasswordAction } from "@/app/lib/utils";
 import { auth, signOut } from "@/auth";
-import pool from "@/app/lib/mocks/db";
+import pool from "@/app/lib/tests/mocks/db";
 import { headers } from "next/headers";
 import { sql } from "@vercel/postgres";
 

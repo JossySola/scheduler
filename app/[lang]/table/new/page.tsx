@@ -1,4 +1,4 @@
-import pool from "@/app/lib/mocks/db";
+import pool from "@/app/lib/tests/mocks/db";
 import Table from "@/app/ui/v4/table/table";
 import { auth } from "@/auth";
 
