@@ -1,7 +1,7 @@
 'use server'
 import "server-only";
 import crypto, { randomBytes } from "crypto";
-import pool from "./mocks/db";
+import pool from "./tests/mocks/db";
 import sgMail from "@sendgrid/mail";
 import * as z from "zod/v4";
 import { KMSDataKey, UserResponse, UtilResponse } from "./definitions";
