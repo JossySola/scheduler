@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { SharedSelection } from "@heroui/react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useParams } from "next/navigation";
-import { CalendarDate, parseDate } from "@internationalized/date";
+import { DateValue, parseDate } from "@internationalized/date";
 import { DatePicker } from "@heroui/date-picker";
 import * as z from "zod/v4";
 import { Table } from "@tanstack/react-table";
@@ -22,7 +22,7 @@ export default function DateInput({ initialValue, handleDuplicates, isDuplicate,
     setHeaderType: Dispatch<SetStateAction<SharedSelection>>,
 }) {
     const { lang } = useParams<{ lang: "es" | "en" }>();
-    const [value, setValue] = useState<CalendarDate| null>(() => {
+    const [value, setValue] = useState<DateValue | null>(() => {
         if (initialValue && typeof initialValue === "string") {
             const isDate = z.iso.date().safeParse(initialValue);
             if (isDate.success) {
