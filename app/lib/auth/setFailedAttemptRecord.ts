@@ -1,7 +1,12 @@
 import { sql } from "@vercel/postgres";
+import { z } from "zod/v4";
 
 export async function setFailedAttemptRecord(email: string): Promise<string | null> {
     try {
+        const verifyEmail = z.email().safeParse(email);
+        if (!verifyEmail.success) {
+            throw new Error("Invalid email format");
+        }
         const response = await sql`
         INSERT INTO scheduler_login_attempts (email, created_at, last_attempt_at, next_attempt_allowed_at, attempts)
         VALUES (${email}, NOW(), NOW(), NOW() + INTERVAL '1 minute', 1)

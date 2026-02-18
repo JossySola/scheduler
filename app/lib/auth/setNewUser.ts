@@ -1,4 +1,5 @@
 import { sql } from "@vercel/postgres";
+import { z } from "zod/v4";
 
 export async function setNewUser(
     name: string,
@@ -7,6 +8,13 @@ export async function setNewUser(
     user_image: string,
 ): Promise<{ success: boolean; id: string }> {
     try {
+        const verifyName = z.string().nonempty().safeParse(name);
+        const verifyUsername = z.string().nonempty().safeParse(username);
+        const verifyEmail = z.email().safeParse(email);
+        const verifyUserImage = z.url().safeParse(user_image);
+        if (!verifyName.success || !verifyUsername.success || !verifyEmail.success || !verifyUserImage.success) {
+            throw new Error("Invalid data format");
+        }
         const response = await sql`
         INSERT INTO scheduler_users(name, username, email, user_image)
         VALUES (

@@ -1,4 +1,5 @@
 import { sql } from "@vercel/postgres";
+import { z } from "zod/v4";
 
 type UserIntel = {
     id: string;
@@ -10,6 +11,10 @@ type UserIntel = {
 }
 export async function getUserIntelByUsername(username: string): Promise<UserIntel | null> {
     try {
+        const verifyUsername = z.string().nonempty().safeParse(username);
+        if (!verifyUsername.success) {
+            throw new Error("Invalid username format or missing");
+        }
         const data = await sql`
         SELECT
             id,

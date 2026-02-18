@@ -1,7 +1,12 @@
 import { sql } from "@vercel/postgres";
+import { z } from "zod/v4";
 
-export async function isAccountLocked(email: string): Promise<{ status: boolean, nextAttempt?: string }> {
+export async function isAccountLocked(email: string): Promise<{ isLocked: boolean, nextAttempt?: string }> {
     try {
+        const verifyEmail = z.email().safeParse(email);
+        if (!verifyEmail.success) {
+            throw new Error("Invalid email format");
+        }
         const response = await sql`
         SELECT next_attempt_allowed_at
         FROM scheduler_login_attempts
@@ -9,10 +14,10 @@ export async function isAccountLocked(email: string): Promise<{ status: boolean,
         AND next_attempt_allowed_at > NOW();
         `;
         return {
-            status: true,
+            isLocked: true,
             nextAttempt: response.rows[0].next_attempt_allowed_at,
         };
     } catch (error) {
-        return { status: false };
+        return { isLocked: false };
     }
 }

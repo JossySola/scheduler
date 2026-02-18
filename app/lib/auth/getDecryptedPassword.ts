@@ -1,7 +1,16 @@
 import { sql } from "@vercel/postgres";
+import { z } from "zod/v4";
 
 export async function getDecryptedPassword(decryptedKey: string, email: string): Promise<string | null> {
     try {
+        const verifiedKey = z.string().min(36).safeParse(decryptedKey);
+        if (!verifiedKey.success) {
+            throw new Error("Invalid decrypted key");
+        }
+        const verifiedEmail = z.email().safeParse(email);
+        if (!verifiedEmail.success) {
+            throw new Error("Invalid email format");
+        }
         const password = await sql`
         SELECT pgp_sym_decrypt_bytea(password, ${decryptedKey}) AS decrypted_password
         FROM scheduler_users
