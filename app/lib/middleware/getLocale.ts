@@ -1,9 +1,31 @@
+import { z } from "zod/v4";
+
 export function getLocale(
     pathname: string,
     locales: string[],
     defaultLocale: string,
     acceptLanguage: string | null,
 ): { locale: string, redirectPath?: string } {
+    const verifyPathname = z.string().nonempty().safeParse(pathname);
+    if (!verifyPathname.success) {
+        console.error("Invalid pathname:", pathname);
+        return { locale: defaultLocale };
+    }
+    const verifyLocales = z.array(z.string().nonempty()).safeParse(locales);
+    if (!verifyLocales.success) {
+        console.error("Invalid locales array:", locales);
+        return { locale: defaultLocale };
+    }
+    const verifyDefaultLocale = z.string().nonempty().safeParse(defaultLocale);
+    if (!verifyDefaultLocale.success) {
+        console.error("Invalid default locale:", defaultLocale);
+        return { locale: defaultLocale };
+    }
+    const verifyAcceptLanguage = z.string().nullable().safeParse(acceptLanguage);
+    if (!verifyAcceptLanguage.success) {
+        console.error("Invalid accept-language header:", acceptLanguage);
+        return { locale: defaultLocale };
+    }
     const pathnameParts = pathname.split("/");
     const pathnameLocale = pathnameParts[1];
     // Missing locale in the URL, try to get it from the accept-language header and redirect to the correct path
