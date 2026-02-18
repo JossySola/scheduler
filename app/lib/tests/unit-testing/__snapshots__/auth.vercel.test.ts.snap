@@ -1,0 +1,80 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Next Auth > getDecryptedKey > DecryptCommand constructor has been called with correct parameters 1`] = `
+[MockFunction] {
+  "calls": [
+    [
+      {
+        "CiphertextBlob": {
+          "data": [
+            116,
+            101,
+            115,
+            116,
+            67,
+            105,
+            112,
+            104,
+            101,
+            114,
+            84,
+            101,
+            120,
+            116,
+          ],
+          "type": "Buffer",
+        },
+        "KeyId": "testKeyArn",
+      },
+    ],
+    [
+      {
+        "CiphertextBlob": {
+          "data": [
+            116,
+            101,
+            115,
+            116,
+            67,
+            105,
+            112,
+            104,
+            101,
+            114,
+            84,
+            101,
+            120,
+            116,
+          ],
+          "type": "Buffer",
+        },
+        "KeyId": "testKeyArn",
+      },
+    ],
+  ],
+  "results": [
+    {
+      "type": "return",
+      "value": Mock {},
+    },
+    {
+      "type": "return",
+      "value": Mock {},
+    },
+  ],
+}
+`;
+
+exports[`Next Auth > getDecryptedKey > DecryptCommand constructor has been called with correct parameters 2`] = `"ZGVjcnlwdGVkS2V5"`;
+
+exports[`Next Auth > getDecryptedKey > KMSClient constructor has been called 1`] = `"ZGVjcnlwdGVkS2V5"`;
+
+exports[`Next Auth > getDecryptedKey > returns decrypted key in base64 format 1`] = `"ZGVjcnlwdGVkS2V5"`;
+
+exports[`Next Auth > getDecryptedPassword > returns null if decryption fails 1`] = `null`;
+
+exports[`Next Auth > getPasswordKey > returns null if retrieval fails 1`] = `null`;
+
+exports[`Next Auth > getPasswordKey > returns password key as string 1`] = `"decryptedPassword"`;
+
+exports[`Next Auth > getPasswordKey > sql utility has been called 1`] = `null`;
