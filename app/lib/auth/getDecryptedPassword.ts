@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 
 export async function getDecryptedPassword(decryptedKey: string, email: string): Promise<string | null> {
     try {
-        const verifiedKey = z.string().min(36).safeParse(decryptedKey);
+        const verifiedKey = z.guid().safeParse(decryptedKey);
         if (!verifiedKey.success) {
             throw new Error("Invalid decrypted key");
         }
