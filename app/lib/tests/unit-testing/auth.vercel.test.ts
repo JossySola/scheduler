@@ -65,18 +65,18 @@ describe("Next Auth", () => {
     describe("getDecryptedPassword", () => {
         afterEach(() => vi.restoreAllMocks());
         test("sql utility has been called", async () => {
-            const result = await getDecryptedPassword("decryptedKey", "email@domain.com");
+            const result = await getDecryptedPassword("1234abcd-12ab-34cd-56ef-1234567890ab", "email@domain.com");
             expect(sql).toHaveBeenCalled();
             expect(result).toMatchSnapshot();
         });
         test("return decrypted password as string", async () => {
-            const result = await getDecryptedPassword("decryptedKey", "email@domain.com");
+            const result = await getDecryptedPassword("1234abcd-12ab-34cd-56ef-1234567890ab", "email@domain.com");
             expect(result).toBe("decryptedPassword");
             expect(result).toMatchSnapshot();
         });
         test("returns null if decryption fails", async () => {
             vi.fn(sql).mockRejectedValue(new Error("Decryption failed"));
-            const result = await getDecryptedPassword("decryptedKey", "email@domain.com");
+            const result = await getDecryptedPassword("1234abcd-12ab-34cd-56ef-1234567890ab", "email@domain.com");
             expect(result).toBeNull();
             expect(result).toMatchSnapshot();
         });

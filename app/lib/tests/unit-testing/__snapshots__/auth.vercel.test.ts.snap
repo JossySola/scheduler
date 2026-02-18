@@ -71,10 +71,12 @@ exports[`Next Auth > getDecryptedKey > KMSClient constructor has been called 1`]
 
 exports[`Next Auth > getDecryptedKey > returns decrypted key in base64 format 1`] = `"ZGVjcnlwdGVkS2V5"`;
 
+exports[`Next Auth > getDecryptedPassword > return decrypted password as string 1`] = `"decryptedPassword"`;
+
 exports[`Next Auth > getDecryptedPassword > returns null if decryption fails 1`] = `null`;
 
-exports[`Next Auth > getPasswordKey > returns null if retrieval fails 1`] = `null`;
+exports[`Next Auth > getDecryptedPassword > sql utility has been called 1`] = `"decryptedPassword"`;
 
-exports[`Next Auth > getPasswordKey > returns password key as string 1`] = `"decryptedPassword"`;
+exports[`Next Auth > getPasswordKey > returns null if retrieval fails 1`] = `null`;
 
 exports[`Next Auth > getPasswordKey > sql utility has been called 1`] = `null`;
