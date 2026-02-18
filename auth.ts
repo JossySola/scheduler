@@ -99,7 +99,7 @@ export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
                 // Check if user's account is locked
                 const account = await isAccountLocked(userData.email);
                 // User's account is locked
-                if (account.status) {
+                if (account.isLocked) {
                     const next_attempt = account.nextAttempt;
                     throw new AuthError("Account currently locked", { cause: { next_attempt } });
                 }
