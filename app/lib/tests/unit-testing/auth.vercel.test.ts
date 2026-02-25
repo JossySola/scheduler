@@ -1,69 +1,110 @@
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { getDecryptedKey } from "../../auth/getDecryptedKey";
-import { KMSClient } from "@aws-sdk/client-kms";
 import { getDecryptedPassword } from "../../auth/getDecryptedPassword";
 import { sql } from "@vercel/postgres";
 import { getPasswordKey } from "../../auth/getPasswordKey";
+import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
 
-vi.mock('@aws-sdk/client-kms', () => {
-    return {
+vi.mock('@aws-sdk/client-kms', () => ({
         KMSClient: vi.fn(class {
-            Plaintext = Buffer.from("decryptedKey");
+            Plaintext = Buffer.from("AQIDAHpL9KfTzWQmrKVuYd/7hcLE3BNzgDXClU2wcqMnJrYhOAEF9trmVSxIEruFErbgQUt3AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQNuHv4En7L/eDf4RVaAgEQgDvjH7tPpSjkhPsy+ybxq4sCciBwBqXhGZvZDyqGCkrMPmr9T97lRqNy7xEsS5Tq5bTmY6kdI4LcI82MZQ==");
             send = vi.fn().mockResolvedValue({ Plaintext: this.Plaintext });
         }),
-        DecryptCommand: vi.fn(class {
-
-        }),
-    }
-});
-vi.mock('@vercel/postgres', () => {
-    return {
+        DecryptCommand: vi.fn(class { }),
+    })
+);
+vi.mock('@vercel/postgres', () => ({
         sql: vi.fn().mockResolvedValue({
             rows: [{ 
-                decrypted_password: Buffer.from("decryptedPassword"),
-                user_password_key: "decryptedPassword",
+                decrypted_password: "decryptedPassword",
+                user_password_key: "passwordKey",
             }]
         }),
-    }
-})
+    })
+);
+
 vi.stubEnv("AWS_KMS_KEY", "testAccessKey");
 vi.stubEnv("AWS_KMS_SECRET", "testSecretKey");
 vi.stubEnv("AWS_KMS_ARN", "testKeyArn");
 
 describe("Next Auth", () => {
-    afterEach(() => vi.restoreAllMocks());
+    describe("getPasswordKey", () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+        });      
+        test("sql utility has been called", async () => {          
+            const result = await getPasswordKey("email@domain.com");
+            expect(sql).toHaveBeenCalled();
+            expect(result).toMatchSnapshot();
+        });
+        test("returns password key as string", async () => {
+            const result = await getPasswordKey("email@domain.com");
+            expect(result).toBe("passwordKey");
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if retrieval fails", async () => {
+            vi.fn(sql).mockRejectedValue(new Error("Retrieval failed"));
+            const result = await getPasswordKey("email@domain.com");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if email format is invalid", async () => {
+            const result = await getPasswordKey("invalid-email");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if email is empty", async () => {
+            const result = await getPasswordKey("");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+    });    
     describe("getDecryptedKey", () => {
-        afterEach(() => vi.restoreAllMocks());
+        beforeEach(() => {
+            vi.clearAllMocks();
+        });
         test("KMSClient constructor has been called", async () => {
-            const result = await getDecryptedKey("dGVzdENpcGhlclRleHQ="); // "testCipherText" in base64
+            const result = await getDecryptedKey("AQIDAHpL9KfTzWQmrKVuYd/7hcLE3BNzgDXClU2wcqMnJrYhOAEF9trmVSxIEruFErbgQUt3AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQNuHv4En7L/eDf4RVaAgEQgDvjH7tPpSjkhPsy+ybxq4sCciBwBqXhGZvZDyqGCkrMPmr9T97lRqNy7xEsS5Tq5bTmY6kdI4LcI82MZQ==");
             expect(KMSClient).toHaveBeenCalled();
             expect(result).toMatchSnapshot();
         });
         test("DecryptCommand constructor has been called with correct parameters", async () => {
-            const DecryptCommand = (await import('@aws-sdk/client-kms')).DecryptCommand;
-            const result = await getDecryptedKey("dGVzdENpcGhlclRleHQ=");
+            const result = await getDecryptedKey("AQIDAHpL9KfTzWQmrKVuYd/7hcLE3BNzgDXClU2wcqMnJrYhOAEF9trmVSxIEruFErbgQUt3AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQNuHv4En7L/eDf4RVaAgEQgDvjH7tPpSjkhPsy+ybxq4sCciBwBqXhGZvZDyqGCkrMPmr9T97lRqNy7xEsS5Tq5bTmY6kdI4LcI82MZQ==");
             expect(DecryptCommand).toHaveBeenCalledWith({
-                CiphertextBlob: Buffer.from("dGVzdENpcGhlclRleHQ=", "base64"),
+                CiphertextBlob: Buffer.from("AQIDAHpL9KfTzWQmrKVuYd/7hcLE3BNzgDXClU2wcqMnJrYhOAEF9trmVSxIEruFErbgQUt3AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQNuHv4En7L/eDf4RVaAgEQgDvjH7tPpSjkhPsy+ybxq4sCciBwBqXhGZvZDyqGCkrMPmr9T97lRqNy7xEsS5Tq5bTmY6kdI4LcI82MZQ==", "base64"),
                 KeyId: "testKeyArn",
             });
             expect(DecryptCommand).toMatchSnapshot();
             expect(result).toMatchSnapshot();
         });
         test("returns decrypted key in base64 format", async () => {
-            const result = await getDecryptedKey("dGVzdENpcGhlclRleHQ="); // "testCipherText" in base64
-            expect(result).toBe("ZGVjcnlwdGVkS2V5"); // "decryptedKey" in base64
+            const result = await getDecryptedKey("AQIDAHpL9KfTzWQmrKVuYd/7hcLE3BNzgDXClU2wcqMnJrYhOAEF9trmVSxIEruFErbgQUt3AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQNuHv4En7L/eDf4RVaAgEQgDvjH7tPpSjkhPsy+ybxq4sCciBwBqXhGZvZDyqGCkrMPmr9T97lRqNy7xEsS5Tq5bTmY6kdI4LcI82MZQ==");
+            expect(result).toBe("QVFJREFIcEw5S2ZUeldRbXJLVnVZZC83aGNMRTNCTnpnRFhDbFUyd2NxTW5KclloT0FFRjl0cm1WU3hJRXJ1RkVyYmdRVXQzQUFBQWZqQjhCZ2txaGtpRzl3MEJCd2FnYnpCdEFnRUFNR2dHQ1NxR1NJYjNEUUVIQVRBZUJnbGdoa2dCWlFNRUFTNHdFUVFOdUh2NEVuN0wvZURmNFJWYUFnRVFnRHZqSDd0UHBTamtoUHN5K3lieHE0c0NjaUJ3QnFYaEdadlpEeXFHQ2tyTVBtcjlUOTdsUnFOeTd4RXNTNVRxNWJUbVk2a2RJNExjSTgyTVpRPT0=");
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if no argument is passed", async () => {
+            const result = await getDecryptedKey(""); // "testCipherText" in base64
+            expect(result).toBeNull();
             expect(result).toMatchSnapshot();
         });
         test("returns null if decryption fails", async () => {
-            const KMSClient = (await import('@aws-sdk/client-kms')).KMSClient;
-            vi.fn(KMSClient.prototype.send).mockRejectedValue(new Error("Decryption failed"));
-            const result = await getDecryptedKey("dGVzdENpcGhlclRleHQ="); // "testCipherText" in base64
+            (KMSClient as any).mockRejectedValueOnce(new Error("Decryption failed"));
+            const result = await getDecryptedKey("AQIDAHpL9KfTzWQmrKVuYd/7hcLE3BNzgDXClU2wcqMnJrYhOAEF9trmVSxIEruFErbgQUt3AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQNuHv4En7L/eDf4RVaAgEQgDvjH7tPpSjkhPsy+ybxq4sCciBwBqXhGZvZDyqGCkrMPmr9T97lRqNy7xEsS5Tq5bTmY6kdI4LcI82MZQ==");
             expect(result).toBeNull();
             expect(result).toMatchSnapshot();
         });
     });
     describe("getDecryptedPassword", () => {
-        afterEach(() => vi.restoreAllMocks());
+        beforeEach(() => {
+            vi.clearAllMocks();
+            (sql as any).mockResolvedValue({
+                rows: [
+                {
+                    decrypted_password: "decryptedPassword",
+                },
+                ],
+            });
+        });
         test("sql utility has been called", async () => {
             const result = await getDecryptedPassword("1234abcd-12ab-34cd-56ef-1234567890ab", "email@domain.com");
             expect(sql).toHaveBeenCalled();
@@ -75,27 +116,18 @@ describe("Next Auth", () => {
             expect(result).toMatchSnapshot();
         });
         test("returns null if decryption fails", async () => {
-            vi.fn(sql).mockRejectedValue(new Error("Decryption failed"));
+            (sql as any).mockRejectedValueOnce(new Error("Decryption failed"));
             const result = await getDecryptedPassword("1234abcd-12ab-34cd-56ef-1234567890ab", "email@domain.com");
             expect(result).toBeNull();
             expect(result).toMatchSnapshot();
         });
-    });
-    describe("getPasswordKey", () => {
-        afterEach(() => vi.restoreAllMocks());
-        test("sql utility has been called", async () => {
-            const result = await getPasswordKey("email@domain.com");
-            expect(sql).toHaveBeenCalled();
+        test("returns null if decrypted key is invalid", async () => {
+            const result = await getDecryptedPassword("invalid-decrypted-key", "email@domain.com");
+            expect(result).toBeNull();
             expect(result).toMatchSnapshot();
         });
-        test("returns password key as string", async () => {
-            const result = await getPasswordKey("email@domain.com");
-            expect(result).toBe("decryptedPassword");
-            expect(result).toMatchSnapshot();
-        });
-        test("returns null if retrieval fails", async () => {
-            vi.fn(sql).mockRejectedValue(new Error("Retrieval failed"));
-            const result = await getPasswordKey("email@domain.com");
+        test("returns null if email format is invalid", async () => {
+            const result = await getDecryptedPassword("1234abcd-12ab-34cd-56ef-1234567890ab", "invalid-email");
             expect(result).toBeNull();
             expect(result).toMatchSnapshot();
         });
