@@ -13,6 +13,7 @@ export async function getPasswordKey(email: string): Promise<string | null> {
         `;
         return response.rows[0].user_password_key;
     } catch (error) {
+        console.error("Error retrieving the password key:", error);
         return null;
     }
 }

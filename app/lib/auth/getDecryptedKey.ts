@@ -3,8 +3,9 @@ import { z } from "zod/v4";
 
 export async function getDecryptedKey(passwordKey: string): Promise<string | null> {
     try {
-        const inputVerified = z.string().safeParse(passwordKey);
+        const inputVerified = z.string().length(248).safeParse(passwordKey);
         if (!inputVerified.success) {
+            console.error("Invalid password key format:", inputVerified.error);
             throw new Error("Invalid password key");
         }
         const accessKeyId: string = process.env.AWS_KMS_KEY!;
