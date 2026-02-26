@@ -4,6 +4,9 @@ import { getDecryptedPassword } from "../../auth/getDecryptedPassword";
 import { sql } from "@vercel/postgres";
 import { getPasswordKey } from "../../auth/getPasswordKey";
 import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
+import { getProviderNameConfirmation } from "../../auth/getProviderNameConfirmation";
+import { getUserByEmail } from "../../auth/getUserByEmail";
+import { getUserIntelByUsername } from "../../auth/getUserIntelByUsername";
 
 vi.mock('@aws-sdk/client-kms', () => ({
         KMSClient: vi.fn(class {
@@ -18,6 +21,8 @@ vi.mock('@vercel/postgres', () => ({
             rows: [{ 
                 decrypted_password: "decryptedPassword",
                 user_password_key: "passwordKey",
+                provider: "providerName",
+                id: "1234",
             }]
         }),
     })
@@ -132,4 +137,105 @@ describe("Next Auth", () => {
             expect(result).toMatchSnapshot();
         });
     });
+    describe("getProviderNameConfirmation", () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            (sql as any).mockResolvedValue({
+                rows: [
+                {
+                    provider: "providerName",
+                },
+                ],
+            });            
+        });
+        test("returns provider name", async () => {
+            const result = await getProviderNameConfirmation("name@domain.com", "facebook");
+            expect(result).toBe("providerName");
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if email has an invalid format", async () => {
+            const result = await getProviderNameConfirmation("invalid-email", "facebook");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if provider name is empty", async () => {
+            const result = await getProviderNameConfirmation("name@domain.com", "");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if SQL query fails", async ()=> {
+            (sql as any).mockRejectedValueOnce(new Error("SQL query failed"));
+            const result = await getProviderNameConfirmation("name@domain.com", "facebook");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+    });
+    describe("getUserByEmail", () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            (sql as any).mockResolvedValue({
+                rows: [
+                {
+                    id: "1234",
+                },
+                ],
+            });            
+        });
+        test("returns user ID", async () => {
+            const result = await getUserByEmail("name@domain.com");
+            expect(result).toBe("1234");
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if email format is invalid", async () => {
+            const result = await getUserByEmail("invalid-email");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if SQL query fails", async () => {
+            (sql as any).mockRejectedValueOnce(new Error("SQL query failed"));
+            const result = await getUserByEmail("name@domain.com");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+    });
+    describe("getUserIntelByUsername", () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            (sql as any).mockResolvedValue({
+                rows: [
+                {
+                    id: "1234",
+                    name: "Test User",
+                    username: "testuser",
+                    email: "testuser@domain.com",
+                    password: "hashedPassword",
+                    user_image: "https://example.com/user-image.jpg",
+                },                
+            ]});      
+        });
+        test("returns user intel object", async () => {
+            const result = await getUserIntelByUsername("testuser");
+            expect(result).toEqual({
+                id: "1234",
+                name: "Test User",
+                username: "testuser",
+                email: "testuser@domain.com",
+                password: "hashedPassword",
+                user_image: "https://example.com/user-image.jpg",
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if username format is invalid", async () => {
+            const result = await getUserIntelByUsername("");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if SQL query fails", async () => {
+            (sql as any).mockRejectedValueOnce(new Error("SQL query failed"));
+            const result = await getUserIntelByUsername("testuser");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+    });
+    
 });
