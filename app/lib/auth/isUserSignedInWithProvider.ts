@@ -13,6 +13,7 @@ export async function isUserSignedInWithProvider(email: string): Promise<boolean
         `;
         return response.rowCount !== 0;
     } catch (error) {
+        console.error("Error checking if user is signed in with provider:", error);
         return false;
     }
 }

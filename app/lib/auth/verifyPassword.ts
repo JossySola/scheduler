@@ -23,6 +23,7 @@ export async function verifyPassword(inputPassword: string, decryptedPassword: s
         const res = await response.json();
         return res.isValid;
     } catch (error) {
+        console.error("Error verifying password:", error);
         return false;
     }
 }

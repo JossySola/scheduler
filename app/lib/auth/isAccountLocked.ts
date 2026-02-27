@@ -18,6 +18,7 @@ export async function isAccountLocked(email: string): Promise<{ isLocked: boolea
             nextAttempt: response.rows[0].next_attempt_allowed_at,
         };
     } catch (error) {
+        console.error("Error checking account lock status:", error);
         return { isLocked: false };
     }
 }
