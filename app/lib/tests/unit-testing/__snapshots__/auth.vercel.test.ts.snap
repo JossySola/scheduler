@@ -221,8 +221,6 @@ exports[`Next Auth > getDecryptedPassword > return decrypted password as string 
 
 exports[`Next Auth > getDecryptedPassword > returns null if decrypted key is invalid 1`] = `null`;
 
-exports[`Next Auth > getDecryptedPassword > returns null if decryption fails 1`] = `null`;
-
 exports[`Next Auth > getDecryptedPassword > returns null if email format is invalid 1`] = `null`;
 
 exports[`Next Auth > getDecryptedPassword > sql utility has been called 1`] = `"decryptedPassword"`;
@@ -237,33 +235,132 @@ exports[`Next Auth > getPasswordKey > returns password key as string 1`] = `"pas
 
 exports[`Next Auth > getPasswordKey > sql utility has been called 1`] = `"passwordKey"`;
 
-exports[`Next Auth > getProviderNameConfirmation > returns null if SQL query fails 1`] = `null`;
-
 exports[`Next Auth > getProviderNameConfirmation > returns null if email has an invalid format 1`] = `null`;
 
 exports[`Next Auth > getProviderNameConfirmation > returns null if provider name is empty 1`] = `null`;
-
-exports[`Next Auth > getProviderNameConfirmation > returns provider name 1`] = `"providerName"`;
 
 exports[`Next Auth > getUserByEmail > returns null if SQL query fails 1`] = `null`;
 
 exports[`Next Auth > getUserByEmail > returns null if email format is invalid 1`] = `null`;
 
-exports[`Next Auth > getUserByEmail > returns user ID 1`] = `"1234"`;
-
 exports[`Next Auth > getUserIntelByUsername > returns null if SQL query fails 1`] = `null`;
 
 exports[`Next Auth > getUserIntelByUsername > returns null if username format is invalid 1`] = `null`;
 
-exports[`Next Auth > getUserIntelByUsername > returns user intel object 1`] = `
+exports[`Next Auth > isAccountLocked > returns isLocked false if SQL query fails 1`] = `
 {
-  "email": "testuser@domain.com",
-  "id": "1234",
-  "name": "Test User",
-  "password": "hashedPassword",
-  "user_image": "https://example.com/user-image.jpg",
-  "username": "testuser",
+  "isLocked": false,
 }
 `;
 
-exports[`Next Auth > returns provider name 1`] = `"providerName"`;
+exports[`Next Auth > isAccountLocked > returns isLocked false if email format is invalid 1`] = `
+{
+  "isLocked": false,
+}
+`;
+
+exports[`Next Auth > isAccountLocked > returns isLocked true with nextAttempt timestamp 1`] = `
+{
+  "isLocked": true,
+  "nextAttempt": "2024-06-30T12:00:00Z",
+}
+`;
+
+exports[`Next Auth > isUserSignedInWithProvider > returns false if SQL query fails 1`] = `false`;
+
+exports[`Next Auth > isUserSignedInWithProvider > returns false if email format is invalid 1`] = `false`;
+
+exports[`Next Auth > isUserSignedInWithProvider > returns true if user is signed in with provider 1`] = `true`;
+
+exports[`Next Auth > setFailedAttemptRecord > returns next attempt allowed timestamp 1`] = `"2024-06-30T12:00:00Z"`;
+
+exports[`Next Auth > setFailedAttemptRecord > returns null if SQL query fails 1`] = `null`;
+
+exports[`Next Auth > setFailedAttemptRecord > returns null if email format is invalid 1`] = `null`;
+
+exports[`Next Auth > setNewUser > returns success false if SQL query fails 1`] = `
+{
+  "id": "",
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setNewUser > returns success false if email format is invalid 1`] = `
+{
+  "id": "",
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setNewUser > returns success false if email is empty 1`] = `
+{
+  "id": "",
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setNewUser > returns success false if input data format is invalid 1`] = `
+{
+  "id": "",
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setNewUser > returns success false if name is empty 1`] = `
+{
+  "id": "",
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setNewUser > returns success false if user image URL format is invalid 1`] = `
+{
+  "id": "",
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setNewUser > returns success false if user image URL is empty 1`] = `
+{
+  "id": "",
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setNewUser > returns success false if username is empty 1`] = `
+{
+  "id": "",
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setNewUser > returns success true with new user ID 1`] = `
+{
+  "id": "1234",
+  "success": true,
+}
+`;
+
+exports[`Next Auth > setUserWithProvider > returns success false if SQL query fails 1`] = `
+{
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setUserWithProvider > returns success false if email format is invalid 1`] = `
+{
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setUserWithProvider > returns success false if provider ID is empty 1`] = `
+{
+  "success": false,
+}
+`;
+
+exports[`Next Auth > setUserWithProvider > returns success false if provider format is invalid 1`] = `
+{
+  "success": false,
+}
+`;

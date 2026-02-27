@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { getDecryptedKey } from "../../auth/getDecryptedKey";
 import { getDecryptedPassword } from "../../auth/getDecryptedPassword";
 import { sql } from "@vercel/postgres";
@@ -7,6 +7,11 @@ import { DecryptCommand, KMSClient } from "@aws-sdk/client-kms";
 import { getProviderNameConfirmation } from "../../auth/getProviderNameConfirmation";
 import { getUserByEmail } from "../../auth/getUserByEmail";
 import { getUserIntelByUsername } from "../../auth/getUserIntelByUsername";
+import { isAccountLocked } from "../../auth/isAccountLocked";
+import { isUserSignedInWithProvider } from "../../auth/isUserSignedInWithProvider";
+import { setFailedAttemptRecord } from "../../auth/setFailedAttemptRecord";
+import { setNewUser } from "../../auth/setNewUser";
+import { setUserWithProvider } from "../../auth/setUserWithProvider";
 
 vi.mock('@aws-sdk/client-kms', () => ({
         KMSClient: vi.fn(class {
@@ -88,12 +93,12 @@ describe("Next Auth", () => {
             expect(result).toMatchSnapshot();
         });
         test("returns null if no argument is passed", async () => {
-            const result = await getDecryptedKey(""); // "testCipherText" in base64
+            const result = await getDecryptedKey("");
             expect(result).toBeNull();
             expect(result).toMatchSnapshot();
         });
         test("returns null if decryption fails", async () => {
-            (KMSClient as any).mockRejectedValueOnce(new Error("Decryption failed"));
+            vi.fn(KMSClient).mockRejectedValueOnce(new Error("Decryption failed"));
             const result = await getDecryptedKey("AQIDAHpL9KfTzWQmrKVuYd/7hcLE3BNzgDXClU2wcqMnJrYhOAEF9trmVSxIEruFErbgQUt3AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQNuHv4En7L/eDf4RVaAgEQgDvjH7tPpSjkhPsy+ybxq4sCciBwBqXhGZvZDyqGCkrMPmr9T97lRqNy7xEsS5Tq5bTmY6kdI4LcI82MZQ==");
             expect(result).toBeNull();
             expect(result).toMatchSnapshot();
@@ -102,7 +107,7 @@ describe("Next Auth", () => {
     describe("getDecryptedPassword", () => {
         beforeEach(() => {
             vi.clearAllMocks();
-            (sql as any).mockResolvedValue({
+            (sql as any).mockResolvedValueOnce({
                 rows: [
                 {
                     decrypted_password: "decryptedPassword",
@@ -238,4 +243,231 @@ describe("Next Auth", () => {
         });
     });
     
+    describe("isAccountLocked", () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            (sql as any).mockResolvedValue({
+                rows: [
+                {
+                    next_attempt_allowed_at: "2024-06-30T12:00:00Z",
+                },
+                ],
+            });      
+        });
+        test("returns isLocked true with nextAttempt timestamp", async () => {
+            const result = await isAccountLocked("test@example.com");
+            expect(result).toEqual({
+                isLocked: true,
+                nextAttempt: "2024-06-30T12:00:00Z",
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns isLocked false if email format is invalid", async () => {
+            const result = await isAccountLocked("invalid-email");
+            expect(result).toEqual({
+                isLocked: false,
+            });
+            expect(result).toMatchSnapshot();
+
+        });
+        test("returns isLocked false if SQL query fails", async () => {
+            (sql as any).mockRejectedValueOnce(new Error("SQL query failed"));
+            const result = await isAccountLocked("test@example.com");
+            expect(result).toEqual({
+                isLocked: false,
+            });
+            expect(result).toMatchSnapshot();
+        });
+    });
+    
+    describe("isUserSignedInWithProvider", () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            (sql as any).mockResolvedValue({
+                rows: [
+                {
+                    provider: "providerName",
+                },
+                ],
+            });      
+        });
+        test("returns true if user is signed in with provider", async () => {
+            const result = await isUserSignedInWithProvider("test@example.com");
+            expect(result).toBe(true);
+            expect(result).toMatchSnapshot();
+        });
+        test("returns false if user is not signed in with provider", async () => {
+            (sql as any).mockResolvedValueOnce({
+                rows: [],
+            });
+            const result = await isUserSignedInWithProvider("test@example.com");
+            expect(result).toBe(false);
+            expect(result).toMatchSnapshot();
+        });
+        test("returns false if email format is invalid", async () => {
+            const result = await isUserSignedInWithProvider("invalid-email");
+            expect(result).toBe(false);
+            expect(result).toMatchSnapshot();
+        });
+        test("returns false if SQL query fails", async () => {
+            (sql as any).mockRejectedValueOnce(new Error("SQL query failed"));
+            const result = await isUserSignedInWithProvider("test@example.com");
+            expect(result).toBe(false);
+            expect(result).toMatchSnapshot();
+        });
+    });
+    describe("setFailedAttemptRecord", () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            (sql as any).mockResolvedValue({
+                rows: [
+                {
+                    next_attempt_allowed_at: "2024-06-30T12:00:00Z",
+                },
+                ],
+            });      
+        });
+        test("returns next attempt allowed timestamp", async () => {
+            const result = await setFailedAttemptRecord("test@example.com");
+            expect(result).toBe("2024-06-30T12:00:00Z");
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if email format is invalid", async () => {
+            const result = await setFailedAttemptRecord("invalid-email");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+        test("returns null if SQL query fails", async () => {
+            (sql as any).mockRejectedValueOnce(new Error("SQL query failed"));
+            const result = await setFailedAttemptRecord("test@example.com");
+            expect(result).toBeNull();
+            expect(result).toMatchSnapshot();
+        });
+    });
+    describe("setNewUser", () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+            (sql as any).mockResolvedValue({
+                rows: [
+                {
+                    id: "1234",
+                },
+                ],
+            });      
+        });
+        test("returns success true with new user ID", async () => {
+            const result = await setNewUser("Test User", "testuser", "test@example.com", "https://example.com/user-image.jpg");
+            expect(result).toEqual({
+                success: true,
+                id: "1234",
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if input data format is invalid", async () => {
+            const result = await setNewUser("", "", "invalid-email", "invalid-url");
+            expect(result).toEqual({
+                success: false,
+                id: "",
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if email format is invalid", async () => {
+            const result = await setNewUser("Test User", "testuser", "invalid-email", "https://example.com/user-image.jpg");
+            expect(result).toEqual({
+                success: false,
+                id: "",
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if user image URL format is invalid", async () => {
+            const result = await setNewUser("Test User", "testuser", "test@example.com", "invalid-url");
+            expect(result).toEqual({
+                success: false,
+                id: "",
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if name is empty", async () => {
+            const result = await setNewUser("", "testuser", "test@example.com", "https://example.com/user-image.jpg");
+            expect(result).toEqual({
+                success: false,
+                id: "",
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if username is empty", async () => {
+            const result = await setNewUser("Test User", "", "test@example.com", "https://example.com/user-image.jpg");
+            expect(result).toEqual({
+                success: false,
+                id: "",
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if email is empty", async () => {
+            const result = await setNewUser("Test User", "testuser", "", "https://example.com/user-image.jpg");
+            expect(result).toEqual({
+                success: false,
+                id: "",
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if user image URL is empty", async () => {
+            const result = await setNewUser("Test User", "testuser", "test@example.com", "");
+            expect(result).toEqual({
+                success: false,
+                id: "",
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if SQL query fails", async () => {
+            (sql as any).mockRejectedValueOnce(new Error("SQL query failed"));
+            const result = await setNewUser("Test User", "testuser", "test@example.com", "https://example.com/user-image.jpg");
+            expect(result).toEqual({
+                success: false,
+                id: "",
+            });
+            expect(result).toMatchSnapshot();
+        });
+    });
+    describe("setUserWithProvider", () => {
+         beforeEach(() => {
+            vi.clearAllMocks();
+        });
+        test("returns success true when user is set with provider", async () => {
+            const result = await setUserWithProvider("test@example.com", "test-provider", "provider-id-1234");
+            expect(result).toEqual({
+                success: true,
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if email format is invalid", async () => {
+            const result = await setUserWithProvider("invalid-email", "test-provider", "provider-id-1234");
+            expect(result).toEqual({
+                success: false,
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if provider format is invalid", async () => {
+            const result = await setUserWithProvider("test@example.com", "invalid-provider", "provider-id-1234");
+            expect(result).toEqual({
+                success: false,
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if provider ID is empty", async () => {
+            const result = await setUserWithProvider("test@example.com", "test-provider", "");
+            expect(result).toEqual({
+                success: false,
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("returns success false if SQL query fails", async () => {
+            (sql as any).mockRejectedValueOnce(new Error("SQL query failed"));
+            const result = await setUserWithProvider("test@example.com", "test-provider", "provider-id-1234");
+            expect(result).toEqual({
+                success: false,
+            });
+            expect(result).toMatchSnapshot();
+        });
+    });
 });
