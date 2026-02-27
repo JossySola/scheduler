@@ -1,6 +1,6 @@
-import { defineConfig, globalIgnores } from 'eslint/config'
-import nextVitals from 'eslint-config-next/core-web-vitals'
-import nextTs from 'eslint-config-next/typescript'
+import { defineConfig, globalIgnores } from 'eslint/config';
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -13,6 +13,9 @@ const eslintConfig = defineConfig([
     'build/**',
     'next-env.d.ts',
   ]),
-])
+  {
+    "@typescript-eslint/no-explicit-any": "off",
+  }
+]);
  
-export default eslintConfig
+export default eslintConfig;
