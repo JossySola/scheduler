@@ -1,5 +1,4 @@
 'use server'
-import "server-only";
 import crypto, { randomBytes } from "crypto";
 import pool from "./tests/mocks/db";
 import sgMail from "@sendgrid/mail";
