@@ -7,6 +7,7 @@ export default defineConfig({
             enabled: true,
             reporter: ['html'],
         },
+        setupFiles: ["vitest.setup.ts"],
         projects: [
             'app/lib/tests/*',
             {
