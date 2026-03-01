@@ -8,9 +8,9 @@ export async function setUserWithProvider(email: string, provider: string, provi
         if (!verifyEmail.success) {
             throw new Error("Invalid email format");
         }
-        const verifyProvider = z.string().nonempty().safeParse(provider);
+        const verifyProvider = z.literal("facebook").or(z.literal("google")).safeParse(provider);
         if (!verifyProvider.success) {
-            throw new Error("Invalid provider format");
+            throw new Error("Invalid provider");
         }
         const verifyProviderId = z.string().nonempty().safeParse(providerId);
         if (!verifyProviderId.success) {
