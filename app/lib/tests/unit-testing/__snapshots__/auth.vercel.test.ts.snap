@@ -221,6 +221,8 @@ exports[`Next Auth > getDecryptedPassword > return decrypted password as string 
 
 exports[`Next Auth > getDecryptedPassword > returns null if decrypted key is invalid 1`] = `null`;
 
+exports[`Next Auth > getDecryptedPassword > returns null if decryption fails 1`] = `null`;
+
 exports[`Next Auth > getDecryptedPassword > returns null if email format is invalid 1`] = `null`;
 
 exports[`Next Auth > getDecryptedPassword > sql utility has been called 1`] = `"decryptedPassword"`;
@@ -235,17 +237,34 @@ exports[`Next Auth > getPasswordKey > returns password key as string 1`] = `"pas
 
 exports[`Next Auth > getPasswordKey > sql utility has been called 1`] = `"passwordKey"`;
 
+exports[`Next Auth > getProviderNameConfirmation > returns null if SQL query fails 1`] = `null`;
+
 exports[`Next Auth > getProviderNameConfirmation > returns null if email has an invalid format 1`] = `null`;
 
 exports[`Next Auth > getProviderNameConfirmation > returns null if provider name is empty 1`] = `null`;
+
+exports[`Next Auth > getProviderNameConfirmation > returns provider name 1`] = `"providerName"`;
 
 exports[`Next Auth > getUserByEmail > returns null if SQL query fails 1`] = `null`;
 
 exports[`Next Auth > getUserByEmail > returns null if email format is invalid 1`] = `null`;
 
+exports[`Next Auth > getUserByEmail > returns user ID 1`] = `"1234"`;
+
 exports[`Next Auth > getUserIntelByUsername > returns null if SQL query fails 1`] = `null`;
 
 exports[`Next Auth > getUserIntelByUsername > returns null if username format is invalid 1`] = `null`;
+
+exports[`Next Auth > getUserIntelByUsername > returns user intel object 1`] = `
+{
+  "email": "testuser@domain.com",
+  "id": "1234",
+  "name": "Test User",
+  "password": "hashedPassword",
+  "user_image": "https://example.com/user-image.jpg",
+  "username": "testuser",
+}
+`;
 
 exports[`Next Auth > isAccountLocked > returns isLocked false if SQL query fails 1`] = `
 {
@@ -269,6 +288,8 @@ exports[`Next Auth > isAccountLocked > returns isLocked true with nextAttempt ti
 exports[`Next Auth > isUserSignedInWithProvider > returns false if SQL query fails 1`] = `false`;
 
 exports[`Next Auth > isUserSignedInWithProvider > returns false if email format is invalid 1`] = `false`;
+
+exports[`Next Auth > isUserSignedInWithProvider > returns false if user is not signed in with provider 1`] = `false`;
 
 exports[`Next Auth > isUserSignedInWithProvider > returns true if user is signed in with provider 1`] = `true`;
 
@@ -364,3 +385,13 @@ exports[`Next Auth > setUserWithProvider > returns success false if provider for
   "success": false,
 }
 `;
+
+exports[`Next Auth > setUserWithProvider > returns success true when user is set with provider 1`] = `
+{
+  "success": true,
+}
+`;
+
+exports[`Next Auth > verifyPassword > returns false if password verification fails 1`] = `false`;
+
+exports[`Next Auth > verifyPassword > returns true if password verification is successful 1`] = `true`;

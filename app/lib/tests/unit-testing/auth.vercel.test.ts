@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { getDecryptedKey } from "../../auth/getDecryptedKey";
 import { getDecryptedPassword } from "../../auth/getDecryptedPassword";
 import { sql } from "@vercel/postgres";
@@ -12,6 +12,9 @@ import { isUserSignedInWithProvider } from "../../auth/isUserSignedInWithProvide
 import { setFailedAttemptRecord } from "../../auth/setFailedAttemptRecord";
 import { setNewUser } from "../../auth/setNewUser";
 import { setUserWithProvider } from "../../auth/setUserWithProvider";
+import { server } from "../mocks/node";
+import { verifyPassword } from "../../auth/verifyPassword";
+import { HttpResponse, http } from "msw";
 
 vi.mock('@aws-sdk/client-kms', () => ({
         KMSClient: vi.fn(class {
@@ -36,6 +39,7 @@ vi.mock('@vercel/postgres', () => ({
 vi.stubEnv("AWS_KMS_KEY", "testAccessKey");
 vi.stubEnv("AWS_KMS_SECRET", "testSecretKey");
 vi.stubEnv("AWS_KMS_ARN", "testKeyArn");
+vi.stubEnv("NEXTAUTH_URL", "http://localhost:3000");
 
 describe("Next Auth", () => {
     describe("getPasswordKey", () => {
@@ -107,13 +111,15 @@ describe("Next Auth", () => {
     describe("getDecryptedPassword", () => {
         beforeEach(() => {
             vi.clearAllMocks();
-            (sql as any).mockResolvedValueOnce({
-                rows: [
-                {
+            vi.fn(sql).mockResolvedValue({
+                rows: [{ 
                     decrypted_password: "decryptedPassword",
-                },
-                ],
-            });
+                }],
+                command: "SELECT",
+                rowCount: 1,
+                oid: 0,
+                fields: [],
+            })
         });
         test("sql utility has been called", async () => {
             const result = await getDecryptedPassword("1234abcd-12ab-34cd-56ef-1234567890ab", "email@domain.com");
@@ -126,7 +132,7 @@ describe("Next Auth", () => {
             expect(result).toMatchSnapshot();
         });
         test("returns null if decryption fails", async () => {
-            (sql as any).mockRejectedValueOnce(new Error("Decryption failed"));
+            vi.fn(sql).mockRejectedValueOnce(new Error("Decryption failed"));
             const result = await getDecryptedPassword("1234abcd-12ab-34cd-56ef-1234567890ab", "email@domain.com");
             expect(result).toBeNull();
             expect(result).toMatchSnapshot();
@@ -178,13 +184,17 @@ describe("Next Auth", () => {
     describe("getUserByEmail", () => {
         beforeEach(() => {
             vi.clearAllMocks();
-            (sql as any).mockResolvedValue({
+            vi.fn(sql).mockResolvedValue({
                 rows: [
                 {
                     id: "1234",
                 },
                 ],
-            });            
+                command: "SELECT",
+                rowCount: 1,
+                oid: 0,
+                fields: [],
+            });
         });
         test("returns user ID", async () => {
             const result = await getUserByEmail("name@domain.com");
@@ -197,7 +207,7 @@ describe("Next Auth", () => {
             expect(result).toMatchSnapshot();
         });
         test("returns null if SQL query fails", async () => {
-            (sql as any).mockRejectedValueOnce(new Error("SQL query failed"));
+            vi.fn(sql).mockRejectedValueOnce(new Error("SQL query failed"));
             const result = await getUserByEmail("name@domain.com");
             expect(result).toBeNull();
             expect(result).toMatchSnapshot();
@@ -206,7 +216,7 @@ describe("Next Auth", () => {
     describe("getUserIntelByUsername", () => {
         beforeEach(() => {
             vi.clearAllMocks();
-            (sql as any).mockResolvedValue({
+            vi.fn(sql as any).mockResolvedValue({
                 rows: [
                 {
                     id: "1234",
@@ -242,7 +252,6 @@ describe("Next Auth", () => {
             expect(result).toMatchSnapshot();
         });
     });
-    
     describe("isAccountLocked", () => {
         beforeEach(() => {
             vi.clearAllMocks();
@@ -279,17 +288,9 @@ describe("Next Auth", () => {
             expect(result).toMatchSnapshot();
         });
     });
-    
     describe("isUserSignedInWithProvider", () => {
         beforeEach(() => {
-            vi.clearAllMocks();
-            (sql as any).mockResolvedValue({
-                rows: [
-                {
-                    provider: "providerName",
-                },
-                ],
-            });      
+            vi.clearAllMocks();  
         });
         test("returns true if user is signed in with provider", async () => {
             const result = await isUserSignedInWithProvider("test@example.com");
@@ -297,8 +298,12 @@ describe("Next Auth", () => {
             expect(result).toMatchSnapshot();
         });
         test("returns false if user is not signed in with provider", async () => {
-            (sql as any).mockResolvedValueOnce({
+            vi.fn(sql).mockResolvedValueOnce({
                 rows: [],
+                command: "SELECT",
+                rowCount: 0,
+                oid: 0,
+                fields: [],
             });
             const result = await isUserSignedInWithProvider("test@example.com");
             expect(result).toBe(false);
@@ -430,32 +435,35 @@ describe("Next Auth", () => {
         });
     });
     describe("setUserWithProvider", () => {
-         beforeEach(() => {
+        beforeEach(() => {
             vi.clearAllMocks();
+            vi.mock("../../utils", () => ({
+                generateKmsDataKey: vi.fn().mockResolvedValue("testDataKey"),
+            }));
         });
         test("returns success true when user is set with provider", async () => {
-            const result = await setUserWithProvider("test@example.com", "test-provider", "provider-id-1234");
+            const result = await setUserWithProvider("test@example.com", "facebook", "provider-id-1234");
             expect(result).toEqual({
                 success: true,
             });
             expect(result).toMatchSnapshot();
         });
         test("returns success false if email format is invalid", async () => {
-            const result = await setUserWithProvider("invalid-email", "test-provider", "provider-id-1234");
+            const result = await setUserWithProvider("invalid-email", "facebook", "provider-id-1234");
             expect(result).toEqual({
                 success: false,
             });
             expect(result).toMatchSnapshot();
         });
         test("returns success false if provider format is invalid", async () => {
-            const result = await setUserWithProvider("test@example.com", "invalid-provider", "provider-id-1234");
+            const result = await setUserWithProvider("test@example.com", "test-provider", "provider-id-1234");
             expect(result).toEqual({
                 success: false,
             });
             expect(result).toMatchSnapshot();
         });
         test("returns success false if provider ID is empty", async () => {
-            const result = await setUserWithProvider("test@example.com", "test-provider", "");
+            const result = await setUserWithProvider("test@example.com", "facebook", "");
             expect(result).toEqual({
                 success: false,
             });
@@ -463,10 +471,34 @@ describe("Next Auth", () => {
         });
         test("returns success false if SQL query fails", async () => {
             (sql as any).mockRejectedValueOnce(new Error("SQL query failed"));
-            const result = await setUserWithProvider("test@example.com", "test-provider", "provider-id-1234");
+            const result = await setUserWithProvider("test@example.com", "facebook", "provider-id-1234");
             expect(result).toEqual({
                 success: false,
             });
+            expect(result).toMatchSnapshot();
+        });
+    });
+    describe("verifyPassword", () => {
+        beforeAll(() => {
+            vi.clearAllMocks();
+            server.listen();
+        });
+        afterEach(() => server.resetHandlers());
+        afterAll(() => server.close());
+        test("returns true if password verification is successful", async () => {
+            const result = await verifyPassword("inputPassword", "decryptedPassword");
+            expect(result).toBe(true);
+
+            expect(result).toMatchSnapshot();
+        });
+        test("returns false if password verification fails", async () => {            
+            server.use(
+                http.post("http://localhost:3000/api/argon2/verify", async () => {
+                    return HttpResponse.json({ isValid: false });
+                }),
+            );
+            const result = await verifyPassword("inputPassword", "decryptedPassword");
+            expect(result).toBe(false);
             expect(result).toMatchSnapshot();
         });
     });
