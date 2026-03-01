@@ -5,7 +5,7 @@ import { Box, SettingsGearFill } from "../../icons";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import ValuesList from "../table/list";
 import { ColumnDef, Table } from "@tanstack/react-table";
-import { ColSpecs, RowSpecs, StatesType, VTData } from "@/app/hooks/custom";
+import { ColSpecs, RowSpecs, StatesType, VTData } from "@/app/lib/hooks/custom";
 import ColTabs from "../tabs/col-tabs";
 import RowTabs from "../tabs/row-tabs";
 import { useSession } from "next-auth/react";

@@ -5,7 +5,7 @@ import { Header } from "../../icons";
 import { Dispatch, memo, SetStateAction, useState } from "react";
 import { useParams } from "next/navigation";
 import { Table } from "@tanstack/react-table";
-import { VTData } from "@/app/hooks/custom";
+import { VTData } from "@/app/lib/hooks/custom";
 
 const Input = memo(function Input({ isLoading, initialValue, handleDuplicates, isDuplicate, table, row, column }: {
     initialValue: unknown,

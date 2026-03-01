@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { decryptKmsDataKey, generateKmsDataKey } from "@/app/lib/utils";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
-import { StatesType } from "@/app/hooks/custom";
+import { StatesType } from "@/app/lib/hooks/custom";
 
 export async function SaveNewTableAction (states: StatesType) {
     const requestHeaders = headers();

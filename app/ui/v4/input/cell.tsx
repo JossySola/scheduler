@@ -1,5 +1,5 @@
 "use client"
-import { VTData } from "@/app/hooks/custom"
+import { VTData } from "@/app/lib/hooks/custom"
 import { SharedSelection } from "@heroui/react";
 import { Getter, Table } from "@tanstack/react-table"
 import { Dispatch, SetStateAction, useState } from "react";

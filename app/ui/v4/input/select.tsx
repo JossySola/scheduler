@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { Select as SelectHeroUi, SelectItem, Spinner } from "@heroui/react";
 import { memo, use, useState } from "react";
 import { Table } from "@tanstack/react-table";
-import { VTData } from "@/app/hooks/custom";
+import { VTData } from "@/app/lib/hooks/custom";
 import { useParams } from "next/navigation";
 
 const Select = memo(function Select({ isLoading, value, table, row, column, values }: {

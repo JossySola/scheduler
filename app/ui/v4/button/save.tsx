@@ -2,7 +2,7 @@
 import { addToast, Button } from "@heroui/react";
 import { redirect, useParams } from "next/navigation";
 import { FloppyDisk } from "../../icons";
-import { StatesType, useCallbackAction } from "@/app/hooks/custom";
+import { StatesType, useCallbackAction } from "@/app/lib/hooks/custom";
 import { SaveNewTableAction, SaveTableAction } from "@/app/[lang]/table/actions";
 import { useEffect } from "react";
 

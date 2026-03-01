@@ -1,5 +1,5 @@
 "use client"
-import { ColSpecs, NumRows, ValAmount, VTData } from "@/app/hooks/custom";
+import { ColSpecs, NumRows, ValAmount, VTData } from "@/app/lib/hooks/custom";
 import { generateColumnName } from "@/app/lib/utils-client";
 import { Card, CardBody, NumberInput, Slider, Tab, Tabs } from "@heroui/react";
 import { Table } from "@tanstack/react-table";

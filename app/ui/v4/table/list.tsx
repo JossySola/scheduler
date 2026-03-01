@@ -5,7 +5,7 @@ import { Button, Input } from "@heroui/react";
 import { AnimatePresence, motion } from "motion/react";
 import { PlusCircle, Trash } from "../../icons";
 import { ColumnDef } from "@tanstack/react-table";
-import { VTData } from "@/app/hooks/custom";
+import { VTData } from "@/app/lib/hooks/custom";
 
 export default function ValuesList({ values, setValues, setColumns }: {
     values: Set<string>,

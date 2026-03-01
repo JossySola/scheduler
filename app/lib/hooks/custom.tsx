@@ -1,8 +1,8 @@
 "use client"
 import { ColumnDef, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable, RowData, SortingState, HeaderContext, RowModel } from "@tanstack/react-table";
 import { Key, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { generateColumnName } from "../lib/utils-client";
-import CellRenderer from "../ui/v4/input/cell";
+import { generateColumnName } from "../utils-client";
+import CellRenderer from "../../ui/v4/input/cell";
 import { SharedSelection } from "@heroui/react";
 import { DeepPartial } from "ai";
 

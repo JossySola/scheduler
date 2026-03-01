@@ -1,5 +1,5 @@
 "use client"
-import { useVirtualizedTable } from "@/app/hooks/custom";
+import { useVirtualizedTable } from "@/app/lib/hooks/custom";
 import { addToast, Button, Input } from "@heroui/react";
 import { flexRender } from "@tanstack/react-table";
 import Filter from "../input/filter";

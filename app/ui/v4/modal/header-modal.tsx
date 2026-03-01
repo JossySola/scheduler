@@ -4,7 +4,7 @@ import { SettingsSliders } from "../../icons";
 import { useParams } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Table } from "@tanstack/react-table";
-import { VTData } from "@/app/hooks/custom";
+import { VTData } from "@/app/lib/hooks/custom";
 
 export default function HeaderModal({table, interval, setInterval, headerType, setHeaderType}: {
     table: Table<VTData>,

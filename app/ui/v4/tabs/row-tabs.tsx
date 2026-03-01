@@ -1,5 +1,5 @@
 "use client"
-import { DisableRow, EnabledColumns, EnabledValues, RowCount, RowSpecs, VTData } from "@/app/hooks/custom";
+import { DisableRow, EnabledColumns, EnabledValues, RowCount, RowSpecs, VTData } from "@/app/lib/hooks/custom";
 import { Card, CardBody, Checkbox, CheckboxGroup, NumberInput, Switch, Tab, Tabs } from "@heroui/react";
 import { Table } from "@tanstack/react-table";
 import { useParams } from "next/navigation";

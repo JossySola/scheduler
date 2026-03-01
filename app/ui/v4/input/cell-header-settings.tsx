@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { Input as InputHeroUI, SharedSelection } from "@heroui/react";
 import HeaderModal from "../modal/header-modal";
 import { Table } from "@tanstack/react-table";
-import { VTData } from "@/app/hooks/custom";
+import { VTData } from "@/app/lib/hooks/custom";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useParams } from "next/navigation";
 import { Header } from "../../icons";

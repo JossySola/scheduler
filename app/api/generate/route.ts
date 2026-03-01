@@ -3,7 +3,7 @@ import { streamObject } from "ai";
 import { NextRequest } from "next/server";
 import { tableGenerationSchema } from "./schema";
 import { anthropic } from "@ai-sdk/anthropic";
-import { VTData } from "@/app/hooks/custom";
+import { VTData } from "@/app/lib/hooks/custom";
 import * as z from "zod/v4";
 
 // TYPES

@@ -7,7 +7,7 @@ import { DateValue, parseDate } from "@internationalized/date";
 import { DatePicker } from "@heroui/date-picker";
 import * as z from "zod/v4";
 import { Table } from "@tanstack/react-table";
-import { VTData } from "@/app/hooks/custom";
+import { VTData } from "@/app/lib/hooks/custom";
 
 export default function DateInput({ initialValue, handleDuplicates, isDuplicate, table, row, column, interval, headerType, setInterval, setHeaderType }: {
     initialValue: unknown,

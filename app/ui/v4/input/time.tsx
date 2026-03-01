@@ -8,7 +8,7 @@ import { SharedSelection } from "@heroui/react";
 import { TimeInput as TimeHeroUi } from "@heroui/react";
 import { ClockDashed } from "../../icons";
 import { Table } from "@tanstack/react-table";
-import { VTData } from "@/app/hooks/custom";
+import { VTData } from "@/app/lib/hooks/custom";
 
 export default function TimeInput({ initialValue, handleDuplicates, isDuplicate, table, row, column, interval, headerType, setInterval, setHeaderType }: {
     initialValue: unknown,
