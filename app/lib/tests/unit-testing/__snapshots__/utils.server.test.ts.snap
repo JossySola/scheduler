@@ -10,3 +10,31 @@ exports[`Server Utils > isPasswordPwned > returns object if function fails 1`] =
   "ok": false,
 }
 `;
+
+exports[`Server Utils > sendResetPasswordConfirmation > returns successful message 1`] = `
+{
+  "message": "Code sent!",
+  "ok": true,
+}
+`;
+
+exports[`Server Utils > sendResetPasswordConfirmation > returns unsuccessful message when email is invalid 1`] = `
+{
+  "message": "Invalid email",
+  "ok": false,
+}
+`;
+
+exports[`Server Utils > sendResetPasswordConfirmation > returns unsuccessful message when email is not found 1`] = `
+{
+  "message": "Email not found",
+  "ok": false,
+}
+`;
+
+exports[`Server Utils > sendResetPasswordConfirmation > throws when insertion into database fails 1`] = `
+{
+  "message": "Password confirmation error: Error: Mock Error",
+  "ok": false,
+}
+`;
