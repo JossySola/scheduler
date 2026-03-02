@@ -43,61 +43,56 @@ export async function isPasswordPwned (password: string): Promise<number | UtilR
   }
 }
 export async function sendResetPasswordConfirmation (email: string): Promise<UtilResponse> {
-  if (!email) {
-    return {
-      ok: false,
-      message: 'Email must be provided'
+  try {
+    const verifyEmail = z.email({ error: "Invalid email" }).nonempty({ error: "Empty input" }).safeParse(email);
+    if (!verifyEmail.success) {
+      return {
+        ok: false,
+        message: verifyEmail.error.issues[0].message as unknown as string,
+      }
     }
-  }
-  const validated = z.email({ message: "Invalid e-mail" }).safeParse(email);
-  if (!validated.success) {
-    return {
-      ok: false,
-      message: validated.error?.issues?.[0]?.message || "Unknown validation error"
-    }
-  }
-  const confirming = await sql`
+    const confirming = await sql`
       SELECT email FROM scheduler_users
       WHERE email = ${email};
-  `;
-  
-  if (confirming.rowCount === 0 || !confirming) {
-    return {
-      ok: false,
-      message: 'Email not found'
+    `;
+    if (confirming.rowCount === 0 || !confirming) {
+      return {
+        ok: false,
+        message: 'Email not found',
+      }
     }
-  }
-  const verification_code = randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 6);
-  const msg = {
-    to: `${email}`,
-    from: 'no-reply@jossysola.com',
-    subject: 'Scheduler: Reset password confirmation',
-    text: `${verification_code}`
-  }
-  try {
-    process.env.SENDGRID_API_KEY && sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    const verification_code = randomBytes(6).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 6);
+    const msg = {
+      to: `${email}`,
+      from: 'no-reply@jossysola.com',
+      subject: 'Scheduler: Reset password confirmation',
+      text: `${verification_code}`,
+    }
+    const sendgridKey = process.env.SENDGRID_API_KEY;
+    if (sendgridKey) sgMail.setApiKey(sendgridKey);
     const insertToken = await sql`
       INSERT INTO scheduler_email_confirmation_tokens (token, email, expires_at)
       VALUES (${verification_code}, ${email}, CURRENT_TIMESTAMP + INTERVAL '3 minutes');
     `;
-    if (insertToken.rowCount === 0) {
+    if (!insertToken || insertToken.rowCount === 0) {
+      console.error("Error inserting confirmation token");
       throw new Error('Server Error');
     }
-    const sending = await sgMail.send(msg)
+    const sending = await sgMail.send(msg);
     if (sending[0].statusCode !== 202) {
       return {
         ok: false,
-        message: 'Error at mail provider'
+        message: 'Error at mail provider',
       }
     }
     return {
       ok: true,
-      message: 'Code sent!'
+      message: 'Code sent!',
     }
   } catch (error) {
     return {
       ok: false,
-      message: 'Server failure'
+      message: `Password confirmation error: ${error}`,
     }
   }
 }
