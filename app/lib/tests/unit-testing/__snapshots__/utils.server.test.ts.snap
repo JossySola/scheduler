@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Server Utils > isPasswordPwned > returns 0 if the password has not been leaked 1`] = `0`;
+
+exports[`Server Utils > isPasswordPwned > returns greater than 0 if the password has been leaked 1`] = `707`;
+
+exports[`Server Utils > isPasswordPwned > returns object if function fails 1`] = `
+{
+  "message": "Unknown error from exposed password checking.",
+  "ok": false,
+}
+`;
