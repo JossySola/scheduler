@@ -146,11 +146,13 @@ export async function generateKmsDataKey (): Promise<KMSDataKey | null> {
     throw e;
   }
 }
-export async function decryptKmsDataKey (CiphertextBlob: string) {
-  const accessKeyId = process.env.AWS_KMS_KEY;
-  const secretAccessKey = process.env.AWS_KMS_SECRET;
-  const KeyId = process.env.AWS_KMS_ARN;
+export async function decryptKmsDataKey (CiphertextBlob: string): Promise<string> {
   try {
+    const verifyCipher = z.string().nonempty().safeParse(CiphertextBlob);
+    if (!verifyCipher.success) throw new Error("Cipher is malformed or empty");
+    const accessKeyId = process.env.AWS_KMS_KEY;
+    const secretAccessKey = process.env.AWS_KMS_SECRET;
+    const KeyId = process.env.AWS_KMS_ARN;
     if (!accessKeyId || !secretAccessKey || !KeyId) throw new Error("Missing keys", { cause: 400 })
     const client = new KMSClient({
       region: "us-east-1",
@@ -166,8 +168,11 @@ export async function decryptKmsDataKey (CiphertextBlob: string) {
     const result = await client.send(command);
     if (result.Plaintext) {
       return Buffer.from(result.Plaintext).toString("base64");
+    } else {
+      throw new Error("Plaintext was not returned");
     }
   } catch (err) {
+    console.error(err);
     throw err;
   }
 }
@@ -184,6 +189,14 @@ export async function encrypt (data: string, key: string): Promise<string >{
   return `${ivBase64url}:${encryptedBase64url}`;
 }
 export async function decrypt (encrypted: string, key: string): Promise<string> {
+  const verifyEncrypted = z.string().nonempty().includes(":").safeParse(encrypted);
+  if (!verifyEncrypted.success) {
+    throw new Error("Encrypted string malformed or empty");
+  }
+  const verifyKey = z.string().nonempty().safeParse(key);
+  if (!verifyKey.success) {
+    throw new Error("Key string malformed or empty");
+  }
   const [ ivStr, encryptedData ] = encrypted.split(':');
 
   const iv = Buffer.from(fromBase64Url(ivStr), 'base64');
