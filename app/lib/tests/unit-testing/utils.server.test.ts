@@ -1,8 +1,42 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from "vitest";
-import { isPasswordPwned, sendResetPasswordConfirmation } from "../../utils";
+import { generateKmsDataKey, isPasswordPwned, sendResetPasswordConfirmation } from "../../utils";
 import { server } from "../mocks/node";
 import { sql } from "@vercel/postgres";
 import sgMail from "@sendgrid/mail";
+import { HttpMessage } from "@aws-sdk/types";
+import { Sha256 } from "@aws-crypto/sha256-js";
+import { SignatureV4 } from "@aws-sdk/signature-v4";
+
+vi.mock("@aws-sdk/signature-v4", () => ({
+    SignatureV4: vi.fn(class SignatureV4 { 
+        credentials: { accessKeyId: string, secretAccessKey: string}; 
+        service: string; 
+        region: string; 
+        sha256: Sha256; 
+        constructor({ credentials, service, region, sha256 }:{ 
+            credentials: { accessKeyId: string, secretAccessKey: string}, 
+            service: string, 
+            region: string, 
+            sha256: Sha256 
+        }) { 
+            this.credentials = credentials; 
+            this.service = service; 
+            this.region = region; 
+            this.sha256 = sha256; 
+        }; 
+        sign = vi.fn().mockResolvedValue(async function ({method, hostname, protocol, port, path, headers, body}:{ 
+            method: string, 
+            hostname: string, 
+            protocol: string, 
+            port: number, 
+            path: string, 
+            headers: { 'Content-Type': string, 'X-Amz-Target': string, 'Host': string } 
+            body: HttpMessage 
+        }) { 
+            return { method: "POST", headers: {}, body: "" } 
+        }); 
+    }),
+}));
 
 describe("Server Utils", () => {
     describe("isPasswordPwned", () => {
@@ -74,7 +108,7 @@ describe("Server Utils", () => {
             const result = await sendResetPasswordConfirmation("");
             expect(result).toEqual({
                 ok: false,
-                message: "Empty input"
+                message: "Invalid email"
             });
             expect(result).toMatchSnapshot();
         });
@@ -109,6 +143,27 @@ describe("Server Utils", () => {
                 ok: false,
                 message: "Error at mail provider"
             })
+        });
+    });
+    describe("generateKmsDataKey", () => {
+        beforeAll(() => {
+            vi.stubEnv("AWS_KMS_KEY", "KMS_KEY_MOCK");
+            vi.stubEnv("AWS_KMS_SECRET", "KMS_SECRET_MOCK");
+            server.listen();
+        });
+        afterEach(() => server.resetHandlers());
+        afterAll(() => server.close());
+        test("returns CiphertextBlob and Plaintext", async () => {
+            const result = await generateKmsDataKey();
+            expect(result).toEqual({
+                CiphertextBlob: "cipher_mock",
+                Plaintext: "plaintext_mock"
+            });
+            expect(result).toMatchSnapshot();
+        });
+        test("creates an instance of SignatureV4", async () => {
+            await generateKmsDataKey();
+            expect(SignatureV4).toHaveBeenCalled();
         });
     });
 });

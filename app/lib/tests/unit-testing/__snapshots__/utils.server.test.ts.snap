@@ -18,6 +18,13 @@ exports[`Server Utils > sendResetPasswordConfirmation > returns successful messa
 }
 `;
 
+exports[`Server Utils > sendResetPasswordConfirmation > returns unsuccessful message when email is empty 1`] = `
+{
+  "message": "Invalid email",
+  "ok": false,
+}
+`;
+
 exports[`Server Utils > sendResetPasswordConfirmation > returns unsuccessful message when email is invalid 1`] = `
 {
   "message": "Invalid email",
