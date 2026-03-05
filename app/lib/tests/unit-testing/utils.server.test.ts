@@ -1,42 +1,9 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from "vitest";
-import { generateKmsDataKey, isPasswordPwned, sendResetPasswordConfirmation } from "../../utils";
+import { decrypt, decryptKmsDataKey, encrypt, generateKmsDataKey, isPasswordPwned, sendResetPasswordConfirmation } from "../../utils";
 import { server } from "../mocks/node";
 import { sql } from "@vercel/postgres";
 import sgMail from "@sendgrid/mail";
-import { HttpMessage } from "@aws-sdk/types";
-import { Sha256 } from "@aws-crypto/sha256-js";
-import { SignatureV4 } from "@aws-sdk/signature-v4";
-
-vi.mock("@aws-sdk/signature-v4", () => ({
-    SignatureV4: vi.fn(class SignatureV4 { 
-        credentials: { accessKeyId: string, secretAccessKey: string}; 
-        service: string; 
-        region: string; 
-        sha256: Sha256; 
-        constructor({ credentials, service, region, sha256 }:{ 
-            credentials: { accessKeyId: string, secretAccessKey: string}, 
-            service: string, 
-            region: string, 
-            sha256: Sha256 
-        }) { 
-            this.credentials = credentials; 
-            this.service = service; 
-            this.region = region; 
-            this.sha256 = sha256; 
-        }; 
-        sign = vi.fn().mockResolvedValue(async function ({method, hostname, protocol, port, path, headers, body}:{ 
-            method: string, 
-            hostname: string, 
-            protocol: string, 
-            port: number, 
-            path: string, 
-            headers: { 'Content-Type': string, 'X-Amz-Target': string, 'Host': string } 
-            body: HttpMessage 
-        }) { 
-            return { method: "POST", headers: {}, body: "" } 
-        }); 
-    }),
-}));
+import { http, HttpResponse } from "msw";
 
 describe("Server Utils", () => {
     describe("isPasswordPwned", () => {
@@ -65,7 +32,7 @@ describe("Server Utils", () => {
             expect(result).toMatchSnapshot();
         });
     });
-    describe("sendResetPasswordConfirmation", async () => {
+    describe("sendResetPasswordConfirmation", () => {
         beforeAll(() => {
             vi.mock("@vercel/postgres", () => ({
                 sql: vi.fn().mockResolvedValue({
@@ -153,7 +120,25 @@ describe("Server Utils", () => {
         });
         afterEach(() => server.resetHandlers());
         afterAll(() => server.close());
+        
         test("returns CiphertextBlob and Plaintext", async () => {
+            server.use(
+                http.post("https://kms.us-east-1.amazonaws.com", async ({ request }) => {
+                    const headers = request.headers;
+                    expect(headers.get("Content-Type")).toBe("application/x-amz-json-1.1");
+                    expect(headers.get("X-Amz-Target")).toBe("TrentService.GenerateDataKey");
+                    expect(headers.get("Host")).toBe("kms.us-east-1.amazonaws.com");
+                    const body = await request.json();
+                    expect(body).toMatchObject({
+                        "KeyId": "alias/scheduler",
+                        "KeySpec": "AES_256"
+                    });
+                    return HttpResponse.json({
+                        CiphertextBlob: "cipher_mock",
+                        Plaintext: "plaintext_mock",
+                    });
+                })
+            );
             const result = await generateKmsDataKey();
             expect(result).toEqual({
                 CiphertextBlob: "cipher_mock",
@@ -161,9 +146,158 @@ describe("Server Utils", () => {
             });
             expect(result).toMatchSnapshot();
         });
-        test("creates an instance of SignatureV4", async () => {
-            await generateKmsDataKey();
-            expect(SignatureV4).toHaveBeenCalled();
+        test("throws when reaching AWS KMS endpoint fails", async () => {
+            server.use(
+                http.post("https://kms.us-east-1.amazonaws.com", async () => {
+                    return HttpResponse.error();
+                })
+            );
+            await expect(generateKmsDataKey()).rejects.toThrow();
+        });
+        test("returns 'Invalid response' if CiphertextBlob and Plaintext are empty", async () => {
+            server.use(
+                http.post("https://kms.us-east-1.amazonaws.com", async () => {
+                    return HttpResponse.json({
+                        CiphertextBlob: "",
+                        Plaintext: ""
+                    });
+                })
+            );
+            await expect(generateKmsDataKey()).rejects.toThrowError("Invalid response");
+        });
+    });
+    describe("decryptKmsDataKey", () => {
+        beforeAll(() => {
+            vi.stubEnv("AWS_KMS_KEY", "KMS_KEY_MOCK");
+            vi.stubEnv("AWS_KMS_SECRET", "KMS_SECRET_MOCK");
+            vi.stubEnv("AWS_KMS_ARN", "KMS_ARN_MOCK");
+            vi.mock("@aws-sdk/client-kms", () => ({
+                KMSClient: vi.fn(class {
+                    region: string;
+                    credentials: { accessKeyId: string, secretAccessKey: string }
+                    constructor({ region, credentials }: { region: string, credentials: { accessKeyId: string, secretAccessKey: string }}) {
+                        this.region = region;
+                        this.credentials = credentials;
+                    }
+                    send = vi.fn((command) => {
+                        return {
+                            Plaintext: "plaintext_mock"
+                        }
+                    })
+                }),
+                DecryptCommand: vi.fn(class {
+                    CiphertextBlob: string;
+                    KeyId: string;
+                    constructor({ CiphertextBlob, KeyId }: { CiphertextBlob: string, KeyId: string }) {
+                        this.CiphertextBlob = CiphertextBlob;
+                        this.KeyId = KeyId;
+                    }
+                })
+            }));
+        });
+        test("decrypts CiphertextBlob and returns Plaintext", async () => {
+            const result = await decryptKmsDataKey("ciphertextblob_mock");
+            expect(result).toBe("cGxhaW50ZXh0X21vY2s=");
+            expect(result).toMatchSnapshot();
+        });
+        test("throws error if Cipher input is empty", async () => {
+            await expect(decryptKmsDataKey("")).rejects.toThrowError("Cipher is malformed or empty");
+        });
+    });
+    describe("encrypt", () => {
+        test("encrypts a simple string", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+            const result = await encrypt("Hello", key);
+            expect(typeof result).toBe("string");
+            expect(result.includes(":")).toBe(true);
+        });
+        test("returns iv and ciphertext separated by colon", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+            const result = await encrypt("test", key);
+            const [iv, ciphertext] = result.split(":");
+            expect(iv).toBeDefined();
+            expect(ciphertext).toBeDefined();
+
+        });
+        test("produces different outputs for same inputs due to random IV", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+            const a = await encrypt("hello", key);
+            const b = await encrypt("hello", key);
+            expect(a).not.toBe(b);
+        });
+        test("encrypts empty string", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+            const result = await encrypt("", key);
+            expect(result).toContain(":");
+        });
+        test("throws if key length is invalid", async () => {
+            const badKey = Buffer.alloc(10).toString("base64");
+            await expect(encrypt("hello", badKey)).rejects.toThrow();
+        });
+        test("throws if key is not base64", async () => {
+            await expect(encrypt("hello", "not-base64")).rejects.toThrow();
+        });
+    });
+    describe("decrypt", () => {
+        test("decrypts data encrypted by encrypt()", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+            const encrypted = await encrypt("Hello world", key);
+            const decrypted = await decrypt(encrypted, key);
+            expect(decrypted).toBe("Hello world");
+            expect(decrypted).toMatchSnapshot();
+        });
+        test("decrypts unicode text correctly", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+            const encrypted = await encrypt("こんにちは🌙", key);
+            const decrypted = await decrypt(encrypted, key);
+            expect(decrypted).toBe("こんにちは🌙");
+        });
+        test("decrypts empty string", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+
+            const encrypted = await encrypt("", key);
+            const decrypted = await decrypt(encrypted, key);
+
+            expect(decrypted).toBe("");
+        });
+        test("throws if key is incorrect", async () => {
+            const key1 = Buffer.alloc(32).toString("base64");
+            const key2 = Buffer.alloc(32, 1).toString("base64");
+
+            const encrypted = await encrypt("secret", key1);
+
+            await expect(decrypt(encrypted, key2)).rejects.toThrow();
+        });
+        test("throws if ciphertext is modified", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+
+            const encrypted = await encrypt("secret", key);
+
+            const tampered = encrypted.replace(/.$/, "A");
+
+            await expect(decrypt(tampered, key)).rejects.toThrow();
+        });
+        test("throws if encrypted string format is invalid", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+
+            await expect(
+                decrypt("invalid-format", key)
+            ).rejects.toThrow();
+        });
+        test("throws if encrypted data is invalid base64", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+
+            const bad = "invalid:%%%";
+
+            await expect(decrypt(bad, key)).rejects.toThrow();
+        });
+        test("throws if IV length is invalid", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+
+            const badIv = Buffer.alloc(8).toString("base64");
+            const bad = `${badIv}:abcd`;
+
+            await expect(decrypt(bad, key)).rejects.toThrow();
         });
     });
 });

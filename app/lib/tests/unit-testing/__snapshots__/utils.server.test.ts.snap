@@ -1,5 +1,16 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Server Utils > decrypt > decrypts data encrypted by encrypt() 1`] = `"Hello world"`;
+
+exports[`Server Utils > decryptKmsDataKey > decrypts CiphertextBlob and returns Plaintext 1`] = `"cGxhaW50ZXh0X21vY2s="`;
+
+exports[`Server Utils > generateKmsDataKey > returns CiphertextBlob and Plaintext 1`] = `
+{
+  "CiphertextBlob": "cipher_mock",
+  "Plaintext": "plaintext_mock",
+}
+`;
+
 exports[`Server Utils > isPasswordPwned > returns 0 if the password has not been leaked 1`] = `0`;
 
 exports[`Server Utils > isPasswordPwned > returns greater than 0 if the password has been leaked 1`] = `707`;
