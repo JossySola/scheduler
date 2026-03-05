@@ -44,7 +44,7 @@ export async function isPasswordPwned (password: string): Promise<number | UtilR
 }
 export async function sendResetPasswordConfirmation (email: string): Promise<UtilResponse> {
   try {
-    const verifyEmail = z.email({ error: "Invalid email" }).nonempty({ error: "Empty input" }).safeParse(email);
+    const verifyEmail = z.email({ error: "Invalid email" }).nonempty().safeParse(email);
     if (!verifyEmail.success) {
       return {
         ok: false,
@@ -97,11 +97,11 @@ export async function sendResetPasswordConfirmation (email: string): Promise<Uti
   }
 }
 export async function generateKmsDataKey (): Promise<KMSDataKey | null> {
-  const accessKeyId = process.env.AWS_KMS_KEY;
-  const secretAccessKey = process.env.AWS_KMS_SECRET;
-  const region = 'us-east-1';
-  const service = 'kms';
   try {
+    const accessKeyId = process.env.AWS_KMS_KEY;
+    const secretAccessKey = process.env.AWS_KMS_SECRET;
+    const region = 'us-east-1';
+    const service = 'kms';
     if (!accessKeyId || !secretAccessKey) throw new Error("Missing keys", { cause: 400 });
     const signer = new SignatureV4({
       credentials: { accessKeyId, secretAccessKey },
@@ -142,6 +142,7 @@ export async function generateKmsDataKey (): Promise<KMSDataKey | null> {
       throw new Error("Invalid response", { cause: 400 });
     }
   } catch (e) {
+    console.error(e);
     throw e;
   }
 }
