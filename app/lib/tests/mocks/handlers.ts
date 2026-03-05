@@ -10,5 +10,11 @@ export const handlers = [
     }),
     http.get("https://api.pwnedpasswords.com/range/8be3c", async () => {
         return HttpResponse.text("");
-    })
+    }),
+    http.post("https://kms.us-east-1.amazonaws.com", async () => {
+        return HttpResponse.json({
+            CiphertextBlob: "cipher_mock",
+            Plaintext: "plaintext_mock",
+        })
+    }),
 ];
