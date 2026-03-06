@@ -1,4 +1,5 @@
 import { FieldDef } from "pg";
+import { Key } from "react";
 
 export interface UtilResponse {
     message: string,
@@ -60,9 +61,49 @@ export interface KMSDecryptedKey {
     "KeyOrigin": "AWS_KMS",
     "Plaintext": string
 }
-
 export type asyncActionStateResponse = [state: Awaited<{ message: string}>, dispatch: (payload: FormData) => void, isPending: boolean];
-
 export function isPostgreSQLError(error: any): error is PostgreSQLError {
     return typeof error === "object" && error !== null && "severity" in error && "sqlstate" in error;
 }
+export type VTData = {
+    [columnKey: string]: string | undefined;
+}
+export type ColSpecs = {
+    numberOfRows: NumRows,
+    amountOfValues: ValAmount,
+}
+export type NumRows = { [key: string]: number }
+export type ValAmount = { [key: string]: Array<number> }
+export type RowSpecs = {
+    disable: DisableRow,
+    count: RowCount,
+    enabledValues: EnabledValues,
+    enabledColumns: EnabledColumns,
+}
+export type DisableRow = { [key: number]: boolean }
+export type RowCount = { [key: string]: number }
+export type EnabledValues = { [key: string]: Array<string> }
+export type EnabledColumns = { [key: string]: Array<string> }
+export type StatesType = {
+    values: Array<string>,
+    headerType: Array<Key>,
+    rows: Array<{ [key: string]: string }>,
+    data: Array<VTData>,
+    interval: number,
+    colSpecs: ColSpecs,
+    rowSpecs: RowSpecs,
+    title: string,
+    cols: Array<string | undefined>,
+}
+export type RowType = {
+    value: string,
+    hasConflict?: boolean,
+    specs?: {
+        disabled: boolean,
+        disabledCols: Array<string>,
+        rowTimes: number,
+        preferValues: Array<string>,
+        colTimes: number,
+        valueTimes: Map<string, number>,
+    },
+};
