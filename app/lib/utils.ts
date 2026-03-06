@@ -157,8 +157,8 @@ export async function decryptKmsDataKey (CiphertextBlob: string): Promise<string
     const client = new KMSClient({
       region: "us-east-1",
       credentials: {
-          accessKeyId,
-          secretAccessKey,
+        accessKeyId,
+        secretAccessKey,
       },
     });
     const command = new DecryptCommand({
@@ -176,62 +176,92 @@ export async function decryptKmsDataKey (CiphertextBlob: string): Promise<string
     throw err;
   }
 }
-export async function encrypt (data: string, key: string): Promise<string >{
-  const iv = crypto.randomBytes(16);
-  const keyBuffer = Buffer.from(key, 'base64'); 
-  const cipher = crypto.createCipheriv('aes-256-cbc', keyBuffer, iv);
-  let encrypted = cipher.update(data, 'utf-8', 'base64');
-  encrypted += cipher.final('base64');
+export async function encrypt(plaintext: string, base64Key: string): Promise<string> {
+  const key = Buffer.from(base64Key, "base64");
 
-  const ivBase64url = toBase64Url(iv.toString('base64'));
-  const encryptedBase64url = toBase64Url(encrypted);
+  if (key.length !== 32) {
+    throw new Error("Key must be 32 bytes for AES-256-GCM");
+  }
 
-  return `${ivBase64url}:${encryptedBase64url}`;
+  const iv = crypto.randomBytes(12); // recommended for GCM
+  const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
+
+  const encrypted = Buffer.concat([
+    cipher.update(plaintext, "utf8"),
+    cipher.final()
+  ]);
+
+  const tag = cipher.getAuthTag();
+
+  return [
+    iv.toString("base64"),
+    encrypted.toString("base64"),
+    tag.toString("base64")
+  ].join(":");
 }
-export async function decrypt (encrypted: string, key: string): Promise<string> {
-  const verifyEncrypted = z.string().nonempty().includes(":").safeParse(encrypted);
-  if (!verifyEncrypted.success) {
-    throw new Error("Encrypted string malformed or empty");
+export async function decrypt(payload: string, base64Key: string): Promise<string> {
+  const key = Buffer.from(base64Key, "base64");
+
+  if (key.length !== 32) {
+    throw new Error("Key must be 32 bytes for AES-256-GCM");
   }
-  const verifyKey = z.string().nonempty().safeParse(key);
-  if (!verifyKey.success) {
-    throw new Error("Key string malformed or empty");
+
+  const [ivB64, ciphertextB64, tagB64] = payload.split(":");
+
+  if (ivB64 === undefined || ciphertextB64 === undefined || tagB64 === undefined) {
+    throw new Error("Invalid encrypted payload format");
   }
-  const [ ivStr, encryptedData ] = encrypted.split(':');
 
-  const iv = Buffer.from(fromBase64Url(ivStr), 'base64');
-  const encryptedBase64 = fromBase64Url(encryptedData);
+  const iv = Buffer.from(ivB64, "base64");
+  const ciphertext = Buffer.from(ciphertextB64, "base64");
+  const tag = Buffer.from(tagB64, "base64");
 
-  const keyBuffer = Buffer.from(key, 'base64');
-  const decipher = crypto.createDecipheriv('aes-256-cbc', keyBuffer, iv);
+  const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
 
-  let decrypted = decipher.update(encryptedBase64, 'base64', 'utf-8');
-  decrypted += decipher.final('utf-8');
-  return decrypted;
+  decipher.setAuthTag(tag);
+
+  const decrypted = Buffer.concat([
+    decipher.update(ciphertext),
+    decipher.final()
+  ]);
+
+  return decrypted.toString("utf8");
 }
 export async function verifyPasswordAction (hashed: string, password: string): Promise<boolean> {
-  const { verify } = await import('argon2');
-  return await verify(hashed, password);
+  try {
+    const { verify } = await import('argon2');
+    return await verify(hashed, password);
+  } catch (e) {
+    console.error(e);
+    throw new Error(`Error verifying password: ${e}`);
+  }
+
 }
 export async function hashPasswordAction (password: string): Promise<string> {
-  const { hash } = await import('argon2');
-  return await hash(password);
+  try {
+    const { hash } = await import('argon2');
+    return await hash(password);
+  } catch (e) {
+    console.error(e);
+    throw new Error(`Error hashing password: ${e}`);
+  }
 }
 export async function signedOnlyWithProvider (id: string): Promise<boolean | null> {
-  const result = await sql`
-  SELECT password, user_password_key
-  FROM scheduler_users
-  WHERE id = ${id};
-  `.then(response => {
-    if (response.rowCount !== 0) {
-      if (response.rows[0].password === null && response.rows[0].user_password_key === null) {
-        return true;
-      }
-      return false;
+  try {
+    const response = await sql`
+    SELECT password, user_password_key
+    FROM scheduler_users
+    WHERE id = ${id};`;
+    const { password, user_password_key } = response.rows[0];
+    if (password === null || user_password_key === null) {
+      return true;
+    } else {
+      throw new Error(`Password: ${password}, Password Key: ${user_password_key}`);
     }
-    return null;
-  });
-  return result;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
 }
 function toBase64Url (str: string): string {
   return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
