@@ -1,6 +1,6 @@
 {
   "name": "scheduler",
-  "version": "2.0.7-10",
+  "version": "2.1.0",
   "type": "module",
   "private": true,
   "scripts": {
@@ -24,6 +24,7 @@
     "@aws-sdk/signature-v4": "^3.374.0",
     "@aws-sdk/types": "^3.973.4",
     "@aws-sdk/util-base64": "^3.374.0",
+    "@clerk/nextjs": "^7.0.1",
     "@edge-runtime/vm": "^5.0.0",
     "@emailjs/browser": "^4.4.1",
     "@heroui/date-picker": "^2.3.32",
@@ -47,6 +48,7 @@
     "motion": "^12.35.0",
     "next": "^16.1.6",
     "next-auth": "^5.0.0-beta.30",
+    "next-intl": "^4.8.3",
     "next-themes": "^0.4.6",
     "pg": "^8.20.0",
     "postcss": "^8.5.8",
