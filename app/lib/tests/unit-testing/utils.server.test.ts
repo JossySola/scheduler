@@ -1,9 +1,10 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from "vitest";
-import { decrypt, decryptKmsDataKey, encrypt, generateKmsDataKey, isPasswordPwned, sendResetPasswordConfirmation } from "../../utils";
+import { decrypt, decryptKmsDataKey, encrypt, generateKmsDataKey, isPasswordPwned, sendResetPasswordConfirmation, signedOnlyWithProvider, verifyPasswordAction } from "../../utils";
 import { server } from "../mocks/node";
 import { sql } from "@vercel/postgres";
 import sgMail from "@sendgrid/mail";
 import { http, HttpResponse } from "msw";
+import * as argon from "argon2";
 
 describe("Server Utils", () => {
     describe("isPasswordPwned", () => {
@@ -209,21 +210,32 @@ describe("Server Utils", () => {
             const key = Buffer.alloc(32).toString("base64");
             const result = await encrypt("Hello", key);
             expect(typeof result).toBe("string");
-            expect(result.includes(":")).toBe(true);
+            const parts = result.split(":");
+            expect(parts.length).toBe(3);
         });
         test("returns iv and ciphertext separated by colon", async () => {
             const key = Buffer.alloc(32).toString("base64");
             const result = await encrypt("test", key);
-            const [iv, ciphertext] = result.split(":");
+            const [iv, ciphertext, tag] = result.split(":");
             expect(iv).toBeDefined();
             expect(ciphertext).toBeDefined();
-
+            expect(tag).toBeDefined();
         });
         test("produces different outputs for same inputs due to random IV", async () => {
             const key = Buffer.alloc(32).toString("base64");
             const a = await encrypt("hello", key);
             const b = await encrypt("hello", key);
             expect(a).not.toBe(b);
+        });
+        test("encrypt returns iv:ciphertext:tag format", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+            const result = await encrypt("Hello", key);
+            const parts = result.split(":");
+            expect(parts).toHaveLength(3);
+            const [iv, ciphertext, tag] = parts;
+            expect(iv.length).toBeGreaterThan(0);
+            expect(ciphertext.length).toBeGreaterThan(0);
+            expect(tag.length).toBeGreaterThan(0);
         });
         test("encrypts empty string", async () => {
             const key = Buffer.alloc(32).toString("base64");
@@ -254,50 +266,108 @@ describe("Server Utils", () => {
         });
         test("decrypts empty string", async () => {
             const key = Buffer.alloc(32).toString("base64");
-
             const encrypted = await encrypt("", key);
             const decrypted = await decrypt(encrypted, key);
-
             expect(decrypted).toBe("");
+        });
+        test("decrypts data encrypted by encrypt()", async () => {
+            const key = Buffer.alloc(32).toString("base64");
+            const plaintext = "Hello world";
+            const encrypted = await encrypt(plaintext, key);
+            const decrypted = await decrypt(encrypted, key);
+            expect(decrypted).toBe(plaintext);
+        });
+        test("throws if wrong key is used", async () => {
+            const key1 = Buffer.alloc(32, 1).toString("base64");
+            const key2 = Buffer.alloc(32, 2).toString("base64");
+            const encrypted = await encrypt("secret", key1);
+            await expect(decrypt(encrypted, key2)).rejects.toThrow();
         });
         test("throws if key is incorrect", async () => {
             const key1 = Buffer.alloc(32).toString("base64");
             const key2 = Buffer.alloc(32, 1).toString("base64");
-
             const encrypted = await encrypt("secret", key1);
-
             await expect(decrypt(encrypted, key2)).rejects.toThrow();
         });
         test("throws if ciphertext is modified", async () => {
             const key = Buffer.alloc(32).toString("base64");
-
             const encrypted = await encrypt("secret", key);
-
-            const tampered = encrypted.replace(/.$/, "A");
-
+            const [iv, ciphertext, tag] = encrypted.split(":");
+            // corrupt ciphertext
+            const corrupted = ciphertext.slice(0, -2) + "AA";
+            const tampered = [iv, corrupted, tag].join(":");
             await expect(decrypt(tampered, key)).rejects.toThrow();
         });
         test("throws if encrypted string format is invalid", async () => {
             const key = Buffer.alloc(32).toString("base64");
-
             await expect(
                 decrypt("invalid-format", key)
             ).rejects.toThrow();
         });
         test("throws if encrypted data is invalid base64", async () => {
             const key = Buffer.alloc(32).toString("base64");
-
             const bad = "invalid:%%%";
-
             await expect(decrypt(bad, key)).rejects.toThrow();
         });
         test("throws if IV length is invalid", async () => {
             const key = Buffer.alloc(32).toString("base64");
-
             const badIv = Buffer.alloc(8).toString("base64");
             const bad = `${badIv}:abcd`;
-
             await expect(decrypt(bad, key)).rejects.toThrow();
+        });
+    });
+    describe("verifyPasswordAction", () => {
+        test("verifies password with Argon2 and returns true", async () => {
+            const password = "Password123";
+            const hashed = await argon.hash(password);
+            const result = await verifyPasswordAction(hashed, password);
+            expect(result).toBe(true);
+            expect(result).toMatchSnapshot();
+        });
+        test("returns false if verification fails", async () => {
+            const password = "Password123";
+            const hashed = await argon.hash(password);
+            const result = await verifyPasswordAction(hashed, "IncorrectPassword");
+            expect(result).toBe(false);
+            expect(result).toMatchSnapshot();
+        });
+    });
+    describe("hashPasswordAction", () => {
+        test("correctly hashes password", async () => {
+            const password = "Password123";
+            const hashed = await argon.hash(password);
+            const result = await verifyPasswordAction(hashed, password);
+            expect(typeof hashed).toBe("string");
+            expect(result).toBe(true);
+            expect(result).toMatchSnapshot();
+        });
+    });
+    describe("signedOnlyWithProvider", () => {
+        beforeAll(() => {
+            vi.mock("@vercel/postgres", () => ({
+                sql: vi.fn().mockImplementation(() => ({
+                    rows: [{
+                        password: null,
+                        user_password_key: null,
+                    }]
+                }))
+            }));
+        });
+        test("returns true if password & user_password_key are 'null'", async () => {
+            const result = await signedOnlyWithProvider("id_mock");
+            expect(result).toBe(true);
+            expect(result).toMatchSnapshot();
+        });
+        test("returns false if either password or user_password_key are not null", async () => {
+            (sql as any).mockImplementation(() => ({
+                rows: [{
+                    password: "password_mock",
+                    user_password_key: "key_mock"
+                }]
+            }));
+            const result = await signedOnlyWithProvider("id_mock");
+            expect(result).toBe(false);
+            expect(result).toMatchSnapshot();
         });
     });
 });
