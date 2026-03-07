@@ -36,7 +36,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/lib/db.js",
+    "v2.0.7/app/lib/db.js",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
