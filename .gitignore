@@ -1,5 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-structure.md
+
 # dependencies
 /node_modules
 /.pnp
@@ -8,7 +8,7 @@ structure.md
 
 # testing
 /coverage
-
+/html
 # next.js
 /.next/
 /out/
@@ -36,5 +36,3 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 v2.0.7
-# clerk configuration (can include secrets)
-/.clerk/
