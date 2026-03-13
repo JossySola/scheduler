@@ -3,23 +3,26 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { ClientProviders } from "./provider";
+import { headers } from "next/headers";
+import { isRTL } from "react-aria-components";
 
 const geistSans = localFont({
-  src: "../fonts/Geist-Regular.woff2",
+  src: "../../fonts/Geist-Regular.woff2",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
 const geistMono = localFont({
-  src: "../fonts/GeistMonoVF.woff",
+  src: "../../fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
 });
 const geistBold = localFont({
-  src: "../fonts/Geist-Bold.woff2",
+  src: "../../fonts/Geist-Bold.woff2",
   variable: "--font-geist-bold"
 })
 const geistBlack = localFont({
-  src: "../fonts/Geist-Black.woff2",
+  src: "../../fonts/Geist-Black.woff2",
   variable: "--font-geist-black"
 })
 
@@ -51,19 +54,21 @@ export const metadata: Metadata = {
   },
 };
 // Meta Tags Generated via https://www.opengraph.xyz
-export default function RootLayout({
+export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const acceptLanguage = (await headers()).get('accept-language');
+  const lang = acceptLanguage?.split(/[,;]/)[0] || 'en-US';  
   return (
-    <html lang="en">
+    <html lang={ lang } dir={isRTL(lang) ? "rtl" : "ltr"}>
       <body className={`${geistSans.variable} ${geistMono.variable} ${geistBold.variable} ${geistBlack.variable} antialiased`}>
-        <main>
-            {children}
-            <Analytics />
-            <SpeedInsights />
-        </main>
+        <ClientProviders lang={ lang }>
+          { children }
+          <Analytics />
+          <SpeedInsights />
+        </ClientProviders>
       </body>
     </html>
   );
