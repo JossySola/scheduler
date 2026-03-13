@@ -3,7 +3,7 @@ import handleSignUp from "@/features/(auth)/utils/signup/server/signup";
 import { signUpSchema } from "@/lib/schemas";
 import z from "zod";
 
-export async function signUpAction(initialState: { message?: string, errors?: {} }, formData: FormData) {
+export async function signUpAction(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
     const name= formData.get("name")?.toString() as string;
     const username= formData.get("username")?.toString() as string;
     const email= formData.get("email")?.toString() as string;
@@ -18,10 +18,10 @@ export async function signUpAction(initialState: { message?: string, errors?: {}
         confirmPassword
     })
     if (!verification.success) return ({
-        errors: z.treeifyError(verification.error).errors
+        errors: Object.values(z.flattenError(verification.error).fieldErrors)[0]
     });    
     if (password !== confirmPassword) return ({
-        errors: "Incorrect password confirmation"
+        errors: ["Incorrect password confirmation"]
     });
     const request = await handleSignUp({ 
         email,
@@ -29,5 +29,13 @@ export async function signUpAction(initialState: { message?: string, errors?: {}
         password,
         username,
     });
-
+    if (request) {
+        return {
+            message: "User successfully signed up"
+        }
+    } else {
+        return {
+            message: "Sign up unsuccessful"
+        }
+    }
 }
