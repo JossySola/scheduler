@@ -1,10 +1,11 @@
 import { auth } from "@/auth";
+import { SignUpEmailData } from "@/lib/definitions";
 import getMultipleZodErrors from "@/lib/utils/getMultipleZodErrors";
 import z from "zod";
 
 export default async function handleSignUp({ email, name, password, username }: { email: string, name: string, password: string, username: string }) {
     try {
-const emailVerification = z.email({ error: "Invalid input: expected email" }).nonempty({ error: "Input empty" }).safeParse(email);
+        const emailVerification = z.email({ error: "Invalid input: expected email" }).nonempty({ error: "Input empty" }).safeParse(email);
         const passwordVerification = z.string({ error: "Invalid input: expected string" }).min(8, { error: "Password must be minimum 8 characters long" }).safeParse(password);
         const nameVerification = z.string({ error: "Invalid input: expected string" }).nonempty({ error: "Input empty" }).safeParse(name);
         if (!emailVerification.success 
@@ -13,7 +14,7 @@ const emailVerification = z.email({ error: "Invalid input: expected email" }).no
             const messages = getMultipleZodErrors([emailVerification, passwordVerification, nameVerification]);
             throw new Error(`Zod Errors: ${messages}`);
         }
-        const data = await auth.api.signUpEmail({
+        const data: SignUpEmailData = await auth.api.signUpEmail({
             body: {
                 email,
                 name,
