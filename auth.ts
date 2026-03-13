@@ -10,6 +10,12 @@ export const auth = betterAuth({
         connectionString: process.env.DATABASE_URL,
     }),
     experimental: { joins: true },
+    session: {
+        cookieCache: {
+            enabled: true,
+            maxAge: 5 * 60,
+        }
+    },
     emailAndPassword: {
         enabled: true,
         password: {
