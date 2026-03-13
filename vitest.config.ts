@@ -1,12 +1,12 @@
-import path from "path";
 import { defineConfig } from "vitest/config";
+import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
+import tsconfigPaths from "vite-tsconfig-paths";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const paths = tsconfigPaths({ root: __dirname });
 export default defineConfig({
-    resolve: {
-        alias: {
-            "@": path.resolve(__dirname, "./")
-        },
-    },
+    plugins: [tsconfigPaths({ root: resolve(__dirname, "../../../../")})],
     test: {
         reporters: ['verbose', 'html'],
         coverage: {
@@ -15,30 +15,30 @@ export default defineConfig({
         },
         setupFiles: ["vitest.setup.ts"],
         projects: [
-            './lib/tests/*',
             {
-                extends: true,
+                plugins: [paths],
                 test: {
-                    include: ['unit-testing/*.server.test.{ts,js}'],
+                    include: ['lib/tests/unit-testing/*.server.test.{ts,js}'],
                     name: { label: 'Server-side Tests', color: 'blue' },
                     environment: 'node',
                 }
             },
             {
-                extends: true,
+                plugins: [paths],
                 test: {
-                    include: ['unit-testing/*.client.test.{ts,js}'],
+                    include: ['lib/tests/unit-testing/*.client.test.{ts,js}'],
                     name: { label: 'Client-side Tests', color: 'green' },
                     environment: 'happy-dom',
                 }
             }, 
             {
+                plugins: [paths],
                 test: {
-                    include: ['unit-testing/*.vercel.test.{ts,js}'],
+                    include: ['lib/tests/unit-testing/*.vercel.test.{ts,js}'],
                     name: { label: 'Vercel Edge tests', color: 'yellow' },
                     environment: 'edge-runtime',
                 }
             }
         ]
     }
-})
+});
