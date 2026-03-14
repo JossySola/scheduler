@@ -22,9 +22,14 @@ export default async function handleSignUp({ email, name, password, username }: 
                 username,
             }
         });
+        console.log(data)
         return data;       
-    } catch (e) {
-        console.error(e);
-        throw new Error("Failed signing up");
+    } catch (e: any) {
+    // better-auth throws when onExistingUserSignUp rejects
+        const msg = e?.message ?? "";
+        if (msg.includes("credits exceeded") || msg.includes("Unauthorized")) {
+            throw new Error("Email service unavailable. Please try again later.");
+        }
+        throw new Error(msg);
     }
 }
