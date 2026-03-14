@@ -7,7 +7,7 @@ import { hashPassword, verifyPassword } from "./features/(auth)/utils/hashing/ha
 
 export const auth = betterAuth({
     database: new Pool({
-        connectionString: process.env.DATABASE_URL,
+        connectionString: process.env.DATABASE_URL + "?sslmode=verify-full",
     }),
     experimental: { joins: true },
     session: {
@@ -24,31 +24,45 @@ export const auth = betterAuth({
         },
         requireEmailVerification: true,
         onExistingUserSignUp: async ({ user }, request) => {
-            void sendEmail({
-                to: user.email,
-                subject: "Sign-up attempt with your email",
-                text: "Someone tried to create an account using your email address. If this was you, try signing in instead. If not, you can safely ignore this email.",
-            })
+            try {
+                await sendEmail({
+                    to: user.email,
+                    subject: "Scheduler: Sign-up attempt with your email",
+                    text: "Someone tried to create an account using your email address. If this was you, try signing in instead. If not, you can safely ignore this email.",
+                });                
+            } catch (error) {
+                console.error(`Auth: ${error}`)
+                throw new Error(`Auth: ${error}`);                
+            }
+
         },
         sendResetPassword: async ({ user, url, token }, request) => {
-            void sendEmail({
+            await sendEmail({
                 to: user.email,
-                subject: "Reset your password",
-                text: `Click the link to reset your password: ${url}`,
+                subject: "Scheduler: Reset your password",
+                text: `Click the link to reset your password:`,
+                url,
             });
         },
         onPasswordReset: async ({ user }, request) => {
           // callback to execute logic after a password has been successfully reset.  
-        }
+        },
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url, token }, request) => {
-            void sendEmail({
-                to: user.email,
-                subject: "Verify your email address",
-                text: `Click the link to verify your email: ${url}`,
-            })
-        }
+            try {
+                await sendEmail({
+                    to: user.email,
+                    subject: "Scheduler: Verify your email address",
+                    text: "Complete your sign up process by clicking the following button:",
+                    url,
+                    linkText: "Confirm email"
+                });                
+            } catch (error) {
+                console.error(`Auth: ${error}`)
+                throw new Error(`Auth: ${error}`);
+            }
+        },
     },
     socialProviders: {
         facebook: {
