@@ -1,5 +1,5 @@
 "use server"
-import handleSignUp from "@/features/(auth)/utils/signup/server/signup";
+import handleSignUp from "@/features/auth/utils/signup/server/signup";
 import { signUpSchema } from "@/lib/schemas";
 import z from "zod";
 
@@ -16,7 +16,7 @@ export async function signUpAction(initialState: { message?: string, errors?: Ar
             username,
             email,
             password,
-            confirmPassword
+            confirmPassword,
         })
         if (!verification.success) return ({
             errors: Object.values(z.flattenError(verification.error).fieldErrors)[0]
