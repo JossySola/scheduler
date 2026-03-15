@@ -2,8 +2,8 @@ import { betterAuth } from "better-auth";
 import { username } from "better-auth/plugins";
 import { Pool } from "pg";
 import { nextCookies } from "better-auth/next-js";
-import sendEmail from "./features/(auth)/utils/sendEmail/sendEmail";
-import { hashPassword, verifyPassword } from "./features/(auth)/utils/hashing/hashing";
+import sendEmail from "./features/auth/utils/sendEmail/sendEmail";
+import { hashPassword, verifyPassword } from "./features/auth/utils/hashing/hashing";
 
 export const auth = betterAuth({
     database: new Pool({
@@ -34,7 +34,6 @@ export const auth = betterAuth({
                 console.error(`Auth: ${error}`)
                 throw new Error(`Auth: ${error}`);                
             }
-
         },
         sendResetPassword: async ({ user, url, token }, request) => {
             await sendEmail({
