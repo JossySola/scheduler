@@ -1,4 +1,4 @@
-import { authClient } from "@/features/auth/auth-client";
+import { authClient } from "@/features/auth/utils/auth-client";
 import getMultipleZodErrors from "@/lib/utils/getMultipleZodErrors";
 import z from "zod";
 

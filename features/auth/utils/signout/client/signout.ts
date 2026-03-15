@@ -1,4 +1,4 @@
-import { authClient } from "@/features/auth/auth-client";
+import { authClient } from "@/features/auth/utils/auth-client";
 import { useRouter } from "next/navigation";
 
 export default async function() {

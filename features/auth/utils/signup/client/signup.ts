@@ -1,6 +1,6 @@
 import * as z from "zod";
 import getMultipleZodErrors from "../../../../../lib/utils/getMultipleZodErrors";
-import { authClient } from "@/features/auth/auth-client";
+import { authClient } from "@/features/auth/utils/auth-client";
 
 export default async function handleSignUp(email: string, password: string, name: string, username: string, callbackURL: string) {
     try {

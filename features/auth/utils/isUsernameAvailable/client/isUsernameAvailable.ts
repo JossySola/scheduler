@@ -1,4 +1,4 @@
-import { authClient } from "@/features/auth/auth-client";
+import { authClient } from "@/features/auth/utils/auth-client";
 import z from "zod";
 
 export default async function isUsernameAvailable(username: string) {
