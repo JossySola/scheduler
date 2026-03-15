@@ -7,7 +7,7 @@ import signInFacebook from "../utils/signInFacebook/client/signInFacebook";
 
 export default function SignInProviders() {
     return (
-        <section className="flex flex-col">
+        <section className="flex flex-col w-full sm:flex-row">
             <Button className="provider-button" onClick={e => signInMicrosoft()}><MicrosoftLogo /> Microsoft</Button>
             <Button className="provider-button" onClick={e => signInGoogle()}><GoogleLogo /> Google</Button>
             <Button className="provider-button" onClick={e => signInFacebook()}><FacebookLogo /> Facebook</Button>
