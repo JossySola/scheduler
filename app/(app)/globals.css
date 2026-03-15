@@ -42,6 +42,10 @@ a {
   text-decoration: underline;
 }
 
+.provider-button {
+  @apply flex flex-row items-center justify-center p-1 gap-3 border border-gray-300 rounded-md w-40 text-sm text-gray-600 shadow-xs cursor-pointer;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
