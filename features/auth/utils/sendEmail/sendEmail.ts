@@ -17,8 +17,7 @@ export default async function sendEmail({ to, subject, text, url, linkText }: {
             url,
             linkText,
         });
-        if (!verification.success) throw new Error(`${Object.values(z.prettifyError(verification.error))}`);
-        
+        if (!verification.success) throw new Error(`${z.prettifyError(verification.error)}`);
         const key = process.env.RESEND_API_KEY;
         if (!key) throw new Error("Key missing");
         const resend = new Resend(key);
