@@ -10,7 +10,6 @@ export default function getMultipleZodErrors(verifications: Array<z.ZodSafeParse
     });
     const str = result.join("//");
     if (str) {
-        console.log(str)
         return str;
     } else {
         return null;
