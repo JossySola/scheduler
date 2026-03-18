@@ -4,6 +4,7 @@ import { Pool } from "pg";
 import { nextCookies } from "better-auth/next-js";
 import sendEmail from "./features/auth/utils/sendEmail/sendEmail";
 import { hashPassword, verifyPassword } from "./features/auth/utils/hashing/hashing";
+import { waitUntil } from "@vercel/functions";
 
 export const auth = betterAuth({
     database: new Pool({
@@ -25,23 +26,29 @@ export const auth = betterAuth({
         requireEmailVerification: true,
         onExistingUserSignUp: async ({ user }, request) => {
             try {
-                await sendEmail({
+                waitUntil(sendEmail({
                     to: user.email,
                     subject: "Scheduler: Sign-up attempt with your email",
                     text: "Someone tried to create an account using your email address. If this was you, try signing in instead. If not, you can safely ignore this email.",
-                });                
+                }));                
             } catch (error) {
-                console.error(`Auth: ${error}`)
-                throw new Error(`Auth: ${error}`);                
+                console.error(`onExistingUserSignUp: ${error}`)
+                throw new Error(`onExistingUserSignUp: ${error}`);                
             }
         },
         sendResetPassword: async ({ user, url, token }, request) => {
-            await sendEmail({
-                to: user.email,
-                subject: "Scheduler: Reset your password",
-                text: `Click the link to reset your password:`,
-                url,
-            });
+            try {
+                waitUntil(sendEmail({
+                    to: user.email,
+                    subject: "Scheduler: Reset your password",
+                    text: `Click the link to reset your password:`,
+                    url,
+                }));               
+            } catch (error) {
+                console.error(`sendResetPassword: ${error}`)
+                throw new Error(`sendResetPassword: ${error}`);                
+            }
+
         },
         onPasswordReset: async ({ user }, request) => {
           // callback to execute logic after a password has been successfully reset.  
@@ -50,16 +57,16 @@ export const auth = betterAuth({
     emailVerification: {
         sendVerificationEmail: async ({ user, url, token }, request) => {
             try {
-                await sendEmail({
+                waitUntil(sendEmail({
                     to: user.email,
                     subject: "Scheduler: Verify your email address",
                     text: "Complete your sign up process by clicking the following button:",
                     url,
                     linkText: "Confirm email"
-                });                
+                }));                
             } catch (error) {
-                console.error(`Auth: ${error}`)
-                throw new Error(`Auth: ${error}`);
+                console.error(`sendVerificationEmail: ${error}`)
+                throw new Error(`sendVerificationEmail: ${error}`);
             }
         },
     },
