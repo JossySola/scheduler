@@ -15,6 +15,30 @@ export const auth = betterAuth({
         cookieCache: {
             enabled: true,
             maxAge: 5 * 60,
+            strategy: "jwe",
+        }
+    },
+    user: {
+        deleteUser: {
+            enabled: true,
+            sendDeleteAccountVerification: async ({
+                user,
+                url,
+                token,
+            }, request) => {
+                try {
+                    waitUntil(sendEmail({
+                        to: user.email,
+                        subject: "Scheduler: Confirm your account deletion",
+                        text: "We are sorry to see you go 😢. Please click on the following button to confirm your account deletion. Note that this action is irreversible.",
+                        url,
+                        linkText: "Complete account deletion"
+                    }));
+                } catch (error) {
+                    console.error(error);
+                    throw new Error(`sendDeleteAccountVerification: ${error}`);                     
+                }
+            }
         }
     },
     emailAndPassword: {
@@ -55,6 +79,7 @@ export const auth = betterAuth({
         },
     },
     emailVerification: {
+        autoSignInAfterVerification: true,        
         sendVerificationEmail: async ({ user, url, token }, request) => {
             try {
                 waitUntil(sendEmail({
