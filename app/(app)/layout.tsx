@@ -6,6 +6,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ClientProviders } from "./provider";
 import { headers } from "next/headers";
 import { isRTL } from "react-aria-components";
+import SignOutButton from "@/features/auth/components/signout-button";
+import SignInButton from "@/features/auth/components/signin-button";
 
 const geistSans = localFont({
   src: "../../fonts/Geist-Regular.woff2",
@@ -64,6 +66,7 @@ export default async function AppLayout({
   return (
     <html lang={ lang } dir={isRTL(lang) ? "rtl" : "ltr"}>
       <body className={`${geistSans.variable} ${geistMono.variable} ${geistBold.variable} ${geistBlack.variable} antialiased`}>
+        <nav><SignInButton/><SignOutButton /></nav>
         <ClientProviders lang={ lang }>
           { children }
           <Analytics />
