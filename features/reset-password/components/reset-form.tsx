@@ -1,5 +1,5 @@
 "use client"
-import { requestPasswordReset } from "@/app/(app)/reset-password/actions";
+import { requestPasswordReset } from "@/app/(app)/(auth)/reset-password/actions";
 import ActionButton from "@/ui/buttons/action-button";
 import Form from "@/ui/form/form";
 import Input from "@/ui/input/input";

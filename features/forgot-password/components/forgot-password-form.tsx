@@ -1,5 +1,5 @@
 "use client"
-import { forgotPasswordAction } from "@/app/(app)/forgot-password/actions"
+import { forgotPasswordAction } from "@/app/(app)/(auth)/forgot-password/actions"
 import ActionButton from "@/ui/buttons/action-button"
 import Form from "@/ui/form/form"
 import Input from "@/ui/input/input"

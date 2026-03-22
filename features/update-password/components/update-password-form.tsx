@@ -1,5 +1,5 @@
 "use client"
-import { updatePasswordAction } from "@/app/(app)/update-password/actions";
+import { updatePasswordAction } from "@/app/(app)/(auth)/update-password/actions";
 import ActionButton from "@/ui/buttons/action-button";
 import Form from "@/ui/form/form";
 import Input from "@/ui/input/input";
