@@ -15,7 +15,10 @@ export default function ForgotPasswordForm() {
             <Input type="text" name="email" autoComplete="email" required />
             <Text slot="description">We will send you an email in order to proceed with the password reset process. If you don't see the email in your inbox, please wait a few minutes or check your spam folder.</Text>
             <p>{state.message}</p>
-            <ActionButton isDisabled={isPending}>Send reset request</ActionButton>
+            {
+                state.errors ? <p>{state.errors[0]}</p> : null
+            }            
+            <ActionButton type="submit" isDisabled={isPending}>Send reset request</ActionButton>
         </Form>
     )
 }
