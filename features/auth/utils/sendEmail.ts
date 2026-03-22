@@ -1,7 +1,7 @@
 import { sendEmailSchema } from "@/lib/schemas";
 import { Resend } from 'resend';
 import z from "zod";
-import { TemplateLink, TemplateNoLink } from "../../components/emailTemplates";
+import { TemplateLink, TemplateNoLink } from "../components/emailTemplates";
 
 export default async function sendEmail({ to, subject, text, url, linkText }: { 
     to: string, 
