@@ -67,6 +67,7 @@ export const auth = betterAuth({
                     subject: "Scheduler: Reset your password",
                     text: `Click the link to reset your password:`,
                     url,
+                    linkText: "Reset password"
                 }));               
             } catch (error) {
                 console.error(`sendResetPassword: ${error}`)
