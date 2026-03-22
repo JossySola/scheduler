@@ -1,8 +1,7 @@
 import sendEmail from "@/features/auth/utils/sendEmail";
-import { beforeEach } from "node:test";
 import { JSX } from "react";
 import { Resend } from "resend";
-import { beforeAll, describe, expect, expectTypeOf, test, vi } from "vitest";
+import { beforeEach, beforeAll, describe, expect, expectTypeOf, test, vi } from "vitest";
 
 vi.mock("resend", () => ({
     Resend: vi.fn(class {
