@@ -19,6 +19,10 @@ export const sendEmailSchema = z.object({
     linkText: z.optional(z.string({ error: "Invalid input format" })),
 });
 export const resetPasswordSchema = z.object({
-    password: z.string({ error: "Invalid input format" }).min(8, { message: "Password must be minimum 8 characters long" }),
-    token: z.string({ error: "Invalid input format" }).nonempty({ error: "Token is missing" }),
+    newPassword: z.string({ error: "Password: Invalid input format" }).min(8, { message: "Password must be minimum 8 characters long" }),
+    token: z.string({ error: "Token: Invalid input format" }).nonempty({ error: "Token is missing" }),
+});
+export const updatePasswordSchema = z.object({
+    currentPassword: z.string({ error: "Invalid input format" }).nonempty({ message: "Input should not be empty" }),
+    newPassword: z.string({ error: "Invalid input format" }).nonempty({ message: "Input should not be empty" }),
 });
