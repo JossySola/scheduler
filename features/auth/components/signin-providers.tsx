@@ -1,9 +1,9 @@
 "use client"
 import { FacebookLogo, GoogleLogo, MicrosoftLogo } from "@/ui/icons/geist/icons";
 import { Button } from "react-aria-components";
-import signInMicrosoft from "../utils/signInMicrosoft/client/signInMicrosoft";
-import signInGoogle from "../utils/signInGoogle/client/signInGoogle";
-import signInFacebook from "../utils/signInFacebook/client/signInFacebook";
+import signInMicrosoft from "../utils/signInMicrosoft";
+import signInGoogle from "../utils/signInGoogle";
+import signInFacebook from "../utils/signInFacebook";
 
 export default function SignInProviders() {
     return (

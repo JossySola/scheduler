@@ -3,7 +3,7 @@ import { username } from "better-auth/plugins";
 import { Pool } from "pg";
 import { nextCookies } from "better-auth/next-js";
 import sendEmail from "./features/auth/utils/sendEmail/sendEmail";
-import { hashPassword, verifyPassword } from "./features/auth/utils/hashing/hashing";
+import { hashPassword, verifyPassword } from "./features/auth/utils/hashing";
 import { waitUntil } from "@vercel/functions";
 
 export const auth = betterAuth({
