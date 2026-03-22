@@ -1,23 +1,25 @@
 "use server"
-import requestPasswordReset from "@/features/auth/utils/requestPasswordReset/server/requestPasswordReset";
+import { auth } from "@/auth";
 import z from "zod";
 
-export async function forgotPasswordAction(initialState: { message: string }, formData: FormData) {
+export async function forgotPasswordAction(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
     try {
         const email = formData.get("email")?.toString();
+        if (!email) return { message: "Email field should not be empty" }
         const inputVerification = z.email().nonempty().safeParse(email);
-        if (!inputVerification.success || !email) {
+        if (!inputVerification.success) {
             return {
-                message: "Invalid or empty email address"
+                errors: ["Invalid email address"]
             }
         }
-        const request = await requestPasswordReset(email, `${process.env.NEXTAUTH_URL}/reset-password`);
-        if (request.status) {
-            return {
-                message: "The email has been sent!"
+        await auth.api.requestPasswordReset({
+            body: {
+                email,
+                redirectTo: `${process.env.NEXTAUTH_URL}/reset-password`,
             }
-        } else {
-            throw new Error();
+        });
+        return {
+            message: "The email has been sent!"
         }
     } catch (error) {
         return {

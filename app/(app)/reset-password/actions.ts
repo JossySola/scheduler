@@ -1,5 +1,5 @@
 "use server"
-import resetPassword from "@/features/auth/utils/resetPassword/server/resetPassword";
+import { auth } from "@/auth";
 import { resetPasswordSchema } from "@/lib/schemas";
 import z from "zod";
 
@@ -14,15 +14,14 @@ export async function requestPasswordReset(initialState: { message?: string, err
         if (!verification.success) return ({
             errors: Object.values(z.flattenError(verification.error).fieldErrors)[0]
         });
-        const request = await resetPassword(newPassword, token);
-        if (request) {
-            return {
-                message: "Password reset successful",
-            }
-        } else {
-            return {
-                message: "Password could not be reset"
-            }
+        await auth.api.resetPassword({
+            body: {
+                newPassword,
+                token,
+            },
+        });
+        return {
+            message: "Password reset successful",
         }
     } catch (error) {
          console.error(error);

@@ -1,5 +1,6 @@
 "use server"
-import handleSignUp from "@/features/auth/utils/signup/server/signup";
+import { auth } from "@/auth";
+import { SignUpEmailData } from "@/lib/definitions";
 import { signUpSchema } from "@/lib/schemas";
 import z from "zod";
 
@@ -24,11 +25,13 @@ export async function signUpAction(initialState: { message?: string, errors?: Ar
         if (password !== confirmPassword) return ({
             errors: ["Incorrect password confirmation"]
         });
-        const request = await handleSignUp({ 
-            email,
-            name,
-            password,
-            username,
+        const request: SignUpEmailData = await auth.api.signUpEmail({
+            body: {
+                email,
+                name,
+                password,
+                username,
+            }
         });
         if (request) {
             return {

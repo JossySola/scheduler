@@ -1,5 +1,5 @@
 "use server"
-import handleSignIn from "@/features/auth/utils/signin/server/signin";
+import { auth } from "@/auth";
 import { signInSchema } from "@/lib/schemas";
 import z from "zod";
 
@@ -11,11 +11,18 @@ export async function signInAction(initialState: { message?: string, errors?: Ar
         const verification = signInSchema.safeParse({
             username,
             password,
-        })
+        });
         if (!verification.success) return ({
             errors: Object.values(z.flattenError(verification.error).fieldErrors)[0]
         });
-        const request = await handleSignIn(username, password);
+        const request = await auth.api.signInUsername({
+            body: {
+                username,
+                password,
+                rememberMe: true,
+                callbackURL: "/dashboard",
+            }
+        });
         if (request) {
             return {
                 message: "User signed in successfully"
