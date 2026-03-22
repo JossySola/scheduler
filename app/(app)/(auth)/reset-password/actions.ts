@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { resetPasswordSchema } from "@/lib/schemas";
 import z from "zod";
 
-export async function requestPasswordReset(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
+export async function requestPasswordResetAction(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
     try {
         const newPassword = formData.get("password")?.toString() as string;
         const token = formData.get("token")?.toString() as string;
@@ -25,6 +25,6 @@ export async function requestPasswordReset(initialState: { message?: string, err
         }
     } catch (error) {
          console.error(error);
-         return { message: `${error}`}
+         return { errors: [`${error}`] }
     }
 }

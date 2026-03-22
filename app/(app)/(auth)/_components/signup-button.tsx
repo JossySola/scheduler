@@ -1,6 +1,6 @@
 "use client"
-import { authClient } from "@/features/auth/utils/auth-client";
-import PrimaryButton from "../../../ui/buttons/primary-button";
+import { authClient } from "../_utils/auth-client";
+import PrimaryButton from "../../../../ui/buttons/primary-button";
 import { redirect } from "next/navigation";
 
 export default function SignUpButton() {

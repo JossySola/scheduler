@@ -27,7 +27,7 @@ export async function updatePasswordAction(initialState: { message?: string, err
     } catch (error) {
         console.error(error);
         return {
-            message: `${error}`,
+            errors: [`${error}`],
         }
     }
 }

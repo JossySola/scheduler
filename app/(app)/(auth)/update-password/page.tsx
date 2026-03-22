@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import UpdatePasswordForm from "@/features/update-password/components/update-password-form";
+import UpdatePasswordForm from "./_components/update-password-form";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 

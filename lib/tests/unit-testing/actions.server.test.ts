@@ -30,12 +30,32 @@ vi.mock("@/auth", () => ({
                     displayUsername: "jossysola",
                 }
             })),
+            requestPasswordReset: vi.fn().mockImplementation(() => ({
+                status: true,
+                message: "Success"
+            })),
+            resetPassword: vi.fn().mockImplementation(() => ({
+                status: true,
+            })),
+            changePassword: vi.fn().mockImplementation(() => ({
+                token: "123",
+                user: {
+                    id: "1234",
+                    createdAt: "",
+                    updatedAt: "",
+                    email: "name@domain.com",
+                    emailVerified: true,
+                    name: "jossysola"
+                },
+            })),
         },     
     },
 }));
+vi.stubEnv("NEXTAUTH_URL", "http://localhost:3000/");
+
 describe("(app)",() => {
     describe("(auth)", () => {
-        describe("signin", () => {
+        describe("signInAction", () => {
             test("returns successful message", async () => {
                 const initialState = { message: "" };                
                 const payload = {
@@ -61,7 +81,7 @@ describe("(app)",() => {
                 expect(result).toEqual({ errors: ["Password must be minimum 8 characters long"] })
             });
         });
-        describe("signup", () => {
+        describe("signUpAction", () => {
             test("returns object with successful message", async () => {
                 const payload = {
                     email: "name@domain.com",
@@ -146,6 +166,39 @@ describe("(app)",() => {
                 
                 const result = await signUpAction({ message: "" }, formData);
                 expect(result).toEqual({ message: "Error: Error bubbling from auth.api.signUpEmail" });                
+            });
+        });
+        describe("forgotPasswordAction", () => {
+            test("returns successful message", async () => {
+
+            });
+            test("returns errors array with Zod messages when input is invalid", async () => {
+
+            });
+            test("returns unsuccessful message if API fails", async () => {
+
+            });
+        });
+        describe("requestPasswordResetAction", () => {
+            test("returns successful message", async () => {
+
+            });
+            test("returns errors array with Zod messages when input is invalid", async () => {
+
+            });
+            test("returns unsuccessful message if API fails", async () => {
+
+            });
+        });
+        describe("updatePasswordAction", () => {
+            test("returns successful message", async () => {
+
+            });
+            test("returns errors array with Zod messages when input is invalid", async () => {
+
+            });
+            test("returns unsuccessful message if API fails", async () => {
+
             });
         });
     });

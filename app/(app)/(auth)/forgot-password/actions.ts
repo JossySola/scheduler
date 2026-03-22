@@ -23,7 +23,7 @@ export async function forgotPasswordAction(initialState: { message?: string, err
         }
     } catch (error) {
         return {
-            message: "The email couldn't be sent"
+            errors: ["The email couldn't be sent"]
         }
     }
 }

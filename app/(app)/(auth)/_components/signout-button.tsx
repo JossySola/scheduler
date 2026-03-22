@@ -1,7 +1,7 @@
 "use client"
 import { useRouter } from "next/navigation";
 import ActionButton from "@/ui/buttons/action-button";
-import { authClient } from "@/features/auth/utils/auth-client";
+import { authClient } from "../_utils/auth-client";
 
 export default function SignOutButton() {
     const router = useRouter();

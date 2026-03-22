@@ -1,4 +1,4 @@
-import ResetForm from "@/features/reset-password/components/reset-form";
+import ResetForm from "./_components/reset-form";
 
 export default async function ResetPage({ searchParams }: {
     searchParams: Promise<{ [key:string] : string | undefined }>

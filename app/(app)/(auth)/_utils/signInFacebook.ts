@@ -1,4 +1,4 @@
-import { authClient } from "@/features/auth/utils/auth-client";
+import { authClient } from "../_utils/auth-client";
 
 export default async function signInFacebook() {
     try {

@@ -1,5 +1,5 @@
-import SignInProviders from "@/features/auth/components/signin-providers";
-import SignUpForm from "@/features/auth/components/signup-form";
+import SignInProviders from "@/app/(app)/(auth)/_components/signin-providers";
+import SignUpForm from "@/app/(app)/(auth)/_components/signup-form";
 
 export default async function SignUpPage() {
     return (

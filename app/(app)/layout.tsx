@@ -6,8 +6,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ClientProviders } from "./provider";
 import { headers } from "next/headers";
 import { isRTL } from "react-aria-components";
-import SignOutButton from "@/features/auth/components/signout-button";
-import SignInButton from "@/features/auth/components/signin-button";
+import SignOutButton from "@/app/(app)/(auth)/_components/signout-button";
+import SignInButton from "@/app/(app)/(auth)/_components/signin-button";
 
 const geistSans = localFont({
   src: "../../fonts/Geist-Regular.woff2",

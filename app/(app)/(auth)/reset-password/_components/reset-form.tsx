@@ -1,5 +1,5 @@
 "use client"
-import { requestPasswordReset } from "@/app/(app)/(auth)/reset-password/actions";
+import { requestPasswordResetAction } from "@/app/(app)/(auth)/reset-password/actions";
 import ActionButton from "@/ui/buttons/action-button";
 import Form from "@/ui/form/form";
 import Input from "@/ui/input/input";
@@ -11,7 +11,7 @@ import VisibilityOff from '@react-spectrum/s2/icons/VisibilityOff';
 import { Button } from "react-aria-components";
 
 export default function ResetForm({ token }: { token: string }) {
-    const [state, dispatchAction, isPending] = useActionState(requestPasswordReset, { message: "" })
+    const [state, dispatchAction, isPending] = useActionState(requestPasswordResetAction, { message: "" })
     const [isVisible, setIsVisible] = useState(false);
     return (
         <Form action={dispatchAction}>
