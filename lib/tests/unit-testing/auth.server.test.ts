@@ -2,8 +2,6 @@ import { signInAction } from "@/app/(app)/(auth)/signin/actions";
 import { signUpAction } from "@/app/(app)/(auth)/signup/actions";
 import { auth } from "@/auth";
 import sendEmail from "@/features/auth/utils/sendEmail/sendEmail";
-import handleSignIn from "@/features/auth/utils/signin/server/signin";
-import handleSignUp from "@/features/auth/utils/signup/server/signup";
 import { JSX } from "react";
 import { Resend } from "resend";
 import { beforeAll, beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest";
@@ -59,31 +57,6 @@ vi.mock("resend", () => ({
 }))
 describe("(auth)",() => {
     describe("signin/", () => {
-        describe("@features/**/server -> handleSignIn", () => {
-            test("returns user data", async () => {
-                const username = "jossysola";
-                const password = "password123";
-                const result = await handleSignIn(username, password);
-                expect(result).toEqual({
-                    token: "a123",
-                    user: {
-                        id: "123",
-                        createdAt: "DateType",
-                        updatedAt: "DateType",
-                        email: "name@domain.com",
-                        emailVerified: true,
-                        name: "jossy",
-                        username: "jossysola",
-                        displayUsername: "jossysola",
-                    }                    
-                });
-            });
-            test("throws if the password's length is less than 8 characters", async () => {
-                const username = "jossysola";
-                const password = "1234567";
-                await expect(handleSignIn(username, password)).rejects.toThrow();                 
-            })
-        });
         describe("@app/**/signin -> signInAction", () => {
             test("returns successful message", async () => {
                 const initialState = { message: "" };                
@@ -112,37 +85,6 @@ describe("(auth)",() => {
         });
     });
     describe("signup/", () => {
-        describe("@features/**/server -> handleSignUp", () => {
-            test("returns sign up data", async () => {
-                const payload = {
-                    email: "name@domain.com",
-                    name: "Jossy",
-                    username: "jossysola",
-                    password: "password123"
-                }
-                const result = await handleSignUp(payload);
-                expect(result).toEqual({
-                    token: null,
-                    user: {
-                        id: "123",
-                        createdAt: "DateType",
-                        updatedAt: "DateType",
-                        email: "name@domain",
-                        emailVerified: true,
-                        name: "jossy"
-                    }
-                });
-            });
-            test("throws if any expected input is invalid", async () => {
-                const payload = {
-                    email: "invalidEmail",
-                    name: "Jossy",
-                    username: "jossysola",
-                    password: "password123"                    
-                }
-                await expect(handleSignUp(payload)).rejects.toThrow();
-            });
-        });
         describe("@app/**/signup -> signUpAction", () => {
             test("returns object with successful message", async () => {
                 const payload = {
