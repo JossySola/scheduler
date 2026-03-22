@@ -1,4 +1,4 @@
-import sendEmail from "@/features/auth/utils/sendEmail/sendEmail";
+import sendEmail from "@/features/auth/utils/sendEmail";
 import { beforeEach } from "node:test";
 import { JSX } from "react";
 import { Resend } from "resend";
