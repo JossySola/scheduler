@@ -41,6 +41,9 @@ export default function SignInForm() {
                 </div>
             </TextField>
             <p>{state.message}</p>
+            {
+                state.errors ? <p>{state.errors[0]}</p> : null
+            }            
             <ActionButton type="submit" isDisabled={isPending}>Log In</ActionButton>
         </Form>
     )

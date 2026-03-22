@@ -78,6 +78,9 @@ export default function SignUpForm() {
             </Text>
 
             <p>{state.message}</p>
+            {
+                state.errors ? <p>{state.errors[0]}</p> : null
+            }            
             <ActionButton type="submit" isDisabled={isPending}>Sign Up</ActionButton>
         </Form>
     )    
