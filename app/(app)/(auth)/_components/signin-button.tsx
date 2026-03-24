@@ -5,8 +5,18 @@ import SecondaryButton from "../../../../ui/buttons/secondary-button";
 
 export default function SignInButton() {
     const { data: session } = authClient.useSession();
+    const handleSignIn = () => {
+        redirect("/signin");
+    }
     if (!session) {
-        return <SecondaryButton type="button" aria-label="sign in" onClick={e => redirect("/signin")}>Sign In</SecondaryButton>
+        return (
+            <SecondaryButton 
+            type="button" 
+            aria-label="sign in" 
+            onPress={handleSignIn}>
+            Sign In
+            </SecondaryButton>
+        )
     }
     return null;
 }

@@ -5,8 +5,18 @@ import { redirect } from "next/navigation";
 
 export default function SignUpButton() {
     const { data: session } = authClient.useSession();
+    const handleSignUp = () => {
+        redirect("/signup");
+    }    
     if (!session) {
-        return <PrimaryButton type="button" aria-label="sign up" onClick={e => redirect("/signup")}>Sign Up</PrimaryButton>
+        return (
+            <PrimaryButton 
+            type="button" 
+            aria-label="sign up" 
+            onPress={handleSignUp}>
+            Sign Up
+            </PrimaryButton>
+        )
     }
     return null;
 }

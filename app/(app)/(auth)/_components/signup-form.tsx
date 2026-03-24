@@ -56,7 +56,7 @@ export default function SignUpForm() {
                 <Label>Password</Label>
                 <div>
                     <Input placeholder="Choose a password" name="password" minLength={8} autoComplete="new-password" required />
-                    <Button type='button' aria-label='switch password visibility' onClick={() => setIsVisible(prev => !prev)}>
+                    <Button type='button' aria-label='switch password visibility' onPress={() => setIsVisible(prev => !prev)}>
                         {
                             isVisible 
                             ? <VisibilityOff />
@@ -77,9 +77,9 @@ export default function SignUpForm() {
                 By completing the sign up process and/or signing in with an external provider, you agree with our Terms & Conditions.
             </Text>
 
-            <p>{state.message}</p>
+            <p role='alert'>{state.message}</p>
             {
-                state.errors ? <p>{state.errors[0]}</p> : null
+                state.errors ? <p role='alert'>{state.errors[0]}</p> : null
             }            
             <ActionButton type="submit" isDisabled={isPending}>Sign Up</ActionButton>
         </Form>
