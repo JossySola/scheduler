@@ -10,21 +10,21 @@ import SignOutButton from "@/src/app/(app)/(auth)/_components/signout-button";
 import SignInButton from "@/src/app/(app)/(auth)/_components/signin-button";
 
 const geistSans = localFont({
-  src: "../../fonts/Geist-Regular.woff2",
+  src: "../../../fonts/Geist-Regular.woff2",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
 const geistMono = localFont({
-  src: "../../fonts/GeistMonoVF.woff",
+  src: "../../../fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
 });
 const geistBold = localFont({
-  src: "../../fonts/Geist-Bold.woff2",
+  src: "../../../fonts/Geist-Bold.woff2",
   variable: "--font-geist-bold"
 })
 const geistBlack = localFont({
-  src: "../../fonts/Geist-Black.woff2",
+  src: "../../../fonts/Geist-Black.woff2",
   variable: "--font-geist-black"
 })
 
