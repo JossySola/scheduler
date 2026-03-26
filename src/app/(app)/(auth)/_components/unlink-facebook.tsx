@@ -1,0 +1,43 @@
+"use client"
+import { FacebookLogo } from "@/ui/icons/geist/icons";
+import { Button } from "react-aria-components";
+import { authClient } from "../_utils/auth-client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+
+export default function UnlinkFacebook() {
+    const [message, setMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+    const { refetch } = authClient.useSession();
+    const translation = useTranslations("unlink-facebook");
+    const handleUnlink = async () => {
+        setIsLoading(true);
+        try {
+            await authClient.unlinkAccount({ providerId: 'facebook' });
+            await refetch();
+            router.refresh();
+            setMessage(translation("success"));
+        } catch (error: any) {
+            setMessage(error.error.message || translation("error"))
+        } finally {
+            setIsLoading(false);
+        }
+    }
+    return ( 
+        <>
+        <Button 
+        type="button"
+        isDisabled={ isLoading } 
+        aria-label="Unlink Facebook account"
+        className="provider-button"
+        onPress={ handleUnlink } >
+        <FacebookLogo /> { isLoading ? translation("state") : translation("text") } 
+        </Button> 
+        {
+            message && <p role="alert"> { message } </p>
+        } 
+        </>
+    );
+}

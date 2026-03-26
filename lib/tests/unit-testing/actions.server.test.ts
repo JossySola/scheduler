@@ -1,5 +1,5 @@
-import { signInAction } from "@/app/(app)/(auth)/signin/actions";
-import { signUpAction } from "@/app/(app)/(auth)/signup/actions";
+import { signInAction } from "@/src/app/(app)/(auth)/signin/actions";
+import { signUpAction } from "@/src/app/(app)/(auth)/signup/actions";
 import { auth } from "@/auth";
 import { describe, expect, test, vi } from "vitest";
 

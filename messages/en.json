@@ -1,0 +1,78 @@
+{
+    "goodbye": {
+        "h2": "We are sorry to see you go 😢",
+        "p": "However, you are more than welcome to join again anytime and/or leave us with some feedback so we can improve."
+    },
+    "delete-form" : {
+        "warning": "CAUTION: You will need to confirm this action with your password, as this action is irreversible.",
+        "label": "Password",
+        "placeholder": "Enter your password",
+        "button": "Delete account"
+    },
+    "forgot-form": {
+        "label": "Email",
+        "placeholder": "Enter your email",
+        "description": "We will send you an email in order to proceed with the password reset process. If you don't see the email in your inbox, please wait a few minutes or check your spam folder.",
+        "button": "Send confirmation"
+    },
+    "reset-form": {
+        "label": "New password",
+        "placeholder": "Enter your new password",
+        "button": "Reset password"
+    },
+    "update-form": {
+        "labelCurrent": "Current password",
+        "placeholderCurrent": "Enter your current password",
+        "labelNew:": "New password",
+        "placeholderNew": "Enter your new password",
+        "button": "Update password"
+    },
+    "signin-form": {
+        "username": "Username",
+        "placeholderUsername": "Enter your username",
+        "password": "Password",
+        "placeholderPassword": "Enter your password",
+        "button": "Sign In"
+    },
+    "signup-form": {
+        "name": "Name",
+        "placeholderName": "Enter your name",
+        "username": "Username",
+        "placeholderUsername": "Enter a username",
+        "email": "Email",
+        "placeholderEmail": "Enter your email",
+        "password": "Password",
+        "placeholderPwd": "Choose a password",
+        "placeholderConfirm": "Confirm your password",
+        "pwd-description": "We highly recommend using your Password Manager suggestion to create a strong password. This way, your password will be securely stored and you'll be able to use it without the need to memorize it!",
+        "legal-description": "By completing the sign up process and/or signing in with an external provider, you agree with our Terms & Conditions.",
+        "button": "Sign Up"
+    },
+    "signin-button": {
+        "button": "Sign In"
+    },
+    "signout-button": {
+        "button": "Sign Out"
+    },
+    "signup-button": {
+        "button": "Sign Up"
+    },
+    "unlink-facebook": {
+        "state": "Disconnecting...",
+        "text": "Disconnect from Facebook",
+        "error": "Failed to disconnect",
+        "success": "Disconnected successfully"
+    },
+    "unlink-google": {
+        "state": "Disconnecting...",
+        "text": "Disconnect from Google",
+        "error": "Failed to disconnect",
+        "success": "Disconnected successfully"
+    },
+    "unlink-microsoft": {
+        "state": "Disconnecting...",
+        "text": "Disconnect from Microsoft",
+        "error": "Failed to disconnect",
+        "success": "Disconnected successfully"
+    }
+}

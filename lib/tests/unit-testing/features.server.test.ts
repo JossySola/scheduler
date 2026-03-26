@@ -1,4 +1,4 @@
-import sendEmail from "@/app/(app)/(auth)/_utils/sendEmail";
+import sendEmail from "@/src/app/(app)/(auth)/_utils/sendEmail";
 import { JSX } from "react";
 import { Resend } from "resend";
 import { beforeEach, beforeAll, describe, expect, expectTypeOf, test, vi } from "vitest";

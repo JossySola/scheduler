@@ -1,0 +1,78 @@
+{
+    "goodbye": {
+        "h2": "¡Sentimos que te vayas! 😢",
+        "p": "Sin embargo, eres bienvenid@ a regresar en cualquier momento y/o dejar una retroalimentación para mejorar."
+    },
+    "delete-form" : {
+        "warning": "CUIDADO: Necesitas confirmar esta acción con tu contraseña, ya que será irreversible.",
+        "label": "Contraseña",
+        "placeholder": "Ingresa tu contraseña",
+        "button": "Eliminar cuenta"
+    },
+    "forgot-form": {
+        "label": "Correo electrónico",
+        "placeholder": "Ingresa tu correo electrónico",
+        "description": "Enviaremos un correo electrónico para confirmar esta acción. En caso de no ver el correo en la bandeja de entrada, por favor espera unos minutos o busca en la bandeja de spam.",
+        "button": "Enviar confirmación"
+    },
+    "reset-form": {
+        "label": "Nueva contraseña",
+        "placeholder": "Ingresa una nueva contraseña",
+        "button": "Cambiar contraseña"
+    },
+    "update-form": {
+        "labelCurrent": "Contraseña actual",
+        "placeholderCurrent": "Ingresa tu contraseña actual",
+        "labelNew:": "Nueva contraseña",
+        "placeholderNew": "Ingresa una nueva contraseña",
+        "button": "Cambiar contraseña"
+    },
+    "signin-form": {
+        "username": "Nombre de usuario",
+        "placeholderUsername": "Ingresa un nombre de usuario",
+        "password": "Contraseña",
+        "placeholderPassword": "Ingresa tu contraseña",
+        "button": "Iniciar sesión"
+    },
+    "signup-form": {
+        "name": "Nombre",
+        "placeholderName": "Ingresa tu nombre",
+        "username": "Nombre de usuario",
+        "placeholderUsername": "Ingresa tu nombre de usuario",
+        "email": "Correo electrónico",
+        "placeholderEmail": "Ingresa tu correo electrónico",
+        "password": "Contraseña",
+        "placeholderPwd": "Escribe una contraseña",
+        "placeholderConfirm": "Confirma tu contraseña",
+        "pwd-description": "Recomendamos ampliamente el uso del Administrador de Contraseñas de tu dispositivo para crear una contraseña segura. De este modo, tu contraseña de guardará de manera segura sin necesidad de memorizarla.",
+        "legal-description": "Al completar el proceso de registro y/o iniciar sesión con algún proveedor externo, aceptas nuestros Términos y Condiciones.",
+        "button": "Registrarme"
+    },
+    "signin-button": {
+        "button": "Iniciar sesión"
+    },
+    "signout-button": {
+        "button": "Cerrar sesión"
+    },
+    "signup-button": {
+        "button": "Registrarme"
+    },
+    "unlink-facebook": {
+        "state": "Desconectando...",
+        "text": "Desconectar Facebook",
+        "error": "Error al desconectar",
+        "success": "Desconexión exitosa"
+    },
+    "unlink-google": {
+        "state": "Desconectando...",
+        "text": "Desconectar Google",
+        "error": "Error al desconectar",
+        "success": "Desconexión exitosa"
+    },
+    "unlink-microsoft": {
+        "state": "Desconectando...",
+        "text": "Desconectar Microsoft",
+        "error": "Error al desconectar",
+        "success": "Desconexión exitosa"
+    }
+}
