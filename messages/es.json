@@ -3,6 +3,22 @@
         "h2": "¡Sentimos que te vayas! 😢",
         "p": "Sin embargo, eres bienvenid@ a regresar en cualquier momento y/o dejar una retroalimentación para mejorar."
     },
+    "auth-form": {
+        "username": "Nombre de usuario",
+        "name": "Nombre",
+        "password": "Contraseña",
+        "email": "Correo electrónico",
+        "placeholderEmail": "Ingresa tu correo electrónico",        
+        "placeholderName": "Ingresa tu nombre",
+        "placeholderUsername": "Ingresa un nombre de usuario",
+        "placeholderPassword": "Ingresa tu contraseña",
+        "placeholderConfirm": "Confirma tu contraseña",
+        "pwd-description": "Recomendamos ampliamente el uso del Administrador de Contraseñas de tu dispositivo para crear una contraseña segura. De este modo, tu contraseña de guardará de manera segura sin necesidad de memorizarla.",
+        "legal-description": "Al completar el proceso de registro y/o iniciar sesión con algún proveedor externo, aceptas nuestros Términos y Condiciones.",
+        "signInBtn": "Iniciar sesión",
+        "signOutBtn": "Cerrar sesión",
+        "signUpBtn": "Registrarme"
+    },
     "delete-form" : {
         "warning": "CUIDADO: Necesitas confirmar esta acción con tu contraseña, ya que será irreversible.",
         "label": "Contraseña",
@@ -18,60 +34,20 @@
     "reset-form": {
         "label": "Nueva contraseña",
         "placeholder": "Ingresa una nueva contraseña",
-        "button": "Cambiar contraseña"
+        "button": "Cambiar contraseña",
+        "h2-page": "El token ha expirado o es inválido"        
     },
     "update-form": {
         "labelCurrent": "Contraseña actual",
         "placeholderCurrent": "Ingresa tu contraseña actual",
         "labelNew:": "Nueva contraseña",
         "placeholderNew": "Ingresa una nueva contraseña",
-        "button": "Cambiar contraseña"
+        "button": "Cambiar contraseña",
+        "h2-page": "Cambiar contraseña"
     },
-    "signin-form": {
-        "username": "Nombre de usuario",
-        "placeholderUsername": "Ingresa un nombre de usuario",
-        "password": "Contraseña",
-        "placeholderPassword": "Ingresa tu contraseña",
-        "button": "Iniciar sesión"
-    },
-    "signup-form": {
-        "name": "Nombre",
-        "placeholderName": "Ingresa tu nombre",
-        "username": "Nombre de usuario",
-        "placeholderUsername": "Ingresa tu nombre de usuario",
-        "email": "Correo electrónico",
-        "placeholderEmail": "Ingresa tu correo electrónico",
-        "password": "Contraseña",
-        "placeholderPwd": "Escribe una contraseña",
-        "placeholderConfirm": "Confirma tu contraseña",
-        "pwd-description": "Recomendamos ampliamente el uso del Administrador de Contraseñas de tu dispositivo para crear una contraseña segura. De este modo, tu contraseña de guardará de manera segura sin necesidad de memorizarla.",
-        "legal-description": "Al completar el proceso de registro y/o iniciar sesión con algún proveedor externo, aceptas nuestros Términos y Condiciones.",
-        "button": "Registrarme"
-    },
-    "signin-button": {
-        "button": "Iniciar sesión"
-    },
-    "signout-button": {
-        "button": "Cerrar sesión"
-    },
-    "signup-button": {
-        "button": "Registrarme"
-    },
-    "unlink-facebook": {
+    "unlink-provider": {
         "state": "Desconectando...",
-        "text": "Desconectar Facebook",
-        "error": "Error al desconectar",
-        "success": "Desconexión exitosa"
-    },
-    "unlink-google": {
-        "state": "Desconectando...",
-        "text": "Desconectar Google",
-        "error": "Error al desconectar",
-        "success": "Desconexión exitosa"
-    },
-    "unlink-microsoft": {
-        "state": "Desconectando...",
-        "text": "Desconectar Microsoft",
+        "text": "Desconectar {provider}",
         "error": "Error al desconectar",
         "success": "Desconexión exitosa"
     }

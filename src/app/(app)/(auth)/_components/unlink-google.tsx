@@ -4,23 +4,22 @@ import { Button } from "react-aria-components";
 import { authClient } from "../_utils/auth-client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { UnlinkProviderProps } from "@/lib/definitions";
 
-export default function UnlinkGoogle() {
+export default function UnlinkGoogle({t}: {t: UnlinkProviderProps}) {
     const [message, setMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const { refetch } = authClient.useSession();
-    const translation = useTranslations("unlink-google");
     const handleUnlink = async () => {
         setIsLoading(true);
         try {
             await authClient.unlinkAccount({ providerId: 'google' });
             await refetch();
             router.refresh();
-            setMessage(translation("success"));
+            setMessage(t.success);
         } catch (error: any) {
-            setMessage(error.error.message || translation("error"))
+            setMessage(error.error.message || t.error)
         } finally {
             setIsLoading(false);
         }
@@ -33,7 +32,7 @@ export default function UnlinkGoogle() {
         aria-label="Unlink Google account"
 		className="provider-button"
 		onPress={ handleUnlink } >
-		<GoogleLogo /> { isLoading ? translation("state") : translation("text") } 
+		<GoogleLogo /> { isLoading ? t.state : t.text } 
         </Button> 
         {
 			message && <p role="alert"> { message } </p>

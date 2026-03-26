@@ -3,13 +3,12 @@ import { useRouter } from "next/navigation";
 import ActionButton from "@/ui/buttons/action-button";
 import { authClient } from "../_utils/auth-client";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { AuthFormProps } from "@/lib/definitions";
 
-export default function SignOutButton() {
+export default function SignOutButton({t}: {t: AuthFormProps}) {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const { data: session } = authClient.useSession();
-    const translation = useTranslations("signout-button");
     const handleSignOut = async () => {
         setIsLoading(true);
         try {
@@ -31,7 +30,7 @@ export default function SignOutButton() {
             type="button" 
             aria-label="sign out"
             onPress={handleSignOut}>
-            {translation("button")}
+            {t.signOutBtn}
             </ActionButton>
         )
     }

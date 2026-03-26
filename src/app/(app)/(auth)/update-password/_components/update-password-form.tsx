@@ -9,18 +9,17 @@ import { useActionState, useState } from "react";
 import { Button } from "react-aria-components";
 import Visibility from '@react-spectrum/s2/icons/Visibility';
 import VisibilityOff from '@react-spectrum/s2/icons/VisibilityOff';
-import { useTranslations } from "next-intl";
+import { UpdateFormProps } from "@/lib/definitions";
 
-export default function UpdatePasswordForm() {
+export default function UpdatePasswordForm({t}: UpdateFormProps) {
     const [state, dispatchAction, isPending] = useActionState(updatePasswordAction, { message: "" });
     const [isVisible, setIsVisible] = useState(false);
-    const translation = useTranslations("update-form");
     return (
         <Form action={dispatchAction}>
             <TextField type="text">
-                <Label>{translation("labelCurrent")}</Label>
+                <Label>{t.labelCurrent}</Label>
                 <div>
-                    <Input placeholder={translation("placeholderCurrent")} type={isVisible ? "text" : "password"} name="current-password" autoComplete="current-password" required />
+                    <Input placeholder={t.placeholderCurrent} type={isVisible ? "text" : "password"} name="current-password" autoComplete="current-password" required />
                     <Button type='button' aria-label='switch password visibility' onClick={() => setIsVisible(prev => !prev)}>
                         {
                             isVisible 
@@ -31,9 +30,9 @@ export default function UpdatePasswordForm() {
                 </div>
             </TextField>
             <TextField type="text">
-                <Label>{translation("labelNew")}</Label>
+                <Label>{t.labelNew}</Label>
                 <div>
-                    <Input placeholder={translation("placeholderNew")} type={isVisible ? "text" : "password"} name="new-password" autoComplete="new-password" required />
+                    <Input placeholder={t.placeholderNew} type={isVisible ? "text" : "password"} name="new-password" autoComplete="new-password" required />
                     <Button type='button' aria-label='switch password visibility' onClick={() => setIsVisible(prev => !prev)}>
                         {
                             isVisible 
@@ -47,7 +46,7 @@ export default function UpdatePasswordForm() {
             {
                 state.errors ? <p role="alert">{state.errors[0]}</p> : null
             }        
-            <ActionButton type="submit" isDisabled={isPending}>{translation("button")}</ActionButton>
+            <ActionButton type="submit" isDisabled={isPending}>{t.button}</ActionButton>
         </Form>
     )
 }

@@ -2,11 +2,10 @@
 import PrimaryButton from "@/ui/buttons/primary-button";
 import { authClient } from "../_utils/auth-client";
 import { redirect } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { AuthFormProps } from "@/lib/definitions";
 
-export default function SignUpButton() {
+export default function SignUpButton({t}: {t: AuthFormProps}) {
     const { data: session } = authClient.useSession();
-    const translation = useTranslations("signup-button");
     const handleSignUp = () => {
         redirect("/signup");
     }    
@@ -16,7 +15,7 @@ export default function SignUpButton() {
             type="button" 
             aria-label="sign up" 
             onPress={handleSignUp}>
-            {translation("button")}
+            {t.signUpBtn}
             </PrimaryButton>
         )
     }

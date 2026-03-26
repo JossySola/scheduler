@@ -40,3 +40,55 @@ export type SignInUsernameData = {
         displayUsername: string;
     };
 }
+export type DeleteFormProps = {
+  t: {
+    warning: string,
+    label: string,
+    placeholder: string,
+    button: string,
+  }
+}
+export type ForgotFormProps = {
+    t: {
+        label: string,
+        placeholder: string,
+        description: string,
+        button: string,
+    }
+}
+export type ResetFormProps = {
+    label: string,
+    placeholder: string,
+    button: string,
+}
+export type UpdateFormProps = {
+    t: {
+        labelCurrent: string,
+        placeholderCurrent: string,
+        labelNew: string,
+        placeholderNew: string,
+        button: string,
+    }
+}
+export type AuthFormProps = {
+    username?: string,
+    name?: string,
+    password?: string,   
+    email?: string,
+    placeholderEmail?: string, 
+    placeholderName?: string,
+    placeholderUsername?: string,
+    placeholderPassword?: string,
+    placeholderConfirm?: string,
+    "pwd-description"?: string,
+    "legal-description"?: string,
+    signInBtn?: string,    
+    signOutBtn?: string,
+    signUpBtn?: string,
+}
+export type UnlinkProviderProps = {
+    state: string,
+    text: string,
+    error: string,
+    success: string,
+}

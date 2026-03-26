@@ -9,18 +9,17 @@ import { useActionState, useState } from "react";
 import Visibility from '@react-spectrum/s2/icons/Visibility';
 import VisibilityOff from '@react-spectrum/s2/icons/VisibilityOff';
 import { Button } from "react-aria-components";
-import { useTranslations } from "next-intl";
+import { ResetFormProps } from "@/lib/definitions";
 
-export default function ResetForm({ token }: { token: string }) {
+export default function ResetForm({ token, t }: { token: string, t: ResetFormProps }) {
     const [state, dispatchAction, isPending] = useActionState(requestPasswordResetAction, { message: "" })
     const [isVisible, setIsVisible] = useState(false);
-    const translation = useTranslations("reset-form");
     return (
         <Form action={dispatchAction}>
             <TextField type="text">
-                <Label>{translation("label")}</Label>
+                <Label>{t.label}</Label>
                 <div>
-                    <Input placeholder={translation("placeholder")} type={isVisible ? "text" : "password"} name="password" autoComplete="new-password" required />
+                    <Input placeholder={t.placeholder} type={isVisible ? "text" : "password"} name="password" autoComplete="new-password" required />
                     <Button type='button' aria-label='switch password visibility' onClick={() => setIsVisible(prev => !prev)}>
                         {
                             isVisible 
@@ -35,7 +34,7 @@ export default function ResetForm({ token }: { token: string }) {
             {
                 state.errors ? <p role="alert">{state.errors[0]}</p> : null
             }
-            <ActionButton type="submit" isDisabled={isPending}>{translation("button")}</ActionButton>
+            <ActionButton type="submit" isDisabled={isPending}>{t.button}</ActionButton>
         </Form>
     )
 }

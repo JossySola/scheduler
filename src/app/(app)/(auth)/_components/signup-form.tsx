@@ -10,21 +10,20 @@ import TextField from "@/ui/textField/text-field";
 import { useActionState, useState } from "react";
 import { Button } from 'react-aria-components';
 import { signUpAction } from '../signup/actions';
-import { useTranslations } from 'next-intl';
+import { AuthFormProps } from '@/lib/definitions';
 
-export default function SignUpForm() {
+export default function SignUpForm({t}: {t: AuthFormProps}) {
     const [state, dispatchAction, isPending] = useActionState(signUpAction, { message: "" });
     const [isVisible, setIsVisible] = useState(false);
     const [name, setName] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
-    const translation = useTranslations("signup-form");
     return (
         <Form action={dispatchAction}>
             <TextField type="text">
-                <Label>{translation("name")}</Label>
+                <Label>{t.name}</Label>
                 <Input 
-                placeholder={translation("placeholderName")}
+                placeholder={t.placeholderName}
                 name="name" 
                 autoComplete="name" 
                 required 
@@ -33,9 +32,9 @@ export default function SignUpForm() {
             </TextField>
 
             <TextField type="text">
-                <Label>{translation("username")}</Label>
+                <Label>{t.username}</Label>
                 <Input 
-                placeholder={translation("placeholderUsername")}
+                placeholder={t.placeholderUsername}
                 name="username" 
                 autoComplete="username" 
                 required 
@@ -44,9 +43,9 @@ export default function SignUpForm() {
             </TextField>
 
             <TextField type="email">
-                <Label>{translation("email")}</Label>
+                <Label>{t.email}</Label>
                 <Input 
-                placeholder={translation("placeholderEmail")} 
+                placeholder={t.placeholderEmail} 
                 name="email" 
                 autoComplete="email" 
                 required
@@ -55,9 +54,9 @@ export default function SignUpForm() {
             </TextField>
 
             <TextField type={isVisible ? "text" : "password"}>
-                <Label>{translation("password")}</Label>
+                <Label>{t.password}</Label>
                 <div>
-                    <Input placeholder={translation("placeholderPwd")} name="password" minLength={8} autoComplete="new-password" required />
+                    <Input placeholder={t.placeholderPassword} name="password" minLength={8} autoComplete="new-password" required />
                     <Button type='button' aria-label='switch password visibility' onPress={() => setIsVisible(prev => !prev)}>
                         {
                             isVisible 
@@ -67,23 +66,23 @@ export default function SignUpForm() {
                     </Button>
                 </div>
                 <Text slot="description">
-                    {translation("pwd-description")}
+                    {t["pwd-description"]}
                 </Text>
             </TextField>
 
             <TextField type={isVisible ? "text" : "password"}>
-                <Input placeholder={translation("placeholderConfirm")} name="confirm-password" minLength={8} autoComplete="new-password" required />
+                <Input placeholder={t.placeholderConfirm} name="confirm-password" minLength={8} autoComplete="new-password" required />
             </TextField>
 
             <Text slot="description">
-                {translation("legal-description")}
+                {t["legal-description"]}
             </Text>
 
             <p role='alert'>{state.message}</p>
             {
                 state.errors ? <p role='alert'>{state.errors[0]}</p> : null
             }            
-            <ActionButton type="submit" isDisabled={isPending}>{translation("button")}</ActionButton>
+            <ActionButton type="submit" isDisabled={isPending}>{t.signUpBtn}</ActionButton>
         </Form>
     )
 }

@@ -6,18 +6,17 @@ import Text from "@/ui/text/text";
 import { useActionState } from "react";
 import { Button } from "react-aria-components";
 import { deleteAccountAction } from "../actions";
-import { useTranslations } from "next-intl";
+import { DeleteFormProps } from "@/lib/definitions";
 
-export default function DeleteForm() {
+export default function DeleteForm({t}: DeleteFormProps) {
     const [state, dispatchAction, isPending] = useActionState(deleteAccountAction, { message: "" });
-    const translation = useTranslations("delete-form");
     return (
         <Form action={dispatchAction}>
-            <Text slot="description">{translation("warning")}</Text>
-            <Label>{translation("label")}</Label>
-            <Input placeholder={translation("placeholder")} name="password" autoComplete="current-password" required />
+            <Text slot="description">{t.warning}</Text>
+            <Label>{t.label}</Label>
+            <Input placeholder={t.placeholder} name="password" autoComplete="current-password" required />
             <p role="alert">{state.message}</p>
-            <Button type="submit" isDisabled={isPending}>{translation("button")}</Button>
+            <Button type="submit" isDisabled={isPending}>{t.button}</Button>
         </Form>
     )
 }

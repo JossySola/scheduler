@@ -8,6 +8,7 @@ import { headers } from "next/headers";
 import { isRTL } from "react-aria-components";
 import SignOutButton from "@/src/app/(app)/(auth)/_components/signout-button";
 import SignInButton from "@/src/app/(app)/(auth)/_components/signin-button";
+import { getTranslations } from "next-intl/server";
 
 const geistSans = localFont({
   src: "../../../fonts/Geist-Regular.woff2",
@@ -62,11 +63,12 @@ export default async function AppLayout({
   children: React.ReactNode;
 }>) {
   const acceptLanguage = (await headers()).get('accept-language');
-  const lang = acceptLanguage?.split(/[,;]/)[0] || 'en-US';  
+  const lang = acceptLanguage?.split(/[,;]/)[0] || 'en-US';
+  const translation = await getTranslations("auth-form");
   return (
     <html lang={ lang } dir={isRTL(lang) ? "rtl" : "ltr"}>
       <body className={`${geistSans.variable} ${geistMono.variable} ${geistBold.variable} ${geistBlack.variable} antialiased`}>
-        <nav><SignInButton/><SignOutButton /></nav>
+        <nav><SignInButton t={{ signInBtn: translation("signInBtn") }}/><SignOutButton t={{ signOutBtn: translation("signOutBtn") }} /></nav>
         <ClientProviders lang={ lang }>
           { children }
           <Analytics />

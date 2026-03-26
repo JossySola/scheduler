@@ -9,20 +9,19 @@ import Visibility from '@react-spectrum/s2/icons/Visibility';
 import VisibilityOff from '@react-spectrum/s2/icons/VisibilityOff';
 import ActionButton from "@/ui/buttons/action-button";
 import { signInAction } from "../signin/actions";
-import { useTranslations } from "next-intl";
+import { AuthFormProps } from "@/lib/definitions";
 
 
-export default function SignInForm() {
+export default function SignInForm({t}: {t: AuthFormProps}) {
     const [state, dispatchAction, isPending] = useActionState(signInAction, { message: "" });
     const [username, setUsername] = useState("");
     const [isVisible, setIsVisible] = useState(false);
-    const translation = useTranslations("signin-form");
     return (
         <Form action={dispatchAction}>
             <TextField type="text">
-                <Label>{translation("username")}</Label>
+                <Label>{t.username}</Label>
                 <Input
-                placeholder={translation("placeholderUsername")}
+                placeholder={t.placeholderUsername}
                 name="username"
                 autoComplete="username"
                 required
@@ -30,9 +29,9 @@ export default function SignInForm() {
                 onChange={e => setUsername(e.target.value)} />
             </TextField>
             <TextField type={isVisible ? "text" : "password"}>
-                <Label>{translation("password")}</Label>
+                <Label>{t.password}</Label>
                 <div>
-                    <Input placeholder={translation("placeholderPassword")} name="password" minLength={8} autoComplete="" required />
+                    <Input placeholder={t.placeholderPassword} name="password" minLength={8} autoComplete="" required />
                     <Button type="button" aria-label="switch password visibility" onClick={() => setIsVisible(prev => !prev)}>
                         {
                             isVisible
@@ -46,7 +45,7 @@ export default function SignInForm() {
             {
                 state.errors ? <p role="alert">{state.errors[0]}</p> : null
             }            
-            <ActionButton type="submit" isDisabled={isPending}>{translation("button")}</ActionButton>
+            <ActionButton type="submit" isDisabled={isPending}>{t.signInBtn}</ActionButton>
         </Form>
     )
 }
