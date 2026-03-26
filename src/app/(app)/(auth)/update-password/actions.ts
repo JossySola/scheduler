@@ -1,9 +1,16 @@
 "use server"
 import { auth } from "@/auth";
 import { updatePasswordSchema } from "@/lib/schemas";
+import { headers } from "next/headers";
 import z from "zod";
 
 export async function updatePasswordAction(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+    if (!session) {
+        return { message: "Unauthorized" }
+    }    
     try {
         const currentPassword = formData.get("current-password")?.toString() as string;
         const newPassword = formData.get("new-password")?.toString() as string;

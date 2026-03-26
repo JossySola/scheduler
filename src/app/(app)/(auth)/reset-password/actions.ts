@@ -1,9 +1,16 @@
 "use server"
 import { auth } from "@/auth";
 import { resetPasswordSchema } from "@/lib/schemas";
+import { headers } from "next/headers";
 import z from "zod";
 
 export async function requestPasswordResetAction(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+    if (!session) {
+        return { message: "Unauthorized" }
+    }    
     try {
         const newPassword = formData.get("password")?.toString() as string;
         const token = formData.get("token")?.toString() as string;

@@ -5,6 +5,12 @@ import { headers } from "next/headers";
 import z from "zod";
 
 export async function deleteAccountAction(initialState: { message: string }, formData: FormData) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+    if (!session) {
+        return { message: "Unauthorized" }
+    }
     try {
         const password = formData.get("password")?.toString() as string;
         const verification = z.string({ error: "Unexpected input format" }).min(8, { error: "The password must be 8 characters long" }).safeParse(password);
