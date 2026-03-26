@@ -3,8 +3,8 @@ import { username } from "better-auth/plugins";
 import { Pool } from "pg";
 import { nextCookies } from "better-auth/next-js";
 import { waitUntil } from "@vercel/functions";
-import sendEmail from "./app/(app)/(auth)/_utils/sendEmail";
-import { hashPassword, verifyPassword } from "./app/(app)/(auth)/_utils/hashing";
+import { hashPassword, verifyPassword } from "./src/app/(app)/(auth)/_utils/hashing";
+import sendEmail from "./src/app/(app)/(auth)/_utils/sendEmail";
 
 export const auth = betterAuth({
     database: new Pool({
