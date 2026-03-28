@@ -31,9 +31,6 @@ export default function ResetForm({ token, t }: { token: string, t: ResetFormPro
             </TextField>
             <Input name="token" value={token} hidden readOnly />
             <p role="alert">{state.message}</p>
-            {
-                state.errors ? <p role="alert">{state.errors[0]}</p> : null
-            }
             <ActionButton type="submit" isDisabled={isPending}>{t.button}</ActionButton>
         </Form>
     )

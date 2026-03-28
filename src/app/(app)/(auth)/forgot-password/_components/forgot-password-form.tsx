@@ -16,10 +16,7 @@ export default function ForgotPasswordForm({t}: ForgotFormProps) {
             <Label>{t.label}</Label>
             <Input placeholder={t.placeholder} type="text" name="email" autoComplete="email" required />
             <Text slot="description">{t.description}</Text>
-            <p role="alert">{state.message}</p>
-            {
-                state.errors ? <p role="alert">{state.errors[0]}</p> : null
-            }            
+            <p role="alert">{state.message}</p>        
             <ActionButton type="submit" isDisabled={isPending}>{t.button}</ActionButton>
         </Form>
     )

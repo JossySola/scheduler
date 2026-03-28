@@ -41,10 +41,7 @@ export default function SignInForm({t}: {t: AuthFormProps}) {
                     </Button>
                 </div>
             </TextField>
-            <p role="alert">{state.message}</p>
-            {
-                state.errors ? <p role="alert">{state.errors[0]}</p> : null
-            }            
+            <p role="alert">{state.message}</p>           
             <ActionButton type="submit" isDisabled={isPending}>{t.signInBtn}</ActionButton>
         </Form>
     )
