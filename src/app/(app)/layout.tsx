@@ -31,12 +31,12 @@ const geistBlack = localFont({
 
 export const metadata: Metadata = {
   title: "Scheduler App",
-  description: "Let the AI do the thinking to make strategic schedules!",
+  description: "AI-powered strategic scheduling application that generates personalized schedules based on user specifications and values using Anthropic’s Claude AI",
   openGraph: {
     url: "https://scheduler.jossysola.com",
     type: "website",
     title: "Scheduler",
-    description: "Let the AI do the thinking to make strategic schedules!",
+    description: "AI-powered strategic scheduling application that generates personalized schedules based on user specifications and values using Anthropic’s Claude AI",
     images: [
       {
         url: "https://opengraph.b-cdn.net/production/images/25f031f4-8b86-4763-acb6-14e5afdd57a2.png?token=gJDkX97UMNp3Xk5siysdNuubSuuKyLKZ_rYL8AYrmoc&height=630&width=1200&expires=33279455004",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Scheduler",
-    description: "Let the AI do the thinking to make strategic schedules!",
+    description: "AI-powered strategic scheduling application that generates personalized schedules based on user specifications and values using Anthropic’s Claude AI",
     images: ["https://opengraph.b-cdn.net/production/images/25f031f4-8b86-4763-acb6-14e5afdd57a2.png?token=gJDkX97UMNp3Xk5siysdNuubSuuKyLKZ_rYL8AYrmoc&height=630&width=1200&expires=33279455004"],
   },
   facebook: {
