@@ -2,6 +2,10 @@ import { signInAction } from "@/src/app/(app)/(auth)/signin/actions";
 import { signUpAction } from "@/src/app/(app)/(auth)/signup/actions";
 import { auth } from "@/auth";
 import { describe, expect, test, vi } from "vitest";
+import { forgotPasswordAction } from "@/src/app/(app)/(auth)/forgot-password/actions";
+import { requestPasswordResetAction } from "@/src/app/(app)/(auth)/reset-password/actions";
+import { updatePasswordAction } from "@/src/app/(app)/(auth)/update-password/actions";
+import { deleteAccountAction } from "@/src/app/(app)/(auth)/delete-account/actions";
 
 vi.mock("@/auth", () => ({
     auth: {
@@ -48,9 +52,33 @@ vi.mock("@/auth", () => ({
                     name: "jossysola"
                 },
             })),
+            deleteUser: vi.fn().mockImplementation(() => ({
+
+            })),
+            getSession: vi.fn().mockImplementation(() => ({
+                session: {
+                    id: "123",
+                    createdAt: "Date",
+                    updatedAt: "Date",
+                    useId: "abc123",
+                    expiresIn: "Date",
+                    token: "abc"
+                },
+                user: {
+                    id: "123",
+                    createdAt: "Date",
+                    updatedAt: "Date",                    
+                    email: "name@domain.com",
+                    emailVerified: true,
+                    name: "jossysola"
+                }
+            }))
         },     
     },
 }));
+vi.mock("next/headers", () => ({
+    headers: vi.fn()
+}))
 vi.stubEnv("NEXTAUTH_URL", "http://localhost:3000/");
 
 describe("(app)",() => {
@@ -78,7 +106,7 @@ describe("(app)",() => {
                 const formData = new FormData();
                 Object.entries(payload).forEach(([key, value]) => formData.append(key, value));
                 const result = await signInAction(initialState, formData);
-                expect(result).toEqual({ errors: ["Password must be minimum 8 characters long"] })
+                expect(result).toEqual({ message: "Password must be minimum 8 characters long" })
             });
         });
         describe("signUpAction", () => {
@@ -108,7 +136,7 @@ describe("(app)",() => {
                 Object.entries(payload).forEach(([key, value]) => formData.append(key, value));
                 
                 const result = await signUpAction({ message: "" }, formData);
-                expect(result).toEqual({ errors: ["Incorrect password confirmation"] });                
+                expect(result).toEqual({ message: "Incorrect password confirmation" });                
             });
             test("returns error's object when an expected input is invalid", async () => {
                 const payload = {
@@ -122,7 +150,7 @@ describe("(app)",() => {
                 Object.entries(payload).forEach(([key, value]) => formData.append(key, value));
                 
                 const result = await signUpAction({ message: "" }, formData);
-                expect(result).toEqual({ errors: ["Invalid email address"] });                  
+                expect(result).toEqual({ message: "Invalid email address" });                  
             });
             test("returns error's object when a field is empty", async () => {
                 const payload = {
@@ -136,7 +164,7 @@ describe("(app)",() => {
                 Object.entries(payload).forEach(([key, value]) => formData.append(key, value));
                 
                 const result = await signUpAction({ message: "" }, formData);
-                expect(result).toEqual({ errors: ["This field should not be empty"] });
+                expect(result).toEqual({ message: "This field should not be empty" });
             });
             test("returns error's object when the password's length is less than 8 characters", async () => {
                 const payload = {
@@ -150,7 +178,7 @@ describe("(app)",() => {
                 Object.entries(payload).forEach(([key, value]) => formData.append(key, value));
                 
                 const result = await signUpAction({ message: "" }, formData);
-                expect(result).toEqual({ errors: ["Password must be minimum 8 characters long"] });
+                expect(result).toEqual({ message: "Password must be minimum 8 characters long" });
             });
             test("returns a message when the auth API throws an Error", async () => {
                 vi.mocked(auth.api.signUpEmail).mockRejectedValueOnce(new Error("Error bubbling from auth.api.signUpEmail"));
@@ -165,40 +193,120 @@ describe("(app)",() => {
                 Object.entries(payload).forEach(([key, value]) => formData.append(key, value));
                 
                 const result = await signUpAction({ message: "" }, formData);
-                expect(result).toEqual({ message: "Error: Error bubbling from auth.api.signUpEmail" });                
+                expect(result).toEqual({ message: "Error bubbling from auth.api.signUpEmail" });                
             });
         });
         describe("forgotPasswordAction", () => {
             test("returns successful message", async () => {
-
+                const formData = new FormData();
+                formData.append("email", "name@domain.com");
+                const result = await forgotPasswordAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "The email has been sent!" });
             });
             test("returns errors array with Zod messages when input is invalid", async () => {
-
+                const formData = new FormData();
+                formData.append("email", "invalid input");
+                const result = await forgotPasswordAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "Invalid email address" });
             });
             test("returns unsuccessful message if API fails", async () => {
-
+                vi.mocked(auth.api.requestPasswordReset).mockRejectedValueOnce(new Error("Error from requestPasswordReset"));
+                const formData = new FormData();
+                formData.append("email", "name@domain.com");
+                const result = await forgotPasswordAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "The email couldn't be sent" });                
             });
         });
         describe("requestPasswordResetAction", () => {
             test("returns successful message", async () => {
-
+                const formData = new FormData();
+                formData.append("password", "password123");
+                formData.append("token", "abc123");
+                const result = await requestPasswordResetAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "Password reset successful" })
+            });
+            test("returns Unauthorized if session is missing", async () => {
+                vi.mocked(auth.api.getSession).mockReturnValueOnce({});                
+                const formData = new FormData();
+                formData.append("password", "password123");
+                formData.append("token", "abc123");
+                const result = await requestPasswordResetAction({ message: "" }, formData);                
+                expect(result).toEqual({ message: "Unauthorized" });
             });
             test("returns errors array with Zod messages when input is invalid", async () => {
-
+                const formData = new FormData();
+                formData.append("password", "pass");
+                formData.append("token", "abc123");
+                const result = await requestPasswordResetAction({ message: "" }, formData);                
+                expect(result).toEqual({ message: "Password must be minimum 8 characters long" });
             });
             test("returns unsuccessful message if API fails", async () => {
-
+                vi.mocked(auth.api.resetPassword).mockRejectedValueOnce(new Error("Error at resetPassword"));
+                const formData = new FormData();
+                formData.append("password", "password123");
+                formData.append("token", "abc123");
+                const result = await requestPasswordResetAction({ message: "" }, formData);                
+                expect(result).toEqual({ message: "Error at resetPassword" });
             });
         });
         describe("updatePasswordAction", () => {
             test("returns successful message", async () => {
-
+                const formData = new FormData();
+                formData.append("current-password", "password123");
+                formData.append("new-password", "123password");
+                const result = await updatePasswordAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "Password update successful" });
+            });
+            test("returns Unauthorized when Session is missing", async () => {
+                vi.mocked(auth.api.getSession).mockReturnValueOnce({});
+                const formData = new FormData();
+                formData.append("current-password", "password123");
+                formData.append("new-password", "123password");
+                const result = await updatePasswordAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "Unauthorized" });
             });
             test("returns errors array with Zod messages when input is invalid", async () => {
-
+                const formData = new FormData();
+                formData.append("current-password", "pass");
+                formData.append("new-password", "123password");
+                const result = await updatePasswordAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "Password must be minimum 8 characters long" });
             });
             test("returns unsuccessful message if API fails", async () => {
-
+                vi.mocked(auth.api.changePassword).mockRejectedValueOnce(new Error("Error at changePassword"));
+                const formData = new FormData();
+                formData.append("current-password", "password123");
+                formData.append("new-password", "123password");
+                const result = await updatePasswordAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "Error at changePassword"});
+            });
+        });
+        describe("deleteAccountAction", () => {
+            test("returns successful message", async () => {
+                const formData = new FormData();
+                formData.append("password", "password123");
+                const result = await deleteAccountAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "You will receive an email to complete the process"})
+            });
+            test("returns Unauthorized when Session is missing", async () => {
+                vi.mocked(auth.api.getSession).mockReturnValueOnce({});
+                const formData = new FormData();
+                formData.append("password", "password123");
+                const result = await deleteAccountAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "Unauthorized" });                
+            });
+            test("returns error message when Zod rejects", async () => {
+                const formData = new FormData();
+                formData.append("password", "pass");
+                const result = await deleteAccountAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "The password must be 8 characters long" });
+            });
+            test("returns error message when API fails", async () => {
+                vi.mocked(auth.api.deleteUser).mockRejectedValueOnce(new Error("Error at deleteUser"));
+                const formData = new FormData();
+                formData.append("password", "password123");
+                const result = await deleteAccountAction({ message: "" }, formData);
+                expect(result).toEqual({ message: "Error at deleteUser" });
             });
         });
     });
