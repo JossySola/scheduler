@@ -2,14 +2,14 @@
 import { auth } from "@/auth";
 import z from "zod";
 
-export async function forgotPasswordAction(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
+export async function forgotPasswordAction(initialState: { message: string }, formData: FormData) {
     try {
         const email = formData.get("email")?.toString();
         if (!email) return { message: "Email field should not be empty" }
         const inputVerification = z.email().nonempty().safeParse(email);
         if (!inputVerification.success) {
             return {
-                errors: ["Invalid email address"]
+                message: "Invalid email address"
             }
         }
         await auth.api.requestPasswordReset({
@@ -23,7 +23,7 @@ export async function forgotPasswordAction(initialState: { message?: string, err
         }
     } catch (error) {
         return {
-            errors: ["The email couldn't be sent"]
+            message: "The email couldn't be sent"
         }
     }
 }

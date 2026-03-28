@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { signInSchema } from "@/lib/schemas";
 import z from "zod";
 
-export async function signInAction(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
+export async function signInAction(initialState: { message: string }, formData: FormData) {
     try {
         const username = formData.get("username")?.toString() as string;
         const password = formData.get("password")?.toString() as string;
@@ -13,7 +13,7 @@ export async function signInAction(initialState: { message?: string, errors?: Ar
             password,
         });
         if (!verification.success) return ({
-            errors: Object.values(z.flattenError(verification.error).fieldErrors)[0]
+            message: Object.values(z.flattenError(verification.error).fieldErrors)[0][0]
         });
         const request = await auth.api.signInUsername({
             body: {
@@ -39,6 +39,6 @@ export async function signInAction(initialState: { message?: string, errors?: Ar
         } else if (e.message.includes("Email not verified")) {
             return { message: "Email not verified" }
         }        
-        return { message: `${e}` }
+        return { message: `${e.message}` }
     }
 }

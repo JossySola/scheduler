@@ -4,11 +4,11 @@ import { resetPasswordSchema } from "@/lib/schemas";
 import { headers } from "next/headers";
 import z from "zod";
 
-export async function requestPasswordResetAction(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
+export async function requestPasswordResetAction(initialState: { message: string }, formData: FormData) {
     const session = await auth.api.getSession({
         headers: await headers()
     });
-    if (!session) {
+    if (!session?.user) {
         return { message: "Unauthorized" }
     }    
     try {
@@ -19,7 +19,7 @@ export async function requestPasswordResetAction(initialState: { message?: strin
             token,
         });
         if (!verification.success) return ({
-            errors: Object.values(z.flattenError(verification.error).fieldErrors)[0]
+            message: Object.values(z.flattenError(verification.error).fieldErrors)[0][0]
         });
         await auth.api.resetPassword({
             body: {
@@ -30,8 +30,8 @@ export async function requestPasswordResetAction(initialState: { message?: strin
         return {
             message: "Password reset successful",
         }
-    } catch (error) {
+    } catch (error: any) {
          console.error(error);
-         return { errors: [`${error}`] }
+         return { message: `${error.message}` }
     }
 }

@@ -4,11 +4,11 @@ import { updatePasswordSchema } from "@/lib/schemas";
 import { headers } from "next/headers";
 import z from "zod";
 
-export async function updatePasswordAction(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
+export async function updatePasswordAction(initialState: { message: string }, formData: FormData) {
     const session = await auth.api.getSession({
         headers: await headers()
     });
-    if (!session) {
+    if (!session?.user) {
         return { message: "Unauthorized" }
     }    
     try {
@@ -19,7 +19,7 @@ export async function updatePasswordAction(initialState: { message?: string, err
             newPassword,
         });
         if (!verification.success) return ({
-            errors: Object.values(z.flattenError(verification.error).fieldErrors)[0],
+            message: Object.values(z.flattenError(verification.error).fieldErrors)[0][0],
         })
         await auth.api.changePassword({
             body: {
@@ -31,10 +31,10 @@ export async function updatePasswordAction(initialState: { message?: string, err
         return {
             message: "Password update successful"
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
         return {
-            errors: [`${error}`],
+            message: `${error.message}`,
         }
     }
 }

@@ -4,7 +4,7 @@ import { SignUpEmailData } from "@/lib/definitions";
 import { signUpSchema } from "@/lib/schemas";
 import z from "zod";
 
-export async function signUpAction(initialState: { message?: string, errors?: Array<string> }, formData: FormData) {
+export async function signUpAction(initialState: { message: string }, formData: FormData) {
     try {
         const name = formData.get("name")?.toString() as string;
         const username = formData.get("username")?.toString() as string;
@@ -20,10 +20,10 @@ export async function signUpAction(initialState: { message?: string, errors?: Ar
             confirmPassword,
         })
         if (!verification.success) return ({
-            errors: Object.values(z.flattenError(verification.error).fieldErrors)[0]
+            message: Object.values(z.flattenError(verification.error).fieldErrors)[0][0]
         });    
         if (password !== confirmPassword) return ({
-            errors: ["Incorrect password confirmation"]
+            message: "Incorrect password confirmation"
         });
         const request: SignUpEmailData = await auth.api.signUpEmail({
             body: {
@@ -42,7 +42,8 @@ export async function signUpAction(initialState: { message?: string, errors?: Ar
                 message: "Sign up unsuccessful"
             }
         }
-    } catch (e) {
-        return { message: `${e}` }
+    } catch (e: any) {
+        console.error(e);
+        return { message: `${e.message}` }
     }
 }

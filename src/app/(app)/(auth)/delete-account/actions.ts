@@ -8,7 +8,7 @@ export async function deleteAccountAction(initialState: { message: string }, for
     const session = await auth.api.getSession({
         headers: await headers()
     });
-    if (!session) {
+    if (!session?.user) {
         return { message: "Unauthorized" }
     }
     try {
