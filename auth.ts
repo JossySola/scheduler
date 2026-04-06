@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { username } from "better-auth/plugins";
+import { admin, username } from "better-auth/plugins";
 import { Pool } from "pg";
 import { nextCookies } from "better-auth/next-js";
 import { waitUntil } from "@vercel/functions";
@@ -111,5 +111,5 @@ export const auth = betterAuth({
             clientSecret: process.env.AUTH_MICROSOFT_SECRET as string,
         }
     },
-    plugins: [username(), nextCookies()],
+    plugins: [username(), admin(), nextCookies()],
 });
