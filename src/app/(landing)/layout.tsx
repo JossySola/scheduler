@@ -12,6 +12,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="favicon.ico" rel="icon" />
         <link rel="preload" href="Geist-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="Geist-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="Geist-SemiBold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="scheduler_logo" href="scheduler-black-105x16.png" sizes="105x16" type="image/png" />
         <link rel="scheduler_logo" href="scheduler-black-210x32.png" sizes="210x32" type="image/png" />
         <link rel="scheduler_logo" href="scheduler-black-420x64.png" sizes="420x64" type="image/png" />
