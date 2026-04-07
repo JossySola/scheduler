@@ -1,0 +1,53 @@
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Geist-Bold", sans-serif;
+}
+h1 {
+    font-size: 3.5rem;
+}
+h2 {
+    font-size: 3.0rem;
+}
+html {
+    font-family: "Geist-Regular", sans-serif;
+}
+nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 4rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4rem;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+figure {
+    width: fit-content;
+    margin: 0px;
+}
+.action-button {
+    margin: 0.5rem;
+    padding: 1rem;
+    width: fit-content;
+    text-decoration: none;
+    color: rgb(28, 27, 27);
+    font-family: 'Geist-SemiBold', sans-serif;
+    font-size: 1rem;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+.primary-button {
+    padding: 1rem;
+    margin: 0.5rem;
+    width: fit-content;
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) */
+    background-image: linear-gradient(to top right, oklch(54.1% 0.281 293.009), oklch(62.3% 0.214 259.815));
+    cursor: pointer;
+}

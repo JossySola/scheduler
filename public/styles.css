@@ -31,8 +31,23 @@ figure {
 .action-button {
     margin: 0.5rem;
     padding: 1rem;
+    width: fit-content;
+    text-decoration: none;
+    color: rgb(28, 27, 27);
+    font-family: 'Geist-SemiBold', sans-serif;
+    font-size: 1rem;
+    border-radius: 1rem;
+    cursor: pointer;
 }
 .primary-button {
-    margin: 0.5rem;
     padding: 1rem;
+    margin: 0.5rem;
+    width: fit-content;
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) */
+    background-image: linear-gradient(to top right, oklch(54.1% 0.281 293.009), oklch(62.3% 0.214 259.815));
+    cursor: pointer;
 }
