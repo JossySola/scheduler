@@ -2,6 +2,7 @@ import useRows from "@/lib/custom-hooks/use-rows";
 import { describe, expect, test } from "vitest";
 import { act, renderHook } from "@testing-library/react";
 import useValues from "@/lib/custom-hooks/use-table-values";
+import useHeaderType from "@/lib/custom-hooks/use-header-type";
 
 describe("Custom React hooks", () => {
     describe("useRows", () => {
@@ -116,6 +117,21 @@ describe("Custom React hooks", () => {
             const edited = new Set();
             edited.add("edited");
             expect(result.current.values).toEqual(edited);
+        });
+    });
+    describe("useHeaderType", () => {
+        test("enables changing the headers type and returns true", async () => {
+            const { result } = renderHook(() => useHeaderType());
+            expect(result.current.type).toEqual("text");
+            const type = await act(() => result.current.changeType("date"));
+            expect(result.current.type).toEqual("date");
+            expect(type).toBe(true);
+        });
+        test("returns false if the type passed is invalid and prevents the change", async () => {
+            const { result } = renderHook(() => useHeaderType());
+            const type = await act(() => result.current.changeType("location"));
+            expect(type).toBe(false);
+            expect(result.current.type).toEqual("text");
         });
     });
 });
