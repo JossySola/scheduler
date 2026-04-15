@@ -1,6 +1,7 @@
 import useRows from "@/lib/custom-hooks/use-rows";
 import { describe, expect, test } from "vitest";
 import { act, renderHook } from "@testing-library/react";
+import useValues from "@/lib/custom-hooks/use-table-values";
 
 describe("Custom React hooks", () => {
     describe("useRows", () => {
@@ -83,6 +84,38 @@ describe("Custom React hooks", () => {
             expect(firstAttempt).toBe(false);
             const secondAttempt = await act(() => result.current.editRow(0, "B", "test"));
             expect(secondAttempt).toBe(false);
+        });
+    });
+    describe("useValues", () => {
+        test("enables adding a value", () => {
+            const { result } = renderHook(() => useValues());
+            act(() => result.current.addValue("test"));
+
+            const expected = new Set();
+            expected.add("test");
+
+            expect(result.current.values).toEqual(expected);
+        });
+        test("enables deleting a value", () => {
+            const { result } = renderHook(() => useValues());
+            act(() => result.current.addValue("test"));
+            const expected = new Set();
+            expected.add("test");
+            expect(result.current.values).toEqual(expected);
+            act(() => result.current.deleteValue("test"));
+            const deleted = new Set();
+            expect(result.current.values).toEqual(deleted);
+        });
+        test("enables editing a value", () => {
+            const { result } = renderHook(() => useValues());
+            act(() => result.current.addValue("test"));
+            const expected = new Set();
+            expected.add("test");
+            expect(result.current.values).toEqual(expected);
+            act(() => result.current.editValue("test", "edited"));
+            const edited = new Set();
+            edited.add("edited");
+            expect(result.current.values).toEqual(edited);
         });
     });
 });
