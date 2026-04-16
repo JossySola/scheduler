@@ -40,7 +40,7 @@ export default function useRows(
         setRows(prev => {
             const newRow = prev.get(rowId);
             if (newRow) {
-                newRow?.set(colLetter, value);
+                newRow.set(colLetter, value);
                 const newRows = prev;
                 newRows.set(rowId, newRow);
                 return newRows;
