@@ -92,3 +92,5 @@ export type UnlinkProviderProps = {
     error: string,
     success: string,
 }
+export type Row = Map<string, string>;
+export type RowsState = Map<string, Row>;
