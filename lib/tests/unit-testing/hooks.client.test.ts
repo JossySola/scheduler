@@ -3,14 +3,15 @@ import { describe, expect, test } from "vitest";
 import { act, renderHook } from "@testing-library/react";
 import useValues from "@/lib/custom-hooks/use-table-values";
 import useHeaderType from "@/lib/custom-hooks/use-header-type";
+import useHardConstraints from "@/lib/custom-hooks/use-hard-constraints";
 
 describe("Custom React hooks", () => {
-    describe("useRows", () => {
-        test.skip("initializes with a Map", () => {
+    describe.skip("useRows", () => {
+        test("initializes with a Map", () => {
             const { result } = renderHook(() => useRows());
             expect(result.current.rows).toEqual(new Map());
         });
-        test.skip("enables adding a row", () => {
+        test("enables adding a row", () => {
             const { result } = renderHook(() => useRows());
             // Confirms adding a row in an empty Map            
             act(() => result.current.addRow("123"));
@@ -31,7 +32,7 @@ describe("Custom React hooks", () => {
             secondMap.set("456", secondRow);
             expect(result.current.rows).toEqual(secondMap);
         });
-        test.skip("enables adding a column", () => {
+        test("enables adding a column", () => {
             const { result } = renderHook(() => useRows());
             act(() => result.current.addRow("123"));
             act(() => result.current.addCol());
@@ -44,7 +45,7 @@ describe("Custom React hooks", () => {
 
             expect(result.current.rows).toEqual(map);            
         });
-        test.skip("enables deleting a row", () => {
+        test("enables deleting a row", () => {
             const { result } = renderHook(() => useRows());
             act(() => result.current.addRow("123"));
             act(() => result.current.addRow("456"));
@@ -61,7 +62,7 @@ describe("Custom React hooks", () => {
             map.delete("456");
             expect(result.current.rows).toEqual(map);
         });
-        test.skip("enables editing specific cell", () => {
+        test("enables editing specific cell", () => {
             const { result } = renderHook(() => useRows());
 
             act(() => result.current.addRow("123"));
@@ -124,6 +125,40 @@ describe("Custom React hooks", () => {
             const type = await act(() => result.current.changeType("location"));
             expect(type).toBe(false);
             expect(result.current.type).toEqual("text");
+        });
+    });
+    describe("useHardConstraints", () => {
+        test("adds disabled row into Set", () => {
+            const { result } = renderHook(() => useHardConstraints());
+            act(() => result.current.disableRow("123"));
+            const expectedSet = new Set();
+            expectedSet.add("123")
+            expect(result.current.disabledRows).toEqual(expectedSet);
+        });
+        test("adds disabled column into Set", () => {
+            const { result } = renderHook(() => useHardConstraints());
+            act(() => result.current.disableColumn("A"));
+            const expectedSet = new Set();
+            expectedSet.add("A")
+            expect(result.current.disabledColumns).toEqual(expectedSet);
+        });
+        test("deletes row item from Set", () => {
+            const { result } = renderHook(() => useHardConstraints());
+            act(() => result.current.disableRow("123"));
+            const expectedSet = new Set();
+            expectedSet.add("123")
+            expect(result.current.disabledRows).toEqual(expectedSet);
+            act(() => result.current.enableRow("123"));
+            expect(result.current.disabledRows).toEqual(new Set());
+        });
+        test("deletes column item from Set", () => {
+            const { result } = renderHook(() => useHardConstraints());
+            act(() => result.current.disableColumn("A"));
+            const expectedSet = new Set();
+            expectedSet.add("A")
+            expect(result.current.disabledColumns).toEqual(expectedSet);
+            act(() => result.current.enableColumn("A"));
+            expect(result.current.disabledColumns).toEqual(new Set());
         });
     });
 });
