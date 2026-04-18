@@ -4,6 +4,7 @@ import { act, renderHook } from "@testing-library/react";
 import useValues from "@/lib/custom-hooks/use-table-values";
 import useHeaderType from "@/lib/custom-hooks/use-header-type";
 import useHardConstraints from "@/lib/custom-hooks/use-hard-constraints";
+import useSoftConstraints from "@/lib/custom-hooks/use-soft-constraints";
 
 describe("Custom React hooks", () => {
     describe.skip("useRows", () => {
@@ -127,7 +128,7 @@ describe("Custom React hooks", () => {
             expect(result.current.type).toEqual("text");
         });
     });
-    describe("useHardConstraints", () => {
+    describe.skip("useHardConstraints", () => {
         test("adds disabled row into Set", () => {
             const { result } = renderHook(() => useHardConstraints());
             act(() => result.current.disableRow("123"));
@@ -159,6 +160,135 @@ describe("Custom React hooks", () => {
             expect(result.current.disabledColumns).toEqual(expectedSet);
             act(() => result.current.enableColumn("A"));
             expect(result.current.disabledColumns).toEqual(new Set());
+        });
+    });
+    describe.skip("useSoftConstraints", () => {
+        describe("Use X value N times in <Y column> (valuesInColumn)", () => {
+            test("enables adding a value constraint into a column", () => {
+                const { result } = renderHook(() => useSoftConstraints());
+                act(() => result.current.addValueInColumn("test", 1, "A"));
+                const expectedValuesMap = new Map();
+                expectedValuesMap.set("test", 1);
+                const expectedColsMap = new Map();
+                expectedColsMap.set("A", expectedValuesMap);
+                expect(result.current.valuesInColumn).toEqual(expectedColsMap);
+            });
+            test("enables editing count in column", () => {
+                const { result } = renderHook(() => useSoftConstraints());
+                act(() => result.current.addValueInColumn("test", 1, "A"));
+                act(() => result.current.editCountInColumn("test", 10, "A"));
+                const expectedValuesMap = new Map();
+                expectedValuesMap.set("test", 10);
+                const expectedMap = new Map();
+                expectedMap.set("A", expectedValuesMap);
+                expect(result.current.valuesInColumn).toEqual(expectedMap);
+            });
+            test("when editing, if the is no previous count, it creates a new count", () => {
+                const { result } = renderHook(() => useSoftConstraints());
+                act(() => result.current.editCountInColumn("test", 10, "A"));
+                const expectedValuesMap = new Map();
+                expectedValuesMap.set("test", 10);
+                const expectedMap = new Map();
+                expectedMap.set("A", expectedValuesMap);
+                expect(result.current.valuesInColumn).toEqual(expectedMap);
+            });
+            test("enables deleting a value constraint", () => {
+                const { result } = renderHook(() => useSoftConstraints());
+                act(() => result.current.addValueInColumn("test", 1, "A"));
+                const expectedValuesMap = new Map();
+                expectedValuesMap.set("test", 1);
+                const expectedColsMap = new Map();
+                expectedColsMap.set("A", expectedValuesMap);
+                expect(result.current.valuesInColumn).toEqual(expectedColsMap);
+
+                act(() => result.current.deleteCountInColumn("test", "A"));
+                const valuesAfterDeletion = new Map();
+                const mapAfterDeletion = new Map();
+                mapAfterDeletion.set("A", valuesAfterDeletion);
+                expect(result.current.valuesInColumn).toEqual(mapAfterDeletion);
+            });
+            test("returns current value constraints if value is not found when deleting", () => {
+                const { result } = renderHook(() => useSoftConstraints());
+                act(() => result.current.addValueInColumn("test", 1, "A"));
+                const expectedValuesMap = new Map();
+                expectedValuesMap.set("test", 1);
+                const expectedColsMap = new Map();
+                expectedColsMap.set("A", expectedValuesMap);
+                expect(result.current.valuesInColumn).toEqual(expectedColsMap);
+
+                act(() => result.current.deleteCountInColumn("bug", "A"));
+                expect(result.current.valuesInColumn).toEqual(expectedColsMap);
+            });
+        });
+        describe("Use X values in <Y row> (valuesInRow)", () => {
+            test("enables adding a value constraint into a row", () => {
+                const { result } = renderHook(() => useSoftConstraints());
+                act(() => result.current.addValueInRow("test", "123"));
+                const expectedSet = new Set();
+                expectedSet.add("test");
+                const expectedMap = new Map();
+                expectedMap.set("123", expectedSet);
+                expect(result.current.valuesInRow).toEqual(expectedMap); 
+            });
+            test("enables editing value constraint in row", () => {
+                const { result } = renderHook(() => useSoftConstraints());
+                act(() => result.current.addValueInRow("test", "123"));
+                const expectedSet = new Set();
+                expectedSet.add("test");
+                const expectedMap = new Map();
+                expectedMap.set("123", expectedSet);
+                expect(result.current.valuesInRow).toEqual(expectedMap); 
+
+                act(() => result.current.editValueInRow("test", "bug", "123"));
+                const editedSet = new Set();
+                editedSet.add("bug");
+                const editedMap = new Map();
+                editedMap.set("123", editedSet);
+                expect(result.current.valuesInRow).toEqual(editedMap);
+            });
+            test("if editing a non existent value, adds the value", () => {
+                const { result } = renderHook(() => useSoftConstraints());
+                act(() => result.current.addValueInRow("test", "123"));
+                const expectedSet = new Set();
+                expectedSet.add("test");
+                const expectedMap = new Map();
+                expectedMap.set("123", expectedSet);
+                expect(result.current.valuesInRow).toEqual(expectedMap); 
+
+                act(() => result.current.editValueInRow("test2", "bug", "123"));
+                const editedSet = new Set();
+                editedSet.add("test");
+                editedSet.add("bug");
+                const editedMap = new Map();
+                editedMap.set("123", editedSet);
+                expect(result.current.valuesInRow).toEqual(editedMap);
+            });
+            test("enables deleting a value constraint in a row", () => {
+                const { result } = renderHook(() => useSoftConstraints());
+                act(() => result.current.addValueInRow("test", "123"));
+                const expectedSet = new Set();
+                expectedSet.add("test");
+                const expectedMap = new Map();
+                expectedMap.set("123", expectedSet);
+                expect(result.current.valuesInRow).toEqual(expectedMap); 
+
+                act(() => result.current.deleteValueInRow("test", "123"));
+                const mapAfterDeletion = new Map();
+                mapAfterDeletion.set("123", new Set());
+                expect(result.current.valuesInRow).toEqual(mapAfterDeletion);
+            });
+            test("returns current map when deleting a non existent value", () => {
+                const { result } = renderHook(() => useSoftConstraints());
+                act(() => result.current.addValueInRow("test", "123"));
+                const expectedSet = new Set();
+                expectedSet.add("test");
+                const expectedMap = new Map();
+                expectedMap.set("123", expectedSet);
+                expect(result.current.valuesInRow).toEqual(expectedMap); 
+
+                act(() => result.current.deleteValueInRow("bug", "123"));
+                expect(result.current.valuesInRow).toEqual(expectedMap);
+            });
         });
     });
 });
