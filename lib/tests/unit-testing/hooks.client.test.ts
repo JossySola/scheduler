@@ -1,6 +1,6 @@
-import useRows from "@/lib/custom-hooks/use-rows";
 import { describe, expect, test } from "vitest";
 import { act, renderHook } from "@testing-library/react";
+import useRows from "@/lib/custom-hooks/use-rows";
 import useValues from "@/lib/custom-hooks/use-table-values";
 import useHeaderType from "@/lib/custom-hooks/use-header-type";
 import useHardConstraints from "@/lib/custom-hooks/use-hard-constraints";
@@ -183,7 +183,7 @@ describe("Custom React hooks", () => {
                 expectedMap.set("A", expectedValuesMap);
                 expect(result.current.valuesInColumn).toEqual(expectedMap);
             });
-            test("when editing, if the is no previous count, it creates a new count", () => {
+            test("when editing, if there is no previous count, it creates a new count", () => {
                 const { result } = renderHook(() => useSoftConstraints());
                 act(() => result.current.editCountInColumn("test", 10, "A"));
                 const expectedValuesMap = new Map();
