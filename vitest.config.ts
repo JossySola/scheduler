@@ -1,12 +1,14 @@
 import { defineConfig } from "vitest/config";
-import { dirname, resolve } from "path";
+import { dirname } from "path";
 import { fileURLToPath } from "url";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const paths = tsconfigPaths({ root: __dirname });
 export default defineConfig({
-    plugins: [tsconfigPaths({ root: resolve(__dirname, "../../../../")})],
+    resolve: {
+        tsconfigPaths: true,
+    },
     test: {
         reporters: ['verbose', 'html'],
         coverage: {
