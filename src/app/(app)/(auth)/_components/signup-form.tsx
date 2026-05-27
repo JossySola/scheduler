@@ -24,6 +24,7 @@ export default function SignUpForm({t}: {t: AuthFormProps}) {
                 <Label>{t.name}</Label>
                 <Input 
                 placeholder={t.placeholderName}
+                aria-label='name'
                 name="name" 
                 autoComplete="name" 
                 required 
@@ -35,6 +36,7 @@ export default function SignUpForm({t}: {t: AuthFormProps}) {
                 <Label>{t.username}</Label>
                 <Input 
                 placeholder={t.placeholderUsername}
+                aria-label='username'
                 name="username" 
                 autoComplete="username" 
                 required 
@@ -46,6 +48,7 @@ export default function SignUpForm({t}: {t: AuthFormProps}) {
                 <Label>{t.email}</Label>
                 <Input 
                 placeholder={t.placeholderEmail} 
+                aria-label='email'
                 name="email" 
                 autoComplete="email" 
                 required
@@ -56,7 +59,7 @@ export default function SignUpForm({t}: {t: AuthFormProps}) {
             <TextField type={isVisible ? "text" : "password"}>
                 <Label>{t.password}</Label>
                 <div>
-                    <Input placeholder={t.placeholderPassword} name="password" minLength={8} autoComplete="new-password" required />
+                    <Input aria-label='create password' placeholder={t.placeholderPassword} name="password" minLength={8} autoComplete="new-password" required />
                     <Button type='button' aria-label='switch password visibility' onPress={() => setIsVisible(prev => !prev)}>
                         {
                             isVisible 
@@ -71,7 +74,7 @@ export default function SignUpForm({t}: {t: AuthFormProps}) {
             </TextField>
 
             <TextField type={isVisible ? "text" : "password"}>
-                <Input placeholder={t.placeholderConfirm} name="confirm-password" minLength={8} autoComplete="new-password" required />
+                <Input aria-label='confirm password' placeholder={t.placeholderConfirm} name="confirm-password" minLength={8} autoComplete="new-password" required />
             </TextField>
 
             <Text slot="description">
