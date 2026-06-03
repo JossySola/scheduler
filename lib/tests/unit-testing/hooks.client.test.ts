@@ -7,7 +7,7 @@ import useHardConstraints from "@/lib/custom-hooks/use-hard-constraints";
 import useSoftConstraints from "@/lib/custom-hooks/use-soft-constraints";
 
 describe("Custom React hooks", () => {
-    describe.skip("useRows", () => {
+    describe("useRows", () => {
         test("initializes with a Map", () => {
             const { result } = renderHook(() => useRows());
             expect(result.current.rows).toEqual(new Map());
@@ -81,7 +81,7 @@ describe("Custom React hooks", () => {
             expect(result.current.rows).toEqual(editedMap);
         });
     });
-    describe.skip("useValues", () => {
+    describe("useValues", () => {
         test("enables adding a value", () => {
             const { result } = renderHook(() => useValues());
             act(() => result.current.addValue("test"));
@@ -113,7 +113,7 @@ describe("Custom React hooks", () => {
             expect(result.current.values).toEqual(edited);
         });
     });
-    describe.skip("useHeaderType", () => {
+    describe("useHeaderType", () => {
         test("enables changing the headers type and returns true", async () => {
             const { result } = renderHook(() => useHeaderType());
             expect(result.current.type).toEqual("text");
@@ -128,7 +128,7 @@ describe("Custom React hooks", () => {
             expect(result.current.type).toEqual("text");
         });
     });
-    describe.skip("useHardConstraints", () => {
+    describe("useHardConstraints", () => {
         test("adds disabled row into Set", () => {
             const { result } = renderHook(() => useHardConstraints());
             act(() => result.current.disableRow("123"));
@@ -162,7 +162,7 @@ describe("Custom React hooks", () => {
             expect(result.current.disabledColumns).toEqual(new Set());
         });
     });
-    describe.skip("useSoftConstraints", () => {
+    describe("useSoftConstraints", () => {
         describe("Use X value N times in <Y column> (valuesInColumn)", () => {
             test("enables adding a value constraint into a column", () => {
                 const { result } = renderHook(() => useSoftConstraints());
