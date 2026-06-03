@@ -15,20 +15,9 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.81",
     "@ai-sdk/react": "^3.0.196",
-    "@auth/core": "^0.41.2",
-    "@auth/pg-adapter": "^1.11.2",
-    "@aws-crypto/client-browser": "^4.2.2",
-    "@aws-crypto/sha256-js": "^5.2.0",
-    "@aws-sdk/client-kms": "^3.1058.0",
-    "@aws-sdk/hash-node": "^3.374.0",
-    "@aws-sdk/signature-v4": "^3.374.0",
-    "@aws-sdk/types": "^3.973.9",
-    "@aws-sdk/util-base64": "^3.374.0",
     "@edge-runtime/vm": "^5.0.0",
     "@lottiefiles/dotlottie-react": "^0.18.10",
     "@node-rs/argon2": "^2.0.2",
-    "@react-email/components": "^1.0.12",
-    "@react-email/render": "^2.0.8",
     "@react-spectrum/s2": "^1.4.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
@@ -82,5 +71,8 @@
     "msw@2.14.6": true,
     "sharp@0.34.5": true,
     "unrs-resolver@1.12.2": true
+  },
+  "overrides": {
+    "postcss": "^8.5.15"
   }
 }
