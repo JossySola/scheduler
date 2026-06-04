@@ -1,14 +1,14 @@
 import { createClient } from '@/lib/supabase/server'
 import { type EmailOtpType } from '@supabase/supabase-js'
-import { NextResponse, NextRequest } from 'next/server'
+import { redirect } from 'next/navigation'
+import { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const token_hash = searchParams.get('token_hash')
   const type = searchParams.get('type') as EmailOtpType | null
-  const next = searchParams.get('next') ?? '/'
-  const redirectTo = request.nextUrl.clone()
-  redirectTo.pathname = next
+  const _next = searchParams.get('next')
+  const next = _next?.startsWith('/') ? _next : '/'
 
   if (token_hash && type) {
     const supabase = await createClient()
@@ -19,11 +19,12 @@ export async function GET(request: NextRequest) {
     })
     if (!error) {
       // redirect user to specified redirect URL or root of app
-      return NextResponse.redirect(redirectTo)
+      return redirect(next)
+    } else {
+      // redirect the user to an error page with some instructions
+      redirect(`/error?error=${error?.message}`)
     }
   }
-
   // redirect the user to an error page with some instructions
-  redirectTo.pathname = '/auth/auth-code-error'
-  return NextResponse.redirect(redirectTo)
+  redirect('/error?error=No token hash or type');
 }
