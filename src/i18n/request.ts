@@ -20,7 +20,7 @@ export default getRequestConfig(async () => {
   } else {
     return {
       locale: lang,
-      messages: (await import(`../../messages/${lang}.json`)).default
+      messages: (await import(`../../messages/en.json`)).default
     }
   }
 });
