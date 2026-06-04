@@ -20,10 +20,11 @@ export default function SignUpForm() {
     const router = useRouter();
 
     const handleSignUp = async (formData: FormData) => {
+        setIsLoading(true);
         const email = formData.get("email")?.toString() ?? "";
         const password = formData.get("password")?.toString() ?? "";
         const confirmPassword = formData.get("confirmPassword")?.toString() ?? "";
-        setIsLoading(true);
+
         if (password !== confirmPassword) {
             setError("Passwords do not match");
             setIsLoading(false);
@@ -35,15 +36,16 @@ export default function SignUpForm() {
                 password,
                 confirmPassword,
             });
-            const { data, error } = await signUpNewUser(email, password, "/dashboard");
+            const { error } = await signUpNewUser(email, password, `${window.location.origin}/dashboard`);
             if (error) throw error;
-            console.log(data);
             router.push("/sign-up-success");
         } catch (error: unknown) {
             if (error instanceof z.ZodError) {
                 setError(error.issues[0].message);
             } else if (error instanceof Error) {
                 setError(error.message);
+            } else {
+                setError("An error occurred");
             }
         } finally {
             setIsLoading(false);
@@ -86,8 +88,8 @@ export default function SignUpForm() {
             autoComplete="new-password"
             onChange={setRepeatPassword} isRequired/>
 
-            <ActionButton type="submit" isDisabled={isLoading}>Submit</ActionButton>
-            <p className="text-center text-red-600">{ error ?? "" }</p>
+            <ActionButton type="submit" isDisabled={isLoading} isPending={isLoading}>Sign Up</ActionButton>
+            {error && <p className="text-sm text-red-500">{error}</p>}
         </Form>
     )
 }
