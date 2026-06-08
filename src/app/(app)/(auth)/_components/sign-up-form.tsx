@@ -9,6 +9,7 @@ import { TextField } from "@/ui/text-field/text-field";
 import ActionButton from "@/ui/buttons/action-button";
 import { Button } from "react-aria-components";
 import { Eye, EyeOff } from "@/ui/icons/geist/icons";
+import Link from "next/link";
 
 export default function SignUpForm() {
     const [email, setEmail] = useState("");
@@ -90,6 +91,12 @@ export default function SignUpForm() {
 
             <ActionButton type="submit" isDisabled={isLoading} isPending={isLoading}>Sign Up</ActionButton>
             {error && <p className="text-sm text-red-500">{error}</p>}
+            <div className="mt-4 text-center text-sm">
+                Aready have an account?{' '}
+                <Link href="/login" className="underline underline-offset-4">
+                Sign in
+                </Link>
+            </div> 
         </Form>
     )
 }
