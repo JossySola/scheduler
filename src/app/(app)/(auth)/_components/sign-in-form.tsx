@@ -63,7 +63,6 @@ export default function SignInForm() {
             type={ isRevealed ? "text" : "password" }
             value={password}
             placeholder="Enter a password"
-            description="We highly recommend using your Password Manager suggestion to get a strong password and store it"
             autoComplete="new-password"
             onChange={setPassword} isRequired />
             <Button 
