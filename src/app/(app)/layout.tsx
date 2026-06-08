@@ -7,6 +7,8 @@ import { ClientProviders } from "./provider";
 import { headers } from "next/headers";
 import { isRTL } from "react-aria-components";
 import { getTranslations } from "next-intl/server";
+import SignOut from "./(auth)/_components/sign-out-button";
+import { createClient } from "@/lib/supabase/server";
 
 const geistSans = localFont({
   src: "../../../fonts/Geist-Regular.woff2",
@@ -20,11 +22,15 @@ const geistMono = localFont({
 });
 const geistBold = localFont({
   src: "../../../fonts/Geist-Bold.woff2",
-  variable: "--font-geist-bold"
-})
+  variable: "--font-geist-bold",
+});
 const geistBlack = localFont({
   src: "../../../fonts/Geist-Black.woff2",
-  variable: "--font-geist-black"
+  variable: "--font-geist-black",
+});
+const geistSemiBold = localFont({
+  src: "../../../fonts/Geist-SemiBold.woff2",
+  variable: "--font-geist-semibold",
 })
 
 export const metadata: Metadata = {
@@ -60,13 +66,22 @@ export default async function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Internationalization
   const acceptLanguage = (await headers()).get('accept-language');
   const lang = acceptLanguage?.split(/[,;]/)[0] || 'en-US';
   const translation = await getTranslations("auth-form");
+  // Session checkup
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  
   return (
     <html lang={ lang } dir={isRTL(lang) ? "rtl" : "ltr"}>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${geistBold.variable} ${geistBlack.variable} antialiased`}>
-        <nav></nav>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${geistBold.variable} ${geistBlack.variable} ${geistSemiBold.variable} antialiased`}>
+        <nav>{
+          data && data.claims.email
+          ? <SignOut />
+          : null
+        }</nav>
         <ClientProviders lang={ lang }>
           { children }
           <Analytics />
