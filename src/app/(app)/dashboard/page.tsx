@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import NewTable from './_components/new-table-button'
 
 export default async function ProtectedPage() {
   const supabase = await createClient()
@@ -10,10 +11,13 @@ export default async function ProtectedPage() {
   }
 
   return (
-    <div className="flex h-svh w-full items-center justify-center gap-2">
+    <div className="flex flex-col h-svh w-full items-center justify-center gap-2">
       <p>
         Hello <span>{data.claims.email}</span>
+        <NewTable />
       </p>
+      <section>
+      </section>
     </div>
   )
 }
