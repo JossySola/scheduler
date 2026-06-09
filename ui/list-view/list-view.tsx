@@ -5,6 +5,14 @@ import Delete from '@react-spectrum/s2/icons/Delete';
 import {Dispatch, SetStateAction, useState} from 'react';
 import { TextField } from '@react-spectrum/s2/TextField';
 import { Button } from '@react-spectrum/s2/Dialog';
+import {ButtonContext, DEFAULT_SLOT, Provider} from 'react-aria-components';
+
+const actionBarButtonContext = {
+    slots: {
+        [DEFAULT_SLOT]: {},
+        close: {}
+    }
+};
 
 export default function List({ name, values, setValues }: {
     name: string,
@@ -51,11 +59,13 @@ export default function List({ name, values, setValues }: {
         renderActionBar={(selectedKeys) => {
             let selection = selectedKeys === 'all' ? 'all' : [...selectedKeys].join(', ');
             return (
+                <Provider values={[[ButtonContext, actionBarButtonContext]]}>
                 <ActionBar>
                 <ActionButton aria-label="Delete" onPress={() => handleDeleteValue(selection)}>
                     <Delete />
                 </ActionButton>
                 </ActionBar>
+                </Provider>
             );
             }}>
             {
