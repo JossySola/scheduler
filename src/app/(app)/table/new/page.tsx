@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import AiPromptOption from '../_components/ai-prompt-option'
+import AiPromptOption from './_components/ai-prompt-option'
 
 /*
     Sorting, filtering, faceting, grouping,
