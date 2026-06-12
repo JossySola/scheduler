@@ -5,80 +5,206 @@ import useValues from "@/lib/custom-hooks/use-table-values";
 import useHeaderType from "@/lib/custom-hooks/use-header-type";
 import useHardConstraints from "@/lib/custom-hooks/use-hard-constraints";
 import useSoftConstraints from "@/lib/custom-hooks/use-soft-constraints";
+import { TableState } from "@/lib/definitions";
 
 describe("Custom React hooks", () => {
     describe("useRows", () => {
-        test("initializes with a Map", () => {
+        test("initializes with an Array", () => {
             const { result } = renderHook(() => useRows());
-            expect(result.current.rows).toEqual(new Map());
+            expect(result.current.rows).toEqual([]);
         });
         test("enables adding a row", () => {
             const { result } = renderHook(() => useRows());
             // Confirms adding a row in an empty Map            
-            act(() => result.current.addRow("123"));
+            act(() => result.current.addRow());
 
-            const firstRow = new Map(); // <"A":"">
-            firstRow.set("A", "");
-            const firstMap = new Map(); // <"123": Map>
-            firstMap.set("123", firstRow);
-            expect(result.current.rows).toEqual(firstMap);
+            const rows: TableState = [];
+            rows.push([{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }]);
+            expect(result.current.rows).toEqual(rows);
 
             // Confirms adding a second row in a populated Map
-            act(() => result.current.addRow("456"));
-
-            const secondRow = new Map(); // <"A":"">
-            secondRow.set("A", "");
-            const secondMap = new Map(); // <"123": Map, "456", Map>
-            secondMap.set("123", firstRow);
-            secondMap.set("456", secondRow);
-            expect(result.current.rows).toEqual(secondMap);
+            act(() => result.current.addRow());
+            
+            rows.push([{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }]);
+            expect(result.current.rows).toEqual(rows);
         });
         test("enables adding a column", () => {
             const { result } = renderHook(() => useRows());
-            act(() => result.current.addRow("123"));
+            act(() => result.current.addRow());
             act(() => result.current.addCol());
 
-            const row = new Map();
-            row.set("A", "");
-            row.set("B", "");
-            const map = new Map();
-            map.set("123", row);
-
-            expect(result.current.rows).toEqual(map);            
+            const rows: TableState = [];
+            rows.push([{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }, {
+                value: "",
+                type: "text",
+                isVisible: true,
+            }]);
+            expect(result.current.rows).toEqual(rows);            
         });
         test("enables deleting a row", () => {
             const { result } = renderHook(() => useRows());
-            act(() => result.current.addRow("123"));
-            act(() => result.current.addRow("456"));
-            const firstRow = new Map();
-            firstRow.set("A", "");
-            const secondRow = new Map();
-            secondRow.set("A", "");
-            const map = new Map();
-            map.set("123", firstRow);
-            map.set("456", secondRow);
+            act(() => result.current.addRow());
+            act(() => result.current.addRow());
+            
+            const rows: TableState = [];
+            rows.push([{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }], [{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }]);
 
-            expect(result.current.rows).toEqual(map);
-            act(() => result.current.deleteRow("456"));
-            map.delete("456");
-            expect(result.current.rows).toEqual(map);
+            expect(result.current.rows).toEqual(rows);
+            act(() => result.current.deleteRow());
+            rows.pop();
+            expect(result.current.rows).toEqual(rows);
         });
-        test("enables editing specific cell", () => {
+        test("enables deleting a specific row with index", () => {
             const { result } = renderHook(() => useRows());
+            act(() => result.current.addRow());
+            act(() => result.current.addRow());
+            act(() => result.current.addRow());
+            
+            const rows: TableState = [];
+            rows.push([{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }], [{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }], [{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }]);
 
-            act(() => result.current.addRow("123"));
-            const initialRow = new Map();
-            initialRow.set("A", "");
-            const initialMap = new Map();
-            initialMap.set("123", initialRow);
-            expect(result.current.rows).toEqual(initialMap);
+            expect(result.current.rows).toEqual(rows);
+            act(() => result.current.deleteRow(1));
+            rows.splice(1,1);
+            expect(result.current.rows).toEqual(rows);
+        });
+        test("enables deleting a column", () => {
+            const { result } = renderHook(() => useRows());
+            act(() => result.current.addRow());
+            act(() => result.current.addCol());
 
-            act(() => result.current.editRow("123", "A", "test"));
-            const editedRow = new Map();
-            editedRow.set("A", "test");
-            const editedMap = new Map();
-            editedMap.set("123", editedRow);
-            expect(result.current.rows).toEqual(editedMap);
+            // First verifies adding columns is enabled
+            let rows: TableState = [];
+            rows.push([{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }, {
+                value: "",
+                type: "text",
+                isVisible: true,
+            }]);
+            expect(result.current.rows).toEqual(rows);
+
+            // Now we will verify that we can delete a column
+            act(() => result.current.deleteColumn());
+            rows = [[{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }]];
+            expect(result.current.rows).toEqual(rows);
+        });
+        test("enables deleting a specific column", () => {
+            const { result } = renderHook(() => useRows());
+            act(() => result.current.addRow());
+            act(() => result.current.addCol());
+            act(() => result.current.addCol());
+
+            // First verifies adding columns is enabled
+            const rows: TableState = [];
+            rows.push([{
+                value: "",
+                type: "text",
+                isVisible: true,
+            }, {
+                value: "",
+                type: "text",
+                isVisible: true,
+            }, {
+                value: "",
+                type: "text",
+                isVisible: true,
+            }]);
+            expect(result.current.rows).toEqual(rows);
+
+            // Now we will verify that we can delete a column
+            act(() => result.current.deleteColumn(1));
+            rows[0].splice(1,1);
+            expect(result.current.rows).toEqual(rows);
+        });
+        test("enables editing a header's value", () => {
+            const { result } = renderHook(() => useRows());
+            act(() => result.current.addRow());
+            act(() => result.current.addCol());
+            act(() => result.current.addCol());
+            act(() => result.current.editCell({
+                rowIndex: 0,
+                colIndex: 1,
+                value: "test"
+            }));
+            
+            const rows: TableState = [];
+            const defaultHeader = { value: "", type: "text" as "text", isVisible: true };
+            rows.push([defaultHeader, { value: "test", type: "text", isVisible: true }, defaultHeader]);
+
+            expect(result.current.rows).toEqual(rows);
+        });
+        test("enables editing a header's type", () => {
+            const { result } = renderHook(() => useRows());
+            act(() => result.current.addRow());
+            act(() => result.current.addCol());
+            act(() => result.current.addCol());
+            act(() => result.current.editCell({
+                rowIndex: 0,
+                colIndex: 1,
+                type: "date",
+            }));
+            
+            const rows: TableState = [];
+            const defaultHeader = { value: "", type: "text" as "text", isVisible: true };
+            rows.push([defaultHeader, { value: "", type: "date", isVisible: true }, defaultHeader]);
+
+            expect(result.current.rows).toEqual(rows);
+        });
+        test("enables editing a header's visibility", () => {
+            const { result } = renderHook(() => useRows());
+            act(() => result.current.addRow());
+            act(() => result.current.addCol());
+            act(() => result.current.addCol());
+            act(() => result.current.editCell({
+                rowIndex: 0,
+                colIndex: 1,
+                isVisible: false,
+            }));
+            
+            const rows: TableState = [];
+            const defaultHeader = { value: "", type: "text" as "text", isVisible: true };
+            rows.push([defaultHeader, { value: "", type: "text", isVisible: false }, defaultHeader]);
+
+            expect(result.current.rows).toEqual(rows);
         });
     });
     describe("useValues", () => {
