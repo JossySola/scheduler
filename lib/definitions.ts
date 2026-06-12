@@ -41,12 +41,12 @@ export type SignInUsernameData = {
     };
 }
 export type DeleteFormProps = {
-  t: {
-    warning: string,
-    label: string,
-    placeholder: string,
-    button: string,
-  }
+    t: {
+        warning: string,
+        label: string,
+        placeholder: string,
+        button: string,
+    }
 }
 export type ForgotFormProps = {
     t: {
@@ -92,5 +92,15 @@ export type UnlinkProviderProps = {
     error: string,
     success: string,
 }
-export type Row = Map<string, string>;
-export type RowsState = Map<string, Row>;
+// Table types
+export type CellType = string;
+
+export type RowType = Array<HeaderType | CellType>;
+
+export type HeaderType = {
+  value: string;
+  type: "text" | "date" | "time";
+  isVisible: boolean;
+};
+
+export type TableState = Array<RowType>;
