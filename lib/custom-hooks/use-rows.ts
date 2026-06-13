@@ -1,6 +1,5 @@
 "use client"
 import { useState } from "react";
-import { generateColumnName } from "../utils";
 import { HeaderType, TableState } from "../definitions";
 
 export default function useRows(
@@ -12,7 +11,7 @@ export default function useRows(
         setRows(prev => {
             const newRow = Array.from({ length: maxCols }, (_, colIndex) => 
                 colIndex === 0 
-                ? { value: "", type: "text", isVisible: true } 
+                ? ({ value: "", type: "text", isVisible: true } as HeaderType) 
                 : ""
             );
             return [...prev, newRow];
