@@ -94,13 +94,23 @@ export type UnlinkProviderProps = {
 }
 // Table types
 export type CellType = string;
-
 export type RowType = Array<HeaderType | CellType>;
-
 export type HeaderType = {
   value: string;
   type: "text" | "date" | "time";
   isVisible: boolean;
 };
-
 export type TableState = Array<RowType>;
+
+export interface PanelInitialState {
+    rows: TableState;
+    hardConstraints: {
+        disabledRows: Set<string>,
+        disabledColumns: Set<string>,
+    };
+    softConstraints: {
+        valuesInColumn: Map<string, Map<string, number>>,
+        valuesInRow: Map<string, Set<string>>,
+    };
+    values: Set<string>;
+}
