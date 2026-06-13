@@ -32,7 +32,7 @@ export default function Table({ rows, editCell }: {
             </thead>
             <tbody>
                 {
-                    rows && rows.length > 1
+                    rows && rows.length > 0
                     ? rows.map((row, rowIndex) => {
                         if (rowIndex === 0) {
                             return null;

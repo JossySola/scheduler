@@ -6,106 +6,77 @@ import { HeaderType, TableState } from "../definitions";
 export default function useRows(
     initialState: TableState = []) {
     const [rows, setRows] = useState<TableState>(initialState);
-    // Check how many columns will be added in a new row as an initial load
-    const maxCols = rows[0] ? rows[0].length : 1;
-    
+
     const addRow = () => {
+        const maxCols = rows[0] ? rows[0].length : 1;
         setRows(prev => {
-            const newArray = prev;
-            if (prev.length === 0) {
-                const row = new Array(maxCols);
-                row.fill({
-                    value: "",
-                    type: "text",
-                    isVisible: true,
-                });
-                newArray.push(row);
-                return newArray;
-            }
-            const row = new Array(maxCols);
-            row.fill({
-                value: "",
-                type: "text",
-                isVisible: true,
-            }, 0, 1);
-            row.fill("", 1, maxCols - 1);
-            newArray.push(row);
-            return newArray;
+            const newRow = Array.from({ length: maxCols }, (_, colIndex) => 
+                colIndex === 0 
+                ? { value: "", type: "text", isVisible: true } 
+                : ""
+            );
+            return [...prev, newRow];
         });
     }
     const addCol = () => {
+        const maxCols = rows[0] ? rows[0].length : 1;
         setRows(prev => {
             const newArray = prev.map((row, index) => {
                 if (index === 0) {
-                    const newRow = row;
-                    newRow.push({
+                    return row.toSpliced(maxCols - 1, 0, {
                         value: "",
                         type: "text",
                         isVisible: true,
-                    })
-                    return newRow;
+                    });
                 }
-                const newRow = row;
-                newRow.push("");
-                return newRow;
+                return row.toSpliced(maxCols - 1, 0, "");
             });
             return newArray;
         });
     }
     const deleteRow = (index?: number) => {
         setRows(prev => {
-            if (index) {
+            if (index !== undefined) {
                 return prev.toSpliced(index, 1);
             }
-            const newArray = prev;
-            newArray.pop();
-            return newArray;
+            return prev.slice(0, -1);
         });
     }
     const deleteColumn = (index?: number) => {
         setRows(prev => {
-            if (index) {
+            if (index !== undefined) {
                 return prev.map((row, _) => {
                     return row.toSpliced(index, 1);
                 });
             }
-            return prev.map((row, _) => {
-                row.pop();
-                return row;
-            });
+            return prev.map(row => row.slice(0, -1));
         });
     }
     const editCell = ({rowIndex, colIndex, value, type, isVisible}: {
-        rowIndex: number,
-        colIndex: number,
-        value?: string,
-        type?: "text" | "time" | "date",
-        isVisible?: boolean,
+        rowIndex: number, colIndex: number, value?: string, type?: "text" | "time" | "date", isVisible?: boolean,
     }) => {
-        setRows(prev => {
-            const newRows = prev;
-            if (value) {
-                const cell = newRows[rowIndex][colIndex];
-                if (typeof cell !== "string") {
-                    (newRows[rowIndex][colIndex] as HeaderType).value = value;
-                } else {
-                    newRows[rowIndex][colIndex] = value;
+        setRows(prev => prev.map((row, rIdx) => {
+            if (rIdx !== rowIndex) return row; // Keep other rows exactly as they are
+            
+            return row.map((cell, cIdx) => {
+                if (cIdx !== colIndex) return cell; // Keep other cells exactly as they are
+                
+                // If it's a primitive string cell
+                if (typeof cell === "string") {
+                    return value !== undefined ? value : cell;
                 }
-            } else if (type) {
-                const cell = newRows[rowIndex][colIndex];
-                if (typeof cell !== "string") {
-                    (newRows[rowIndex][colIndex] as HeaderType).type = type;
-                }
-            } else if (isVisible !== undefined) {
-                const cell = newRows[rowIndex][colIndex];
-                if (typeof cell !== "string") {
-                    (newRows[rowIndex][colIndex] as HeaderType).isVisible = isVisible;
-                }
-            }
-
-            return newRows;
-        });
+                
+                // If it's an object cell (HeaderType), return a brand new object copy
+                return {
+                    ...cell,
+                    ...(value !== undefined && { value }),
+                    ...(type !== undefined && { type }),
+                    ...(isVisible !== undefined && { isVisible }),
+                };
+            });
+        }));
     }
+
     return {
         rows,
         addRow,
