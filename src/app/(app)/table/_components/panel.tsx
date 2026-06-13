@@ -5,9 +5,10 @@ import useSoftConstraints from "@/lib/custom-hooks/use-soft-constraints";
 import useValues from "@/lib/custom-hooks/use-table-values";
 import { PanelInitialState } from "@/lib/definitions";
 import Table from "./table";
+import { Button } from "react-aria-components";
 
 export default function Panel({ initialState }: {
-    initialState: PanelInitialState,
+    initialState?: PanelInitialState,
 }) {
     const {
         disableRow,
@@ -16,7 +17,7 @@ export default function Panel({ initialState }: {
         enableColumn,
         disabledRows,
         disabledColumns,
-    } = useHardConstraints(initialState.hardConstraints);
+    } = useHardConstraints(initialState?.hardConstraints);
     const {
         valuesInColumn,
         valuesInRow,
@@ -26,13 +27,13 @@ export default function Panel({ initialState }: {
         editValueInRow,
         deleteCountInColumn,
         deleteValueInRow,
-    } = useSoftConstraints(initialState.softConstraints);
+    } = useSoftConstraints(initialState?.softConstraints);
     const {
         addValue,
         deleteValue,
         editValue,
         values,
-    } = useValues(initialState.values);
+    } = useValues(initialState?.values);
     const {
         rows,
         addRow,
@@ -40,10 +41,14 @@ export default function Panel({ initialState }: {
         deleteRow,
         deleteColumn,
         editCell,
-    } = useRows(initialState.rows);
+    } = useRows(initialState?.rows);
     return (
         <section>
-            <Table rows={rows} />
+            <Button type="button" onClick={() => addRow()}>Add Row</Button>
+            <Button type="button" onClick={() => addCol()}>Add Column</Button>
+            <Button type="button" onClick={() => deleteRow()}>Delete Row</Button>
+            <Button type="button" onClick={() => deleteColumn()}>Delete Column</Button>
+            <Table rows={rows} editCell={editCell} />
         </section>
     )
 }
