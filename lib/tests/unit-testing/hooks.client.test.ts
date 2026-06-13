@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { act, renderHook } from "@testing-library/react";
 import useRows from "@/lib/custom-hooks/use-rows";
 import useValues from "@/lib/custom-hooks/use-table-values";
-import useHeaderType from "@/lib/custom-hooks/use-header-type";
+import useHeaderType from "@/lib/custom-hooks/_use-header-type";
 import useHardConstraints from "@/lib/custom-hooks/use-hard-constraints";
 import useSoftConstraints from "@/lib/custom-hooks/use-soft-constraints";
 import { TableState } from "@/lib/definitions";
