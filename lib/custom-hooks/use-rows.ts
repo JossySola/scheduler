@@ -14,7 +14,7 @@ export default function useRows(
                 colIndex === 0 
                 ? { value: "", type: "text", isVisible: true } 
                 : ""
-            ); - 1);
+            );
             return [...prev, newRow];
         });
     }
