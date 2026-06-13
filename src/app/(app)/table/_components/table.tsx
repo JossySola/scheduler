@@ -14,7 +14,7 @@ export default function Table({ rows }: {
                         ? rows[0].map((row, index) => {
                             return (
                                 <th scope="col">
-                                    <Cell value={row} index={index} />
+                                    <Cell value={row} rowIndex={0} colIndex={index} />
                                 </th>
                             )
                         })
@@ -25,25 +25,25 @@ export default function Table({ rows }: {
             <tbody>
                 {
                     rows && rows.length > 1
-                    ? rows.map((row, index) => {
-                        if (index === 0) {
+                    ? rows.map((row, rowIndex) => {
+                        if (rowIndex === 0) {
                             return null;
                         }
                         return (
                             <tr>
                                 {
                                     row 
-                                    ? row.map((cell, index) => {
-                                        if (index === 0) {
+                                    ? row.map((cell, colIndex) => {
+                                        if (colIndex === 0) {
                                             return (
                                                 <th scope="row">
-                                                    <Cell value={cell} index={index} />
+                                                    <Cell value={cell} rowIndex={rowIndex} colIndex={colIndex} />
                                                 </th>
                                             )
                                         }
                                         return (
                                             <td>
-                                                <Cell value={cell} index={index} />
+                                                <Cell value={cell} rowIndex={rowIndex} colIndex={colIndex} />
                                             </td>
                                         )
                                     })

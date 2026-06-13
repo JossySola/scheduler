@@ -1,9 +1,10 @@
 'use client'
 import { HeaderType } from "@/lib/definitions";
 
-export default function Cell({ value, index }: {
+export default function Cell({ value, rowIndex, colIndex }: {
     value: string | HeaderType,
-    index: number,
+    rowIndex: number,
+    colIndex: number,
 }) {
     return (
         <>
