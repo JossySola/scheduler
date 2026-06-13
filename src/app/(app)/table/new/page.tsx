@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AiPromptOption from './_components/ai-prompt-option'
+import ManualTableOption from './_components/manual-table-card'
 
 /*
     Sorting, filtering, faceting, grouping,
@@ -8,11 +9,11 @@ import AiPromptOption from './_components/ai-prompt-option'
     pinning, visibility, ordering and pagination
 */
 export default async function ProtectedPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
-  const { data, error } = await supabase.auth.getClaims()
+  const { data, error } = await supabase.auth.getClaims();
   if (error || !data?.claims) {
-    redirect('/login')
+    redirect('/login');
   }
 
   return (
@@ -20,8 +21,9 @@ export default async function ProtectedPage() {
       <p>
         Table by <span>{data.claims.email}</span>
       </p>
-      <section>
+      <section className='flex flex-col sm:flex-row items-center justify-around gap-3'>
         <AiPromptOption />
+        <ManualTableOption />
       </section>
     </div>
   )
