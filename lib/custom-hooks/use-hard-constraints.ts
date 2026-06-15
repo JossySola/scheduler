@@ -8,33 +8,39 @@ export default function useHardConstraints(initialState: {
     const [disabledRows, setDisabledRows] = useState(initialState.disabledRows);
     const [disabledColumns, setDisabledColumns] = useState(initialState.disabledColumns);
 
-    const disableRow = (rowId: string) => {
+    const disableRow = (value: string) => {
         setDisabledRows(prev => {
-            const newSet = prev;
-            newSet.add(rowId);
+            const newSet = new Set(Array.from(prev));
+            newSet.add(value);
             return newSet;
         });
     }
-    const disableColumn = (columnLetter: string) => {
+    const disableColumn = (value: string) => {
         setDisabledColumns(prev => {
-            const newSet = prev;
-            newSet.add(columnLetter);
+            const newSet = new Set(Array.from(prev));
+            newSet.add(value);
             return newSet;
         });
     }
-    const enableRow = (rowId: string) => {
+    const enableRow = (value: string) => {
         setDisabledRows(prev => {
-            const newSet = prev;
-            newSet.delete(rowId);
+            const newSet = new Set(Array.from(prev));
+            newSet.delete(value);
             return newSet;
         });
     }
-    const enableColumn = (columnLetter: string) => {
+    const enableColumn = (value: string) => {
         setDisabledColumns(prev => {
-            const newSet = prev;
-            newSet.delete(columnLetter);
+            const newSet = new Set(Array.from(prev));
+            newSet.delete(value);
             return newSet;
         });
+    }
+    const replaceRowsList = (selection: Set<string>) => {
+        setDisabledRows(selection);
+    }
+    const replaceColsList = (selection: Set<string>) => {
+        setDisabledColumns(selection);
     }
     return {
         disableRow,
@@ -43,5 +49,7 @@ export default function useHardConstraints(initialState: {
         enableColumn,
         disabledRows,
         disabledColumns,
+        replaceRowsList,
+        replaceColsList,
     }
 }
