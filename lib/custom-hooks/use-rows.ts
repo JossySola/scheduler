@@ -18,17 +18,17 @@ export default function useRows(
         });
     }
     const addCol = () => {
-        const maxCols = rows[0] ? rows[0].length : 1;
         setRows(prev => {
+            const maxCols = prev[0] ? prev[0].length : 1;
             const newArray = prev.map((row, index) => {
                 if (index === 0) {
-                    return row.toSpliced(maxCols - 1, 0, {
+                    return row.toSpliced(maxCols, 0, {
                         value: "",
                         type: "text",
                         isVisible: true,
                     });
                 }
-                return row.toSpliced(maxCols - 1, 0, "");
+                return row.toSpliced(maxCols, 0, "");
             });
             return newArray;
         });
@@ -44,11 +44,16 @@ export default function useRows(
     const deleteColumn = (index?: number) => {
         setRows(prev => {
             if (index !== undefined) {
-                return prev.map((row, _) => {
+                return prev.map(row => {
                     return row.toSpliced(index, 1);
                 });
             }
-            return prev.map(row => row.slice(0, -1));
+            if (prev && prev[0] && prev[0].length === 1) {
+                return [];
+            }
+            return prev.map(row => {
+                return row.slice(0, -1);
+            });
         });
     }
     const editCell = ({rowIndex, colIndex, value, type, isVisible}: {
