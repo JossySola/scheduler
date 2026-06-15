@@ -6,6 +6,7 @@ import useValues from "@/lib/custom-hooks/use-table-values";
 import { PanelInitialState } from "@/lib/definitions";
 import Table from "./table";
 import { Button } from "react-aria-components";
+import HardConstraintsModal from "./hard-constraints-modal";
 
 export default function Panel({ initialState }: {
     initialState?: PanelInitialState,
@@ -17,6 +18,8 @@ export default function Panel({ initialState }: {
         enableColumn,
         disabledRows,
         disabledColumns,
+        replaceRowsList,
+        replaceColsList,
     } = useHardConstraints(initialState?.hardConstraints);
     const {
         valuesInColumn,
@@ -43,12 +46,20 @@ export default function Panel({ initialState }: {
         editCell,
     } = useRows(initialState?.rows);
     return (
-        <section>
-            <Button type="button" onClick={() => addRow()}>Add Row</Button>
-            <Button type="button" onClick={() => addCol()}>Add Column</Button>
-            <Button type="button" onClick={() => deleteRow()}>Delete Row</Button>
-            <Button type="button" onClick={() => deleteColumn()}>Delete Column</Button>
-            <Table rows={rows} editCell={editCell} />
-        </section>
+        <main id="panel">
+            <section id="settings">
+                <HardConstraintsModal 
+                rows={rows} 
+                replaceColsList={replaceColsList} 
+                replaceRowsList={replaceRowsList} />
+            </section>
+            <section id="table">
+                <Button type="button" onClick={() => addRow()}>Add Row</Button>
+                <Button type="button" onClick={() => addCol()}>Add Column</Button>
+                <Button type="button" onClick={() => deleteRow()}>Delete Row</Button>
+                <Button type="button" onClick={() => deleteColumn()}>Delete Column</Button>
+                <Table rows={rows} editCell={editCell} />
+            </section>
+        </main>
     )
 }
