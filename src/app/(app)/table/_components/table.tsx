@@ -13,16 +13,18 @@ export default function Table({ rows, editCell }: {
         isVisible?: boolean | undefined,
     }) => void,
 }) {
+
     return (
         <table>
             <thead>
                 <tr className="flex flex-row gap-2">
                     {
                         rows && rows[0]
-                        ? rows[0].map((row, index) => {
+                        ? rows[0].map((col, index) => {
                             return (
                                 <th scope="col" key={`${generateColumnName(index)}${0}`}>
-                                    <Cell value={row} rowIndex={0} colIndex={index} editCell={editCell} />
+                                    <label aria-label="Column Name">{`${generateColumnName(index)}`}</label>
+                                    <Cell value={col} rowIndex={0} colIndex={index} editCell={editCell} />
                                 </th>
                             )
                         })
