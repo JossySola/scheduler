@@ -6,3 +6,7 @@ export function generateColumnName(index: number): string {
   }
   return name;
 }
+
+export function generateCellId(rowIndex: number, colIndex: number): string {
+  return `${generateColumnName(colIndex)}${rowIndex}`;
+}
