@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function useHardConstraints(initialState: {
     disabledRows: Set<string>,
@@ -8,40 +8,40 @@ export default function useHardConstraints(initialState: {
     const [disabledRows, setDisabledRows] = useState(initialState.disabledRows);
     const [disabledColumns, setDisabledColumns] = useState(initialState.disabledColumns);
 
-    const disableRow = (value: string) => {
+    const disableRow = useCallback((value: string) => {
         setDisabledRows(prev => {
             const newSet = new Set(Array.from(prev));
             newSet.add(value);
             return newSet;
         });
-    }
-    const disableColumn = (value: string) => {
+    }, []);
+    const disableColumn = useCallback((value: string) => {
         setDisabledColumns(prev => {
             const newSet = new Set(Array.from(prev));
             newSet.add(value);
             return newSet;
         });
-    }
-    const enableRow = (value: string) => {
+    }, []);
+    const enableRow = useCallback((value: string) => {
         setDisabledRows(prev => {
             const newSet = new Set(Array.from(prev));
             newSet.delete(value);
             return newSet;
         });
-    }
-    const enableColumn = (value: string) => {
+    }, []);
+    const enableColumn = useCallback((value: string) => {
         setDisabledColumns(prev => {
             const newSet = new Set(Array.from(prev));
             newSet.delete(value);
             return newSet;
         });
-    }
-    const replaceRowsList = (selection: Set<string>) => {
+    }, []);
+    const replaceRowsList = useCallback((selection: Set<string>) => {
         setDisabledRows(selection);
-    }
-    const replaceColsList = (selection: Set<string>) => {
+    }, []);
+    const replaceColsList = useCallback((selection: Set<string>) => {
         setDisabledColumns(selection);
-    }
+    }, []);
     return {
         disableRow,
         disableColumn,

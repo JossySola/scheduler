@@ -1,14 +1,14 @@
 "use client"
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { HeaderType, TableState } from "../definitions";
 
 export default function useRows(
     initialState: TableState = []) {
     const [rows, setRows] = useState<TableState>(initialState);
 
-    const addRow = () => {
-        const maxCols = rows[0] ? rows[0].length : 1;
+    const addRow = useCallback(() => {
         setRows(prev => {
+            const maxCols = prev[0] ? prev[0].length : 1;
             const newRow = Array.from({ length: maxCols }, (_, colIndex) => 
                 colIndex === 0 
                 ? ({ value: "", type: "text", isVisible: true } as HeaderType) 
@@ -16,8 +16,8 @@ export default function useRows(
             );
             return [...prev, newRow];
         });
-    }
-    const addCol = () => {
+    }, []);
+    const addCol = useCallback(() => {
         setRows(prev => {
             const maxCols = prev[0] ? prev[0].length : 1;
             const newArray = prev.map((row, index) => {
@@ -32,16 +32,16 @@ export default function useRows(
             });
             return newArray;
         });
-    }
-    const deleteRow = (index?: number) => {
+    }, []);
+    const deleteRow = useCallback((index?: number) => {
         setRows(prev => {
             if (index !== undefined) {
                 return prev.toSpliced(index, 1);
             }
             return prev.slice(0, -1);
         });
-    }
-    const deleteColumn = (index?: number) => {
+    }, []);
+    const deleteColumn = useCallback((index?: number) => {
         setRows(prev => {
             if (index !== undefined) {
                 return prev.map(row => {
@@ -55,8 +55,8 @@ export default function useRows(
                 return row.slice(0, -1);
             });
         });
-    }
-    const editCell = ({rowIndex, colIndex, value, type, isVisible}: {
+    }, []);
+    const editCell = useCallback(({rowIndex, colIndex, value, type, isVisible}: {
         rowIndex: number, colIndex: number, value?: string, type?: "text" | "time" | "date", isVisible?: boolean,
     }) => {
         setRows(prev => prev.map((row, rIdx) => {
@@ -79,7 +79,7 @@ export default function useRows(
                 };
             });
         }));
-    }
+    }, []);
 
     return {
         rows,
