@@ -7,34 +7,21 @@ import { PanelInitialState } from "@/lib/definitions";
 import Table from "./table";
 import { Button } from "react-aria-components";
 import HardConstraintsModal from "./hard-constraints-modal";
+import SoftConstraintsModal from "./soft-constraints-modal";
+import ValuesModal from "./values-modal";
 
 export default function Panel({ initialState }: {
     initialState?: PanelInitialState,
 }) {
     const {
-        disableRow,
-        disableColumn,
-        enableRow,
-        enableColumn,
-        disabledRows,
-        disabledColumns,
         replaceRowsList,
         replaceColsList,
     } = useHardConstraints(initialState?.hardConstraints);
     const {
-        valuesInColumn,
-        valuesInRow,
-        addValueInColumn,
-        addValueInRow,
-        editCountInColumn,
-        editValueInRow,
-        deleteCountInColumn,
-        deleteValueInRow,
-    } = useSoftConstraints(initialState?.softConstraints);
-    const {
         addValue,
         deleteValue,
         editValue,
+        replaceValues,
         values,
     } = useValues(initialState?.values);
     const {
@@ -45,6 +32,23 @@ export default function Panel({ initialState }: {
         deleteColumn,
         editCell,
     } = useRows(initialState?.rows);
+    const {
+        valuesInColumns,
+        valuesInRows,
+        addColumnToMap,
+        addRowToMap,
+        editColumnNameInMap,
+        editRowNameInMap,
+        deleteColumnInMap,
+        deleteRowInMap,
+        addValueToColumn,
+        addValueToRow,
+        editCountInColumn,
+        editCountInRow,
+        deleteValueInColumn,
+        deleteValueInRow,
+    } = useSoftConstraints(initialState?.softConstraints);
+
     return (
         <main id="panel">
             <section id="settings">
@@ -52,6 +56,33 @@ export default function Panel({ initialState }: {
                 rows={rows} 
                 replaceColsList={replaceColsList} 
                 replaceRowsList={replaceRowsList} />
+
+                <SoftConstraintsModal 
+                rows={rows} 
+                values={values}
+                controls={{
+                    valuesInColumns,
+                    valuesInRows,
+                    addColumnToMap,
+                    addRowToMap,
+                    editColumnNameInMap,
+                    editRowNameInMap,
+                    deleteColumnInMap,
+                    deleteRowInMap,
+                    addValueToColumn,
+                    addValueToRow,
+                    editCountInColumn,
+                    editCountInRow,
+                    deleteValueInColumn,
+                    deleteValueInRow,
+                }} />
+
+                <ValuesModal
+                addValue={addValue}
+                replaceValues={replaceValues}
+                deleteValue={deleteValue}
+                editValue={editValue}
+                values={values} />
             </section>
             <section id="table">
                 <Button type="button" onClick={() => addRow()}>Add Row</Button>
