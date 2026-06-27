@@ -1,7 +1,7 @@
 'use client'
 import { TableState } from "@/lib/definitions";
 import Cell from "./cell";
-import { generateColumnName } from "@/lib/utils";
+import { generateCellId, generateColumnName } from "@/lib/utils";
 
 export default function Table({ rows, editCell }: {
     rows: TableState,
@@ -22,8 +22,8 @@ export default function Table({ rows, editCell }: {
                         rows && rows[0]
                         ? rows[0].map((col, index) => {
                             return (
-                                <th scope="col" key={`${generateColumnName(index)}${0}`}>
-                                    <label aria-label="Column Name">{`${generateColumnName(index)}`}</label>
+                                <th scope="col" key={generateCellId(0, index)}>
+                                    <span aria-label="Column Name">{`${generateColumnName(index)}`}</span>
                                     <Cell value={col} rowIndex={0} colIndex={index} editCell={editCell} />
                                 </th>
                             )
@@ -40,19 +40,19 @@ export default function Table({ rows, editCell }: {
                             return null;
                         }
                         return (
-                            <tr className="flex flex-row gap-2" key={rowIndex}>
+                            <tr className="flex flex-row gap-2" key={`row-${rowIndex}`}>
                                 {
                                     row 
                                     ? row.map((cell, colIndex) => {
                                         if (colIndex === 0) {
                                             return (
-                                                <th scope="row" key={`${generateColumnName(colIndex)}${0}`}>
+                                                <th scope="row" key={generateCellId(rowIndex, colIndex)}>
                                                     <Cell value={cell} rowIndex={rowIndex} colIndex={colIndex} editCell={editCell} />
                                                 </th>
                                             )
                                         }
                                         return (
-                                            <td key={`${generateColumnName(colIndex)}${0}`}>
+                                            <td key={generateCellId(rowIndex, colIndex)}>
                                                 <Cell value={cell} rowIndex={rowIndex} colIndex={colIndex} editCell={editCell} />
                                             </td>
                                         )

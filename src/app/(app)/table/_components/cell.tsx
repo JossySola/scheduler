@@ -1,6 +1,6 @@
 'use client'
 import { HeaderType } from "@/lib/definitions";
-import { generateColumnName } from "@/lib/utils";
+import { generateCellId } from "@/lib/utils";
 import { TextField } from "@react-spectrum/s2/TextField";
 
 export default function Cell({ value, rowIndex, colIndex, editCell }: {
@@ -20,6 +20,7 @@ export default function Cell({ value, rowIndex, colIndex, editCell }: {
         ? value
         : value.value
     );
+    const cellId = generateCellId(rowIndex, colIndex);
     const handleChange = (event: string) => {
         const newValue = event;
         const payload = {
@@ -31,8 +32,8 @@ export default function Cell({ value, rowIndex, colIndex, editCell }: {
     }
     return (
         <TextField 
-        id={`${generateColumnName(colIndex)}${rowIndex}`}
-        aria-label={`Cell field for ${generateColumnName(colIndex)}${rowIndex}`}
+        id={cellId}
+        aria-label={`Cell field for ${cellId}`}
         value={text} 
         onChange={handleChange}
         autoComplete="off" />
