@@ -110,7 +110,7 @@ export interface PanelInitialState {
     };
     softConstraints: {
         valuesInColumn: Map<string, Map<string, number>>,
-        valuesInRow: Map<string, Set<string>>,
+        valuesInRow: Map<string, Map<string, number>>,
     };
     values: Set<string>;
 }
