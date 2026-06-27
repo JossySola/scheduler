@@ -36,7 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <img src="scheduler-black-210x32.png" width="210" height="32" alt="Scheduler logo"/>
           </figure>
           <div aria-hidden="true" style={{ width: "fit-content" }}>
-            <a className="action-button" href={`${process.env.NEXTAUTH_URL}/signin`}>{ lang === "es" ? "Iniciar sesión" : "Sign In" }</a>
+            <a className="action-button" href={`${process.env.NEXTAUTH_URL}/login`}>{ lang === "es" ? "Iniciar sesión" : "Sign In" }</a>
             <a className="primary-button" href={`${process.env.NEXTAUTH_URL}/signup`}>{ lang === "es" ? "Registrarse" : "Sign Up" }</a>
           </div>
         </nav>
