@@ -1,7 +1,6 @@
 "use client"
 import { useCallback, useState } from "react";
 
-
 export default function useSoftConstraints(initialState: {
     valuesInColumn: Map<string, Map<string, number>>,
     valuesInRow: Map<string, Map<string, number>>,
@@ -182,7 +181,11 @@ export default function useSoftConstraints(initialState: {
                 });
                 return new Map(previousMap);
             } else {
-                return prev;
+                return new Map([
+                    [column, new Map([
+                        [value, count]
+                    ])]
+                ]);
             }
         });
     }, []);
@@ -203,7 +206,11 @@ export default function useSoftConstraints(initialState: {
                 });
                 return new Map(previousMap);
             } else {
-                return prev;
+                return new Map([
+                    [row, new Map([
+                        [value, count]
+                    ])]
+                ]);
             }
         });
     }, []);
