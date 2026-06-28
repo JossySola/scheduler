@@ -2,6 +2,8 @@
 import { TableState } from "@/lib/definitions";
 import ColsValuesTabs from "./cols-values-tabs";
 import { Button, Content, Dialog, DialogTrigger, Heading } from "@react-spectrum/s2/Dialog";
+import RowsValuesTabs from "./rows-values-tabs";
+import {Divider} from '@react-spectrum/s2/Divider';
 
 export default function SoftConstraintsModal({ rows, values, controls }: {
     rows: TableState,
@@ -32,11 +34,33 @@ export default function SoftConstraintsModal({ rows, values, controls }: {
                         <>
                             <Heading slot="title">Soft Constraints</Heading>
                             <Content>
-                                <h4 id="setting-description">The amount of times the value can be used in each column</h4>
-                                <ColsValuesTabs 
-                                rows={rows} 
-                                values={values}
-                                valuesInColumns={controls.valuesInColumns} />
+                                <section className="w-full my-4">
+                                    <p id="col-setting-description" className="text-xl mb-3">The amount of times the value can be used in each <b>column</b></p>
+                                    {
+                                        rows && rows.length > 0
+                                        ? <ColsValuesTabs 
+                                            rows={rows} 
+                                            values={values}
+                                            valuesInColumns={controls.valuesInColumns}
+                                            editCountInColumn={controls.editCountInColumn} />
+                                    : <p className="text-center"><i>No columns yet</i></p>
+                                    }
+                                </section>
+
+                                <Divider />
+
+                                <section className="w-full my-4">
+                                    <p id="row-setting-description" className="text-xl mb-3">The amount of times the value can be used in each <b>row</b></p>
+                                    {
+                                        rows && rows.length > 0
+                                        ? <RowsValuesTabs
+                                            rows={rows}
+                                            values={values}
+                                            valuesInRows={controls.valuesInRows}
+                                            editCountInRow={controls.editCountInRow} />
+                                        : <p className="text-center"><i>No rows yet.</i></p>
+                                    }
+                                </section>
                             </Content>
                         </>
                     )
