@@ -14,6 +14,18 @@ export default function useSoftConstraints(initialState: {
     // Use X values in <Y row>
     const [valuesInRows, setValuesInRows] = useState<Map<string, Map<string, number>>>(initialState.valuesInRow);
 
+    const getSerializedValuesInColumns = () =>  Object.fromEntries(
+        [...valuesInColumns].map(([key, value]) => [
+            key,
+            Object.fromEntries(value),
+        ])
+    );
+    const getSerializedValuesInRows = () =>  Object.fromEntries(
+        [...valuesInRows].map(([key, value]) => [
+            key,
+            Object.fromEntries(value),
+        ])
+    );
     const addColumnToMap = useCallback((column: string) => {
         setValuesInColumns(prev => {
             const newState = new Map(Array.from(prev));
@@ -294,5 +306,7 @@ export default function useSoftConstraints(initialState: {
         editCountInRow,
         deleteValueInColumn,
         deleteValueInRow,
+        getSerializedValuesInColumns,
+        getSerializedValuesInRows,
     }
 }

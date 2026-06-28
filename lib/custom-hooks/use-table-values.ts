@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 export default function useValues(initialState: Set<string> = new Set()) {
     const [values, setValues] = useState(initialState);
 
+    const getSerializedValues = () => Array.from(values);
     const addValue = useCallback((value: string): boolean => {
         if (values.has(value)) return false;
         setValues(prev => {
@@ -41,5 +42,6 @@ export default function useValues(initialState: Set<string> = new Set()) {
         editValue,
         replaceValues,
         values,
+        getSerializedValues,
     }
 }

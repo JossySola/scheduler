@@ -8,6 +8,8 @@ export default function useHardConstraints(initialState: {
     const [disabledRows, setDisabledRows] = useState(initialState.disabledRows);
     const [disabledColumns, setDisabledColumns] = useState(initialState.disabledColumns);
 
+    const getSerializedDisabledRows = () => Array.from(disabledRows);
+    const getSerializedDisabledColumns = () => Array.from(disabledColumns);
     const disableRow = useCallback((value: string) => {
         setDisabledRows(prev => {
             const newSet = new Set(Array.from(prev));
@@ -51,5 +53,7 @@ export default function useHardConstraints(initialState: {
         disabledColumns,
         replaceRowsList,
         replaceColsList,
+        getSerializedDisabledColumns,
+        getSerializedDisabledRows,
     }
 }
