@@ -1,19 +1,26 @@
 'use client'
 import { HeaderType, TableState } from "@/lib/definitions";
 import { Tab, TabList, TabPanel, Tabs } from "@react-spectrum/s2/Tabs";
-import { NumberField } from "@react-spectrum/s2/NumberField";
 import { useMemo } from "react";
 import { generateCellId } from "@/lib/utils";
+import ColCountSetting from "./col-count-setting";
 
-export default function ColsValuesTabs({ rows, values, valuesInColumns }: {
+export default function ColsValuesTabs({ rows, values, valuesInColumns, editCountInColumn }: {
     rows: TableState,
     values: Set<string>,
     valuesInColumns: Map<string, Map<string, number>>,
+    editCountInColumn: (column: string, value: string, count: number) => void,
 }) {
     const columnsHeaders = useMemo(() => rows && rows[0]
-    ? rows[0].map((col, index) => [generateCellId(0, index), col])
+    ? rows[0].map((col, index) => {
+        if (index === 0) {
+            return;
+        } else {
+            return [generateCellId(0, index), col];
+        }
+    }).filter(element => element !== undefined)
     : [] , [rows]);
-    
+
     return (
         <Tabs aria-label="Columns' values tabs">
             <TabList>
@@ -46,11 +53,12 @@ export default function ColsValuesTabs({ rows, values, valuesInColumns }: {
                                         id={value} 
                                         key={`${value}.${index}`} 
                                         className="w-full flex flex-row justify-around py-2">
-                                            <span className="w-1/5 text-2xl text-center truncate">{ value }</span>
-                                            <NumberField
-                                            aria-labelledby="setting-description" 
-                                            minValue={0} 
-                                            maxValue={columnsHeaders.length ?? 1} />
+                                            <ColCountSetting
+                                            valuesInColumns={valuesInColumns}
+                                            value={value}
+                                            column={coordinate as string}
+                                            rowsLength={rows.length ?? 0}
+                                            editCountInColumn={editCountInColumn} />
                                         </div>
                                     )
                                 })
