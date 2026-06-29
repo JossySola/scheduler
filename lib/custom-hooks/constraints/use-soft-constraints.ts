@@ -1,6 +1,5 @@
 "use client"
 import { useCallback, useState } from "react";
-import { generateCellId } from "../utils";
 
 export default function useSoftConstraints(initialState: {
     valuesInColumn: Map<string, Map<string, number>>,
