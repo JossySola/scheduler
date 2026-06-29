@@ -1,5 +1,5 @@
 'use client'
-import { HeaderType, TableState } from "@/lib/definitions";
+import { TableState } from "@/lib/definitions";
 import { Button, Content, Dialog, DialogTrigger, Heading } from "@react-spectrum/s2/Dialog";
 import { ListView, ListViewItem, type Selection } from "@react-spectrum/s2/ListView";
 import { useMemo, useState } from "react";
@@ -15,10 +15,10 @@ export default function HardConstraintsModal({ rows, replaceRowsList, replaceCol
 
     // Memoized calculations of the rows and columns headers from the 'rows' prop
     const rowHeaders = useMemo(() => rows 
-    ? rows.map(row => row[0] ? (row[0] as HeaderType).value : "")
+    ? rows.map(row => row[0])
     : [], [rows]);
     const colHeaders = useMemo(() => rows && rows[0]
-    ? rows[0].map(col => col ? (col as HeaderType).value : "")
+    ? rows[0].map(col => col)
     : [] , [rows]);
 
     // Handlers to update local and parent states
