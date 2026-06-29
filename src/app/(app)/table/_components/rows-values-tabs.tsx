@@ -1,5 +1,5 @@
 'use client'
-import { HeaderType, TableState } from "@/lib/definitions";
+import { TableState } from "@/lib/definitions";
 import { generateCellId } from "@/lib/utils";
 import { Tab, TabList, TabPanel, Tabs } from "@react-spectrum/s2/Tabs";
 import { useMemo } from "react";
@@ -29,12 +29,16 @@ export default function RowsValuesTabs({ rows, values, valuesInRows, editCountIn
                 {
                     rowsHeaders
                     ? rowsHeaders.map(([coordinate, header], index) => {
+                        // Create entry in the state map for each header, so they can be added in order
+                        if (!valuesInRows.has(coordinate)) {
+                            valuesInRows.set(coordinate, new Map([]));
+                        }
                         return (
                             <Tab 
-                            id={coordinate as string} 
-                            key={`${coordinate as string}.${index}.tab`}
-                            aria-label={`Setting for the row ${coordinate as string}`}>
-                                { coordinate as string }
+                            id={coordinate} 
+                            key={`${coordinate}.${index}.tab`}
+                            aria-label={`Setting for the row ${coordinate}`}>
+                                { coordinate }
                             </Tab>
                         )
                     })
@@ -45,8 +49,8 @@ export default function RowsValuesTabs({ rows, values, valuesInRows, editCountIn
                 rowsHeaders
                 ? rowsHeaders.map(([coordinate, header]) => {
                     return (
-                        <TabPanel id={`${coordinate as string}`} key={`${coordinate as string}.panel`}>
-                            <h5 className="text-center text-2xl my-3">" { (header as HeaderType).value } "</h5>
+                        <TabPanel id={`${coordinate}`} key={`${coordinate}.panel`}>
+                            <h5 className="text-center text-2xl my-3">" { header } "</h5>
                             {
                                 values
                                 ? Array.from(values).map((value, index) => {
@@ -58,7 +62,7 @@ export default function RowsValuesTabs({ rows, values, valuesInRows, editCountIn
                                             <RowCountSetting
                                             value={value}
                                             row={coordinate as string}
-                                            colsLength={rows && rows.length > 0 ? rows[0].length : 0}
+                                            colsLength={rows && rows.length > 0 ? rows[0].length -1 : 0}
                                             valuesInRows={valuesInRows}
                                             editCountInRow={editCountInRow} />
                                         </div>

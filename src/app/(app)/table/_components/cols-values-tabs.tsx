@@ -1,5 +1,5 @@
 'use client'
-import { HeaderType, TableState } from "@/lib/definitions";
+import { TableState } from "@/lib/definitions";
 import { Tab, TabList, TabPanel, Tabs } from "@react-spectrum/s2/Tabs";
 import { useMemo } from "react";
 import { generateCellId } from "@/lib/utils";
@@ -27,12 +27,16 @@ export default function ColsValuesTabs({ rows, values, valuesInColumns, editCoun
                 {
                     columnsHeaders
                     ? columnsHeaders.map(([coordinate, header]) => {
+                        // Create entry in the state map for each header, so they can be added in order
+                        if (!valuesInColumns.has(coordinate)) {
+                            valuesInColumns.set(coordinate, new Map([]));
+                        }
                         return (
                             <Tab 
-                            id={`${coordinate as string}`} 
-                            key={`${coordinate as string}.tab`}
-                            aria-label={`Setting for the column ${coordinate as string}`}>
-                                { coordinate as string }
+                            id={`${coordinate}`} 
+                            key={`${coordinate}.tab`}
+                            aria-label={`Setting for the column ${coordinate}`}>
+                                { coordinate }
                             </Tab>
                         )
                     })
@@ -43,8 +47,8 @@ export default function ColsValuesTabs({ rows, values, valuesInColumns, editCoun
                 columnsHeaders
                 ? columnsHeaders.map(([coordinate, header]) => {
                     return (
-                        <TabPanel id={`${coordinate as string}`} key={`${coordinate as string}.panel`}>
-                            <h5 className="text-center text-2xl my-3">" { (header as HeaderType).value } "</h5>
+                        <TabPanel id={`${coordinate}`} key={`${coordinate}.panel`}>
+                            <h5 className="text-center text-2xl my-3">" { header } "</h5>
                             { 
                                 values
                                 ? Array.from(values).map((value, index) => {
@@ -56,8 +60,8 @@ export default function ColsValuesTabs({ rows, values, valuesInColumns, editCoun
                                             <ColCountSetting
                                             valuesInColumns={valuesInColumns}
                                             value={value}
-                                            column={coordinate as string}
-                                            rowsLength={rows.length ?? 0}
+                                            column={coordinate}
+                                            rowsLength={rows && rows.length > 0 ? rows.length -1 : 0}
                                             editCountInColumn={editCountInColumn} />
                                         </div>
                                     )
