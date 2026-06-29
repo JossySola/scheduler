@@ -1,6 +1,6 @@
 "use client"
 import { useCallback, useState } from "react";
-import { HeaderType, TableState } from "../definitions";
+import { TableState } from "../definitions";
 
 export default function useRows(
     initialState: TableState = []) {
@@ -9,11 +9,7 @@ export default function useRows(
     const addRow = useCallback(() => {
         setRows(prev => {
             const maxCols = prev[0] ? prev[0].length : 1;
-            const newRow = Array.from({ length: maxCols }, (_, colIndex) => 
-                colIndex === 0 
-                ? ({ value: "", type: "text", isVisible: true } as HeaderType) 
-                : ""
-            );
+            const newRow = Array.from({ length: maxCols }, () => " ");
             return [...prev, newRow];
         });
     }, []);
@@ -22,11 +18,7 @@ export default function useRows(
             const maxCols = prev[0] ? prev[0].length : 1;
             const newArray = prev.map((row, index) => {
                 if (index === 0) {
-                    return row.toSpliced(maxCols, 0, {
-                        value: "",
-                        type: "text",
-                        isVisible: true,
-                    });
+                    return row.toSpliced(maxCols, 0, "");
                 }
                 return row.toSpliced(maxCols, 0, "");
             });
@@ -56,27 +48,15 @@ export default function useRows(
             });
         });
     }, []);
-    const editCell = useCallback(({rowIndex, colIndex, value, type, isVisible}: {
-        rowIndex: number, colIndex: number, value?: string, type?: "text" | "time" | "date", isVisible?: boolean,
+    const editCell = useCallback(({rowIndex, colIndex, value}: {
+        rowIndex: number, colIndex: number, value: string,
     }) => {
         setRows(prev => prev.map((row, rIdx) => {
             if (rIdx !== rowIndex) return row; // Keep other rows exactly as they are
             
             return row.map((cell, cIdx) => {
                 if (cIdx !== colIndex) return cell; // Keep other cells exactly as they are
-                
-                // If it's a primitive string cell
-                if (typeof cell === "string") {
-                    return value !== undefined ? value : cell;
-                }
-                
-                // If it's an object cell (HeaderType), return a brand new object copy
-                return {
-                    ...cell,
-                    ...(value !== undefined && { value }),
-                    ...(type !== undefined && { type }),
-                    ...(isVisible !== undefined && { isVisible }),
-                };
+                return value;
             });
         }));
     }, []);

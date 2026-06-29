@@ -1,5 +1,6 @@
 "use client"
 import { useCallback, useState } from "react";
+import { generateCellId } from "../utils";
 
 export default function useSoftConstraints(initialState: {
     valuesInColumn: Map<string, Map<string, number>>,
@@ -14,18 +15,18 @@ export default function useSoftConstraints(initialState: {
     // Use X values in <Y row>
     const [valuesInRows, setValuesInRows] = useState<Map<string, Map<string, number>>>(initialState.valuesInRow);
 
-    const getSerializedValuesInColumns = () =>  Object.fromEntries(
+    const getSerializedValuesInColumns = useCallback(() =>  Object.fromEntries(
         [...valuesInColumns].map(([key, value]) => [
             key,
             Object.fromEntries(value),
         ])
-    );
-    const getSerializedValuesInRows = () =>  Object.fromEntries(
+    ), []);
+    const getSerializedValuesInRows = useCallback(() =>  Object.fromEntries(
         [...valuesInRows].map(([key, value]) => [
             key,
             Object.fromEntries(value),
         ])
-    );
+    ), []);
     const addColumnToMap = useCallback((column: string) => {
         setValuesInColumns(prev => {
             const newState = new Map(Array.from(prev));
@@ -66,27 +67,43 @@ export default function useSoftConstraints(initialState: {
             }
         });
     }, []);
-    const deleteColumnInMap = useCallback((column: string) => {
-        setValuesInColumns(prev => {
-            const newState = new Map(Array.from(prev));
-            if (!newState.has(column)) {
+    const deleteColumnInMap = useCallback((column?: string) => {
+        if (column) {
+            setValuesInColumns(prev => {
+                const newState = new Map(Array.from(prev));
+                if (newState.has(column)) newState.delete(column);
                 return newState;
-            } else {
-                newState.delete(column);
-                return newState;
-            }
-        })
+            });
+        } else {
+            setValuesInColumns(prev => {
+                const mapToArray = Array.from(prev);
+                if (mapToArray.length > 0 && mapToArray[0][1].size > 0) {
+                    const newState = new Map(mapToArray.splice(mapToArray.length -1, 1));
+                    return newState;
+                } else {
+                    return new Map(mapToArray);
+                }
+            });
+        }
     }, []);
-    const deleteRowInMap = useCallback((row: string) => {
-        setValuesInRows(prev => {
-            const newState = new Map(Array.from(prev));
-            if (!newState.has(row)) {
+    const deleteRowInMap = useCallback((row?: string) => {
+        if (row) {
+            setValuesInRows(prev => {
+                const newState = new Map(Array.from(prev));
+                if (newState.has(row)) newState.delete(row);
                 return newState;
-            } else {
-                newState.delete(row);
-                return newState;
-            }
-        })
+            });
+        } else {
+            setValuesInRows(prev => {
+                const mapToArray = Array.from(prev);
+                if (mapToArray.length > 0 && mapToArray[0][1].size > 0) {
+                    const newState = new Map(mapToArray.splice(mapToArray.length -1, 1));
+                    return newState;
+                } else {
+                    return new Map(mapToArray);
+                }
+            })
+        }
     }, []);
     const addValueToColumn = useCallback((column: string | "all", value: string, count: number) => {
         if (column === "all") {
