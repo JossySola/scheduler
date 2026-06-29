@@ -3,14 +3,14 @@ import { TableState } from "@/lib/definitions";
 import Cell from "./cell";
 import { generateCellId, generateColumnName } from "@/lib/utils";
 
-export default function Table({ rows, editCell }: {
+export default function Table({ rows, rowHeadersType, colHeadersType, editCell }: {
     rows: TableState,
-    editCell: ({ rowIndex, colIndex, value, type, isVisible}: {
+    rowHeadersType: string,
+    colHeadersType: string,
+    editCell: ({ rowIndex, colIndex, value}: {
         rowIndex: number,
         colIndex: number,
-        value?: string | undefined,
-        type?: "text" | "time" | "date" | undefined,
-        isVisible?: boolean | undefined,
+        value: string,
     }) => void,
 }) {
 
@@ -24,7 +24,7 @@ export default function Table({ rows, editCell }: {
                             return (
                                 <th scope="col" key={generateCellId(0, index)}>
                                     <span aria-label="Column Name">{`${generateColumnName(index)}`}</span>
-                                    <Cell value={col} rowIndex={0} colIndex={index} editCell={editCell} />
+                                    <Cell value={col} rowIndex={0} colIndex={index} rowHeadersType={rowHeadersType} colHeadersType={colHeadersType} editCell={editCell} />
                                 </th>
                             )
                         })
@@ -47,13 +47,13 @@ export default function Table({ rows, editCell }: {
                                         if (colIndex === 0) {
                                             return (
                                                 <th scope="row" key={generateCellId(rowIndex, colIndex)}>
-                                                    <Cell value={cell} rowIndex={rowIndex} colIndex={colIndex} editCell={editCell} />
+                                                    <Cell value={cell} rowIndex={rowIndex} colIndex={colIndex} rowHeadersType={rowHeadersType} colHeadersType={colHeadersType} editCell={editCell} />
                                                 </th>
                                             )
                                         }
                                         return (
                                             <td key={generateCellId(rowIndex, colIndex)}>
-                                                <Cell value={cell} rowIndex={rowIndex} colIndex={colIndex} editCell={editCell} />
+                                                <Cell value={cell} rowIndex={rowIndex} colIndex={colIndex} rowHeadersType={rowHeadersType} colHeadersType={colHeadersType} editCell={editCell} />
                                             </td>
                                         )
                                     })
