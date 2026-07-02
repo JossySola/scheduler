@@ -38,10 +38,10 @@ export default function useHardConstraints(initialState: {
             return newSet;
         });
     }, []);
-    const replaceRowsList = useCallback((selection: Set<string>) => {
+    const setRowsList = useCallback((selection: Set<string>) => {
         setDisabledRows(selection);
     }, []);
-    const replaceColsList = useCallback((selection: Set<string>) => {
+    const setColsList = useCallback((selection: Set<string>) => {
         setDisabledColumns(selection);
     }, []);
     return {
@@ -51,8 +51,8 @@ export default function useHardConstraints(initialState: {
         enableColumn,
         disabledRows,
         disabledColumns,
-        replaceRowsList,
-        replaceColsList,
+        setRowsList,
+        setColsList,
         getSerializedDisabledColumns,
         getSerializedDisabledRows,
     }
