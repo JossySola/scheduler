@@ -37,7 +37,7 @@ export default function SoftConstraintsModal({ rows, values, controls }: {
                                 <section className="w-full my-4">
                                     <p id="col-setting-description" className="text-xl mb-3">The amount of times the value can be used in each <b>column</b></p>
                                     {
-                                        rows && rows.length > 0
+                                        rows && rows[0] && rows[0].length > 0
                                         ? <ColsValuesTabs 
                                             rows={rows} 
                                             values={values}
@@ -46,9 +46,7 @@ export default function SoftConstraintsModal({ rows, values, controls }: {
                                     : <p className="text-center"><i>No columns yet</i></p>
                                     }
                                 </section>
-
                                 <Divider />
-
                                 <section className="w-full my-4">
                                     <p id="row-setting-description" className="text-xl mb-3">The amount of times the value can be used in each <b>row</b></p>
                                     {

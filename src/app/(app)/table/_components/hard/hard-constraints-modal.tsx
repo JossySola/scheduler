@@ -72,7 +72,7 @@ export default function HardConstraintsModal({ rows, replaceRowsList, replaceCol
                                 onSelectionChange={handleColumnsSelection}>
                                     {
                                         colHeaders 
-                                        ? colHeaders.map((col, index) => (
+                                        ? colHeaders.map((col, index) => index !== 0 && (
                                             <ListViewItem id={`${index}.${col}`} key={`${index}.${col}`}>
                                                 { col ?? "Untitled" }
                                             </ListViewItem>
