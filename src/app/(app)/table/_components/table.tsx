@@ -1,6 +1,6 @@
 'use client'
 import { TableState } from "@/lib/definitions";
-import Cell from "./cell";
+import Cell from "./cells/cell";
 import { generateCellId, generateColumnName } from "@/lib/utils";
 
 export default function Table({ rows, rowHeadersType, colHeadersType, editCell }: {
