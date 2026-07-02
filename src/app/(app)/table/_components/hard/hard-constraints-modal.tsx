@@ -4,10 +4,10 @@ import { Button, Content, Dialog, DialogTrigger, Heading } from "@react-spectrum
 import { ListView, ListViewItem, type Selection } from "@react-spectrum/s2/ListView";
 import { useMemo, useState } from "react";
 
-export default function HardConstraintsModal({ rows, replaceRowsList, replaceColsList }: {
+export default function HardConstraintsModal({ rows, setRowsList, setColsList }: {
     rows: TableState,
-    replaceRowsList: (selection: Set<string>) => void,
-    replaceColsList: (selection: Set<string>) => void,
+    setRowsList: (selection: Set<string>) => void,
+    setColsList: (selection: Set<string>) => void,
 }) {
     // States to manage selections
     const [rowsSelected, setRowsSelected] = useState<Selection>(new Set());
@@ -25,18 +25,18 @@ export default function HardConstraintsModal({ rows, replaceRowsList, replaceCol
     const handleRowsSelection = (keys: Selection) => {
         if (keys === 'all') {
             setRowsSelected(keys);
-            replaceRowsList(new Set(rowHeaders));
+            setRowsList(new Set(rowHeaders));
         }
         setRowsSelected(keys);
-        replaceRowsList(keys as Set<string>);
+        setRowsList(keys as Set<string>);
     }
     const handleColumnsSelection = (keys: Selection) => {
         if (keys === 'all') {
             setColsSelected(keys);
-            replaceColsList(new Set(colHeaders));
+            setColsList(new Set(colHeaders));
         }
         setColsSelected(keys);
-        replaceColsList(keys as Set<string>);
+        setColsList(keys as Set<string>);
     }
     return (
         <DialogTrigger>

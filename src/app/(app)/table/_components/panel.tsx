@@ -20,8 +20,8 @@ export default function Panel({ initialState }: {
     const {
         disabledRows,
         disabledColumns,
-        replaceRowsList,
-        replaceColsList,
+        setRowsList,
+        setColsList,
     } = useHardConstraints(initialState?.hardConstraints);
     const {
         addValue,
@@ -63,10 +63,6 @@ export default function Panel({ initialState }: {
     const {
         setColumnSpec,
         setRowSpec,
-        addColumnSpec,
-        addRowSpec,
-        deleteRowInColumnSpec,
-        deleteColumnInRowSpec,
         deleteRowFromStructuralMap,
         deleteColumnFromStructuralMap,
         columnsSpecificity,
@@ -78,8 +74,8 @@ export default function Panel({ initialState }: {
             <section id="constraints-settings" aria-label="Constraints Settings">
                 <HardConstraintsModal 
                 rows={rows} 
-                replaceColsList={replaceColsList} 
-                replaceRowsList={replaceRowsList} />
+                setColsList={setColsList} 
+                setRowsList={setRowsList} />
 
                 <SoftConstraintsModal 
                 rows={rows} 
