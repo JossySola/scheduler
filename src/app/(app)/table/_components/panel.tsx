@@ -6,17 +6,20 @@ import useValues from "@/lib/custom-hooks/constraints/use-table-values";
 import { PanelInitialState } from "@/lib/definitions";
 import Table from "./table";
 import { Button } from "react-aria-components";
-import HardConstraintsModal from "./hard-constraints-modal";
-import SoftConstraintsModal from "./soft-constraints-modal";
-import ValuesModal from "./values-modal";
+import HardConstraintsModal from "./hard/hard-constraints-modal";
+import SoftConstraintsModal from "./soft/soft-constraints-modal";
+import ValuesModal from "./values/values-modal";
 import useHeaderType from "@/lib/custom-hooks/constraints/use-header-type";
 import useStructuralConstraints from "@/lib/custom-hooks/constraints/use-structural-constraints";
-import HeaderTypesModal from "./header-types-modal";
+import HeaderTypesModal from "./header-types/header-types-modal";
+import StructuralConstraintsModal from "./structural/structural-constraints-modal";
 
 export default function Panel({ initialState }: {
     initialState?: PanelInitialState,
 }) {
     const {
+        disabledRows,
+        disabledColumns,
         replaceRowsList,
         replaceColsList,
     } = useHardConstraints(initialState?.hardConstraints);
@@ -58,10 +61,14 @@ export default function Panel({ initialState }: {
         changeRowsType,
     } = useHeaderType(initialState?.headersType);
     const {
+        setColumnSpec,
+        setRowSpec,
         addColumnSpec,
         addRowSpec,
-        deleteColumnSpec,
-        deleteRowSpec,
+        deleteRowInColumnSpec,
+        deleteColumnInRowSpec,
+        deleteRowFromStructuralMap,
+        deleteColumnFromStructuralMap,
         columnsSpecificity,
         rowsSpecificity,
     } = useStructuralConstraints(initialState?.structuralConstraints);
@@ -94,6 +101,13 @@ export default function Panel({ initialState }: {
                     deleteValueInRow,
                 }} />
 
+                <StructuralConstraintsModal 
+                rows={rows} 
+                setColumnSpec={setColumnSpec} 
+                setRowSpec={setRowSpec} 
+                columnsSpecificity={columnsSpecificity} 
+                rowsSpecificity={rowsSpecificity} />
+
                 <HeaderTypesModal
                 rowsType={rowsType}
                 colsType={colsType}
@@ -113,10 +127,12 @@ export default function Panel({ initialState }: {
                 <Button type="button" onClick={() => {
                     deleteRowInMap();
                     deleteRow();
+                    deleteRowFromStructuralMap();
                 }}>Delete Row</Button>
                 <Button type="button" onClick={() => {
                     deleteColumnInMap();
                     deleteColumn();
+                    deleteColumnFromStructuralMap();
                 }}>Delete Column</Button>
 
                 <Table 
@@ -124,6 +140,97 @@ export default function Panel({ initialState }: {
                 rowHeadersType={rowsType}
                 colHeadersType={colsType}
                 editCell={editCell} />
+            </section>
+            <section className="flex flex-col gap-5">
+                <section>
+                    <h3>Hard Constraints</h3>
+                    <p>disabledRows</p>
+                    <ul>
+                        {
+                            Array.from(disabledRows).map(item => <li key={item}>{item}</li>)
+                        }
+                    </ul>
+                    <p>disabledColumns</p>
+                    <ul>
+                        {
+                            Array.from(disabledColumns).map(item => <li key={item}>{item}</li>)
+                        }
+                    </ul>
+                </section>
+                <section>
+                    <h3>Soft Constraints</h3>
+                    <p>valuesInColumns</p>
+                    <ul>
+                        {
+                            Array.from(valuesInColumns).map(([item, map]) => (
+                                <li key={item}>
+                                    {item} 
+                                    <ul>
+                                    {
+                                        Array.from(map).map(([item, count]) => <li key={item}>{`${item}: ${count}`}</li>)
+                                    }
+                                    </ul>
+                                </li>
+                            ))
+                        }
+                    </ul>
+                    <p>valuesInRows</p>
+                    <ul>
+                        {
+                            Array.from(valuesInRows).map(([item, map]) => (
+                                <li key={item}>
+                                    {item}
+                                    <ul>
+                                    {
+                                        Array.from(map).map(([item, count]) => <li key={item}>{`${item}: ${count}`}</li>)
+                                    }
+                                    </ul>
+                                </li>
+                            ))
+                        }
+                    </ul>
+                </section>
+                <section>
+                    <h3>Values</h3>
+                    <ul>
+                        {
+                            Array.from(values).map(item => <li key={item}>{item}</li>)
+                        }
+                    </ul>
+                </section>
+                <section>
+                    <h3>Structural Constraints</h3>
+                    <p>columnsSpecificity</p>
+                    <ul>
+                    {
+                        Array.from(columnsSpecificity).map(([item, set]) => (
+                            <li key={item}>
+                                {item}
+                                <ul>
+                                    {
+                                        Array.from(set).map(item => <li key={item}>{item}</li>)
+                                    }
+                                </ul>
+                            </li>
+                        ))
+                    }
+                    </ul>
+                    <p>rowsSpecificity</p>
+                    <ul>
+                    {
+                        Array.from(rowsSpecificity).map(([item, set]) => (
+                            <li key={item}>
+                                {item}
+                                <ul>
+                                    {
+                                        Array.from(set).map(item => <li key={item}>{item}</li>)
+                                    }
+                                </ul>
+                            </li>
+                        ))
+                    }
+                    </ul>
+                </section>
             </section>
         </main>
     )
